@@ -29,20 +29,16 @@ export function AgentsPage() {
 				aria-labelledby="agents-title"
 			>
 				<header className="max-w-3xl">
-					<p className="kicker">Agent field note</p>
-					<h1
-						id="agents-title"
-						className="mt-5 text-[64px]/[64px] font-medium tracking-[-0.02em] max-[620px]:text-[40px]/[44px]"
-					>
+					<h1 id="agents-title">
 						Set up the stack.
 					</h1>
-					<p className="mt-6 text-[19px]/7 text-white/70">
+					<p className="mt-6 text-base/6 text-white/70">
 						A compact DLTL for controllers, providers, runtimes, and Pi.
 					</p>
 					<div className="mt-8 flex flex-wrap gap-4">
 						<DownloadButton />
 						<LocalLink
-							className="inline-flex min-h-10 items-center rounded-md border border-white/10 px-4 text-sm"
+							className="inline-flex min-h-10 items-center rounded-md border border-white/10 px-4"
 							href="/"
 						>
 							Back to overview
@@ -53,12 +49,12 @@ export function AgentsPage() {
 				<div className="mt-16 grid grid-cols-[minmax(240px,.72fr)_minmax(0,1.28fr)] items-start gap-10 max-[900px]:grid-cols-1">
 					<aside className="grid gap-8">
 						<section>
-							<h2 className="text-[28px]/9 font-medium">Scope</h2>
+							<h2>Scope</h2>
 							<p className="mt-4 text-base/6 text-white/70">
 								Multi-controller. Multi-provider. Runtime-aware. Local-tool
 								aware.
 							</p>
-							<ul className="mt-6 grid border border-white/10 p-0 text-sm/5 text-white/70">
+							<ul className="mt-6 grid border border-white/10 p-0 text-base/6 text-white/70">
 								{scope.map((item) => (
 									<li
 										className="border-b border-white/10 p-4 last:border-b-0"
@@ -70,7 +66,7 @@ export function AgentsPage() {
 							</ul>
 						</section>
 						<section>
-							<h3 className="text-[19px]/7 font-medium">Useful probes</h3>
+							<h3>Useful probes</h3>
 							<pre className="mt-4 overflow-x-auto rounded-lg border border-white/10 p-5 font-mono text-sm/5 text-white/80">
 								{probes}
 							</pre>
@@ -81,14 +77,14 @@ export function AgentsPage() {
 						aria-labelledby="instructions-title"
 					>
 						<div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-							<h2 id="instructions-title" className="kicker">
+							<h2 id="instructions-title" className="text-sm/5 font-normal text-white/70">
 								Agent instructions
 							</h2>
-							<span className="rounded-full border border-white/10 px-2 py-1 font-mono text-xs text-white/50">
+							<span className="rounded-full border border-white/10 px-2 py-1 font-mono text-sm/5 text-white/50">
 								DLTL
 							</span>
 						</div>
-						<pre className="max-h-[1320px] overflow-auto whitespace-pre-wrap p-6 font-mono text-sm/6 text-white/80">
+						<pre className="max-h-[1320px] overflow-auto whitespace-pre-wrap p-6 font-mono text-sm/5 text-white/80">
 							{instructions}
 						</pre>
 					</section>
@@ -101,11 +97,7 @@ export function AgentsPage() {
 			>
 				<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-8">
 					<div>
-						<p className="kicker">Where to look</p>
-						<h2
-							id="agents-media-title"
-							className="mt-4 text-[40px]/[48px] font-medium tracking-[-0.02em] max-[620px]:text-[32px]/10"
-						>
+						<h2 id="agents-media-title">
 							Runtime. Agent. Models.
 						</h2>
 					</div>
@@ -115,7 +107,7 @@ export function AgentsPage() {
 				</div>
 				<div className="mt-16 grid grid-cols-[1.12fr_.72fr] gap-5 max-[900px]:grid-cols-1">
 					<figure className="overflow-hidden rounded-xl border border-white/10">
-						<figcaption className="flex justify-between px-4 py-3 text-sm">
+						<figcaption className="flex justify-between px-4 py-3 text-sm/5">
 							<strong>Workbench</strong>
 							<span className="text-white/50">live app capture</span>
 						</figcaption>
@@ -131,7 +123,7 @@ export function AgentsPage() {
 					</figure>
 					<div className="grid gap-5">
 						<figure className="overflow-hidden rounded-xl border border-white/10">
-							<figcaption className="flex justify-between px-4 py-3 text-sm">
+							<figcaption className="flex justify-between px-4 py-3 text-sm/5">
 								<strong>Tools</strong>
 								<span className="text-white/50">live app capture</span>
 							</figcaption>
@@ -146,7 +138,7 @@ export function AgentsPage() {
 							/>
 						</figure>
 						<figure className="overflow-hidden rounded-xl border border-white/10">
-							<figcaption className="flex justify-between px-4 py-3 text-sm">
+							<figcaption className="flex justify-between px-4 py-3 text-sm/5">
 								<strong>Configure</strong>
 								<span className="text-white/50">live app capture</span>
 							</figcaption>
@@ -168,7 +160,7 @@ export function AgentsPage() {
 							className="min-h-56 border-r border-white/10 p-8 last:border-r-0 max-[900px]:min-h-0 max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:last:border-b-0"
 							key={title}
 						>
-							<h3 className="text-[19px]/7 font-medium">{title}</h3>
+							<h3>{title}</h3>
 							<p className="mt-4 text-base/6 text-white/70">{text}</p>
 						</article>
 					))}

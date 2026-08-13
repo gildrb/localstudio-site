@@ -21,7 +21,6 @@ export function KittyLitter() {
 		>
 			<div className="kitty__intro">
 				<div>
-					<p className="kicker">KittyLitter</p>
 					<h2 id="kittylitter-title">Your agents, in your pocket.</h2>
 				</div>
 				<div className="kitty__copy">

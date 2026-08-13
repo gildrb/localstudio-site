@@ -30,6 +30,67 @@ for (const [route, title, heading] of routes) {
 	});
 }
 
+test("design system typography is stable", async ({ page }) => {
+	await page.goto("/");
+	const desktop = await page.evaluate(() => {
+		const body = getComputedStyle(document.body);
+		const title = getComputedStyle(document.querySelector("h1")!);
+		const subheadline = getComputedStyle(document.querySelector(".story h2")!);
+		const feature = getComputedStyle(document.querySelector(".feature h3")!);
+		return {
+			body: [body.fontFamily, body.fontSize, body.fontWeight, body.lineHeight, body.letterSpacing],
+			title: [title.fontFamily, title.fontSize, title.fontWeight, title.lineHeight, title.letterSpacing],
+			subheadline: [subheadline.fontSize, subheadline.fontWeight, subheadline.lineHeight, subheadline.letterSpacing],
+			feature: [feature.fontSize, feature.fontWeight, feature.lineHeight, feature.letterSpacing],
+		};
+	});
+	expect(desktop.body).toEqual([expect.stringContaining("Geist Sans"), "16px", "400", "24px", "normal"]);
+	expect(desktop.title).toEqual([expect.stringContaining("Geist Sans"), "56px", "500", "60px", "-1.12px"]);
+	expect(desktop.subheadline).toEqual(["42px", "500", "48px", "normal"]);
+	expect(desktop.feature).toEqual(["42px", "500", "48px", "normal"]);
+	await page.goto("/mobile");
+	const hierarchy = await page.evaluate(() => {
+		const section = getComputedStyle(document.querySelector("h2")!);
+		const compact = getComputedStyle(document.querySelector("h3")!);
+		return {
+			section: [section.fontSize, section.fontWeight, section.lineHeight, section.letterSpacing],
+			compact: [compact.fontSize, compact.fontWeight, compact.lineHeight, compact.letterSpacing],
+		};
+	});
+	expect(hierarchy.section).toEqual(["28px", "500", "36px", "normal"]);
+	expect(hierarchy.compact).toEqual(["19px", "500", "28px", "normal"]);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/");
+	const mobile = await page.evaluate(() => {
+		const title = getComputedStyle(document.querySelector("h1")!);
+		const subheadline = getComputedStyle(document.querySelector(".story h2")!);
+		return {
+			title: [title.fontSize, title.lineHeight, title.letterSpacing],
+			subheadline: [subheadline.fontSize, subheadline.lineHeight, subheadline.letterSpacing],
+		};
+	});
+	expect(mobile.title).toEqual(["40px", "44px", "-0.8px"]);
+	expect(mobile.subheadline).toEqual(["32px", "40px", "normal"]);
+});
+
+test("heading labels are absent", async ({ page }) => {
+	for (const [route] of routes) {
+		await page.goto(route);
+		const findings = await page.locator("h1, h2, h3").evaluateAll(headings =>
+			headings.flatMap(heading => {
+				const previous = heading.previousElementSibling;
+				if (!previous || !["P", "SPAN", "SMALL"].includes(previous.tagName)) return [];
+				return [previous.textContent?.trim() || previous.tagName];
+			}),
+		);
+		expect(findings, `${route} contains labels before headings`).toEqual([]);
+		const transformed = await page.locator("body *").evaluateAll(elements =>
+			elements.filter(element => getComputedStyle(element).textTransform === "uppercase").length,
+		);
+		expect(transformed, `${route} contains uppercase text treatment`).toBe(0);
+	}
+});
+
 for (const width of [390, 320]) {
 	test(`all routes fit ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: 844 });

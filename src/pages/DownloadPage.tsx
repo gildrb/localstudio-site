@@ -15,11 +15,7 @@ export function DownloadPage() {
 				className="mx-auto grid min-h-[calc(100svh_-_160px)] w-[min(760px,calc(100%_-_48px))] place-content-center py-30 text-center max-[620px]:w-[calc(100%_-_24px)]"
 				aria-labelledby="download-page-title"
 			>
-				<p className="kicker">Local Studio 2.11.2</p>
-				<h1
-					id="download-page-title"
-					className="mt-5 text-[64px]/[64px] font-medium tracking-[-0.02em] max-[620px]:text-[40px]/[44px]"
-				>
+				<h1 id="download-page-title">
 					Download for macOS.
 				</h1>
 				<p className="mx-auto mt-8 max-w-xl text-base/6 text-white/70">
@@ -32,7 +28,7 @@ export function DownloadPage() {
 						Download DMG
 					</LocalLink>
 					<LocalLink
-						className="inline-flex min-h-10 items-center rounded-md border border-white/10 px-4 text-sm"
+						className="inline-flex min-h-10 items-center rounded-md border border-white/10 px-4"
 						href="/docs#prerequisites"
 					>
 						Read prerequisites

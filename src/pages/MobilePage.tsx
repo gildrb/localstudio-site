@@ -3,17 +3,14 @@ import { PageShell } from "../components/PageShell";
 
 const steps = [
 	[
-		"01",
 		"Open the connection",
 		"In Local Studio, open Settings, choose Profile & phone, and find Connect your phone.",
 	],
 	[
-		"02",
 		"Scan it in KittyLitter",
 		"Open KittyLitter's server scanner, choose Local Studio, and scan the QR code. Copy connection JSON is the fallback when scanning is unavailable.",
 	],
 	[
-		"03",
 		"Continue the same work",
 		"Open the Local Studio server in KittyLitter. Existing sessions appear there; new phone turns return to the same session on your Mac.",
 	],
@@ -36,8 +33,7 @@ const capabilities = [
 
 const container =
 	"mx-auto w-[min(1240px,calc(100%_-_48px))] max-[620px]:w-[calc(100%_-_24px)]";
-const sectionTitle =
-	"mt-4 max-w-3xl text-[40px]/[48px] font-medium tracking-[-0.02em] max-[620px]:text-[32px]/[40px]";
+const sectionTitle = "max-w-3xl";
 const prose = "text-base/6 text-white/70";
 
 export function MobilePage() {
@@ -51,11 +47,7 @@ export function MobilePage() {
 				aria-labelledby="mobile-title"
 			>
 				<div>
-					<p className="kicker">Local Studio × KittyLitter</p>
-					<h1
-						id="mobile-title"
-						className="mt-6 max-w-3xl text-[64px]/[64px] font-medium tracking-[-0.02em] max-[620px]:text-[40px]/[44px]"
-					>
+					<h1 id="mobile-title" className="max-w-3xl">
 						Your local agents, away from your desk.
 					</h1>
 					<p className={`mt-8 max-w-2xl ${prose}`}>
@@ -72,7 +64,7 @@ export function MobilePage() {
 							Get KittyLitter
 						</TextLink>
 					</div>
-					<ul className="mt-8 flex flex-wrap gap-2 p-0 text-xs/5 text-white/70">
+					<ul className="mt-8 flex flex-wrap gap-2 p-0 text-sm/5 text-white/70">
 						<li className="rounded-full border border-white/10 px-3 py-2">
 							Local Studio 2.9.0 or newer on macOS
 						</li>
@@ -94,7 +86,7 @@ export function MobilePage() {
 							<small className="text-white/50">Your trusted phone</small>
 						</span>
 					</div>
-					<div className="flex min-h-20 items-center justify-center gap-3 font-mono text-xs uppercase tracking-widest text-white/50">
+					<div className="flex min-h-20 items-center justify-center gap-3 font-mono text-sm/5 text-white/50">
 						<span>Authenticated connection</span>
 						<span aria-hidden="true">↓</span>
 					</div>
@@ -119,7 +111,6 @@ export function MobilePage() {
 			>
 				<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-8">
 					<div>
-						<p className="kicker">Pair once</p>
 						<h2 id="pair-title" className={sectionTitle}>
 							Three steps, no server setup.
 						</h2>
@@ -130,13 +121,12 @@ export function MobilePage() {
 					</p>
 				</div>
 				<ol className="mt-16 grid grid-cols-3 border border-white/10 p-0 max-[900px]:grid-cols-1">
-					{steps.map(([number, title, text]) => (
+					{steps.map(([title, text]) => (
 						<li
 							className="min-h-72 border-r border-white/10 p-8 last:border-r-0 max-[900px]:min-h-0 max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:last:border-b-0"
-							key={number}
+							key={title}
 						>
-							<span className="font-mono text-xs text-white/50">{number}</span>
-							<h3 className="mt-16 text-[19px]/7 font-medium max-[900px]:mt-8">
+							<h3>
 								{title}
 							</h3>
 							<p className={`mt-4 ${prose}`}>{text}</p>
@@ -151,7 +141,6 @@ export function MobilePage() {
 			>
 				<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-8">
 					<div>
-						<p className="kicker">What carries across</p>
 						<h2 id="runtime-title" className={sectionTitle}>
 							A window into the same runtime.
 						</h2>
@@ -167,7 +156,7 @@ export function MobilePage() {
 							className="min-h-64 border-t border-white/20 p-8"
 							key={title}
 						>
-							<h3 className="text-[19px]/7 font-medium">{title}</h3>
+							<h3>{title}</h3>
 							<p className={`mt-4 ${prose}`}>{text}</p>
 						</article>
 					))}
@@ -179,13 +168,12 @@ export function MobilePage() {
 				aria-labelledby="security-title"
 			>
 				<div
-					className="grid size-32 place-items-center rounded-full border border-white/20 text-3xl ring-20 ring-white/3"
+					className="grid size-32 place-items-center rounded-full border border-white/20 text-[28px]/9 ring-20 ring-white/3"
 					aria-hidden="true"
 				>
 					◇
 				</div>
 				<div>
-					<p className="kicker">Security boundary</p>
 					<h2 id="security-title" className={sectionTitle}>
 						Treat the pairing code like a password.
 					</h2>
@@ -195,7 +183,7 @@ export function MobilePage() {
 						controller—not only Local Studio. Scan only with a device you trust.
 						Never post, email, record, or paste the code into support chat.
 					</p>
-					<ul className="mt-8 grid max-w-3xl gap-4 p-0 text-sm/5 text-white/70">
+					<ul className="mt-8 grid max-w-3xl gap-4 p-0 text-base/6 text-white/70">
 						<li>The public screenshots use permanently redacted QR images.</li>
 						<li>Local bridge requests are signed and replay-protected.</li>
 						<li>This page has no form, tracker, or pairing upload endpoint.</li>
@@ -207,7 +195,6 @@ export function MobilePage() {
 				className={`${container} min-h-[620px] border-t border-white/10 py-30 text-center`}
 				aria-labelledby="mobile-cta-title"
 			>
-				<p className="kicker">Ready when both apps are current</p>
 				<h2 id="mobile-cta-title" className={`${sectionTitle} mx-auto`}>
 					Take the session with you.
 				</h2>

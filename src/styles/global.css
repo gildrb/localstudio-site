@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@font-face {
+	font-family: "Geist Sans";
+	src: url("/fonts/geist-sans.woff2") format("woff2");
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+}
 
 @font-face {
 	font-family: "Geist Mono";
@@ -11,17 +18,25 @@
 
 :root {
 	color-scheme: dark;
-	font-family: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	font-family: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	color: #fff;
-	background: #050505;
+	background: #000;
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
-	--background: #050505;
+	--background: #000;
 	--foreground: #fff;
-	--dim: rgba(255, 255, 255, 0.7);
-	--subtlest: rgba(255, 255, 255, 0.5);
-	--border: rgba(255, 255, 255, 0.08);
-	--hover: rgba(255, 255, 255, 0.05);
+	--dim: #b3b3b3;
+	--subtlest: #767676;
+	--border: rgba(255, 255, 255, 0.12);
+	--hover: rgba(255, 255, 255, 0.08);
+	--font-sans: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	--type-header-title: 500 56px/60px var(--font-sans);
+	--type-subheadline: 500 42px/48px var(--font-sans);
+	--type-section-title: 500 28px/36px var(--font-sans);
+	--type-compact-heading: 500 19px/28px var(--font-sans);
+	--type-body: 400 16px/24px var(--font-sans);
+	--type-meta: 400 14px/20px var(--font-sans);
+	--tracking-header-title: -0.02em;
 }
 
 * {
@@ -33,13 +48,45 @@ html {
 	min-height: 100%;
 	scroll-behavior: smooth;
 	background: var(--background);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
 }
 
 body {
 	min-width: 320px;
 	min-height: 100%;
 	margin: 0;
+	font: var(--type-body);
+	letter-spacing: 0;
 	background: var(--background);
+}
+
+h1,
+h2,
+h3,
+p {
+	margin-block: 0;
+}
+
+h1 {
+	font: var(--type-header-title);
+	letter-spacing: var(--tracking-header-title);
+}
+
+h2 {
+	font: var(--type-section-title);
+	letter-spacing: 0;
+}
+
+h3 {
+	font: var(--type-compact-heading);
+	letter-spacing: 0;
+}
+
+code,
+pre {
+	font-family: "Geist Mono", ui-monospace, monospace;
 }
 
 button,
@@ -52,7 +99,8 @@ img {
 }
 
 ::selection {
-	background: rgba(255, 255, 255, 0.16);
+	color: #fff;
+	background: #b3b3b3;
 }
 
 .site-shell {
@@ -89,7 +137,7 @@ img {
 	align-items: center;
 	gap: 12px;
 	color: var(--foreground);
-	font-weight: 650;
+	font-weight: 400;
 	text-decoration: none;
 }
 
@@ -173,8 +221,9 @@ img {
 	gap: 8px;
 	padding: 0 14px;
 	border-radius: 6px;
-	font-size: 14px;
-	font-weight: 560;
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 24px;
 	text-decoration: none;
 	transition:
 		color 150ms,
@@ -187,10 +236,6 @@ img {
 	color: var(--dim);
 }
 
-.nav__links a:hover {
-	color: var(--foreground);
-	background: var(--hover);
-}
 
 .button {
 	border: 1px solid #fff;
@@ -198,33 +243,34 @@ img {
 	background: #fff;
 }
 
-.button:hover {
-	border-color: #fff;
-	background: #fff;
-	transform: translateY(-1px);
+@media (hover: hover) {
+	.nav__links a:hover {
+		color: var(--foreground);
+		background: var(--hover);
+	}
+
+	.button:hover {
+		border-color: #fff;
+		background: #fff;
+		transform: translateY(-1px);
+	}
 }
 
 .text-link {
 	display: inline-flex;
 	align-items: center;
 	gap: 9px;
-	color: var(--dim);
-	font-size: 14px;
+	color: var(--subtlest);
+	font: var(--type-body);
 	text-decoration: none;
 }
 
-.text-link:hover {
-	color: var(--foreground);
-}
 
 .text-link span {
 	color: var(--subtlest);
 	transition: transform 160ms;
 }
 
-.text-link:hover span {
-	transform: translate(2px, -2px);
-}
 
 .hero {
 	position: relative;
@@ -272,19 +318,14 @@ img {
 }
 
 .hero h1 {
-	margin: 18px 0 0;
-	font-size: clamp(3.15rem, 5.25vw, 4.85rem);
-	font-weight: 520;
-	letter-spacing: -0.058em;
-	line-height: 0.94;
+	margin-top: 18px;
 }
 
 .hero__lead {
 	max-width: 560px;
 	margin: 24px auto 0;
 	color: var(--dim);
-	font-size: clamp(0.96rem, 1.15vw, 1.08rem);
-	line-height: 1.6;
+	font: var(--type-body);
 }
 
 .hero__actions {
@@ -466,15 +507,6 @@ img {
 	object-position: top;
 }
 
-.kicker {
-	margin: 0;
-	color: var(--dim);
-	font-family: "Geist Mono", ui-monospace, monospace;
-	font-size: 11px;
-	font-weight: 560;
-	letter-spacing: 0.18em;
-	text-transform: uppercase;
-}
 
 .story {
 	padding: 150px 0 80px;
@@ -488,20 +520,18 @@ img {
 
 .story h2,
 .kitty h2,
-.final-callout h2 {
-	margin: 18px 0 0;
-	font-size: clamp(2.5rem, 5vw, 5.4rem);
-	font-weight: 520;
-	letter-spacing: -0.055em;
-	line-height: 0.96;
+.final-callout h2,
+.feature__copy h3 {
+	margin-top: 0;
+	font: var(--type-subheadline);
+	letter-spacing: 0;
 }
 
 .story__intro > p:last-child {
 	max-width: 620px;
 	margin: 30px 0 0;
 	color: var(--dim);
-	font-size: 16px;
-	line-height: 1.65;
+	font: var(--type-body);
 }
 
 .feature-list {
@@ -526,31 +556,18 @@ img {
 	order: 1;
 }
 
-.feature__copy > span {
-	color: var(--subtlest);
-	font-family: "Geist Mono", ui-monospace, monospace;
-	font-size: 11px;
-}
 
 .feature__copy h3,
 .feature__copy p {
 	margin: 0;
 }
 
-.feature__copy h3 {
-	margin-top: 22px;
-	font-size: clamp(2.8rem, 5vw, 5rem);
-	font-weight: 520;
-	letter-spacing: -0.055em;
-	line-height: 0.95;
-}
 
 .feature__copy p {
 	max-width: 420px;
 	margin-top: 26px;
 	color: var(--dim);
-	font-size: 16px;
-	line-height: 1.65;
+	font: var(--type-body);
 }
 
 .feature__visual {
@@ -599,8 +616,7 @@ img {
 .kitty__copy p {
 	margin: 0 0 24px;
 	color: var(--dim);
-	font-size: 16px;
-	line-height: 1.65;
+	font: var(--type-body);
 }
 
 .kitty__copy .text-link + .text-link {
@@ -631,10 +647,8 @@ img {
 	padding: 12px 14px;
 	border-bottom: 1px solid var(--border);
 	color: var(--subtlest);
-	font-family: "Geist Mono", ui-monospace, monospace;
-	font-size: 11px;
-	letter-spacing: 0.14em;
-	text-transform: uppercase;
+	font: var(--type-meta);
+	letter-spacing: 0;
 }
 
 .kitty-card figure > img {
@@ -690,7 +704,7 @@ img {
 	padding: 28px 0 44px;
 	border-top: 1px solid var(--border);
 	color: var(--subtlest);
-	font-size: 12px;
+	font: var(--type-meta);
 }
 
 @keyframes rotate {
@@ -810,7 +824,6 @@ img {
 
 	.brand {
 		gap: 8px;
-		font-size: 12px;
 	}
 
 	.brand > span:last-child {
@@ -824,7 +837,6 @@ img {
 	.nav__links a {
 		min-height: 36px;
 		padding: 0 7px;
-		font-size: 12px;
 	}
 
 	.nav__optional-small {
@@ -839,8 +851,9 @@ img {
 		width: 100%;
 	}
 
-	.hero h1 {
-		font-size: clamp(2.85rem, 13vw, 3.55rem);
+	h1 {
+		font-size: 40px;
+		line-height: 44px;
 	}
 
 	.hero__lead {
@@ -866,8 +879,17 @@ img {
 		padding: 64px 0;
 	}
 
+	h2 {
+		font-size: 24px;
+		line-height: 32px;
+	}
+
+	.story h2,
+	.kitty h2,
+	.final-callout h2,
 	.feature__copy h3 {
-		font-size: 3.2rem;
+		font-size: 32px;
+		line-height: 40px;
 	}
 
 	.feature__visual {

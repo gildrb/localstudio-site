@@ -5,17 +5,14 @@ import { PageShell } from "../components/PageShell";
 
 const handoff = [
 	[
-		"01",
 		"Copy",
 		"Use the entire prompt without trimming the verification phases.",
 	],
 	[
-		"02",
 		"Paste",
 		"Give it to a coding model that can operate a terminal on the target machine.",
 	],
 	[
-		"03",
 		"Verify",
 		"Do not accept completion until health, model launch, and inference all pass.",
 	],
@@ -32,14 +29,10 @@ export function PromptPage() {
 				aria-labelledby="prompt-title"
 			>
 				<header className="mx-auto max-w-3xl text-center">
-					<p className="kicker">Universal setup prompt</p>
-					<h1
-						id="prompt-title"
-						className="mt-6 text-[64px]/[64px] font-medium tracking-[-0.02em] max-[620px]:text-[40px]/[44px]"
-					>
+					<h1 id="prompt-title">
 						Give this to any coding model.
 					</h1>
-					<p className="mt-8 text-[19px]/7 text-white/70">
+					<p className="mt-8 text-base/6 text-white/70">
 						It will inspect the machine, choose the right runtime, install Local
 						Studio, and prove a real inference request works.
 					</p>
@@ -60,18 +53,17 @@ export function PromptPage() {
 						</div>
 						<CopyButton label="Copy prompt" text={setupPrompt} />
 					</div>
-					<pre className="max-h-[660px] overflow-auto whitespace-pre-wrap p-8 font-mono text-sm/6 text-white/80 max-[620px]:p-5">
+					<pre className="max-h-[660px] overflow-auto whitespace-pre-wrap p-8 font-mono text-sm/5 text-white/80 max-[620px]:p-5">
 						<code>{setupPrompt}</code>
 					</pre>
 				</section>
 
 				<ol className="mt-20 grid grid-cols-3 border-y border-white/10 p-0 max-[900px]:grid-cols-1">
-					{handoff.map(([number, title, text]) => (
+					{handoff.map(([title, text]) => (
 						<li
-							className="grid grid-cols-[auto_auto_1fr] gap-6 py-6 pr-8 text-sm/5 max-[900px]:grid-cols-[auto_1fr] max-[900px]:pr-0"
-							key={number}
+							className="grid gap-4 py-6 pr-8 text-base/6 max-[900px]:pr-0"
+							key={title}
 						>
-							<span className="font-mono text-white/50">{number}</span>
 							<strong>{title}</strong>
 							<p className="m-0 text-white/70 max-[900px]:col-span-2">{text}</p>
 						</li>
@@ -79,7 +71,7 @@ export function PromptPage() {
 				</ol>
 
 				<nav
-					className="mt-20 flex justify-between gap-8 border-t border-white/10 pt-8 text-sm/5 text-white/60"
+					className="mt-20 flex justify-between gap-8 border-t border-white/10 pt-8 text-base/6 text-white/60"
 					aria-label="Setup prompt links"
 				>
 					<LocalLink href="/">← Back to Local Studio</LocalLink>

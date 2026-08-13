@@ -23,9 +23,9 @@ export function DocsPage() {
 		>
 			<div className="mx-auto grid w-[min(1240px,calc(100%_-_48px))] grid-cols-[240px_minmax(0,760px)] justify-center gap-16 py-16 max-[900px]:grid-cols-1 max-[620px]:w-[calc(100%_-_24px)] max-[620px]:py-10">
 				<aside className="sticky top-24 self-start max-[900px]:static">
-					<p className="kicker">On this page</p>
+					<p className="text-sm/5 text-white/70">On this page</p>
 					<nav aria-label="Documentation sections">
-						<ul className="mt-4 grid gap-2 border-l border-white/10 p-0 pl-4 text-sm/5 text-white/60">
+						<ul className="mt-4 grid gap-2 border-l border-white/10 p-0 pl-4 text-base/6 text-white/60">
 							{toc.map(([label, id]) => (
 								<li key={id}>
 									<LocalLink
@@ -39,12 +39,9 @@ export function DocsPage() {
 						</ul>
 					</nav>
 				</aside>
-				<article className="min-w-0 text-base/6 text-white/70 [&_h2]:mt-16 [&_h2]:text-[28px]/9 [&_h2]:font-medium [&_h2]:text-white [&_li]:mb-2 [&_strong]:text-white">
+				<article className="min-w-0 text-base/6 text-white/70 [&_h2]:mt-16 [&_h2]:text-white [&_li]:mb-2 [&_strong]:text-white">
 					<header>
-						<p className="kicker">Setup guide</p>
-						<h1 className="mt-4 text-[40px]/[48px] font-medium tracking-[-0.02em] text-white max-[620px]:text-[32px]/10">
-							Get Local Studio running
-						</h1>
+						<h1>Get Local Studio running</h1>
 						<p className="mt-4 max-w-3xl">
 							Local Studio is a local-first workstation for running, managing,
 							and using self-hosted LLM backends. Two modules share one

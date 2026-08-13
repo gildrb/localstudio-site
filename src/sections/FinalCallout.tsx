@@ -7,7 +7,6 @@ export function FinalCallout() {
 			aria-labelledby="download-title"
 		>
 			<div>
-				<p className="kicker">Local Studio</p>
 				<h2 id="download-title">Your models. Your hardware. One surface.</h2>
 				<div className="final-callout__actions">
 					<DownloadButton />
