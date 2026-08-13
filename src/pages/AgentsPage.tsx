@@ -20,10 +20,7 @@ const capabilities = [
 
 export function AgentsPage() {
 	return (
-		<PageShell
-			footerLeft="Agent setup page"
-			footerRight="Controllers, providers, runtimes, Pi"
-		>
+		<PageShell>
 			<section
 				className="mx-auto w-[min(1240px,calc(100%_-_48px))] py-20 max-[620px]:w-[calc(100%_-_24px)]"
 				aria-labelledby="agents-title"

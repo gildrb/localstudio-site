@@ -20,10 +20,7 @@ const handoff = [
 
 export function PromptPage() {
 	return (
-		<PageShell
-			footerLeft="Local Studio setup"
-			footerRight="Portable agent prompt"
-		>
+		<PageShell>
 			<section
 				className="mx-auto w-[min(1040px,calc(100%_-_48px))] py-28 max-[620px]:w-[calc(100%_-_24px)] max-[620px]:py-20"
 				aria-labelledby="prompt-title"

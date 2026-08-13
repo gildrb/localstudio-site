@@ -38,10 +38,7 @@ const prose = "text-base/6 text-white/70";
 
 export function MobilePage() {
 	return (
-		<PageShell
-			footerLeft="Local Studio × KittyLitter"
-			footerRight="Private controller access from a trusted device."
-		>
+		<PageShell>
 			<section
 				className={`${container} grid min-h-[calc(100svh_-_72px)] grid-cols-[minmax(0,1.08fr)_minmax(360px,.72fr)] items-center gap-20 py-28 max-[900px]:grid-cols-1 max-[900px]:gap-16 max-[620px]:py-20`}
 				aria-labelledby="mobile-title"

@@ -30,6 +30,17 @@ for (const [route, title, heading] of routes) {
 	});
 }
 
+test("every route uses the useful canonical footer", async ({ page }) => {
+	const footerLinks = ["Product", "Mobile", "Docs", "Setup", "Agents", "Download"];
+	for (const [route] of routes) {
+		await page.goto(route);
+		await expect(page.locator("footer")).toContainText("© 2026 Local Studio");
+		for (const label of footerLinks) {
+			await expect(page.locator("footer").getByRole("link", { name: label, exact: true })).toBeVisible();
+		}
+	}
+});
+
 test("design system typography is stable", async ({ page }) => {
 	await page.goto("/");
 	const desktop = await page.evaluate(() => {
@@ -110,11 +121,12 @@ for (const width of [390, 320]) {
 
 test("internal navigation never leaves the local origin", async ({ page }) => {
 	await page.goto("/");
-	await page.getByRole("link", { name: "Mobile", exact: true }).click();
+	const navigation = page.getByRole("navigation", { name: "Landing navigation" });
+	await navigation.getByRole("link", { name: "Mobile", exact: true }).click();
 	await expect(page).toHaveURL("/mobile");
-	await page.getByRole("link", { name: "Docs", exact: true }).click();
+	await navigation.getByRole("link", { name: "Docs", exact: true }).click();
 	await expect(page).toHaveURL("/docs");
-	await page.getByRole("link", { name: "Setup", exact: true }).click();
+	await navigation.getByRole("link", { name: "Setup", exact: true }).click();
 	await expect(page).toHaveURL("/prompt");
 	await page.goBack();
 	await expect(page).toHaveURL("/docs");

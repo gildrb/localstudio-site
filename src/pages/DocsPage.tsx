@@ -17,10 +17,7 @@ const sectionClass = "scroll-mt-28";
 
 export function DocsPage() {
 	return (
-		<PageShell
-			footerLeft="Local Studio docs"
-			footerRight="Desktop / web / controller / Pi"
-		>
+		<PageShell>
 			<div className="mx-auto grid w-[min(1240px,calc(100%_-_48px))] grid-cols-[240px_minmax(0,760px)] justify-center gap-16 py-16 max-[900px]:grid-cols-1 max-[620px]:w-[calc(100%_-_24px)] max-[620px]:py-10">
 				<aside className="sticky top-24 self-start max-[900px]:static">
 					<p className="text-sm/5 text-white/70">On this page</p>

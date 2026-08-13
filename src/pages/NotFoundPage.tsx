@@ -3,7 +3,7 @@ import { PageShell } from "../components/PageShell";
 
 export function NotFoundPage() {
 	return (
-		<PageShell footerLeft="Local Studio" footerRight="Page not found">
+		<PageShell>
 			<section
 				className="mx-auto grid min-h-[calc(100svh_-_160px)] w-[min(760px,calc(100%_-_48px))] place-content-center py-30 text-center max-[620px]:w-[calc(100%_-_24px)]"
 				aria-labelledby="not-found-title"

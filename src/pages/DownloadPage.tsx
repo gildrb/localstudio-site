@@ -7,10 +7,7 @@ const downloadUrl =
 
 export function DownloadPage() {
 	return (
-		<PageShell
-			footerLeft="Local Studio for macOS"
-			footerRight="Version 2.11.2 · Apple Silicon"
-		>
+		<PageShell>
 			<section
 				className="mx-auto grid min-h-[calc(100svh_-_160px)] w-[min(760px,calc(100%_-_48px))] place-content-center py-30 text-center max-[620px]:w-[calc(100%_-_24px)]"
 				aria-labelledby="download-page-title"
