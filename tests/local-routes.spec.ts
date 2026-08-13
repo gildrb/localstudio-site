@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const routes = [
 	["/", "Local Studio", "Run your intelligence"],
+	["/product", "Product — Local Studio", "One place to run local AI"],
 	["/mobile", "Mobile — Local Studio", "Your local agents"],
 	["/docs", "Docs — Local Studio", "Get Local Studio running"],
 	["/prompt", "Setup Prompt — Local Studio", "Give this to any coding model"],
@@ -57,6 +58,26 @@ test("homepage features use equal media widths without separators", async ({ pag
 		elements.map(element => Math.round(element.getBoundingClientRect().width)),
 	);
 	expect(mobileWidths).toEqual([mobileWidths[0], mobileWidths[0], mobileWidths[0]]);
+});
+
+test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {
+	await page.goto("/");
+	const layout = await page.locator(".kitty__intro").evaluate(element => {
+		const heading = element.querySelector("h2")!.getBoundingClientRect();
+		const copy = element.querySelector(".kitty__copy")!.getBoundingClientRect();
+		return { stacked: copy.top >= heading.bottom, width: Math.round(element.getBoundingClientRect().width) };
+	});
+	expect(layout).toEqual({ stacked: true, width: 760 });
+});
+
+test("product page media is equal and fully framed", async ({ page }) => {
+	await page.goto("/product");
+	await page.locator('img[loading="lazy"]').last().scrollIntoViewIfNeeded();
+	await page.waitForFunction(() => [...document.querySelectorAll<HTMLImageElement>('img[loading="lazy"]')].every(image => image.complete && image.naturalWidth > 0));
+	const media = await page.locator('section[aria-label="Product capabilities"] figure').evaluateAll(elements =>
+		elements.map(element => Math.round(element.getBoundingClientRect().width)),
+	);
+	expect(media).toEqual([media[0], media[0], media[0]]);
 });
 
 test("design system typography is stable", async ({ page }) => {
@@ -140,6 +161,9 @@ for (const width of [390, 320]) {
 test("internal navigation never leaves the local origin", async ({ page }) => {
 	await page.goto("/");
 	const navigation = page.getByRole("navigation", { name: "Landing navigation" });
+	await expect(navigation.getByRole("link", { name: "Media", exact: true })).toHaveCount(0);
+	await navigation.getByRole("link", { name: "Product", exact: true }).click();
+	await expect(page).toHaveURL("/product");
 	await navigation.getByRole("link", { name: "Mobile", exact: true }).click();
 	await expect(page).toHaveURL("/mobile");
 	await navigation.getByRole("link", { name: "Docs", exact: true }).click();

@@ -1,11 +1,10 @@
 import { LocalLink } from "./LocalLink";
 
 const links = [
-	{ label: "Product", href: "/#product", className: "nav__optional-small" },
+	{ label: "Product", href: "/product" },
 	{ label: "Mobile", href: "/mobile" },
 	{ label: "Docs", href: "/docs" },
 	{ label: "Setup", href: "/prompt", className: "nav__setup" },
-	{ label: "Media", href: "/#media", className: "nav__optional" },
 	{ label: "Agents", href: "/agents", className: "nav__optional" },
 ];
 

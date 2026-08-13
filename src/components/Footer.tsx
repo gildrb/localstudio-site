@@ -1,7 +1,7 @@
 import { LocalLink } from "./LocalLink";
 
 const links = [
-	["Product", "/#product"],
+	["Product", "/product"],
 	["Mobile", "/mobile"],
 	["Docs", "/docs"],
 	["Setup", "/prompt"],

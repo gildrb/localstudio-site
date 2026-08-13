@@ -1,5 +1,6 @@
 export type RoutePath =
 	| "/"
+	| "/product"
 	| "/mobile"
 	| "/docs"
 	| "/prompt"
@@ -8,6 +9,7 @@ export type RoutePath =
 
 const routes = new Set<RoutePath>([
 	"/",
+	"/product",
 	"/mobile",
 	"/docs",
 	"/prompt",

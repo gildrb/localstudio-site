@@ -5,11 +5,13 @@ import { DownloadPage } from "./pages/DownloadPage";
 import { HomePage } from "./pages/HomePage";
 import { MobilePage } from "./pages/MobilePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { ProductPage } from "./pages/ProductPage";
 import { PromptPage } from "./pages/PromptPage";
 import { isRoutePath, normalizePath } from "./routing";
 
 const titles = {
 	"/": "Local Studio",
+	"/product": "Product — Local Studio",
 	"/mobile": "Mobile — Local Studio",
 	"/docs": "Docs — Local Studio",
 	"/prompt": "Setup Prompt — Local Studio",
@@ -46,6 +48,7 @@ export default function App() {
 	}, [location, pathname]);
 
 	if (!isRoutePath(pathname)) return <NotFoundPage />;
+	if (pathname === "/product") return <ProductPage />;
 	if (pathname === "/mobile") return <MobilePage />;
 	if (pathname === "/docs") return <DocsPage />;
 	if (pathname === "/prompt") return <PromptPage />;
