@@ -1,5 +1,4 @@
 import { LocalLink } from "./LocalLink";
-import { LogoMark } from "./LogoMark";
 
 const links = [
 	{ label: "Product", href: "/#product", className: "nav__optional-small" },
@@ -20,8 +19,13 @@ export function Header() {
 	return (
 		<header className="nav">
 			<LocalLink className="brand" href="/" aria-label="Local Studio">
-				<LogoMark />
-				<span>Local Studio</span>
+				<img
+					className="brand__logo"
+					src="/images/localstudio-logo.svg"
+					alt=""
+					width="4667"
+					height="525"
+				/>
 			</LocalLink>
 			<nav className="nav__links" aria-label="Landing navigation">
 				{links.map((link) => (
