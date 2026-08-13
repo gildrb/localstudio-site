@@ -20,24 +20,24 @@ export function KittyLitter() {
 			aria-labelledby="kittylitter-title"
 		>
 			<div className="kitty__intro">
-				<div>
-					<h2 id="kittylitter-title">Your agents, in your pocket.</h2>
-				</div>
+				<h2 id="kittylitter-title">Your agents, in your pocket.</h2>
 				<div className="kitty__copy">
 					<p>
 						Pair your phone from Local Studio, then keep working with Codex,
 						Claude, OpenCode, Pi, and Droid from anywhere.
 					</p>
-					<TextLink href="/mobile" arrow="right">
-						See how mobile works
-					</TextLink>
-					<TextLink
-						href="https://kittylitter.app"
-						target="_blank"
-						rel="noreferrer"
-					>
-						Get KittyLitter
-					</TextLink>
+					<div className="kitty__actions">
+						<TextLink href="/mobile" arrow="right">
+							See how mobile works
+						</TextLink>
+						<TextLink
+							href="https://kittylitter.app"
+							target="_blank"
+							rel="noreferrer"
+						>
+							Get KittyLitter
+						</TextLink>
+					</div>
 				</div>
 			</div>
 			<div className="kitty__gallery">

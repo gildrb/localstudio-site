@@ -20,3 +20,16 @@ test("document uses the local favicon asset", async ({ page }) => {
 	expect(response.ok()).toBeTruthy();
 	expect(response.headers()["content-type"]).toContain("image/x-icon");
 });
+
+test("navbar uses compact text and an accessible GitHub icon", async ({ page }) => {
+	await page.goto("/");
+	const product = page.getByRole("navigation", { name: "Landing navigation" }).getByRole("link", { name: "Product" });
+	const typography = await product.evaluate(element => {
+		const style = getComputedStyle(element);
+		return [style.fontSize, style.lineHeight];
+	});
+	expect(typography).toEqual(["14px", "20px"]);
+	const github = page.getByRole("link", { name: "Local Studio on GitHub" });
+	await expect(github).toHaveAttribute("href", "https://github.com/sybil-solutions/local-studio");
+	await expect(github.locator("svg")).toBeVisible();
+});

@@ -41,6 +41,24 @@ test("every route uses the useful canonical footer", async ({ page }) => {
 	}
 });
 
+test("homepage features use equal media widths without separators", async ({ page }) => {
+	await page.goto("/");
+	const features = await page.locator(".feature").evaluateAll(elements =>
+		elements.map(element => {
+			const media = element.querySelector(".feature__visual")!.getBoundingClientRect();
+			return { width: Math.round(media.width), borderBottom: getComputedStyle(element).borderBottomWidth };
+		}),
+	);
+	expect(features.map(feature => feature.width)).toEqual([features[0].width, features[0].width, features[0].width]);
+	expect(features.map(feature => feature.borderBottom)).toEqual(["0px", "0px", "0px"]);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/");
+	const mobileWidths = await page.locator(".feature__visual").evaluateAll(elements =>
+		elements.map(element => Math.round(element.getBoundingClientRect().width)),
+	);
+	expect(mobileWidths).toEqual([mobileWidths[0], mobileWidths[0], mobileWidths[0]]);
+});
+
 test("design system typography is stable", async ({ page }) => {
 	await page.goto("/");
 	const desktop = await page.evaluate(() => {
