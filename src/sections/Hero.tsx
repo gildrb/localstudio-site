@@ -59,7 +59,7 @@ export function Hero() {
 						}}
 					>
 						<DownloadButton iconSize={17} />
-						<TextLink href="https://localstudio.ai/prompt">Setup</TextLink>
+						<TextLink href="/prompt">Setup</TextLink>
 					</motion.div>
 				</motion.div>
 				<motion.div

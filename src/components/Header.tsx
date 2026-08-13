@@ -1,15 +1,13 @@
+import { LocalLink } from "./LocalLink";
 import { LogoMark } from "./LogoMark";
 
 const links = [
-	{ label: "Product", href: "#product", className: "nav__optional-small" },
-	{ label: "Mobile", href: "https://localstudio.ai/mobile" },
-	{ label: "Docs", href: "https://localstudio.ai/docs" },
-	{
-		label: "Setup",
-		href: "https://localstudio.ai/prompt",
-		className: "nav__setup",
-	},
-	{ label: "Media", href: "#media", className: "nav__optional" },
+	{ label: "Product", href: "/#product", className: "nav__optional-small" },
+	{ label: "Mobile", href: "/mobile" },
+	{ label: "Docs", href: "/docs" },
+	{ label: "Setup", href: "/prompt", className: "nav__setup" },
+	{ label: "Media", href: "/#media", className: "nav__optional" },
+	{ label: "Agents", href: "/agents", className: "nav__optional" },
 	{
 		label: "GitHub",
 		href: "https://github.com/sybil-solutions/local-studio",
@@ -21,13 +19,13 @@ const links = [
 export function Header() {
 	return (
 		<header className="nav">
-			<a className="brand" href="#top" aria-label="Local Studio">
+			<LocalLink className="brand" href="/" aria-label="Local Studio">
 				<LogoMark />
 				<span>Local Studio</span>
-			</a>
+			</LocalLink>
 			<nav className="nav__links" aria-label="Landing navigation">
 				{links.map((link) => (
-					<a
+					<LocalLink
 						className={link.className}
 						href={link.href}
 						key={link.label}
@@ -35,7 +33,7 @@ export function Header() {
 						rel={link.external ? "noreferrer" : undefined}
 					>
 						{link.label}
-					</a>
+					</LocalLink>
 				))}
 			</nav>
 		</header>

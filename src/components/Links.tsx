@@ -1,22 +1,25 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { DownloadIcon } from "./DownloadIcon";
+import { LocalLink } from "./LocalLink";
 
 interface TextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 	children: ReactNode;
+	href: string;
 	arrow?: "up" | "right";
 }
 
 export function TextLink({
 	children,
+	href,
 	arrow = "up",
 	className = "",
 	...props
 }: TextLinkProps) {
 	return (
-		<a className={`text-link ${className}`} {...props}>
+		<LocalLink className={`text-link ${className}`} href={href} {...props}>
 			{children}
 			<span aria-hidden="true">{arrow === "right" ? "→" : "↗"}</span>
-		</a>
+		</LocalLink>
 	);
 }
 
@@ -26,9 +29,9 @@ interface DownloadButtonProps {
 
 export function DownloadButton({ iconSize = 18 }: DownloadButtonProps) {
 	return (
-		<a className="button" href="https://localstudio.ai/download/macos">
+		<LocalLink className="button" href="/download/macos">
 			<DownloadIcon size={iconSize} />
 			Download for macOS
-		</a>
+		</LocalLink>
 	);
 }

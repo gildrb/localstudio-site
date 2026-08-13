@@ -18,7 +18,7 @@ export function FinalCallout() {
 					>
 						View on GitHub
 					</TextLink>
-					<TextLink href="https://localstudio.ai/prompt">Setup</TextLink>
+					<TextLink href="/prompt">Setup</TextLink>
 				</div>
 			</div>
 		</section>

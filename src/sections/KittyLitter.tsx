@@ -29,7 +29,7 @@ export function KittyLitter() {
 						Pair your phone from Local Studio, then keep working with Codex,
 						Claude, OpenCode, Pi, and Droid from anywhere.
 					</p>
-					<TextLink href="https://localstudio.ai/mobile" arrow="right">
+					<TextLink href="/mobile" arrow="right">
 						See how mobile works
 					</TextLink>
 					<TextLink
