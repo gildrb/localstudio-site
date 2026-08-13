@@ -95,14 +95,14 @@ export function MobilePage() {
 				</ul>
 			</PageIntro>
 			<section
-				className={`${container} border-t border-white/10 py-30`}
+				className={`${container} mobile-section pt-30 max-[900px]:pt-20`}
 				aria-labelledby="pair-title"
 			>
-				<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-8">
+				<div className="max-w-3xl">
 					<h2 id="pair-title" className={sectionTitle}>
 						Three steps, no server setup.
 					</h2>
-					<p className={prose}>
+					<p className={`mt-6 ${prose}`}>
 						Local Studio creates the connection. KittyLitter saves it securely
 						so you do not need to scan again every time.
 					</p>
@@ -120,14 +120,14 @@ export function MobilePage() {
 				</ol>
 			</section>
 			<section
-				className={`${container} border-t border-white/10 py-30`}
+				className={`${container} mobile-section pt-30 max-[900px]:pt-20`}
 				aria-labelledby="runtime-title"
 			>
-				<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-8">
+				<div className="max-w-3xl">
 					<h2 id="runtime-title" className={sectionTitle}>
 						A window into the same runtime.
 					</h2>
-					<p className={prose}>
+					<p className={`mt-6 ${prose}`}>
 						KittyLitter is not a separate cloud copy of Local Studio. It
 						connects to the controller and agent runtime you already use.
 					</p>
@@ -145,30 +145,32 @@ export function MobilePage() {
 				</div>
 			</section>
 			<section
-				className={`${container} grid grid-cols-[200px_minmax(0,1fr)] gap-24 border-t border-white/10 py-30 max-[900px]:grid-cols-1 max-[900px]:gap-12`}
+				className={`${container} mobile-section pt-30 max-[900px]:pt-20`}
 				aria-labelledby="security-title"
 			>
-				<div
-					className="grid size-32 place-items-center rounded-full border border-white/20 ring-20 ring-white/3"
-					aria-hidden="true"
-				>
-					<Shield size={32} strokeWidth={1.5} />
-				</div>
-				<div>
+				<div className="max-w-3xl">
 					<h2 id="security-title" className={sectionTitle}>
 						Treat the pairing code like a password.
 					</h2>
-					<p className={`mt-8 max-w-3xl ${prose}`}>
+					<p className={`mt-6 ${prose}`}>
 						The QR code and copied connection JSON contain a private controller
 						credential. They grant access to every agent enabled on that
 						controller—not only Local Studio. Scan only with a device you trust.
 						Never post, email, record, or paste the code into support chat.
 					</p>
-					<ul className="mt-8 grid max-w-3xl gap-4 p-0 text-base/6 text-white/70">
+				</div>
+				<div className="mt-16 grid grid-cols-[minmax(0,1fr)_200px] items-center gap-24 max-[900px]:grid-cols-1 max-[900px]:gap-12">
+					<ul className="grid max-w-3xl gap-4 p-0 text-base/6 text-white/70">
 						<li>The public screenshots use permanently redacted QR images.</li>
 						<li>Local bridge requests are signed and replay-protected.</li>
 						<li>This page has no form, tracker, or pairing upload endpoint.</li>
 					</ul>
+					<div
+						className="grid size-32 justify-self-end place-items-center rounded-full border border-white/20 ring-20 ring-white/3 max-[900px]:justify-self-start"
+						aria-hidden="true"
+					>
+						<Shield size={32} strokeWidth={1.5} />
+					</div>
 				</div>
 			</section>
 			<section

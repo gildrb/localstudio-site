@@ -7,7 +7,7 @@ import { MobilePage } from "./pages/MobilePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ProductPage } from "./pages/ProductPage";
 import { PromptPage } from "./pages/PromptPage";
-import { isRoutePath, normalizePath } from "./routing";
+import { isRoutePath, normalizePath, scrollToHash } from "./routing";
 
 const titles = {
 	"/": "Local Studio",
@@ -39,9 +39,7 @@ export default function App() {
 			: "Page not found — Local Studio";
 		const hash = window.location.hash;
 		if (hash) {
-			window.requestAnimationFrame(() =>
-				document.querySelector(hash)?.scrollIntoView(),
-			);
+			window.requestAnimationFrame(() => scrollToHash(hash));
 		} else {
 			window.scrollTo({ top: 0 });
 		}

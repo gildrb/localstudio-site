@@ -24,6 +24,16 @@ export function normalizePath(pathname: string) {
 	return pathname;
 }
 
+export function scrollToHash(hash: string) {
+	let target: Element | null;
+	try {
+		target = document.querySelector(hash);
+	} catch {
+		return;
+	}
+	target?.scrollIntoView();
+}
+
 export function isRoutePath(pathname: string): pathname is RoutePath {
 	return routes.has(pathname as RoutePath);
 }

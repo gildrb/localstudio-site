@@ -1,14 +1,27 @@
-import { motion, useReducedMotion } from "motion/react";
+import { useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
 import { DownloadButton, TextLink } from "../components/Links";
+
+const evidenceTransition = {
+	duration: 0.82,
+	delay: 1.14,
+	ease: [0.16, 1, 0.3, 1] as const,
+};
 
 export function Hero() {
 	const reduceMotion = useReducedMotion();
-
 	return (
 		<section className="hero" id="top" aria-labelledby="landing-title">
+			<m.div
+				className="hero__gradient"
+				aria-hidden="true"
+				initial={reduceMotion ? false : { opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={evidenceTransition}
+			/>
 			<div className="hero__texture" aria-hidden="true" />
 			<div className="hero__inner">
-				<motion.div
+				<m.div
 					className="hero__copy"
 					initial={reduceMotion ? false : "hidden"}
 					animate="visible"
@@ -19,7 +32,7 @@ export function Hero() {
 						},
 					}}
 				>
-					<motion.img
+					<m.img
 						className="hero__mark"
 						src="/images/optimized.svg"
 						alt=""
@@ -35,7 +48,7 @@ export function Hero() {
 							},
 						}}
 					/>
-					<motion.h1
+					<m.h1
 						id="landing-title"
 						variants={{
 							hidden: { opacity: 0, y: 18 },
@@ -49,8 +62,8 @@ export function Hero() {
 						Run your intelligence
 						<br />
 						at home.
-					</motion.h1>
-					<motion.p
+					</m.h1>
+					<m.p
 						className="hero__lead"
 						variants={{
 							hidden: { opacity: 0, y: 18 },
@@ -62,8 +75,8 @@ export function Hero() {
 						}}
 					>
 						AI workspace built to help you go local.
-					</motion.p>
-					<motion.div
+					</m.p>
+					<m.div
 						className="hero__actions"
 						variants={{
 							hidden: { opacity: 0, y: 18 },
@@ -76,61 +89,25 @@ export function Hero() {
 					>
 						<DownloadButton iconSize={17} />
 						<TextLink href="/prompt">Setup</TextLink>
-					</motion.div>
-				</motion.div>
-				<motion.div
-					className="signal"
-					aria-hidden="true"
-					initial={reduceMotion ? false : { opacity: 0, scale: 0.72 }}
-					animate={
-						reduceMotion ? undefined : { opacity: 1, scale: 1, y: [0, -10, 0] }
-					}
-					transition={{
-						opacity: { duration: 1.35, delay: 0.36, ease: [0.16, 1, 0.3, 1] },
-						scale: { duration: 1.35, delay: 0.36, ease: [0.16, 1, 0.3, 1] },
-						y: { duration: 7, delay: 1.7, repeat: Infinity, ease: "easeInOut" },
-					}}
-				>
-					<div className="signal__glow" />
-					<div className="signal__ripple" />
-					<div className="signal__orbit">
-						<span />
-						<span />
-						<span />
-					</div>
-					<div className="signal__orbit signal__orbit--inner">
-						<span />
-						<span />
-					</div>
-					<div className="signal__axis" />
-					<div className="signal__core">
-						<span />
-					</div>
-				</motion.div>
+					</m.div>
+				</m.div>
 			</div>
-			<motion.figure
+			<m.div
+				className="hero__stage section-width"
 				id="product"
-				className="hero__screenshot"
-				initial={
-					reduceMotion ? false : { opacity: 0, y: 44, x: "-50%", scale: 0.985 }
-				}
-				animate={
-					reduceMotion ? undefined : { opacity: 1, y: 0, x: "-50%", scale: 1 }
-				}
-				transition={{ duration: 1.2, delay: 0.42, ease: [0.16, 1, 0.3, 1] }}
+				initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={evidenceTransition}
 			>
-				<div className="screenshot-bezel">
-					<div className="screenshot-viewport">
-						<img
-							src="/images/workbench-browser.png"
-							alt="Local Studio workbench showing a coding agent and a local document in the integrated browser."
-							width="5118"
-							height="2800"
-							fetchPriority="high"
-						/>
-					</div>
-				</div>
-			</motion.figure>
+				<img
+					className="hero__screenshot"
+					src="/images/workbench-browser.png"
+					alt="Local Studio workbench showing a coding agent and a local document in the integrated browser."
+					width="5118"
+					height="2800"
+					fetchPriority="high"
+				/>
+			</m.div>
 		</section>
 	);
 }

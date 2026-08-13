@@ -113,6 +113,104 @@ test("homepage hero, product story, and mobile story have no separators", async 
 	expect(boundaries).toEqual({ borders: ["0px", "0px"], firstGap: 240, secondGap: 240 });
 });
 
+test("homepage reveals one fixed Workbench screenshot after the hero copy", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.addInitScript(() => {
+		const observer = new MutationObserver(() => {
+			const stage = document.querySelector(".hero__stage");
+			const gradient = document.querySelector(".hero__gradient");
+			if (!stage || !gradient) return;
+			document.documentElement.dataset.heroInitialStageOpacity = getComputedStyle(stage).opacity;
+			document.documentElement.dataset.heroInitialGradientOpacity = getComputedStyle(gradient).opacity;
+			observer.disconnect();
+		});
+		observer.observe(document, { childList: true, subtree: true });
+	});
+	await page.goto("/", { waitUntil: "domcontentloaded" });
+	await expect(page.locator(".signal, .macbook-scroll, .hero__macbook")).toHaveCount(0);
+	const gradient = page.locator(".hero__gradient");
+	const stage = page.locator(".hero__stage");
+	const image = page.locator(".hero__screenshot");
+	await stage.waitFor({ state: "attached" });
+	expect(await page.evaluate(() => [
+		document.documentElement.dataset.heroInitialStageOpacity,
+		document.documentElement.dataset.heroInitialGradientOpacity,
+	])).toEqual(["0", "0"]);
+	await expect(stage).toHaveCSS("opacity", "1");
+	await expect(gradient).toHaveCSS("opacity", "1");
+	await image.evaluate(element => (element as HTMLImageElement).decode());
+	const layout = await page.evaluate(() => {
+		const hero = document.querySelector(".hero")!.getBoundingClientRect();
+		const gradientElement = document.querySelector(".hero__gradient")!;
+		const gradientBounds = gradientElement.getBoundingClientRect();
+		const copy = document.querySelector(".hero__copy")!.getBoundingClientRect();
+		const stageBounds = document.querySelector(".hero__stage")!.getBoundingClientRect();
+		const screenshot = document.querySelector(".hero__screenshot") as HTMLImageElement;
+		const imageBounds = screenshot.getBoundingClientRect();
+		return {
+			gap: Math.round(stageBounds.top - copy.bottom),
+			widths: [Math.round(gradientBounds.width), Math.round(stageBounds.width), Math.round(imageBounds.width)],
+			imageInset: Math.round(imageBounds.left - gradientBounds.left),
+			bottomOffsets: [Math.round(hero.bottom - gradientBounds.bottom), Math.round(hero.bottom - stageBounds.bottom), Math.round(hero.bottom - imageBounds.bottom)],
+			intrinsic: [screenshot.naturalWidth, screenshot.naturalHeight],
+			neutral: !getComputedStyle(gradientElement).backgroundImage.includes("8, 9, 10"),
+		};
+	});
+	expect(layout).toEqual({ gap: 72, widths: [1240, 1240, 920], imageInset: 160, bottomOffsets: [0, 0, 24], intrinsic: [5118, 2800], neutral: true });
+	const documentTop = await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY));
+	await page.evaluate(() => globalThis.scrollTo(0, 500));
+	await page.waitForTimeout(100);
+	expect(await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY))).toBe(documentTop);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/");
+	await expect(stage).toHaveCSS("opacity", "1");
+	const mobile = await page.evaluate(() => {
+		const gradientBounds = document.querySelector(".hero__gradient")!.getBoundingClientRect();
+		const stageBounds = document.querySelector(".hero__stage")!.getBoundingClientRect();
+		const imageBounds = document.querySelector(".hero__screenshot")!.getBoundingClientRect();
+		const heroBottom = document.querySelector(".hero")!.getBoundingClientRect().bottom;
+		return {
+			gap: Math.round(stageBounds.top - document.querySelector(".hero__copy")!.getBoundingClientRect().bottom),
+			widths: [Math.round(gradientBounds.width), Math.round(imageBounds.width)],
+			bottomOffsets: [Math.round(heroBottom - gradientBounds.bottom), Math.round(heroBottom - imageBounds.bottom)],
+		};
+	});
+	expect(mobile).toEqual({ gap: 56, widths: [342, 294], bottomOffsets: [0, 16] });
+	await page.emulateMedia({ reducedMotion: "reduce" });
+	await page.goto("/", { waitUntil: "domcontentloaded" });
+	await stage.waitFor({ state: "attached" });
+	expect(await stage.evaluate(element => [getComputedStyle(element).opacity, getComputedStyle(element).transform])).toEqual(["1", "none"]);
+	expect(await gradient.evaluate(element => getComputedStyle(element).opacity)).toBe("1");
+});
+
+test("mobile sections stack their hierarchy without separators", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/mobile");
+	const desktop = await page.locator(".mobile-section").evaluateAll(sections => sections.map((section, index) => {
+		const heading = section.querySelector("h2")!.getBoundingClientRect();
+		const description = section.querySelector("p")!.getBoundingClientRect();
+		const previous = index > 0 ? sections[index - 1].getBoundingClientRect() : null;
+		return { border: getComputedStyle(section).borderTopWidth, aligned: Math.round(heading.left) === Math.round(description.left), gap: previous ? Math.round(heading.top - previous.bottom) : null };
+	}));
+	expect(desktop).toEqual([
+		{ border: "0px", aligned: true, gap: null },
+		{ border: "0px", aligned: true, gap: 120 },
+		{ border: "0px", aligned: true, gap: 120 },
+	]);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/mobile");
+	const mobileGaps = await page.locator(".mobile-section").evaluateAll(sections => sections.slice(1).map((section, index) => Math.round(section.querySelector("h2")!.getBoundingClientRect().top - sections[index].getBoundingClientRect().bottom)));
+	expect(mobileGaps).toEqual([80, 80]);
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/mobile");
+	const shieldAlignment = await page.locator('[aria-labelledby="security-title"]').evaluate(section => {
+		const shield = section.querySelector("ul + div")!.getBoundingClientRect();
+		const bounds = section.getBoundingClientRect();
+		return { right: Math.round(bounds.right - shield.right), followsList: Boolean(section.querySelector("ul + div")) };
+	});
+	expect(shieldAlignment).toEqual({ right: 0, followsList: true });
+});
+
 test("every route uses the useful canonical footer", async ({ page }) => {
 	const footerLinks = ["Mobile", "Docs", "Setup", "Agents", "Download"];
 	for (const [route] of routes) {

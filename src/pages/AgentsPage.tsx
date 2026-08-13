@@ -35,8 +35,8 @@ export function AgentsPage() {
 				}
 			/>
 			<section className="mx-auto w-[min(1240px,calc(100%_-_48px))] pb-30 max-[620px]:w-[calc(100%_-_24px)]" aria-label="Agent setup">
-				<div className="mt-16 grid grid-cols-[minmax(240px,.72fr)_minmax(0,1.28fr)] items-start gap-10 max-[900px]:grid-cols-1">
-					<aside className="grid gap-8">
+				<div className="mt-16 grid grid-cols-[minmax(240px,.72fr)_minmax(0,1.28fr)] items-start gap-10 max-[900px]:grid-cols-[minmax(0,1fr)]">
+					<aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-8">
 						<section>
 							<h2>Scope</h2>
 							<p className="mt-4 text-base/6 text-white/70">
