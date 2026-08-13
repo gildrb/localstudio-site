@@ -1,4 +1,6 @@
+import { DownloadButton, TextLink } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
+import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
 const toc = [
@@ -12,13 +14,25 @@ const toc = [
 ];
 
 const codeClass =
-	"my-5 block max-w-full overflow-x-auto rounded-lg border border-white/10 px-5 py-4 font-mono text-sm/5 text-white/80";
-const sectionClass = "scroll-mt-28";
+	"docs-code my-8 block max-w-full overflow-x-auto rounded-lg border border-white/10 px-5 py-4 font-mono text-sm/5 text-white/80";
+const sectionClass = "docs-section scroll-mt-28";
 
 export function DocsPage() {
 	return (
 		<PageShell>
-			<div className="mx-auto grid w-[min(1240px,calc(100%_-_48px))] grid-cols-[240px_minmax(0,760px)] justify-center gap-16 py-16 max-[900px]:grid-cols-1 max-[620px]:w-[calc(100%_-_24px)] max-[620px]:py-10">
+			<PageIntro
+				id="docs-title"
+				layout="left"
+				title="Get Local Studio running"
+				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
+				actions={
+					<>
+						<DownloadButton iconSize={17} />
+						<TextLink href="/prompt">Setup</TextLink>
+					</>
+				}
+			/>
+			<div className="docs-layout section-width grid grid-cols-[240px_minmax(0,1fr)] gap-12 pb-30 max-[900px]:grid-cols-1 max-[900px]:gap-12">
 				<aside className="sticky top-24 self-start max-[900px]:static">
 					<p className="text-sm/5 text-white/70">On this page</p>
 					<nav aria-label="Documentation sections">
@@ -36,17 +50,13 @@ export function DocsPage() {
 						</ul>
 					</nav>
 				</aside>
-				<article className="min-w-0 text-base/6 text-white/70 [&_h2]:mt-16 [&_h2]:text-white [&_li]:mb-2 [&_strong]:text-white">
-					<header>
-						<h1>Get Local Studio running</h1>
-						<p className="mt-4 max-w-3xl">
-							Local Studio is a local-first workstation for running, managing,
-							and using self-hosted LLM backends. Two modules share one
-							controller API: a Bun/Hono backend and a Next.js + React frontend
-							with an Electron desktop shell.
-						</p>
-					</header>
-
+				<article className="docs-prose min-w-0 text-base/6 text-white/70 [&_li]:mb-2">
+					<p>
+						Local Studio is a local-first workstation for running, managing,
+						and using self-hosted LLM backends. Two modules share one
+						controller API: a Bun/Hono backend and a Next.js + React frontend
+						with an Electron desktop shell.
+					</p>
 					<section id="prerequisites" className={sectionClass}>
 						<h2>Prerequisites</h2>
 						<ul className="mt-4 list-disc pl-6">

@@ -31,8 +31,90 @@ for (const [route, title, heading] of routes) {
 	});
 }
 
+test("non-home routes use the homepage intro system", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	let mobileHeadingTop = 0;
+	for (const [route] of routes.slice(1)) {
+		await page.goto(route);
+		const intro = page.locator(".page-intro");
+		await expect(intro).toBeVisible();
+		await expect(intro.locator('.page-intro__mark, img[src="/images/optimized.svg"]')).toHaveCount(0);
+		await expect(intro.getByRole("heading", { level: 1 })).toHaveCount(1);
+		await expect(intro.locator(":scope > .page-intro__content > p")).toBeVisible();
+		const geometry = await intro.evaluate(element => {
+			const style = getComputedStyle(element);
+			const heading = getComputedStyle(element.querySelector("h1")!);
+			return { minHeight: style.minHeight, textAlign: style.textAlign, heading: [heading.fontSize, heading.lineHeight] };
+		});
+		if (["/mobile", "/docs", "/prompt", "/agents"].includes(route)) {
+			expect(geometry).toEqual({ minHeight: route === "/mobile" ? "650px" : "0px", textAlign: "left", heading: ["56px", "60px"] });
+			const headingTop = Math.round(await intro.locator("h1").evaluate(element => element.getBoundingClientRect().top));
+			if (route === "/mobile") {
+				mobileHeadingTop = headingTop;
+				await expect(intro.locator(".page-intro__aside svg")).toHaveCount(3);
+				await expect(intro.locator(".page-intro__requirements li")).toHaveCount(3);
+			} else {
+				expect(headingTop).toBe(mobileHeadingTop);
+			}
+		} else {
+			expect(geometry).toEqual({ minHeight: "650px", textAlign: "center", heading: ["56px", "60px"] });
+		}
+	}
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/product");
+	expect(await page.locator(".page-intro").evaluate(element => getComputedStyle(element).minHeight)).toBe("540px");
+});
+
+test("homepage repeats the hero actions in the final callout", async ({ page }) => {
+	await page.goto("/");
+	const heroActions = page.locator(".hero__copy .hero__actions");
+	const finalActions = page.locator(".final-callout .hero__actions");
+	for (const actions of [heroActions, finalActions]) {
+		await expect(actions.getByRole("link", { name: "Download for macOS" })).toHaveAttribute("href", "/download/macos");
+		await expect(actions.getByRole("link", { name: "Setup" })).toHaveAttribute("href", "/prompt");
+		await expect(actions.getByRole("link")).toHaveCount(2);
+	}
+	await expect(page.getByRole("link", { name: "View on GitHub" })).toHaveCount(0);
+	const verticalCenter = await page.locator(".final-callout").evaluate(element => {
+		const section = element.getBoundingClientRect();
+		const content = element.firstElementChild!.getBoundingClientRect();
+		return Math.round((content.top + content.bottom) / 2 - (section.top + section.bottom) / 2);
+	});
+	expect(verticalCenter).toBe(0);
+	const homepageHeading = await page.locator(".page-cta h2").evaluate(element => {
+		const style = getComputedStyle(element);
+		return [style.fontSize, style.lineHeight, style.fontWeight];
+	});
+	await page.goto("/mobile");
+	const mobileRouteHeading = await page.locator(".page-cta h2").evaluate(element => {
+		const style = getComputedStyle(element);
+		return [style.fontSize, style.lineHeight, style.fontWeight];
+	});
+	expect(homepageHeading).toEqual(["42px", "48px", "500"]);
+	expect(mobileRouteHeading).toEqual(homepageHeading);
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/mobile");
+	expect(await page.locator(".page-cta h2").evaluate(element => [getComputedStyle(element).fontSize, getComputedStyle(element).lineHeight])).toEqual(["32px", "40px"]);
+});
+
+test("homepage hero, product story, and mobile story have no separators", async ({ page }) => {
+	await page.goto("/");
+	const boundaries = await page.evaluate(() => {
+		const hero = document.querySelector(".hero")!.getBoundingClientRect();
+		const intro = document.querySelector(".story__intro")!.getBoundingClientRect();
+		const showcase = document.querySelector(".story__showcase")!.getBoundingClientRect();
+		const kittyHeading = document.querySelector(".kitty h2")!.getBoundingClientRect();
+		return {
+			borders: [".hero", ".story"].map(selector => getComputedStyle(document.querySelector(selector)!).borderBottomWidth),
+			firstGap: Math.round(intro.top - hero.bottom),
+			secondGap: Math.round(kittyHeading.top - showcase.bottom),
+		};
+	});
+	expect(boundaries).toEqual({ borders: ["0px", "0px"], firstGap: 240, secondGap: 240 });
+});
+
 test("every route uses the useful canonical footer", async ({ page }) => {
-	const footerLinks = ["Product", "Mobile", "Docs", "Setup", "Agents", "Download"];
+	const footerLinks = ["Mobile", "Docs", "Setup", "Agents", "Download"];
 	for (const [route] of routes) {
 		await page.goto(route);
 		await expect(page.locator("footer")).toContainText("© 2026 Local Studio");
@@ -42,22 +124,58 @@ test("every route uses the useful canonical footer", async ({ page }) => {
 	}
 });
 
-test("homepage features use equal media widths without separators", async ({ page }) => {
+test("shared navbar remains pinned while pages scroll", async ({ page }) => {
+	for (const route of ["/", "/docs", "/prompt", "/agents"]) {
+		await page.goto(route);
+		const header = page.locator("header.nav");
+		expect(await header.evaluate(element => getComputedStyle(element).position)).toBe("sticky");
+		await page.evaluate(() => window.scrollTo(0, 1000));
+		await expect.poll(() => header.evaluate(element => Math.round(element.getBoundingClientRect().top))).toBe(0);
+	}
+});
+
+test("shared action links fully brighten within 130ms", async ({ page }) => {
 	await page.goto("/");
-	const features = await page.locator(".feature").evaluateAll(elements =>
-		elements.map(element => {
-			const media = element.querySelector(".feature__visual")!.getBoundingClientRect();
-			return { width: Math.round(media.width), borderBottom: getComputedStyle(element).borderBottomWidth };
-		}),
-	);
-	expect(features.map(feature => feature.width)).toEqual([features[0].width, features[0].width, features[0].width]);
-	expect(features.map(feature => feature.borderBottom)).toEqual(["0px", "0px", "0px"]);
-	await page.setViewportSize({ width: 390, height: 844 });
+	const link = page.getByRole("link", { name: "See how mobile works" });
+	await link.scrollIntoViewIfNeeded();
+	const rest = await link.evaluate(element => {
+		const style = getComputedStyle(element);
+		const arrow = getComputedStyle(element.querySelector("span")!);
+		return { color: style.color, duration: style.transitionDuration, arrowColor: arrow.color, arrowDuration: arrow.transitionDuration };
+	});
+	expect(rest).toEqual({ color: "rgb(118, 118, 118)", duration: "0.13s", arrowColor: "rgb(118, 118, 118)", arrowDuration: "0.13s" });
+	await link.hover();
+	await page.waitForTimeout(150);
+	const hover = await link.evaluate(element => ({
+		color: getComputedStyle(element).color,
+		arrowColor: getComputedStyle(element.querySelector("span")!).color,
+	}));
+	expect(hover).toEqual({ color: "rgb(255, 255, 255)", arrowColor: "rgb(255, 255, 255)" });
+	for (const route of ["/mobile", "/docs", "/prompt"]) {
+		await page.goto(route);
+		const action = page.locator(".page-intro .text-link");
+		expect(await action.evaluate(element => getComputedStyle(element).transitionDuration)).toBe("0.13s");
+	}
+});
+
+test("homepage capability selector controls one synchronized image", async ({ page }) => {
 	await page.goto("/");
-	const mobileWidths = await page.locator(".feature__visual").evaluateAll(elements =>
-		elements.map(element => Math.round(element.getBoundingClientRect().width)),
-	);
-	expect(mobileWidths).toEqual([mobileWidths[0], mobileWidths[0], mobileWidths[0]]);
+	const options = page.getByRole("list", { name: "Local Studio capabilities" });
+	const control = options.getByRole("button", { name: "Control" });
+	const serve = options.getByRole("button", { name: "Serve" });
+	const work = options.getByRole("button", { name: "Work" });
+	await expect(control).toHaveAttribute("aria-expanded", "true");
+	await expect(page.getByText("Local and remote controllers, live status, launch state, logs, and metrics.")).toBeVisible();
+	await expect(page.locator('.story__visual[data-active-feature="Control"] img')).toHaveAttribute("src", "/images/usage-proxy.png");
+	await serve.click();
+	await expect(serve).toHaveAttribute("aria-expanded", "true");
+	await expect(page.getByText("vLLM, SGLang, MLX, and llama.cpp behind one OpenAI-compatible surface.")).toBeVisible();
+	await expect(page.locator('.story__visual[data-active-feature="Serve"] img')).toHaveAttribute("src", "/images/configure-models.png");
+	await serve.press("ArrowDown");
+	await expect(work).toBeFocused();
+	await expect(work).toHaveAttribute("aria-expanded", "true");
+	await expect(page.locator('.story__visual[data-active-feature="Work"] img')).toHaveAttribute("src", "/images/workbench-terminal.png");
+	await expect(page.locator(".story__visual img")).toHaveCount(1);
 });
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {
@@ -74,19 +192,21 @@ test("product page media is equal and fully framed", async ({ page }) => {
 	await page.goto("/product");
 	await page.locator('img[loading="lazy"]').last().scrollIntoViewIfNeeded();
 	await page.waitForFunction(() => [...document.querySelectorAll<HTMLImageElement>('img[loading="lazy"]')].every(image => image.complete && image.naturalWidth > 0));
-	const media = await page.locator('section[aria-label="Product capabilities"] figure').evaluateAll(elements =>
+	const media = await page.locator('section[aria-label="Product capabilities"] .media-frame').evaluateAll(elements =>
 		elements.map(element => Math.round(element.getBoundingClientRect().width)),
 	);
-	expect(media).toEqual([media[0], media[0], media[0]]);
+	expect(media[0]).toBeGreaterThan(media[1]);
+	expect(media.slice(1)).toEqual([media[1], media[1], media[1]]);
 });
 
 test("design system typography is stable", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
 	const desktop = await page.evaluate(() => {
 		const body = getComputedStyle(document.body);
 		const title = getComputedStyle(document.querySelector("h1")!);
 		const subheadline = getComputedStyle(document.querySelector(".story h2")!);
-		const feature = getComputedStyle(document.querySelector(".feature h3")!);
+		const feature = getComputedStyle(document.querySelector(".story__option-title")!);
 		return {
 			body: [body.fontFamily, body.fontSize, body.fontWeight, body.lineHeight, body.letterSpacing],
 			title: [title.fontFamily, title.fontSize, title.fontWeight, title.lineHeight, title.letterSpacing],
@@ -97,7 +217,30 @@ test("design system typography is stable", async ({ page }) => {
 	expect(desktop.body).toEqual([expect.stringContaining("Geist Sans"), "16px", "400", "24px", "normal"]);
 	expect(desktop.title).toEqual([expect.stringContaining("Geist Sans"), "64px", "500", "64px", "-1.28px"]);
 	expect(desktop.subheadline).toEqual(["42px", "500", "48px", "normal"]);
-	expect(desktop.feature).toEqual(["42px", "500", "48px", "normal"]);
+	expect(desktop.feature).toEqual(["28px", "500", "36px", "normal"]);
+	await page.goto("/docs");
+	const docsType = await page.evaluate(() => {
+		const heading = getComputedStyle(document.querySelector(".docs-section h2")!);
+		const emphasis = getComputedStyle(document.querySelector(".docs-prose strong")!);
+		const code = getComputedStyle(document.querySelector(".docs-code")!);
+		const sections = [...document.querySelectorAll(".docs-section")];
+		return {
+			heading: [heading.fontSize, heading.lineHeight, heading.fontWeight],
+			emphasis: emphasis.fontWeight,
+			code: [code.fontSize, code.lineHeight, code.fontWeight],
+			sectionGap: Math.round(sections[1].getBoundingClientRect().top - sections[0].getBoundingClientRect().bottom),
+		};
+	});
+	expect(docsType).toEqual({ heading: ["24px", "32px", "500"], emphasis: "500", code: ["14px", "20px", "400"], sectionGap: 80 });
+	const fullWidthLayouts = await page.evaluate(() => {
+		const docs = document.querySelector(".docs-layout")!.getBoundingClientRect();
+		const article = document.querySelector(".docs-prose")!.getBoundingClientRect();
+		return { docs: Math.round(docs.width), article: Math.round(article.width), left: Math.round(docs.left) };
+	});
+	expect(fullWidthLayouts).toEqual({ docs: 1240, article: 952, left: 100 });
+	await page.goto("/prompt");
+	const setupWidth = await page.locator('section[aria-label="Setup handoff"]').evaluate(element => Math.round(element.getBoundingClientRect().width));
+	expect(setupWidth).toBe(1240);
 	await page.goto("/mobile");
 	const hierarchy = await page.evaluate(() => {
 		const section = getComputedStyle(document.querySelector("h2")!);
@@ -162,8 +305,7 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 	await page.goto("/");
 	const navigation = page.getByRole("navigation", { name: "Landing navigation" });
 	await expect(navigation.getByRole("link", { name: "Media", exact: true })).toHaveCount(0);
-	await navigation.getByRole("link", { name: "Product", exact: true }).click();
-	await expect(page).toHaveURL("/product");
+	await expect(navigation.getByRole("link", { name: "Product", exact: true })).toHaveCount(0);
 	await navigation.getByRole("link", { name: "Mobile", exact: true }).click();
 	await expect(page).toHaveURL("/mobile");
 	await navigation.getByRole("link", { name: "Docs", exact: true }).click();

@@ -1,6 +1,8 @@
 import setupPrompt from "../content/setup-prompt.txt?raw";
 import { CopyButton } from "../components/CopyButton";
+import { DownloadButton, TextLink } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
+import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
 const handoff = [
@@ -21,22 +23,21 @@ const handoff = [
 export function PromptPage() {
 	return (
 		<PageShell>
-			<section
-				className="mx-auto w-[min(1040px,calc(100%_-_48px))] py-28 max-[620px]:w-[calc(100%_-_24px)] max-[620px]:py-20"
-				aria-labelledby="prompt-title"
-			>
-				<header className="mx-auto max-w-3xl text-center">
-					<h1 id="prompt-title">
-						Give this to any coding model.
-					</h1>
-					<p className="mt-8 text-base/6 text-white/70">
-						It will inspect the machine, choose the right runtime, install Local
-						Studio, and prove a real inference request works.
-					</p>
-				</header>
-
+			<PageIntro
+				id="prompt-title"
+				layout="left"
+				title="Give this to any coding model."
+				description="It will inspect the machine, choose the right runtime, install Local Studio, and prove a real inference request works."
+				actions={
+					<>
+						<DownloadButton iconSize={17} />
+						<TextLink href="/docs" arrow="right">Read the docs</TextLink>
+					</>
+				}
+			/>
+			<section className="section-width pb-30" aria-label="Setup handoff">
 				<section
-					className="mt-20 overflow-hidden rounded-2xl border border-white/15"
+					className="overflow-hidden rounded-2xl border border-white/15"
 					aria-label="Portable setup prompt"
 				>
 					<div className="flex items-center justify-between gap-6 border-b border-white/10 p-5 max-[620px]:items-start">

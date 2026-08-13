@@ -3,20 +3,13 @@ export function FinalCallout() {
 	return (
 		<section
 			id="downloads"
-			className="final-callout section-width"
+			className="final-callout page-cta section-width"
 			aria-labelledby="download-title"
 		>
 			<div>
 				<h2 id="download-title">Your models. Your hardware. One surface.</h2>
-				<div className="final-callout__actions">
-					<DownloadButton />
-					<TextLink
-						href="https://github.com/sybil-solutions/local-studio"
-						target="_blank"
-						rel="noreferrer"
-					>
-						View on GitHub
-					</TextLink>
+				<div className="hero__actions">
+					<DownloadButton iconSize={17} />
 					<TextLink href="/prompt">Setup</TextLink>
 				</div>
 			</div>

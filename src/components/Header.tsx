@@ -1,7 +1,6 @@
 import { LocalLink } from "./LocalLink";
 
 const links = [
-	{ label: "Product", href: "/product" },
 	{ label: "Mobile", href: "/mobile" },
 	{ label: "Docs", href: "/docs" },
 	{ label: "Setup", href: "/prompt", className: "nav__setup" },
@@ -22,7 +21,11 @@ export function Header() {
 			</LocalLink>
 			<nav className="nav__links" aria-label="Landing navigation">
 				{links.map((link) => (
-					<LocalLink className={link.className} href={link.href} key={link.label}>
+					<LocalLink
+						className={link.className}
+						href={link.href}
+						key={link.label}
+					>
 						{link.label}
 					</LocalLink>
 				))}

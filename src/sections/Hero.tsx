@@ -19,6 +19,22 @@ export function Hero() {
 						},
 					}}
 				>
+					<motion.img
+						className="hero__mark"
+						src="/images/optimized.svg"
+						alt=""
+						width="525"
+						height="525"
+						aria-hidden="true"
+						variants={{
+							hidden: { opacity: 0, y: 18 },
+							visible: {
+								opacity: 1,
+								y: 0,
+								transition: { duration: 0.82, ease: [0.16, 1, 0.3, 1] },
+							},
+						}}
+					/>
 					<motion.h1
 						id="landing-title"
 						variants={{

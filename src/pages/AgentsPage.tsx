@@ -1,7 +1,8 @@
 import instructions from "../content/agent-instructions.txt?raw";
 import probes from "../content/agent-probes.txt?raw";
-import { DownloadButton } from "../components/Links";
-import { LocalLink } from "../components/LocalLink";
+import { DownloadButton, TextLink } from "../components/Links";
+import { MediaFrame } from "../components/MediaFrame";
+import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
 const scope = [
@@ -21,28 +22,19 @@ const capabilities = [
 export function AgentsPage() {
 	return (
 		<PageShell>
-			<section
-				className="mx-auto w-[min(1240px,calc(100%_-_48px))] py-20 max-[620px]:w-[calc(100%_-_24px)]"
-				aria-labelledby="agents-title"
-			>
-				<header className="max-w-3xl">
-					<h1 id="agents-title">
-						Set up the stack.
-					</h1>
-					<p className="mt-6 text-base/6 text-white/70">
-						A compact DLTL for controllers, providers, runtimes, and Pi.
-					</p>
-					<div className="mt-8 flex flex-wrap gap-4">
-						<DownloadButton />
-						<LocalLink
-							className="inline-flex min-h-10 items-center rounded-md border border-white/10 px-4"
-							href="/"
-						>
-							Back to overview
-						</LocalLink>
-					</div>
-				</header>
-
+			<PageIntro
+				id="agents-title"
+				layout="left"
+				title="Set up the stack."
+				description="A compact DLTL for controllers, providers, runtimes, and Pi."
+				actions={
+					<>
+						<DownloadButton iconSize={17} />
+						<TextLink href="/" arrow="right">Back to overview</TextLink>
+					</>
+				}
+			/>
+			<section className="mx-auto w-[min(1240px,calc(100%_-_48px))] pb-30 max-[620px]:w-[calc(100%_-_24px)]" aria-label="Agent setup">
 				<div className="mt-16 grid grid-cols-[minmax(240px,.72fr)_minmax(0,1.28fr)] items-start gap-10 max-[900px]:grid-cols-1">
 					<aside className="grid gap-8">
 						<section>
@@ -74,7 +66,10 @@ export function AgentsPage() {
 						aria-labelledby="instructions-title"
 					>
 						<div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
-							<h2 id="instructions-title" className="text-sm/5 font-normal text-white/70">
+							<h2
+								id="instructions-title"
+								className="text-sm/5 font-normal text-white/70"
+							>
 								Agent instructions
 							</h2>
 							<span className="rounded-full border border-white/10 px-2 py-1 font-mono text-sm/5 text-white/50">
@@ -94,61 +89,41 @@ export function AgentsPage() {
 			>
 				<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-8">
 					<div>
-						<h2 id="agents-media-title">
-							Runtime. Agent. Models.
-						</h2>
+						<h2 id="agents-media-title">Runtime. Agent. Models.</h2>
 					</div>
 					<p className="text-base/6 text-white/70">
 						The setup path is visible in the app.
 					</p>
 				</div>
 				<div className="mt-16 grid grid-cols-[1.12fr_.72fr] gap-5 max-[900px]:grid-cols-1">
-					<figure className="overflow-hidden rounded-xl border border-white/10">
-						<figcaption className="flex justify-between px-4 py-3 text-sm/5">
-							<strong>Workbench</strong>
-							<span className="text-white/50">live app capture</span>
-						</figcaption>
-						<img
-							className="block h-auto w-full"
-							src="/images/workbench-browser.png"
-							alt="Local Studio workbench with a coding agent and integrated browser."
+					<MediaFrame
+						caption={<><strong>Workbench</strong><span>live app capture</span></>}
+						src="/images/workbench-browser.png"
+						alt="Local Studio workbench with a coding agent and integrated browser."
+						width="5118"
+						height="2800"
+						loading="lazy"
+						decoding="async"
+					/>
+					<div className="grid gap-5">
+						<MediaFrame
+							caption={<><strong>Tools</strong><span>live app capture</span></>}
+							src="/images/workbench-terminal.png"
+							alt="Local Studio workbench showing terminal and agent tool activity."
 							width="5118"
 							height="2800"
 							loading="lazy"
 							decoding="async"
 						/>
-					</figure>
-					<div className="grid gap-5">
-						<figure className="overflow-hidden rounded-xl border border-white/10">
-							<figcaption className="flex justify-between px-4 py-3 text-sm/5">
-								<strong>Tools</strong>
-								<span className="text-white/50">live app capture</span>
-							</figcaption>
-							<img
-								className="block h-auto w-full"
-								src="/images/workbench-terminal.png"
-								alt="Local Studio workbench showing terminal and agent tool activity."
-								width="5118"
-								height="2800"
-								loading="lazy"
-								decoding="async"
-							/>
-						</figure>
-						<figure className="overflow-hidden rounded-xl border border-white/10">
-							<figcaption className="flex justify-between px-4 py-3 text-sm/5">
-								<strong>Configure</strong>
-								<span className="text-white/50">live app capture</span>
-							</figcaption>
-							<img
-								className="block h-auto w-full"
-								src="/images/configure-models.png"
-								alt="Local Studio model configuration screen."
-								width="5118"
-								height="2800"
-								loading="lazy"
-								decoding="async"
-							/>
-						</figure>
+						<MediaFrame
+							caption={<><strong>Configure</strong><span>live app capture</span></>}
+							src="/images/configure-models.png"
+							alt="Local Studio model configuration screen."
+							width="5118"
+							height="2800"
+							loading="lazy"
+							decoding="async"
+						/>
 					</div>
 				</div>
 				<div className="mt-20 grid grid-cols-3 border border-white/10 max-[900px]:grid-cols-1">
