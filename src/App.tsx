@@ -18,7 +18,9 @@ const titles = {
 };
 
 export default function App() {
-	const [location, setLocation] = useState(() => `${window.location.pathname}${window.location.hash}`);
+	const [location, setLocation] = useState(
+		() => `${window.location.pathname}${window.location.hash}`,
+	);
 	const pathname = normalizePath(location.split("#")[0]);
 
 	useEffect(() => {
@@ -30,10 +32,14 @@ export default function App() {
 	}, []);
 
 	useEffect(() => {
-		document.title = isRoutePath(pathname) ? titles[pathname] : "Page not found — Local Studio";
+		document.title = isRoutePath(pathname)
+			? titles[pathname]
+			: "Page not found — Local Studio";
 		const hash = window.location.hash;
 		if (hash) {
-			window.requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView());
+			window.requestAnimationFrame(() =>
+				document.querySelector(hash)?.scrollIntoView(),
+			);
 		} else {
 			window.scrollTo({ top: 0 });
 		}

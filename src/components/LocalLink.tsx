@@ -5,7 +5,12 @@ interface LocalLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 	href: string;
 }
 
-export function LocalLink({ children, href, onClick, ...props }: LocalLinkProps) {
+export function LocalLink({
+	children,
+	href,
+	onClick,
+	...props
+}: LocalLinkProps) {
 	function handleClick(event: MouseEvent<HTMLAnchorElement>) {
 		onClick?.(event);
 		if (
