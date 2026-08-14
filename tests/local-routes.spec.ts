@@ -211,6 +211,42 @@ test("mobile sections stack their hierarchy without separators", async ({ page }
 	expect(shieldAlignment).toEqual({ right: 0, followsList: true });
 });
 
+test("mobile page keeps stable gutters, type, and actions at narrow widths", async ({ page }) => {
+	for (const width of [390, 320]) {
+		await page.setViewportSize({ width, height: 844 });
+		await page.goto("/mobile");
+		const sections = await page.locator(".mobile-section").evaluateAll(elements =>
+			elements.map(element => {
+				const bounds = element.getBoundingClientRect();
+				const heading = getComputedStyle(element.querySelector("h2")!);
+				return {
+					left: Math.round(bounds.left),
+					width: Math.round(bounds.width),
+					heading: [heading.fontSize, heading.lineHeight],
+				};
+			}),
+		);
+		expect(sections).toEqual(Array(3).fill({
+			left: 24,
+			width: width - 48,
+			heading: ["32px", "40px"],
+		}));
+		const actions = await page
+			.locator(".page-intro .hero__actions, .page-cta .hero__actions")
+			.evaluateAll(groups => groups.map(group => {
+				const links = [...group.children].map(element => element.getBoundingClientRect());
+				return {
+					links: links.map(bounds => [Math.round(bounds.left), Math.round(bounds.width), Math.round(bounds.height)]),
+					gap: Math.round(links[1].top - links[0].bottom),
+				};
+			}));
+		expect(actions).toEqual(Array(2).fill({
+			links: [[24, width - 48, 48], [24, width - 48, 48]],
+			gap: 12,
+		}));
+	}
+});
+
 test("every route uses the useful canonical footer", async ({ page }) => {
 	const footerLinks = ["Mobile", "Docs", "Setup", "Agents", "Download"];
 	for (const [route] of routes) {
@@ -348,7 +384,7 @@ test("design system typography is stable", async ({ page }) => {
 			compact: [compact.fontSize, compact.fontWeight, compact.lineHeight, compact.letterSpacing],
 		};
 	});
-	expect(hierarchy.section).toEqual(["28px", "500", "36px", "normal"]);
+	expect(hierarchy.section).toEqual(["42px", "500", "48px", "normal"]);
 	expect(hierarchy.compact).toEqual(["19px", "500", "28px", "normal"]);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");

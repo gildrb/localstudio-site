@@ -33,8 +33,7 @@ const capabilities = [
 	],
 ] as const;
 
-const container =
-	"mx-auto w-[min(1240px,calc(100%_-_48px))] max-[620px]:w-[calc(100%_-_24px)]";
+const container = "mx-auto w-[min(1240px,calc(100%_-_48px))]";
 const sectionTitle = "max-w-3xl";
 const prose = "text-base/6 text-white/70";
 
@@ -107,10 +106,10 @@ export function MobilePage() {
 						so you do not need to scan again every time.
 					</p>
 				</div>
-				<ol className="mt-16 grid grid-cols-3 border border-white/10 p-0 max-[900px]:grid-cols-1">
+				<ol className="mt-16 grid grid-cols-3 border border-white/10 p-0 max-[900px]:grid-cols-1 max-[620px]:mt-12 max-[620px]:rounded-xl">
 					{steps.map(([title, text]) => (
 						<li
-							className="min-h-72 border-r border-white/10 p-8 last:border-r-0 max-[900px]:min-h-0 max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:last:border-b-0"
+							className="min-h-72 border-r border-white/10 p-8 last:border-r-0 max-[900px]:min-h-0 max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:last:border-b-0 max-[620px]:p-6"
 							key={title}
 						>
 							<h3>{title}</h3>
@@ -132,10 +131,10 @@ export function MobilePage() {
 						connects to the controller and agent runtime you already use.
 					</p>
 				</div>
-				<div className="mt-16 grid grid-cols-3 gap-6 max-[900px]:grid-cols-1">
+				<div className="mt-16 grid grid-cols-3 gap-6 max-[900px]:grid-cols-1 max-[620px]:mt-12 max-[620px]:gap-0">
 					{capabilities.map(([title, text]) => (
 						<article
-							className="min-h-64 border-t border-white/20 p-8"
+							className="min-h-64 border-t border-white/20 p-8 max-[620px]:min-h-0 max-[620px]:px-0 max-[620px]:py-8"
 							key={title}
 						>
 							<h3>{title}</h3>
@@ -159,14 +158,14 @@ export function MobilePage() {
 						Never post, email, record, or paste the code into support chat.
 					</p>
 				</div>
-				<div className="mt-16 grid grid-cols-[minmax(0,1fr)_200px] items-center gap-24 max-[900px]:grid-cols-1 max-[900px]:gap-12">
+				<div className="mt-16 grid grid-cols-[minmax(0,1fr)_200px] items-center gap-24 max-[900px]:grid-cols-1 max-[900px]:gap-12 max-[620px]:mt-12">
 					<ul className="grid max-w-3xl gap-4 p-0 text-base/6 text-white/70">
 						<li>The public screenshots use permanently redacted QR images.</li>
 						<li>Local bridge requests are signed and replay-protected.</li>
 						<li>This page has no form, tracker, or pairing upload endpoint.</li>
 					</ul>
 					<div
-						className="grid size-32 justify-self-end place-items-center rounded-full border border-white/20 ring-20 ring-white/3 max-[900px]:justify-self-start"
+						className="grid size-32 justify-self-end place-items-center rounded-full border border-white/20 ring-20 ring-white/3 max-[900px]:justify-self-start max-[620px]:size-24 max-[620px]:ring-12"
 						aria-hidden="true"
 					>
 						<Shield size={32} strokeWidth={1.5} />
@@ -174,7 +173,7 @@ export function MobilePage() {
 				</div>
 			</section>
 			<section
-				className={`${container} page-cta`}
+				className={`${container} page-cta mobile-cta`}
 				aria-labelledby="mobile-cta-title"
 			>
 				<div>
