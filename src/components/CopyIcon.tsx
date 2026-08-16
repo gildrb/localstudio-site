@@ -43,21 +43,27 @@ export function CopyIcon({ text }: CopyIconProps) {
 			</span>
 			<span className="copy-icon__glyph" aria-hidden="true">
 				<LazyMotion features={domAnimation} strict>
-				<AnimatePresence initial={false} mode="popLayout">
-					<m.svg
-						key={copied ? "check" : "copy"}
-						viewBox="0 0 16 16"
-						width="16"
-						height="16"
-						initial={{ opacity: 0, scale: 0.4 }}
-						animate={{ opacity: 1, scale: 1 }}
-						exit={{ opacity: 0, scale: 0.4 }}
-						transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
-						style={{ x: "-50%", y: "-50%", position: "absolute", left: "50%", top: "50%" }}
-					>
-						<path fill="currentColor" d={copied ? checkPath : copyPath} />
-					</m.svg>
-				</AnimatePresence>
+					<AnimatePresence initial={false} mode="popLayout">
+						<m.svg
+							key={copied ? "check" : "copy"}
+							viewBox="0 0 16 16"
+							width="16"
+							height="16"
+							initial={{ opacity: 0, scale: 0.4 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.4 }}
+							transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
+							style={{
+								x: "-50%",
+								y: "-50%",
+								position: "absolute",
+								left: "50%",
+								top: "50%",
+							}}
+						>
+							<path fill="currentColor" d={copied ? checkPath : copyPath} />
+						</m.svg>
+					</AnimatePresence>
 				</LazyMotion>
 			</span>
 		</button>

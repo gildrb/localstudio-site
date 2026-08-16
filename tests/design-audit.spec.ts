@@ -213,7 +213,7 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 test("navbar and footer hitboxes touch and share one height", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
-	const nav = await page.locator(".nav__links a, .nav__links .nav__machine").evaluateAll((links) =>
+	const nav = await page.locator(".nav__links > *").evaluateAll((links) =>
 		links.map((link) => {
 			const box = link.getBoundingClientRect();
 			return {

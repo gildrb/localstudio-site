@@ -11,7 +11,11 @@ const resources = [
 	{ label: "Overview", href: "/resources" },
 	{ label: "Setup prompt", href: "/prompt" },
 	{ label: "Agent setup", href: "/agents" },
-	{ label: "GitHub", href: "https://github.com/sybil-solutions/local-studio", external: true },
+	{
+		label: "GitHub",
+		href: "https://github.com/sybil-solutions/local-studio",
+		external: true,
+	},
 ];
 
 const githubUrl = "https://github.com/sybil-solutions/local-studio";
@@ -49,11 +53,22 @@ function MenuItems({
 		<div className="nav__menu-items">
 			{items.map((item) =>
 				item.external ? (
-					<a role="menuitem" href={item.href} key={item.label} target="_blank" rel="noreferrer">
+					<a
+						role="menuitem"
+						href={item.href}
+						key={item.label}
+						target="_blank"
+						rel="noreferrer"
+					>
 						{item.label}
 					</a>
 				) : (
-					<LocalLink role="menuitem" href={item.href} key={item.label} onClick={onNavigate}>
+					<LocalLink
+						role="menuitem"
+						href={item.href}
+						key={item.label}
+						onClick={onNavigate}
+					>
 						{item.label}
 					</LocalLink>
 				),
@@ -91,7 +106,9 @@ export function Header() {
 		return (
 			<div
 				className="nav__menu"
-				onPointerLeave={() => setOpenMenu((current) => (current === id ? null : current))}
+				onPointerLeave={() =>
+					setOpenMenu((current) => (current === id ? null : current))
+				}
 			>
 				<button
 					type="button"
@@ -124,11 +141,21 @@ export function Header() {
 					height="525"
 				/>
 			</LocalLink>
-			<nav className="nav__links" aria-label="Landing navigation" ref={menusRef}>
+			<nav
+				className="nav__links"
+				aria-label="Landing navigation"
+				ref={menusRef}
+			>
 				{menu("products", "Products", products)}
 				{menu("resources", "Resources", resources)}
 				<a href="https://www.sybilsolutions.ai/">Company</a>
-				<LocalLink className="nav__github" href={githubUrl} target="_blank" rel="noreferrer" aria-label="Local Studio on GitHub">
+				<LocalLink
+					className="nav__github"
+					href={githubUrl}
+					target="_blank"
+					rel="noreferrer"
+					aria-label="Local Studio on GitHub"
+				>
 					<svg viewBox="0 0 24 24" aria-hidden="true">
 						<path
 							fill="currentColor"

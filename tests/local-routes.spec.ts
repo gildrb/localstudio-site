@@ -491,9 +491,9 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 	await expect(
 		navigation.getByRole("link", { name: "Company", exact: true }),
 	).toHaveAttribute("href", "https://www.sybilsolutions.ai/");
-	await navigation.getByRole("button", { name: /Resources/ }).click();
+	await navigation.getByRole("button", { name: /Resources/ }).hover();
 	const panel = page.locator(".nav__menu-panel");
-	await panel.getByRole("link", { name: "Overview", exact: true }).click();
+	await panel.getByRole("menuitem", { name: "Overview", exact: true }).click();
 	await expect(page).toHaveURL("/resources");
 	await page.goBack();
 	await expect(page).toHaveURL("/");

@@ -78,9 +78,10 @@ export default function App() {
 	}, []);
 
 	useEffect(() => {
-		document.title = isRoutePath(pathname) || pathname === "/machine"
-			? titles[pathname as keyof typeof titles]
-			: "Page not found - Local Studio";
+		document.title =
+			isRoutePath(pathname) || pathname === "/machine"
+				? titles[pathname as keyof typeof titles]
+				: "Page not found - Local Studio";
 		const hash = window.location.hash;
 		if (hash) {
 			window.requestAnimationFrame(() => scrollToHash(hash));

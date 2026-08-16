@@ -132,50 +132,46 @@ export function MachinePage() {
 	const { toggleMachine } = useMachine();
 	return (
 		<PageShell>
-		<main className="machine" id="content" tabIndex={-1}>
-			<div className="machine__inner">
-			<button
-				className="machine__banner"
-				type="button"
-				onClick={() => toggleMachine(false)}
-				aria-label="Back to the human page"
-			>
-				{banner}
-			</button>
-			<p className="machine__title">
-				<span translate="no">local studio</span> :: machine-readable index
-			</p>
-			<p className="machine__note">
-				plain-text mirror of the site for agents, crawlers, and humans who
-				prefer it raw.
-			</p>
-			<nav className="machine__routes" aria-label="Site routes">
-				{sections
-					.find(([name]) => name === "ROUTES")?.[1]
-					.map((line) => {
-						const route = line.split(" ")[0];
-						return (
-							<LocalLink href={route} key={route}>
-								{route}
-							</LocalLink>
-						);
-					})}
-			</nav>
-			{sections.map(([name, lines]) => (
-				<section className="machine__section" key={name}>
-					<h2>
-						── {name}{" "}
-						{"─".repeat(Math.max(2, 80 - name.length - 5))}
-					</h2>
-					<pre>{lines.join("\n")}</pre>
-				</section>
-			))}
-				<section className="machine__section" aria-label="For agents">
-					<h2>
-						── FOR_AGENTS{" "}
-						{"─".repeat(56)}
-					</h2>
-					<pre>{`llms.txt ....... /llms.txt
+			<main className="machine" id="content" tabIndex={-1}>
+				<div className="machine__inner">
+					<button
+						className="machine__banner"
+						type="button"
+						onClick={() => toggleMachine(false)}
+						aria-label="Back to the human page"
+					>
+						{banner}
+					</button>
+					<p className="machine__title">
+						<span translate="no">local studio</span> :: machine-readable index
+					</p>
+					<p className="machine__note">
+						plain-text mirror of the site for agents, crawlers, and humans who
+						prefer it raw.
+					</p>
+					<nav className="machine__routes" aria-label="Site routes">
+						{sections
+							.find(([name]) => name === "ROUTES")?.[1]
+							.map((line) => {
+								const route = line.split(" ")[0];
+								return (
+									<LocalLink href={route} key={route}>
+										{route}
+									</LocalLink>
+								);
+							})}
+					</nav>
+					{sections.map(([name, lines]) => (
+						<section className="machine__section" key={name}>
+							<h2>
+								── {name} {"─".repeat(Math.max(2, 80 - name.length - 5))}
+							</h2>
+							<pre>{lines.join("\n")}</pre>
+						</section>
+					))}
+					<section className="machine__section" aria-label="For agents">
+						<h2>── FOR_AGENTS {"─".repeat(56)}</h2>
+						<pre>{`llms.txt ....... /llms.txt
 agents.md ...... /agents.md
 sitemap.md ..... /sitemap.md
 index.md ....... /index.md
@@ -186,10 +182,10 @@ faq.md ......... /faq.md
 
 every page also serves markdown: append .md to a URL, or request it
 with Accept: text/markdown`}</pre>
-				</section>
-				<p className="machine__end">:: end of index ::</p>
-			</div>
-		</main>
+					</section>
+					<p className="machine__end">:: end of index ::</p>
+				</div>
+			</main>
 		</PageShell>
 	);
 }

@@ -82,10 +82,7 @@ export function ResourcesPage() {
 						<h2>{group.title}</h2>
 						<ul className="mt-6 grid gap-4 p-0">
 							{group.items.map((item) => (
-								<li
-									className="border border-white/10 p-6"
-									key={item.name}
-								>
+								<li className="border border-white/10 p-6" key={item.name}>
 									<div className="flex items-baseline justify-between gap-6">
 										<strong className="text-base/6">{item.name}</strong>
 										{item.external ? (
