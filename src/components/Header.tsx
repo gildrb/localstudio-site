@@ -14,12 +14,6 @@ const resources = [
 	{ label: "Agents", href: "/agents" },
 	{ label: "Mobile", href: "/mobile" },
 	{ label: "Overview", href: "/resources" },
-	{ label: "Download", href: "/download/macos" },
-	{
-		label: "GitHub",
-		href: "https://github.com/sybil-solutions/local-studio",
-		external: true,
-	},
 ];
 
 const githubUrl = "https://github.com/sybil-solutions/local-studio";
@@ -152,11 +146,16 @@ export function Header() {
 		const root = document.documentElement;
 		const main = document.getElementById("content");
 		const footer = document.querySelector("footer");
+		const { body } = document;
 		root.classList.toggle("nav-open", mobileOpen);
 		main?.toggleAttribute("inert", mobileOpen);
 		footer?.toggleAttribute("inert", mobileOpen);
 		if (!mobileOpen) return;
-		sheetRef.current?.focus();
+		const scrollY = window.scrollY;
+		const previous = body.style.cssText;
+		body.style.position = "fixed";
+		body.style.inset = `-${scrollY}px 0 auto`;
+		body.style.width = "100%";
 		function onKeyDown(event: KeyboardEvent) {
 			if (event.key === "Escape") {
 				setMobileOpen(false);
@@ -168,6 +167,8 @@ export function Header() {
 			root.classList.remove("nav-open");
 			main?.removeAttribute("inert");
 			footer?.removeAttribute("inert");
+			body.style.cssText = previous;
+			window.scrollTo(0, scrollY);
 			document.removeEventListener("keydown", onKeyDown);
 		};
 	}, [mobileOpen]);
@@ -189,7 +190,10 @@ export function Header() {
 					className="nav__menu-trigger"
 					aria-haspopup="menu"
 					aria-expanded={open}
-					onClick={() => setOpenMenu(open ? null : id)}
+					onClick={() => {
+						if (open) return;
+						setOpenMenu(id);
+					}}
 					onPointerEnter={() => setOpenMenu(id)}
 				>
 					{label}

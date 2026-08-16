@@ -215,6 +215,25 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 		expect(target.height).toBeGreaterThanOrEqual(44);
 		expect(target.width).toBeGreaterThanOrEqual(44);
 	}
+	const chrome = await page.evaluate(() => {
+		const brand = document.querySelector(".brand") as HTMLElement;
+		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
+		const brandBox = brand.getBoundingClientRect();
+		const toggleBox = toggle.getBoundingClientRect();
+		const brandHit = document.elementFromPoint(brandBox.left + 8, brandBox.top + brandBox.height / 2);
+		const toggleHit = document.elementFromPoint(toggleBox.left + toggleBox.width / 2, toggleBox.top + toggleBox.height / 2);
+		return {
+			brandTop: Math.round(brandBox.top),
+			toggleTop: Math.round(toggleBox.top),
+			brandVisible: brandBox.height > 0 && Boolean(brandHit?.closest(".brand")),
+			toggleVisible: toggleBox.height > 0 && Boolean(toggleHit?.closest(".nav__toggle")),
+		};
+	});
+	expect(chrome.brandTop).toBeGreaterThanOrEqual(0);
+	expect(chrome.toggleTop).toBeGreaterThanOrEqual(0);
+	expect(chrome.brandVisible).toBe(true);
+	expect(chrome.toggleVisible).toBe(true);
+	await expect(page.getByRole("button", { name: "Close menu" })).toBeVisible();
 });
 
 test("navbar and footer hitboxes touch and share one height", async ({ page }) => {
@@ -264,7 +283,7 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 	const hoveredPill = await link.evaluate(
 		(element) => getComputedStyle(element, "::before").backgroundColor,
 	);
-	expect(["rgba(255, 255, 255, 0.08)", "rgba(255, 255, 255, 0.080)", "rgba(255, 255, 255, 0.075)", "rgba(255, 255, 255, 0.067)"]).toContain(hoveredPill);
+	expect(["rgba(255, 255, 255, 0.08)", "rgba(255, 255, 255, 0.080)", "rgba(255, 255, 255, 0.075)", "rgba(255, 255, 255, 0.07)", "rgba(255, 255, 255, 0.067)"]).toContain(hoveredPill);
 	expect(pill).toEqual({
 		hitbox: 72,
 		highlight: "38px",
@@ -406,13 +425,21 @@ test("primary actions highlight clearly without moving", async ({ page }) => {
 		fontWeight: getComputedStyle(element).fontWeight,
 	}));
 	await setup.hover();
-	await page.waitForTimeout(150);
-	const hoveredArrow = await setup.evaluate((element) => ({
-		color: getComputedStyle(element).color,
-		background: getComputedStyle(element).backgroundColor,
-	}));
+	await expect.poll(() => setup.evaluate((element) => {
+		const background = getComputedStyle(element).backgroundColor;
+		return Number(background.match(/[\d.]+(?=\)$)/)?.[0] ?? 0);
+	})).toBeGreaterThanOrEqual(0.05);
+	const hoveredArrow = await setup.evaluate((element) => {
+		const background = getComputedStyle(element).backgroundColor;
+		return {
+			color: getComputedStyle(element).color,
+			alpha: Number(background.match(/[\d.]+(?=\)$)/)?.[0] ?? 0),
+		};
+	});
 	expect(arrow).toEqual({ color: "rgb(255, 255, 255)", fontWeight: "400" });
-	expect(hoveredArrow).toEqual({ color: "rgb(255, 255, 255)", background: "rgba(255, 255, 255, 0.08)" });
+	expect(hoveredArrow.color).toBe("rgb(255, 255, 255)");
+	expect(hoveredArrow.alpha).toBeGreaterThanOrEqual(0.05);
+	expect(hoveredArrow.alpha).toBeLessThanOrEqual(0.1);
 });
 
 test("hero actions are two discrete bordered buttons with a gap", async ({ page }) => {

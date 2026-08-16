@@ -134,14 +134,12 @@ export function MachinePage() {
 					</nav>
 					{sections.map(([name, lines]) => (
 						<section className="machine__section" key={name}>
-							<h2>
-								── {name} {"─".repeat(Math.max(2, 80 - name.length - 5))}
-							</h2>
+							<h2>── {name}</h2>
 							<pre>{lines.join("\n")}</pre>
 						</section>
 					))}
 					<section className="machine__section" aria-label="For agents">
-						<h2>── FOR_AGENTS {"─".repeat(56)}</h2>
+						<h2>── FOR_AGENTS</h2>
 						<pre>{`llms.txt ....... /llms.txt
 agents.md ...... /agents.md
 sitemap.md ..... /sitemap.md

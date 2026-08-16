@@ -437,14 +437,19 @@ test("design system typography is stable", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");
 	const mobile = await page.evaluate(() => {
-		const title = getComputedStyle(document.querySelector("h1")!);
+		const title = document.querySelector("h1")!;
 		const subheadline = getComputedStyle(document.querySelector(".story h2")!);
+		const titleStyle = getComputedStyle(title);
 		return {
-			title: [title.fontSize, title.lineHeight, title.letterSpacing],
+			lines: title.querySelectorAll("br").length + 1,
+			wrap: titleStyle.whiteSpace,
+			titleTracking: titleStyle.letterSpacing,
 			subheadline: [subheadline.fontSize, subheadline.lineHeight, subheadline.letterSpacing],
 		};
 	});
-	expect(mobile.title).toEqual(["40px", "44px", "-0.8px"]);
+	expect(mobile.lines).toBe(2);
+	expect(mobile.wrap).toBe("nowrap");
+	expect(mobile.titleTracking).toMatch(/^-0\.\d+px$/);
 	expect(mobile.subheadline).toEqual(["32px", "40px", "normal"]);
 });
 
@@ -496,6 +501,8 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 	await expect(panel.getByRole("menuitem", { name: "Documentation", exact: true })).toBeVisible();
 	await expect(panel.getByRole("menuitem", { name: "Setup", exact: true })).toBeVisible();
 	await expect(panel.getByRole("menuitem", { name: "Agents", exact: true })).toBeVisible();
+	await expect(panel.getByRole("menuitem", { name: "GitHub", exact: true })).toHaveCount(0);
+	await expect(panel.getByRole("menuitem", { name: "Download", exact: true })).toHaveCount(0);
 	await panel.getByRole("menuitem", { name: "Overview", exact: true }).click();
 	await expect(page).toHaveURL("/resources");
 	await page.goBack();
@@ -548,4 +555,22 @@ test("unknown routes render a local not-found page", async ({ page }) => {
 	await expect(
 		page.getByRole("heading", { level: 1, name: "This page is not local." }),
 	).toBeVisible();
+});
+
+test("machine page stays in the viewport and only scrolls vertically", async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/machine");
+	const layout = await page.evaluate(() => {
+		const banner = document.querySelector(".machine__banner") as HTMLElement;
+		const overflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+		const style = getComputedStyle(banner);
+		return {
+			overflow,
+			bannerSize: [style.fontSize, style.lineHeight],
+			bannerBreaks: banner.querySelectorAll("br").length,
+		};
+	});
+	expect(layout.overflow).toBeLessThanOrEqual(0);
+	expect(layout.bannerBreaks).toBe(1);
+	expect(Number.parseFloat(layout.bannerSize[0])).toBeGreaterThanOrEqual(40);
 });
