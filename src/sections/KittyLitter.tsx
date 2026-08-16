@@ -71,12 +71,11 @@ export function KittyLitter() {
 						from anywhere.
 					</p>
 					<div className="kitty__actions">
-						<TextLink href="/mobile" arrow="right">
+						<TextLink href="/mobile">
 							See how mobile works
 						</TextLink>
 						<TextLink
 							href="https://kittylitter.app"
-							arrow="up"
 							rel="noreferrer"
 						>
 							<span translate="no">Get KittyLitter</span>

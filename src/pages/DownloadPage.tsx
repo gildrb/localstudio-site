@@ -1,4 +1,3 @@
-import { DownloadIcon } from "../components/DownloadIcon";
 import { LocalLink } from "../components/LocalLink";
 import { TextLink } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
@@ -25,10 +24,9 @@ export function DownloadPage() {
 				actions={
 					<div className="button-group">
 						<LocalLink className="button" href={downloadUrl}>
-							<DownloadIcon size={17} />
 							Download DMG
 						</LocalLink>
-						<TextLink href="/docs#prerequisites" arrow="right">
+						<TextLink href="/docs#prerequisites">
 							Read prerequisites
 						</TextLink>
 					</div>

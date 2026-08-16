@@ -59,9 +59,10 @@ export function ProductStory() {
 		if (nextIndex === undefined) return;
 		event.preventDefault();
 		selectFeature(nextIndex);
-		optionsRef.current
-			?.querySelectorAll<HTMLElement>(".story__option-control")
-			[nextIndex]?.focus();
+		const controls = optionsRef.current?.querySelectorAll<HTMLElement>(
+			".story__option-control",
+		);
+		controls?.[nextIndex]?.focus();
 	}
 
 	useEffect(() => {

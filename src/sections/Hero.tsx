@@ -62,7 +62,7 @@ export function Hero() {
 							transition={{ duration: 0.9, ease, delay: 0.24 }}
 						>
 							<div className="button-group">
-								<DownloadButton iconSize={17} />
+								<DownloadButton />
 								<TextLink href="/prompt">Setup prompt</TextLink>
 							</div>
 						</m.div>

@@ -23,17 +23,10 @@ test("hero uses the local standalone mark", async ({ page }) => {
 	expect(source).toContain('viewBox="0 0 525 525"');
 });
 
-test("footer uses the local outline mark", async ({ page }) => {
+test("footer no longer renders the outline mark", async ({ page }) => {
 	await page.goto("/");
-	const mark = page.locator('footer .footer__mark[src="/images/optimized-outline.svg"]');
-	await expect(mark).toBeVisible();
-	await expect(mark).toHaveAttribute("aria-hidden", "true");
-	const response = await page.request.get("/images/optimized-outline.svg");
-	expect(response.ok()).toBeTruthy();
-	const source = await response.text();
-	expect(source).toContain('fill="none"');
-	expect(source).toContain('stroke="#767676"');
-	expect(source).toContain('vector-effect="non-scaling-stroke"');
+	await expect(page.locator("footer .footer__mark")).toHaveCount(0);
+	await expect(page.locator('footer img[src="/images/optimized-outline.svg"]')).toHaveCount(0);
 });
 
 test("document uses the local favicon asset", async ({ page }) => {

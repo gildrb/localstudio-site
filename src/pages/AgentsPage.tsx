@@ -36,10 +36,8 @@ export function AgentsPage() {
 				}
 				actions={
 					<div className="button-group">
-						<DownloadButton iconSize={17} />
-						<TextLink href="/" arrow="right">
-							Back to overview
-						</TextLink>
+						<DownloadButton />
+						<TextLink href="/">Back to overview</TextLink>
 					</div>
 				}
 			/>

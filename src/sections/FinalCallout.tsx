@@ -10,7 +10,7 @@ export function FinalCallout() {
 				<h2 id="download-title">Your models. Your hardware. One surface.</h2>
 				<div className="hero__actions">
 					<div className="button-group">
-						<DownloadButton iconSize={17} />
+						<DownloadButton />
 						<TextLink href="/prompt">Setup prompt</TextLink>
 					</div>
 				</div>

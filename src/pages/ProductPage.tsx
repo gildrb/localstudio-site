@@ -58,10 +58,8 @@ export function ProductPage() {
 				}
 				actions={
 					<div className="button-group">
-						<DownloadButton iconSize={17} />
-						<TextLink href="/docs" arrow="right">
-							Read the docs
-						</TextLink>
+						<DownloadButton />
+						<TextLink href="/docs">Read the docs</TextLink>
 					</div>
 				}
 			/>

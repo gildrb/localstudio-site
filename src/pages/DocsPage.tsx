@@ -27,7 +27,7 @@ export function DocsPage() {
 				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
 				actions={
 					<div className="button-group">
-						<DownloadButton iconSize={17} />
+						<DownloadButton />
 						<TextLink href="/prompt">Setup prompt</TextLink>
 					</div>
 				}

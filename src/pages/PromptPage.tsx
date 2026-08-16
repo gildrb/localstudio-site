@@ -6,10 +6,7 @@ import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
 const handoff = [
-	[
-		"Copy",
-		"Use the entire prompt without trimming the verification phases.",
-	],
+	["Copy", "Use the entire prompt without trimming the verification phases."],
 	[
 		"Paste",
 		"Give it to a coding model that can operate a terminal on the target machine.",
@@ -30,8 +27,8 @@ export function PromptPage() {
 				description="It will inspect the machine, choose the right runtime, install Local Studio, and prove a real inference request works."
 				actions={
 					<div className="button-group">
-						<DownloadButton iconSize={17} />
-						<TextLink href="/docs" arrow="right">Read the docs</TextLink>
+						<DownloadButton />
+						<TextLink href="/docs">Read the docs</TextLink>
 					</div>
 				}
 			/>

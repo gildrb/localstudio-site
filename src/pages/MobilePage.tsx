@@ -72,10 +72,9 @@ export function MobilePage() {
 				}
 				actions={
 					<div className="button-group">
-						<DownloadButton iconSize={17} />
+						<DownloadButton />
 						<TextLink
 							href="https://kittylitter.app"
-							arrow="up"
 							target="_blank"
 							rel="noreferrer"
 						>
@@ -222,10 +221,9 @@ export function MobilePage() {
 					<h2 id="mobile-cta-title">Take the session with you.</h2>
 					<div className="hero__actions">
 						<div className="button-group">
-							<DownloadButton iconSize={17} />
+							<DownloadButton />
 							<TextLink
 								href="https://kittylitter.app"
-								arrow="up"
 								target="_blank"
 								rel="noreferrer"
 							>

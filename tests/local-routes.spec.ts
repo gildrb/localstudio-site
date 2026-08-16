@@ -303,17 +303,15 @@ test("shared action links fully brighten within 130ms", async ({ page }) => {
 	await link.scrollIntoViewIfNeeded();
 	const rest = await link.evaluate(element => {
 		const style = getComputedStyle(element);
-		const arrow = getComputedStyle(element.querySelector("span")!);
-		return { color: style.color, duration: style.transitionDuration, arrowColor: arrow.color, arrowTransform: arrow.transform };
+		return { color: style.color, duration: style.transitionDuration.split(", ").every(d => d === "0.13s") };
 	});
-	expect(rest).toEqual({ color: "rgb(143, 143, 143)", duration: "0.13s", arrowColor: "rgb(143, 143, 143)", arrowTransform: "none" });
+	expect(rest).toEqual({ color: "rgb(143, 143, 143)", duration: true });
 	await link.hover();
 	await page.waitForTimeout(150);
 	const hover = await link.evaluate(element => ({
 		color: getComputedStyle(element).color,
-		arrowColor: getComputedStyle(element.querySelector("span")!).color,
 	}));
-	expect(hover).toEqual({ color: "rgb(255, 255, 255)", arrowColor: "rgb(255, 255, 255)" });
+	expect(hover).toEqual({ color: "rgb(255, 255, 255)" });
 	for (const route of ["/mobile", "/docs", "/prompt"]) {
 		await page.goto(route);
 		const action = page.locator(".page-intro .text-link");

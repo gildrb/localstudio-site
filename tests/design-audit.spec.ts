@@ -396,26 +396,15 @@ test("primary actions highlight clearly without moving", async ({ page }) => {
 	const arrow = await setup.evaluate((element) => ({
 		color: getComputedStyle(element).color,
 		fontWeight: getComputedStyle(element).fontWeight,
-		arrowTransform: getComputedStyle(element.querySelector("span")!).transform,
 	}));
 	await setup.hover();
 	await page.waitForTimeout(150);
 	const hoveredArrow = await setup.evaluate((element) => ({
 		color: getComputedStyle(element).color,
 		background: getComputedStyle(element).backgroundColor,
-		arrowTransform: getComputedStyle(element.querySelector("span")!).transform,
 	}));
-	expect(arrow).toEqual({ color: "rgb(255, 255, 255)", fontWeight: "400", arrowTransform: "none" });
-	expect(hoveredArrow).toEqual({ color: "rgb(255, 255, 255)", background: "rgba(255, 255, 255, 0.08)", arrowTransform: "none" });
-	const spacing = await page
-		.getByRole("link", { name: "Get KittyLitter" })
-		.first()
-		.evaluate((element) => {
-			const base = element.getBoundingClientRect().left;
-			const arrowBox = element.querySelector("span")!.getBoundingClientRect();
-			return Math.round(arrowBox.left - base);
-		});
-	expect(spacing).toBeLessThanOrEqual(8);
+	expect(arrow).toEqual({ color: "rgb(255, 255, 255)", fontWeight: "400" });
+	expect(hoveredArrow).toEqual({ color: "rgb(255, 255, 255)", background: "rgba(255, 255, 255, 0.08)" });
 });
 
 test("hero actions are two discrete bordered buttons with a gap", async ({ page }) => {
