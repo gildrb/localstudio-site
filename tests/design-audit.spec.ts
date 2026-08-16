@@ -325,10 +325,10 @@ test("the story does not autoplay and announces image changes", async ({
 	page,
 }) => {
 	await page.goto("/");
-	const control = page.getByRole("tab", { name: "Control" });
-	await expect(control).toHaveAttribute("aria-selected", "true");
+	const control = page.getByRole("radio", { name: "Control" });
+	await expect(control).toHaveAttribute("aria-checked", "true");
 	await page.waitForTimeout(6500);
-	await expect(control).toHaveAttribute("aria-selected", "true");
+	await expect(control).toHaveAttribute("aria-checked", "true");
 	const live = await page
 		.locator(".story__visual .sr-only")
 		.evaluate((element) => element.getAttribute("role"));
@@ -348,24 +348,24 @@ test("agents page keeps a hierarchical heading order", async ({ page }) => {
 	}
 });
 
-test("nested radii stay concentric", async ({ page }) => {
+test("story media uses the hero border treatment", async ({ page }) => {
 	await page.goto("/");
-	const radii = await page
-		.locator(".media-frame, .story__visual")
-		.first()
-		.evaluate((element) => {
-			const frame = getComputedStyle(element);
-			const child = element.querySelector("img")!;
-			return {
-				outer: frame.borderRadius,
-				padding: frame.paddingTop,
-				inner: getComputedStyle(child).borderRadius,
-			};
-		});
-	expect(radii.padding).toBe("7px");
-	expect(
-		Number.parseInt(radii.outer, 10) - Number.parseInt(radii.padding, 10),
-	).toBe(Number.parseInt(radii.inner, 10));
+	const style = await page.locator(".story__visual img").first().evaluate((element) => ({
+		border: getComputedStyle(element).borderTopWidth,
+		radius: getComputedStyle(element).borderRadius,
+		shadow: getComputedStyle(element).boxShadow,
+	}));
+	expect(style).toEqual({
+		border: "1px",
+		radius: "10px",
+		shadow: "rgba(0, 0, 0, 0.44) 0px 24px 80px 0px",
+	});
+	const frame = await page.locator(".story__visual").evaluate((element) => ({
+		padding: getComputedStyle(element).paddingTop,
+		border: getComputedStyle(element).borderTopWidth,
+		background: getComputedStyle(element).backgroundColor,
+	}));
+	expect(frame).toEqual({ padding: "0px", border: "0px", background: "rgba(0, 0, 0, 0)" });
 });
 
 test("primary actions highlight clearly without moving", async ({ page }) => {

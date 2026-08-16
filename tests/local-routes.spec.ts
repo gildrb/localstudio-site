@@ -121,21 +121,27 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	const stage = page.locator(".hero__stage");
 	const image = page.locator(".hero__screenshot");
 	await stage.waitFor({ state: "attached" });
+	await expect
+		.poll(() => page.evaluate(() => document.querySelector(".hero__gradient")!.opacity), { timeout: 5000 })
+		.toBe("1");
 	const entrance = await page.evaluate(() => {
-		const mark = getComputedStyle(document.querySelector(".hero__mark")!);
-		const title = getComputedStyle(document.querySelector(".hero h1")!);
-		const lead = getComputedStyle(document.querySelector(".story__intro p")!);
-		const stageStyle = getComputedStyle(document.querySelector(".hero__stage")!);
-		const gradientStyle = getComputedStyle(document.querySelector(".hero__gradient")!);
-		const texture = getComputedStyle(document.querySelector(".hero__texture")!);
+		const mark = document.querySelector(".hero__mark")!;
+		const title = document.querySelector(".hero h1")!;
+		const actions = document.querySelector(".hero__actions")!;
+		const stage = document.querySelector(".hero__stage")!;
+		const gradient = document.querySelector(".hero__gradient")!;
+		const lead = document.querySelector(".story__intro p")!;
+		const texture = document.querySelector(".hero__texture")!;
 		return {
-			names: [mark.animationName, title.animationName, stageStyle.animationName, gradientStyle.animationName],
-			textNodeTransforms: [title.transform, lead.transform],
-			textureGradient: texture.backgroundImage.includes("linear-gradient"),
-			grid: getComputedStyle(document.querySelector(".hero__texture")!, "::before").animationName,
+			identity: [getComputedStyle(mark).opacity, getComputedStyle(title).opacity, getComputedStyle(actions).opacity],
+			atmosphere: [getComputedStyle(stage).opacity, getComputedStyle(gradient).opacity],
+			textNodeTransforms: [getComputedStyle(title).transform, getComputedStyle(lead).transform],
+			textureGradient: getComputedStyle(texture).backgroundImage.includes("linear-gradient"),
+			grid: getComputedStyle(texture, "::before").animationName,
 		};
 	});
-	expect(entrance.names).toEqual(["hero-rise", "hero-fade", "hero-rise", "hero-fade"]);
+	expect(entrance.identity).toEqual(["1", "1", "1"]);
+	expect(entrance.atmosphere).toEqual(["1", "1"]);
 	expect(entrance.textNodeTransforms).toEqual(["none", "none"]);
 	expect(entrance.textureGradient).toBe(false);
 	expect(entrance.grid).toBe("grid-drift");
@@ -190,10 +196,11 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await stage.waitFor({ state: "attached" });
 	const reduced = await page.evaluate(() => ({
-		stage: [getComputedStyle(document.querySelector(".hero__stage")!).animationName, getComputedStyle(document.querySelector(".hero__stage")!).opacity],
+		stage: [getComputedStyle(document.querySelector(".hero__stage")!).opacity, getComputedStyle(document.querySelector(".hero__stage")!).transform],
+		gradient: getComputedStyle(document.querySelector(".hero__gradient")!).opacity,
 		grid: getComputedStyle(document.querySelector(".hero__texture")!, "::before").animationName,
 	}));
-	expect(reduced).toEqual({ stage: ["none", "1"], grid: "none" });
+	expect(reduced).toEqual({ stage: ["1", "none"], gradient: "1", grid: "none" });
 });
 
 test("mobile sections stack their hierarchy without separators", async ({ page }) => {
@@ -307,47 +314,27 @@ test("shared action links fully brighten within 130ms", async ({ page }) => {
 	}
 });
 
-test("homepage capability selector is a deep-linkable tablist", async ({ page }) => {
+test("homepage capability selector responds to hover, focus, and keys", async ({ page }) => {
 	await page.goto("/");
-	const options = page.getByRole("tablist", { name: "Local Studio capabilities" });
-	const control = options.getByRole("tab", { name: "Control" });
-	const serve = options.getByRole("tab", { name: "Serve" });
-	const work = options.getByRole("tab", { name: "Work" });
-	await expect(control).toHaveAttribute("aria-selected", "true");
+	const options = page.getByRole("radiogroup", { name: "Local Studio capabilities" });
+	const control = options.getByRole("radio", { name: "Control" });
+	const serve = options.getByRole("radio", { name: "Serve" });
+	const work = options.getByRole("radio", { name: "Work" });
+	await expect(control).toHaveAttribute("aria-checked", "true");
 	await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
 	await expect(page.locator('.story__visual[data-active-feature="Control"] img')).toHaveAttribute("src", "/images/usage-proxy.png");
-	await serve.click();
-	await expect(page).toHaveURL(/#media=serve$/);
-	await expect(serve).toHaveAttribute("aria-selected", "true");
+	await serve.hover();
+	await expect(serve).toHaveAttribute("aria-checked", "true");
+	await expect(page).toHaveURL(/\/$/);
 	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
 	await expect(page.locator('.story__visual[data-active-feature="Serve"] img')).toHaveAttribute("src", "/images/configure-models.png");
+	await serve.focus();
 	await serve.press("ArrowDown");
 	await expect(work).toBeFocused();
-	await expect(work).toHaveAttribute("aria-selected", "true");
-	await expect(page).toHaveURL(/#media=work$/);
+	await expect(work).toHaveAttribute("aria-checked", "true");
+	await expect(page).toHaveURL(/\/$/);
 	await expect(page.locator('.story__visual[data-active-feature="Work"] img')).toHaveAttribute("src", "/images/workbench-terminal.png");
 	await expect(page.locator(".story__visual img")).toHaveCount(1);
-	await page.reload();
-	await expect(work).toHaveAttribute("aria-selected", "true");
-	await expect(page.locator('.story__visual[data-active-feature="Work"] img')).toHaveAttribute("src", "/images/workbench-terminal.png");
-});
-
-test("hovering a story tab opens it like the Vercel hero", async ({ page }) => {
-	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/");
-	const serve = page.getByRole("tablist", { name: "Local Studio capabilities" }).getByRole("tab", { name: "Serve" });
-	await serve.hover();
-	await expect(serve).toHaveAttribute("aria-selected", "true");
-	await expect(page).toHaveURL(/#media=serve$/);
-	await expect(
-		page.locator('.story__visual[data-active-feature="Serve"] img'),
-	).toHaveAttribute("src", "/images/configure-models.png");
-	const work = page.getByRole("tab", { name: "Work" });
-	await work.hover();
-	await expect(work).toHaveAttribute("aria-selected", "true");
-	await expect(
-		page.locator('.story__visual[data-active-feature="Work"] img'),
-	).toHaveAttribute("src", "/images/workbench-terminal.png");
 });
 
 test("tabbing reaches every story tab in order", async ({ page }) => {
@@ -358,7 +345,7 @@ test("tabbing reaches every story tab in order", async ({ page }) => {
 		await page.keyboard.press("Tab");
 		const label = await page.evaluate(() => {
 			const element = document.activeElement as HTMLElement;
-			return element.getAttribute("role") === "tab"
+			return element.getAttribute("role") === "radio"
 				? (element.textContent ?? "").trim()
 				: "";
 		});

@@ -1,10 +1,10 @@
-import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import {
-	LazyMotion,
-	domAnimation,
-	m,
-	useReducedMotion,
-} from "motion/react";
+	type KeyboardEvent,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { responsiveSrcSet, storySizes } from "../images";
 
 const features = [
@@ -39,45 +39,22 @@ const features = [
 	},
 ] as const;
 
-function featureIndexFromHash(hash: string) {
-	const slug = /^#media=([a-z-]+)$/.exec(hash)?.[1];
-	const index = features.findIndex((feature) => feature.slug === slug);
-	return index === -1 ? 0 : index;
-}
-
 export function ProductStory() {
-	const [activeIndex, setActiveIndex] = useState(() =>
-		featureIndexFromHash(window.location.hash),
-	);
-	const buttonsRef = useRef<Array<HTMLButtonElement | null>>([]);
+	const [activeIndex, setActiveIndex] = useState(0);
+	const optionsRef = useRef<HTMLDivElement>(null);
 	const reduceMotion = useReducedMotion();
 	const activeFeature = features[activeIndex];
 
-	useEffect(() => {
-		function syncFromHash() {
-			setActiveIndex(featureIndexFromHash(window.location.hash));
-		}
-		window.addEventListener("hashchange", syncFromHash);
-		return () => window.removeEventListener("hashchange", syncFromHash);
-	}, []);
-
 	function selectFeature(index: number) {
 		setActiveIndex(index);
-		const hash = `#media=${features[index].slug}`;
-		if (window.location.hash !== hash) {
-			window.history.replaceState({}, "", hash);
-		}
 	}
 
-	function handleKeyDown(
-		event: KeyboardEvent<HTMLButtonElement>,
-		index: number,
-	) {
+	function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
 		let nextIndex: number | undefined;
 		if (event.key === "ArrowDown" || event.key === "ArrowRight") {
-			nextIndex = (index + 1) % features.length;
+			nextIndex = (activeIndex + 1) % features.length;
 		} else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-			nextIndex = (index - 1 + features.length) % features.length;
+			nextIndex = (activeIndex - 1 + features.length) % features.length;
 		} else if (event.key === "Home") {
 			nextIndex = 0;
 		} else if (event.key === "End") {
@@ -86,8 +63,18 @@ export function ProductStory() {
 		if (nextIndex === undefined) return;
 		event.preventDefault();
 		selectFeature(nextIndex);
-		buttonsRef.current[nextIndex]?.focus();
+		optionsRef.current?.querySelectorAll<HTMLElement>(
+			".story__option-control",
+		)[nextIndex]?.focus();
 	}
+
+	useEffect(() => {
+		if (!optionsRef.current?.contains(document.activeElement)) return;
+		const controls = optionsRef.current.querySelectorAll<HTMLElement>(
+			".story__option-control",
+		);
+		controls[activeIndex]?.focus();
+	}, [activeIndex]);
 
 	return (
 		<LazyMotion features={domAnimation} strict>
@@ -105,69 +92,55 @@ export function ProductStory() {
 					</p>
 				</div>
 				<div className="story__showcase">
-					<ul
+					<div
 						className="story__options"
-						role="tablist"
+						ref={optionsRef}
+						role="radiogroup"
 						aria-label="Local Studio capabilities"
+						onKeyDown={handleKeyDown}
 					>
 						{features.map((feature, index) => {
 							const selected = activeIndex === index;
-							const descriptionId = `feature-description-${index + 1}`;
-							const tabId = `feature-tab-${index + 1}`;
 							return (
-								<li
-									className={selected ? "is-active" : undefined}
+								<div
+									className={`story__option ${selected ? "is-active" : ""}`}
 									key={feature.title}
-									role="none"
 								>
-									<button
-										ref={(button) => {
-											buttonsRef.current[index] = button;
-										}}
-										type="button"
-										role="tab"
-										id={tabId}
-										aria-selected={selected}
-										onClick={() => selectFeature(index)}
-												onPointerEnter={(event) => {
-													if (event.pointerType === "mouse") {
-														selectFeature(index);
-													}
-												}}
-										onKeyDown={(event) => handleKeyDown(event, index)}
+									<div
+										className="story__option-control"
+										role="radio"
+										aria-checked={selected}
+										tabIndex={0}
+										onPointerEnter={() => selectFeature(index)}
+										onFocus={() => selectFeature(index)}
 									>
 										<span className="story__option-title">{feature.title}</span>
-									</button>
-									<div
-										id={descriptionId}
-										role="tabpanel"
-										aria-labelledby={tabId}
-										hidden={!selected}
-									>
+									</div>
+									<div hidden={!selected}>
 										<p className="story__description">{feature.description}</p>
 									</div>
-								</li>
+								</div>
 							);
 						})}
-					</ul>
+					</div>
 					<figure
 						className="story__visual"
 						data-active-feature={activeFeature.title}
 					>
-					<m.img
-						key={activeFeature.image}
-						srcSet={responsiveSrcSet(activeFeature.image)}
-						sizes={storySizes}
-						src={activeFeature.image}
-						alt={activeFeature.alt}
-						width="5118"
-						height="2800"
-						loading="lazy"
-						decoding="async"
-						initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
-						animate={{ opacity: 1, filter: "blur(0px)" }}
-						transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-					/>
+						<m.img
+							key={activeFeature.image}
+							srcSet={responsiveSrcSet(activeFeature.image)}
+							sizes={storySizes}
+							src={activeFeature.image}
+							alt={activeFeature.alt}
+							width="5118"
+							height="2800"
+							loading="lazy"
+							decoding="async"
+							initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
+							animate={{ opacity: 1, filter: "blur(0px)" }}
+							transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+						/>
 						<p className="sr-only" role="status">
 							{activeFeature.title}. {activeFeature.description}
 						</p>

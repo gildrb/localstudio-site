@@ -533,7 +533,6 @@ button {
     ),
     linear-gradient(rgba(184, 187, 192, 0) 0%, rgba(184, 187, 192, 0) 34%, #b8bbc0 100%);
   transform: translateX(-50%);
-  animation: hero-fade 0.82s cubic-bezier(0.16, 1, 0.3, 1) 1.14s both;
 }
 
 .hero__texture {
@@ -585,27 +584,22 @@ button {
   width: 72px;
   height: 72px;
   margin: 0 auto 30px;
-  animation: hero-rise 0.82s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
 }
 
 .hero h1 {
   margin-top: 0;
   font: var(--type-hero-title);
   letter-spacing: var(--tracking-header-title);
-  animation: hero-fade 0.82s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both;
 }
 
 
-.hero__copy .hero__actions {
-  animation: hero-fade 0.82s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
-}
 
 .hero__actions {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 36px;
 }
 
 .hero__stage {
@@ -613,7 +607,6 @@ button {
   z-index: 2;
   width: min(1240px, calc(100% - 48px));
   margin: 72px auto 0;
-  animation: hero-rise 0.82s cubic-bezier(0.16, 1, 0.3, 1) 1.14s both;
 }
 
 .hero__screenshot {
@@ -627,21 +620,6 @@ button {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.44);
 }
 
-.story__visual::before {
-  position: absolute;
-  z-index: 2;
-  top: 8px;
-  right: 48px;
-  left: 48px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-  content: "";
-}
 
 .story {
   padding: var(--homepage-story-gap) 0 0;
@@ -649,8 +627,8 @@ button {
 
 .story__intro {
   max-width: 900px;
-  margin: 0 auto 80px;
-  text-align: center;
+  margin: 0 0 80px;
+  text-align: left;
 }
 
 .story h2,
@@ -663,7 +641,7 @@ button {
 
 .story__intro > p:last-child {
   max-width: 620px;
-  margin: 30px auto 0;
+  margin: 30px 0 0;
   color: var(--dim);
   font: var(--type-body);
 }
@@ -682,22 +660,19 @@ button {
   list-style: none;
 }
 
-.story__options li {
+.story__option {
   border-top: 1px solid var(--border);
 }
 
-.story__options button {
+.story__option-control {
   display: grid;
   width: 100%;
   min-height: 104px;
   grid-template-columns: 1fr;
   align-items: baseline;
   padding: 28px 0;
-  border: 0;
   color: var(--subtlest);
-  background: transparent;
   text-align: left;
-  cursor: pointer;
   transition: color 130ms ease-out;
 }
 
@@ -705,12 +680,12 @@ button {
   font: var(--type-section-title);
 }
 
-.story__options .is-active button {
+.story__options .is-active .story__option-control {
   color: var(--foreground);
 }
 
 @media (hover: hover) {
-  .story__options button:hover {
+  .story__option-control:hover {
     color: var(--foreground);
   }
 }
@@ -725,28 +700,16 @@ button {
 .story__visual {
   position: relative;
   margin: 0;
-  padding: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  box-shadow:
-    0 0 0 7px rgba(255, 255, 255, 0.012),
-    0 0 0 8px rgba(255, 255, 255, 0.035),
-    0 30px 100px rgba(0, 0, 0, 0.52);
 }
 
-.story__visual::before {
-  top: 7px;
-  right: 42px;
-  left: 42px;
-}
 
 .story__visual img {
   display: block;
   width: 100%;
   height: auto;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 7px;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.44);
 }
 .kitty {
   padding: var(--homepage-story-gap) 0 150px;
@@ -932,27 +895,6 @@ button {
   }
 }
 
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes hero-fade {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
 @media (max-width: 900px) {
   .page-intro--split {
     grid-template-columns: 1fr;
@@ -1106,7 +1048,7 @@ button {
     line-height: 44px;
   }
 
-  .story__options button {
+  .story__option-control {
     min-height: 88px;
     grid-template-columns: 1fr;
     padding: 24px 0;
@@ -1130,7 +1072,6 @@ button {
 
   .story__visual {
     margin: 0 4px;
-    padding: 5px;
   }
 
   .kitty__actions {
@@ -1173,20 +1114,11 @@ button {
     animation: none;
   }
 
-  .hero__mark,
-  .hero h1,
-  .hero__copy .hero__actions,
-  .hero__stage,
-  .hero__gradient,
-  .story__visual img {
-    animation: none;
-  }
-
   .text-link,
   .button,
   .nav__links a,
   .nav__links a::before,
-  .story__options button {
+  .story__option-control {
     transition-duration: 0.01ms;
   }
 }
