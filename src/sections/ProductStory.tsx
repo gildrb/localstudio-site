@@ -1,9 +1,4 @@
-import {
-	type KeyboardEvent,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { responsiveSrcSet, storySizes } from "../images";
 
@@ -22,8 +17,9 @@ const features = [
 		description: (
 			<>
 				<span translate="no">vLLM</span>, <span translate="no">SGLang</span>,{" "}
-				<span translate="no">MLX</span>, and <span translate="no">llama.cpp</span>{" "}
-				behind one OpenAI-compatible surface.
+				<span translate="no">MLX</span>, and{" "}
+				<span translate="no">llama.cpp</span> behind one OpenAI-compatible
+				surface.
 			</>
 		),
 		image: "/images/configure-models.png",
@@ -63,9 +59,9 @@ export function ProductStory() {
 		if (nextIndex === undefined) return;
 		event.preventDefault();
 		selectFeature(nextIndex);
-		optionsRef.current?.querySelectorAll<HTMLElement>(
-			".story__option-control",
-		)[nextIndex]?.focus();
+		optionsRef.current
+			?.querySelectorAll<HTMLElement>(".story__option-control")
+			[nextIndex]?.focus();
 	}
 
 	useEffect(() => {
@@ -137,7 +133,9 @@ export function ProductStory() {
 							height="2800"
 							loading="lazy"
 							decoding="async"
-							initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
+							initial={
+								reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }
+							}
 							animate={{ opacity: 1, filter: "blur(0px)" }}
 							transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
 						/>

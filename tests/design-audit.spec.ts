@@ -66,7 +66,7 @@ test("focus rings appear only after real keyboard use", async ({ page }) => {
 		".nav__links a",
 		".hero__actions .button",
 		".hero__actions .text-link",
-		".story__options button",
+		".story__option-control",
 		".footer__links a",
 	];
 	for (const selector of checks) {

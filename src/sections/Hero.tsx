@@ -11,13 +11,13 @@ export function Hero() {
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section className="hero" id="top" aria-labelledby="landing-title">
-			<m.div
-				className="hero__gradient"
-				aria-hidden="true"
-				initial={reduceMotion ? false : { opacity: 0 }}
-				animate={{ opacity: 1 }}
-				transition={{ duration: 1.2, ease, delay: 0.6 }}
-			/>
+				<m.div
+					className="hero__gradient"
+					aria-hidden="true"
+					initial={reduceMotion ? false : { opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={{ duration: 1.2, ease, delay: 0.6 }}
+				/>
 				<div className="hero__texture" aria-hidden="true" />
 				<div className="hero__inner">
 					<div className="hero__copy">
@@ -28,14 +28,22 @@ export function Hero() {
 							width="525"
 							height="525"
 							aria-hidden="true"
-							initial={reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
+							initial={
+								reduceMotion
+									? false
+									: { opacity: 0, y: 12, filter: "blur(6px)" }
+							}
 							animate={settle}
 							transition={{ duration: 0.9, ease, delay: 0.05 }}
 						/>
 						<m.h1
 							id="landing-title"
 							tabIndex={-1}
-							initial={reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
+							initial={
+								reduceMotion
+									? false
+									: { opacity: 0, y: 12, filter: "blur(6px)" }
+							}
 							animate={settle}
 							transition={{ duration: 0.9, ease, delay: 0.12 }}
 						>
@@ -45,7 +53,11 @@ export function Hero() {
 						</m.h1>
 						<m.div
 							className="hero__actions"
-							initial={reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
+							initial={
+								reduceMotion
+									? false
+									: { opacity: 0, y: 12, filter: "blur(6px)" }
+							}
 							animate={settle}
 							transition={{ duration: 0.9, ease, delay: 0.24 }}
 						>
@@ -59,9 +71,11 @@ export function Hero() {
 				<m.div
 					className="hero__stage section-width"
 					id="product"
-						initial={reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
-						animate={settle}
-						transition={{ duration: 0.9, ease, delay: 0.75 }}
+					initial={
+						reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }
+					}
+					animate={settle}
+					transition={{ duration: 0.9, ease, delay: 0.75 }}
 				>
 					<img
 						className="hero__screenshot"

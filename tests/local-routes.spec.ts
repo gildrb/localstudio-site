@@ -122,19 +122,26 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	const image = page.locator(".hero__screenshot");
 	await stage.waitFor({ state: "attached" });
 	await expect
-		.poll(() => page.evaluate(() => document.querySelector(".hero__gradient")!.opacity), { timeout: 5000 })
+		.poll(
+			() =>
+				page.evaluate(
+					() => (document.querySelector(".hero__gradient") as HTMLElement).style.opacity,
+				),
+				{ timeout: 5000 },
+			)
 		.toBe("1");
 	const entrance = await page.evaluate(() => {
-		const mark = document.querySelector(".hero__mark")!;
-		const title = document.querySelector(".hero h1")!;
-		const actions = document.querySelector(".hero__actions")!;
-		const stage = document.querySelector(".hero__stage")!;
-		const gradient = document.querySelector(".hero__gradient")!;
+		const mark = document.querySelector(".hero__mark") as HTMLElement;
+		const title = document.querySelector(".hero h1") as HTMLElement;
+		const actions = document.querySelector(".hero__actions") as HTMLElement;
+		const stage = document.querySelector(".hero__stage") as HTMLElement;
+		const gradient = document.querySelector(".hero__gradient") as HTMLElement;
 		const lead = document.querySelector(".story__intro p")!;
 		const texture = document.querySelector(".hero__texture")!;
+		const inline = (el: HTMLElement) => el.style.opacity;
 		return {
-			identity: [getComputedStyle(mark).opacity, getComputedStyle(title).opacity, getComputedStyle(actions).opacity],
-			atmosphere: [getComputedStyle(stage).opacity, getComputedStyle(gradient).opacity],
+			identity: [inline(mark), inline(title), inline(actions)],
+			atmosphere: [inline(stage), inline(gradient)],
 			textNodeTransforms: [getComputedStyle(title).transform, getComputedStyle(lead).transform],
 			textureGradient: getComputedStyle(texture).backgroundImage.includes("linear-gradient"),
 			grid: getComputedStyle(texture, "::before").animationName,

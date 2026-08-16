@@ -737,59 +737,40 @@ button {
   margin-top: 24px;
 }
 
-.kitty__gallery {
+.kitty__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
   margin-top: 64px;
 }
 
-.kitty-card {
+.kitty__feature {
   min-width: 0;
 }
 
-.kitty-card figure {
-  position: relative;
-  margin: 0;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.02);
+.kitty__feature-media {
+  aspect-ratio: 1;
   overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.kitty-card figcaption {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  color: var(--subtlest);
-  font: var(--type-meta);
-  letter-spacing: 0;
-}
-
-.kitty-card figure > img {
+.kitty__feature-media img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
 }
 
-.phone-cover {
-  position: absolute;
-  z-index: 2;
-  bottom: -1.5%;
-  left: 29.5%;
-  width: 25%;
-  aspect-ratio: 347 / 724;
-  border-radius: 18% / 9%;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.38);
-  overflow: hidden;
+.kitty__feature h3 {
+  margin-top: 16px;
 }
 
-.phone-cover img {
-  position: absolute;
-  top: -2.8%;
-  left: -158.5%;
-  width: 417%;
-  max-width: none;
-  height: auto;
+.kitty__feature p {
+  margin-top: 8px;
+  color: var(--dim);
+  font: var(--type-body);
 }
 
 .page-cta {
@@ -939,9 +920,8 @@ button {
     gap: 48px;
   }
 
-  .kitty__intro,
-  .kitty__gallery {
-    grid-template-columns: 1fr;
+  .kitty__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1072,6 +1052,10 @@ button {
 
   .story__visual {
     margin: 0 4px;
+  }
+
+  .kitty__grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .kitty__actions {
