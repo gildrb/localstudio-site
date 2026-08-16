@@ -41,7 +41,7 @@ const sections = [
 ] as const;
 
 const container =
-	"mx-auto w-[min(1240px,calc(100%_-_48px))] max-[620px]:w-[calc(100%_-_24px)]";
+	"mx-auto w-[min(1240px,calc(100%_-_48px))]";
 
 export function ProductPage() {
 	return (

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { ChevronDown, Equal, X } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
 import { LocalLink } from "./LocalLink";
 
 const products = [
@@ -8,9 +9,12 @@ const products = [
 ];
 
 const resources = [
+	{ label: "Documentation", href: "/docs" },
+	{ label: "Setup", href: "/prompt" },
+	{ label: "Agents", href: "/agents" },
+	{ label: "Mobile", href: "/mobile" },
 	{ label: "Overview", href: "/resources" },
-	{ label: "Setup prompt", href: "/prompt" },
-	{ label: "Agent setup", href: "/agents" },
+	{ label: "Download", href: "/download/macos" },
 	{
 		label: "GitHub",
 		href: "https://github.com/sybil-solutions/local-studio",
@@ -19,24 +23,25 @@ const resources = [
 ];
 
 const githubUrl = "https://github.com/sybil-solutions/local-studio";
+const mobileQuery = "(max-width: 900px)";
 
 function Chevron({ open }: { open: boolean }) {
 	return (
-		<svg
-			viewBox="0 0 16 16"
-			height="14"
-			width="14"
+		<ChevronDown
+			size={14}
+			strokeWidth={1.25}
 			aria-hidden="true"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="0.75"
 			className={open ? "nav__chevron is-open" : "nav__chevron"}
-		>
+		/>
+	);
+}
+
+function GitHubMark() {
+	return (
+		<svg viewBox="0 0 24 24" aria-hidden="true">
 			<path
 				fill="currentColor"
-				fillRule="evenodd"
-				d="m12.06 6.75-.53.53-2.82 2.82a1 1 0 0 1-1.42 0L4.47 7.28l-.53-.53L5 5.69l.53.53L8 8.69l2.47-2.47.53-.53z"
-				clipRule="evenodd"
+				d="M12 .7a11.5 11.5 0 0 0-3.64 22.4c.58.11.79-.25.79-.56v-2.23c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.75.4-1.27.74-1.56-2.58-.29-5.29-1.29-5.29-5.68 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.47.11-3.05 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.58.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.4-2.72 5.38-5.31 5.67.42.36.79 1.07.79 2.16v3.2c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"
 			/>
 		</svg>
 	);
@@ -77,9 +82,44 @@ function MenuItems({
 	);
 }
 
+function SheetItems({
+	items,
+	onNavigate,
+}: {
+	items: typeof products;
+	onNavigate: () => void;
+}) {
+	return (
+		<ul className="nav__sheet-items">
+			{items.map((item) => (
+				<li key={item.label}>
+					{item.external ? (
+						<a
+							href={item.href}
+							target="_blank"
+							rel="noreferrer"
+							onClick={onNavigate}
+						>
+							{item.label}
+						</a>
+					) : (
+						<LocalLink href={item.href} onClick={onNavigate}>
+							{item.label}
+						</LocalLink>
+					)}
+				</li>
+			))}
+		</ul>
+	);
+}
+
 export function Header() {
 	const [openMenu, setOpenMenu] = useState<string | null>(null);
+	const [mobileOpen, setMobileOpen] = useState(false);
 	const menusRef = useRef<HTMLDivElement>(null);
+	const toggleRef = useRef<HTMLButtonElement>(null);
+	const sheetRef = useRef<HTMLDivElement>(null);
+	const sheetId = useId();
 
 	useEffect(() => {
 		if (!openMenu) return;
@@ -99,7 +139,41 @@ export function Header() {
 		};
 	}, [openMenu]);
 
+	useEffect(() => {
+		const media = window.matchMedia(mobileQuery);
+		function onChange() {
+			if (!media.matches) setMobileOpen(false);
+		}
+		media.addEventListener("change", onChange);
+		return () => media.removeEventListener("change", onChange);
+	}, []);
+
+	useEffect(() => {
+		const root = document.documentElement;
+		const main = document.getElementById("content");
+		const footer = document.querySelector("footer");
+		root.classList.toggle("nav-open", mobileOpen);
+		main?.toggleAttribute("inert", mobileOpen);
+		footer?.toggleAttribute("inert", mobileOpen);
+		if (!mobileOpen) return;
+		sheetRef.current?.focus();
+		function onKeyDown(event: KeyboardEvent) {
+			if (event.key === "Escape") {
+				setMobileOpen(false);
+				toggleRef.current?.focus();
+			}
+		}
+		document.addEventListener("keydown", onKeyDown);
+		return () => {
+			root.classList.remove("nav-open");
+			main?.removeAttribute("inert");
+			footer?.removeAttribute("inert");
+			document.removeEventListener("keydown", onKeyDown);
+		};
+	}, [mobileOpen]);
+
 	const close = () => setOpenMenu(null);
+	const closeMobile = () => setMobileOpen(false);
 
 	function menu(id: string, label: string, items: typeof products) {
 		const open = openMenu === id;
@@ -131,8 +205,13 @@ export function Header() {
 	}
 
 	return (
-		<header className="nav">
-			<LocalLink className="brand" href="/" aria-label="Local Studio">
+		<header className={mobileOpen ? "nav is-open" : "nav"}>
+			<LocalLink
+				className="brand"
+				href="/"
+				aria-label="Local Studio"
+				onClick={closeMobile}
+			>
 				<img
 					className="brand__logo"
 					src="/images/localstudio-logo.svg"
@@ -156,14 +235,88 @@ export function Header() {
 					rel="noreferrer"
 					aria-label="Local Studio on GitHub"
 				>
-					<svg viewBox="0 0 24 24" aria-hidden="true">
-						<path
-							fill="currentColor"
-							d="M12 .7a11.5 11.5 0 0 0-3.64 22.4c.58.11.79-.25.79-.56v-2.23c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.75.4-1.27.74-1.56-2.58-.29-5.29-1.29-5.29-5.68 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.47.11-3.05 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.58.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.4-2.72 5.38-5.31 5.67.42.36.79 1.07.79 2.16v3.2c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"
-						/>
-					</svg>
+					<GitHubMark />
 				</LocalLink>
 			</nav>
+			<button
+				ref={toggleRef}
+				type="button"
+				className="nav__toggle"
+				aria-label={mobileOpen ? "Close menu" : "Open menu"}
+				aria-expanded={mobileOpen}
+				aria-controls={sheetId}
+				onClick={() => setMobileOpen((open) => !open)}
+			>
+				{mobileOpen ? (
+					<X size={22} strokeWidth={1.5} aria-hidden="true" />
+				) : (
+					<Equal size={22} strokeWidth={1.5} aria-hidden="true" />
+				)}
+			</button>
+			<div
+				id={sheetId}
+				ref={sheetRef}
+				className="nav__sheet"
+				role="dialog"
+				tabIndex={-1}
+				aria-modal={mobileOpen || undefined}
+				aria-label="Navigation menu"
+				aria-hidden={!mobileOpen}
+				inert={!mobileOpen || undefined}
+			>
+				<nav className="nav__sheet-nav" aria-label="Mobile navigation">
+					<details name="mobile-nav" className="nav__sheet-group">
+						<summary className="nav__sheet-summary">
+							Products
+							<ChevronDown
+								className="nav__sheet-chevron"
+								size={20}
+								strokeWidth={1.25}
+								aria-hidden="true"
+							/>
+						</summary>
+						<SheetItems items={products} onNavigate={closeMobile} />
+					</details>
+					<details name="mobile-nav" className="nav__sheet-group">
+						<summary className="nav__sheet-summary">
+							Resources
+							<ChevronDown
+								className="nav__sheet-chevron"
+								size={20}
+								strokeWidth={1.25}
+								aria-hidden="true"
+							/>
+						</summary>
+						<SheetItems items={resources} onNavigate={closeMobile} />
+					</details>
+					<a
+						className="nav__sheet-link"
+						href="https://www.sybilsolutions.ai/"
+						onClick={closeMobile}
+					>
+						Company
+					</a>
+				</nav>
+				<div className="nav__sheet-actions">
+					<LocalLink
+						className="button"
+						href="/download/macos"
+						onClick={closeMobile}
+					>
+						Download for macOS
+					</LocalLink>
+					<a
+						className="text-link"
+						href={githubUrl}
+						target="_blank"
+						rel="noreferrer"
+						onClick={closeMobile}
+					>
+						<GitHubMark />
+						GitHub
+					</a>
+				</div>
+			</div>
 		</header>
 	);
 }

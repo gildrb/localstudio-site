@@ -47,7 +47,8 @@ test("focus rings appear only after real keyboard use", async ({ page }) => {
 		ring: getComputedStyle(document.activeElement!).outlineStyle,
 	}));
 	expect(loadState).toEqual({ focused: "H2", ring: "none" });
-	await page.getByRole("navigation", { name: "Landing navigation" }).getByRole("link", { name: "Mobile", exact: true }).click();
+	await page.getByRole("navigation", { name: "Landing navigation" }).getByRole("button", { name: "Resources" }).click();
+	await page.getByRole("menuitem", { name: "Mobile", exact: true }).click();
 	await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
 	expect(
 		await page.evaluate(() => getComputedStyle(document.activeElement!).outlineStyle),
@@ -92,8 +93,9 @@ test("route changes focus the new heading and reset scroll only on push", async 
 	await expect(page.getByRole("heading", { level: 1 })).not.toBeFocused();
 	await page
 		.getByRole("navigation", { name: "Landing navigation" })
-		.getByRole("link", { name: "Docs", exact: true })
+		.getByRole("button", { name: "Resources" })
 		.click();
+	await page.getByRole("menuitem", { name: "Documentation", exact: true }).click();
 	await expect(
 		page.getByRole("heading", { level: 1, name: "Get Local Studio running" }),
 	).toBeFocused();
@@ -109,8 +111,9 @@ test("back and forward restore the scroll position", async ({ page }) => {
 		.toBeGreaterThan(500);
 	await page
 		.getByRole("navigation", { name: "Landing navigation" })
-		.getByRole("link", { name: "Docs", exact: true })
+		.getByRole("button", { name: "Resources" })
 		.click();
+	await page.getByRole("menuitem", { name: "Documentation", exact: true }).click();
 	await expect
 		.poll(() => page.evaluate(() => Math.round(window.scrollY)))
 		.toBe(0);
@@ -168,7 +171,7 @@ test("touch interactions avoid double-tap zoom and tap highlight flash", async (
 }) => {
 	await page.goto("/");
 	const interactions = await page.evaluate(() => {
-		const link = document.querySelector(".nav__links a")!;
+		const link = document.querySelector(".nav__links a, .nav__toggle")!;
 		const button = document.querySelector(".button")!;
 		const tap = getComputedStyle(document.documentElement).getPropertyValue(
 			"-webkit-tap-highlight-color",
@@ -190,24 +193,28 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");
 	const sizes = await page.evaluate(() => {
-		const navLink = document.querySelector(".nav__links a") as HTMLElement;
-		const github = document.querySelector(".nav__github") as HTMLElement;
-		const footerLink = document.querySelector(
-			".footer__links a",
-		) as HTMLElement;
+		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
+		const footerLink = document.querySelector(".footer__links a") as HTMLElement;
 		return {
-			nav: navLink.getBoundingClientRect().height,
-			github: [
-				github.getBoundingClientRect().width,
-				github.getBoundingClientRect().height,
-			],
+			toggle: [toggle.getBoundingClientRect().width, toggle.getBoundingClientRect().height],
 			footer: footerLink.getBoundingClientRect().height,
 		};
 	});
-	expect(sizes.nav).toBeGreaterThanOrEqual(44);
-	expect(sizes.github[0]).toBeGreaterThanOrEqual(44);
-	expect(sizes.github[1]).toBeGreaterThanOrEqual(44);
+	expect(sizes.toggle[0]).toBeGreaterThanOrEqual(44);
+	expect(sizes.toggle[1]).toBeGreaterThanOrEqual(44);
 	expect(sizes.footer).toBeGreaterThanOrEqual(44);
+	await page.getByRole("button", { name: "Open menu" }).click();
+	const sheet = await page.locator(".nav__sheet-summary, .nav__sheet-link").evaluateAll((elements) =>
+		elements.map((element) => {
+			const box = element.getBoundingClientRect();
+			return { height: Math.round(box.height), width: Math.round(box.width) };
+		}),
+	);
+	expect(sheet.length).toBeGreaterThan(0);
+	for (const target of sheet) {
+		expect(target.height).toBeGreaterThanOrEqual(44);
+		expect(target.width).toBeGreaterThanOrEqual(44);
+	}
 });
 
 test("navbar and footer hitboxes touch and share one height", async ({ page }) => {
@@ -230,14 +237,15 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 	}
 	expect(new Set(nav.map((link) => link.bottom - link.top)).size).toBe(1);
 	const between = await page.evaluate(() => {
-		const links = [...document.querySelectorAll<HTMLElement>(".nav__links a")];
-		const first = links[0].getBoundingClientRect();
-		const second = links[1].getBoundingClientRect();
-		const x = (first.right + second.left) / 2;
-		const hit = document.elementFromPoint(x, (first.top + first.bottom) / 2);
-		return hit?.closest("a")?.textContent?.trim() ?? "";
+		const company = document.querySelector<HTMLElement>('.nav__links a[href="https://www.sybilsolutions.ai/"]')!;
+		const github = document.querySelector<HTMLElement>(".nav__github")!;
+		const companyBox = company.getBoundingClientRect();
+		const githubBox = github.getBoundingClientRect();
+		const x = (companyBox.right + githubBox.left) / 2;
+		const hit = document.elementFromPoint(x, (companyBox.top + companyBox.bottom) / 2);
+		return hit?.closest("a")?.getAttribute("href") ?? "";
 	});
-	expect(["Mobile", "Docs"]).toContain(between);
+	expect(["https://www.sybilsolutions.ai/", "https://github.com/sybil-solutions/local-studio"]).toContain(between);
 	const link = page.locator(".nav__links a").first();
 	const pill = await link.evaluate((element) => {
 		const box = element.getBoundingClientRect();
@@ -256,7 +264,7 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 	const hoveredPill = await link.evaluate(
 		(element) => getComputedStyle(element, "::before").backgroundColor,
 	);
-	expect(["rgba(255, 255, 255, 0.08)", "rgba(255, 255, 255, 0.080)", "rgba(255, 255, 255, 0.067)"]).toContain(hoveredPill);
+	expect(["rgba(255, 255, 255, 0.08)", "rgba(255, 255, 255, 0.080)", "rgba(255, 255, 255, 0.075)", "rgba(255, 255, 255, 0.067)"]).toContain(hoveredPill);
 	expect(pill).toEqual({
 		hitbox: 72,
 		highlight: "38px",

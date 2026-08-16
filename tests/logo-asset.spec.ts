@@ -47,7 +47,9 @@ test("navbar uses compact text and an accessible GitHub icon", async ({ page }) 
 	});
 	expect(typography).toEqual(["14px", "20px"]);
 	await page.setViewportSize({ width: 390, height: 844 });
-	const github = page.getByRole("link", { name: "Local Studio on GitHub" });
+	await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
+	await page.getByRole("button", { name: "Open menu" }).click();
+	const github = page.getByRole("dialog", { name: "Navigation menu" }).getByRole("link", { name: "GitHub" });
 	await expect(github).toHaveAttribute("href", "https://github.com/sybil-solutions/local-studio");
 	await expect(github.locator("svg")).toBeVisible();
 });
