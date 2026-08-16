@@ -1,4 +1,10 @@
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+	LazyMotion,
+	domAnimation,
+	m,
+	useReducedMotion,
+} from "motion/react";
 import { responsiveSrcSet, storySizes } from "../images";
 
 const features = [
@@ -16,9 +22,8 @@ const features = [
 		description: (
 			<>
 				<span translate="no">vLLM</span>, <span translate="no">SGLang</span>,{" "}
-				<span translate="no">MLX</span>, and{" "}
-				<span translate="no">llama.cpp</span> behind one OpenAI-compatible
-				surface.
+				<span translate="no">MLX</span>, and <span translate="no">llama.cpp</span>{" "}
+				behind one OpenAI-compatible surface.
 			</>
 		),
 		image: "/images/configure-models.png",
@@ -45,6 +50,7 @@ export function ProductStory() {
 		featureIndexFromHash(window.location.hash),
 	);
 	const buttonsRef = useRef<Array<HTMLButtonElement | null>>([]);
+	const reduceMotion = useReducedMotion();
 	const activeFeature = features[activeIndex];
 
 	useEffect(() => {
@@ -84,65 +90,71 @@ export function ProductStory() {
 	}
 
 	return (
-		<section
-			id="media"
-			className="story section-width"
-			aria-labelledby="system-title"
-		>
-			<div className="story__intro">
-				<h2 id="system-title">Local AI is hard, this will make it easier.</h2>
-				<p>
-					<span translate="no">Local Studio</span> keeps the model, the runtime,
-					and the hardware together. Nothing important disappears behind a
-					provider abstraction.
-				</p>
-			</div>
-			<div className="story__showcase">
-				<ul
-					className="story__options"
-					role="tablist"
-					aria-label="Local Studio capabilities"
-				>
-					{features.map((feature, index) => {
-						const selected = activeIndex === index;
-						const descriptionId = `feature-description-${index + 1}`;
-						const tabId = `feature-tab-${index + 1}`;
-						return (
-							<li
-								className={selected ? "is-active" : undefined}
-								key={feature.title}
-								role="none"
-							>
-								<button
-									ref={(button) => {
-										buttonsRef.current[index] = button;
-									}}
-									type="button"
-									role="tab"
-									id={tabId}
-									aria-selected={selected}
-									onClick={() => selectFeature(index)}
-									onKeyDown={(event) => handleKeyDown(event, index)}
+		<LazyMotion features={domAnimation} strict>
+			<section
+				id="media"
+				className="story section-width"
+				aria-labelledby="system-title"
+			>
+				<div className="story__intro">
+					<h2 id="system-title">Local AI is hard, this will make it easier.</h2>
+					<p>
+						<span translate="no">Local Studio</span> keeps the model, the
+						runtime, and the hardware together. Nothing important disappears
+						behind a provider abstraction.
+					</p>
+				</div>
+				<div className="story__showcase">
+					<ul
+						className="story__options"
+						role="tablist"
+						aria-label="Local Studio capabilities"
+					>
+						{features.map((feature, index) => {
+							const selected = activeIndex === index;
+							const descriptionId = `feature-description-${index + 1}`;
+							const tabId = `feature-tab-${index + 1}`;
+							return (
+								<li
+									className={selected ? "is-active" : undefined}
+									key={feature.title}
+									role="none"
 								>
-									<span className="story__option-title">{feature.title}</span>
-								</button>
-								<div
-									id={descriptionId}
-									role="tabpanel"
-									aria-labelledby={tabId}
-									hidden={!selected}
-								>
-									<p className="story__description">{feature.description}</p>
-								</div>
-							</li>
-						);
-					})}
-				</ul>
-				<figure
-					className="story__visual"
-					data-active-feature={activeFeature.title}
-				>
-					<img
+									<button
+										ref={(button) => {
+											buttonsRef.current[index] = button;
+										}}
+										type="button"
+										role="tab"
+										id={tabId}
+										aria-selected={selected}
+										onClick={() => selectFeature(index)}
+												onPointerEnter={(event) => {
+													if (event.pointerType === "mouse") {
+														selectFeature(index);
+													}
+												}}
+										onKeyDown={(event) => handleKeyDown(event, index)}
+									>
+										<span className="story__option-title">{feature.title}</span>
+									</button>
+									<div
+										id={descriptionId}
+										role="tabpanel"
+										aria-labelledby={tabId}
+										hidden={!selected}
+									>
+										<p className="story__description">{feature.description}</p>
+									</div>
+								</li>
+							);
+						})}
+					</ul>
+					<figure
+						className="story__visual"
+						data-active-feature={activeFeature.title}
+					>
+					<m.img
 						key={activeFeature.image}
 						srcSet={responsiveSrcSet(activeFeature.image)}
 						sizes={storySizes}
@@ -152,12 +164,16 @@ export function ProductStory() {
 						height="2800"
 						loading="lazy"
 						decoding="async"
+						initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
+						animate={{ opacity: 1, filter: "blur(0px)" }}
+						transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
 					/>
-					<p className="sr-only" role="status">
-						{activeFeature.title}. {activeFeature.description}
-					</p>
-				</figure>
-			</div>
-		</section>
+						<p className="sr-only" role="status">
+							{activeFeature.title}. {activeFeature.description}
+						</p>
+					</figure>
+				</div>
+			</section>
+		</LazyMotion>
 	);
 }

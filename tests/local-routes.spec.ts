@@ -332,6 +332,24 @@ test("homepage capability selector is a deep-linkable tablist", async ({ page })
 	await expect(page.locator('.story__visual[data-active-feature="Work"] img')).toHaveAttribute("src", "/images/workbench-terminal.png");
 });
 
+test("hovering a story tab opens it like the Vercel hero", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/");
+	const serve = page.getByRole("tablist", { name: "Local Studio capabilities" }).getByRole("tab", { name: "Serve" });
+	await serve.hover();
+	await expect(serve).toHaveAttribute("aria-selected", "true");
+	await expect(page).toHaveURL(/#media=serve$/);
+	await expect(
+		page.locator('.story__visual[data-active-feature="Serve"] img'),
+	).toHaveAttribute("src", "/images/configure-models.png");
+	const work = page.getByRole("tab", { name: "Work" });
+	await work.hover();
+	await expect(work).toHaveAttribute("aria-selected", "true");
+	await expect(
+		page.locator('.story__visual[data-active-feature="Work"] img'),
+	).toHaveAttribute("src", "/images/workbench-terminal.png");
+});
+
 test("tabbing reaches every story tab in order", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
