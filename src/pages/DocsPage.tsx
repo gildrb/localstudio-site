@@ -11,7 +11,7 @@ const toc = [
 	["Agent runtime", "agent-runtime"],
 	["Remote / LAN", "remote-lan"],
 	["Validation", "validation"],
-];
+] as const;
 
 const codeClass =
 	"docs-code my-8 block max-w-full overflow-x-auto rounded-lg border border-white/10 px-5 py-4 font-mono text-sm/5 text-white/80";
@@ -26,25 +26,20 @@ export function DocsPage() {
 				title="Get Local Studio running"
 				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
 				actions={
-					<>
+					<div className="button-group">
 						<DownloadButton iconSize={17} />
-						<TextLink href="/prompt">Setup</TextLink>
-					</>
+						<TextLink href="/prompt">Setup prompt</TextLink>
+					</div>
 				}
 			/>
 			<div className="docs-layout section-width grid grid-cols-[240px_minmax(0,1fr)] gap-12 pb-30 max-[900px]:grid-cols-1 max-[900px]:gap-12">
 				<aside className="sticky top-24 self-start max-[900px]:static">
 					<p className="text-sm/5 text-white/70">On this page</p>
-					<nav aria-label="Documentation sections">
+					<nav className="docs-toc" aria-label="Documentation sections">
 						<ul className="mt-4 grid gap-2 border-l border-white/10 p-0 pl-4 text-base/6 text-white/60">
 							{toc.map(([label, id]) => (
 								<li key={id}>
-									<LocalLink
-										className="focus-visible:outline focus-visible:outline-offset-4 focus-visible:outline-white"
-										href={`/docs#${id}`}
-									>
-										{label}
-									</LocalLink>
+									<LocalLink href={`/docs#${id}`}>{label}</LocalLink>
 								</li>
 							))}
 						</ul>
@@ -52,16 +47,20 @@ export function DocsPage() {
 				</aside>
 				<article className="docs-prose min-w-0 text-base/6 text-white/70 [&_li]:mb-2">
 					<p>
-						Local Studio is a local-first workstation for running, managing,
-						and using self-hosted LLM backends. Two modules share one
-						controller API: a Bun/Hono backend and a Next.js + React frontend
-						with an Electron desktop shell.
+						<span translate="no">Local Studio</span> is a local-first
+						workstation for running, managing, and using self-hosted LLM
+						backends. Two modules share one controller API: a{" "}
+						<span translate="no">Bun</span>/Hono backend and a Next.js + React
+						frontend with an Electron desktop shell.
 					</p>
 					<section id="prerequisites" className={sectionClass}>
 						<h2>Prerequisites</h2>
 						<ul className="mt-4 list-disc pl-6">
 							<li>
-								<strong>Bun 1.x</strong> — for the controller.
+								<strong>
+									<span translate="no">Bun</span> 1.x
+								</strong>{" "}
+								— for the controller.
 							</li>
 							<li>
 								<strong>Node.js 20+ and npm</strong> — for the frontend.
@@ -74,8 +73,11 @@ export function DocsPage() {
 								<strong>Git.</strong>
 							</li>
 							<li>
-								<strong>NVIDIA driver + CUDA</strong> for vLLM/SGLang on Linux.
-								Apple Silicon uses the MLX backend.
+								<strong>
+									NVIDIA driver + <span translate="no">CUDA</span>
+								</strong>{" "}
+								for vLLM/SGLang on Linux. Apple Silicon uses the{" "}
+								<span translate="no">MLX</span> backend.
 							</li>
 						</ul>
 					</section>
@@ -131,20 +133,32 @@ export function DocsPage() {
 						</p>
 						<ul className="mt-4 list-disc pl-6">
 							<li>
-								<strong>vLLM</strong> — CUDA throughput serving through
-								configured, discovered, system, Docker, or bundled targets.
+								<strong>
+									<span translate="no">vLLM</span>
+								</strong>{" "}
+								— CUDA throughput serving through configured, discovered,
+								system, Docker, or bundled targets.
 							</li>
 							<li>
-								<strong>SGLang</strong> — Structured and multi-turn serving
-								through discovered or configured Python targets.
+								<strong>
+									<span translate="no">SGLang</span>
+								</strong>{" "}
+								— Structured and multi-turn serving through discovered or
+								configured Python targets.
 							</li>
 							<li>
-								<strong>llama.cpp</strong> — GGUF models through the
-								llama-server binary. Great for CPU and modest hardware.
+								<strong>
+									<span translate="no">llama.cpp</span>
+								</strong>{" "}
+								— GGUF models through the llama-server binary. Great for CPU and
+								modest hardware.
 							</li>
 							<li>
-								<strong>MLX</strong> — Apple Silicon serving through
-								mlx_lm.server. The default path on Mac.
+								<strong>
+									<span translate="no">MLX</span>
+								</strong>{" "}
+								— Apple Silicon serving through mlx_lm.server. The default path
+								on Mac.
 							</li>
 						</ul>
 						<p>
@@ -228,8 +242,8 @@ export function DocsPage() {
 							integration + frontend regression
 						</pre>
 						<p>
-							For the full agent runbook — controllers, providers, runtimes, and
-							Pi sessions — see{" "}
+							For the full agent runbook — controllers, providers, runtimes, and{" "}
+							<span translate="no">Pi</span> sessions — see{" "}
 							<LocalLink
 								className="text-white underline underline-offset-4"
 								href="/agents"

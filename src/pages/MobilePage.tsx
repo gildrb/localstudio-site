@@ -6,22 +6,37 @@ import { PageShell } from "../components/PageShell";
 const steps = [
 	[
 		"Open the connection",
-		"In Local Studio, open Settings, choose Profile & phone, and find Connect your phone.",
+		<>
+			In <span translate="no">Local Studio</span>, open Settings, choose Profile
+			&amp; phone, and find Connect your phone.
+		</>,
 	],
 	[
 		"Scan it in KittyLitter",
-		"Open KittyLitter's server scanner, choose Local Studio, and scan the QR code. Copy connection JSON is the fallback when scanning is unavailable.",
+		<>
+			Open <span translate="no">KittyLitter</span>’s server scanner, choose
+			<span translate="no">Local Studio</span>, and scan the QR code. Copy
+			connection JSON is the fallback when scanning is unavailable.
+		</>,
 	],
 	[
 		"Continue the same work",
-		"Open the Local Studio server in KittyLitter. Existing sessions appear there; new phone turns return to the same session on your Mac.",
+		<>
+			Open the <span translate="no">Local Studio</span> server in
+			<span translate="no">KittyLitter</span>. Existing sessions appear there;
+			new phone turns return to the same session on your Mac.
+		</>,
 	],
 ] as const;
 
 const capabilities = [
 	[
 		"One session list",
-		"Start on desktop, continue on mobile, then return to Local Studio without creating a disconnected copy.",
+		<>
+			Start on desktop, continue on mobile, then return to
+			<span translate="no">Local Studio</span> without creating a disconnected
+			copy.
+		</>,
 	],
 	[
 		"The complete timeline",
@@ -29,7 +44,11 @@ const capabilities = [
 	],
 	[
 		"Work stays on the Mac",
-		"The agent runtime and filesystem operations run through Local Studio on your Mac. This website never receives your sessions or files.",
+		<>
+			The agent runtime and filesystem operations run through
+			<span translate="no">Local Studio</span> on your Mac. This website never
+			receives your sessions or files.
+		</>,
 	],
 ] as const;
 
@@ -44,27 +63,36 @@ export function MobilePage() {
 				id="mobile-title"
 				layout="split"
 				title="Your local agents, away from your desk."
-				description="Pair KittyLitter once, then read and continue the same Local Studio sessions from your phone. The work still runs on your Mac."
-				actions={
+				description={
 					<>
+						Pair <span translate="no">KittyLitter</span> once, then read and
+						continue the same <span translate="no">Local Studio</span> sessions
+						from your phone. The work still runs on your Mac.
+					</>
+				}
+				actions={
+					<div className="button-group">
 						<DownloadButton iconSize={17} />
 						<TextLink
 							href="https://kittylitter.app"
+							arrow="up"
 							target="_blank"
 							rel="noreferrer"
 						>
-							Get KittyLitter
+							<span translate="no">Get KittyLitter</span>
 						</TextLink>
-					</>
+					</div>
 				}
 				aside={
-					<div className="grid rounded-2xl border border-white/15 p-3">
+					<div className="grid rounded-3xl border border-white/15 p-3">
 						<div className="flex min-h-28 items-center gap-4 rounded-xl border border-white/10 p-6">
 							<span className="grid size-11 place-items-center rounded-full border border-white/15">
 								<Smartphone size={20} aria-hidden="true" />
 							</span>
 							<span className="grid gap-1">
-								<strong>KittyLitter</strong>
+								<strong>
+									<span translate="no">KittyLitter</span>
+								</strong>
 								<small className="text-white/50">Your trusted phone</small>
 							</span>
 						</div>
@@ -77,7 +105,9 @@ export function MobilePage() {
 								<Laptop size={20} aria-hidden="true" />
 							</span>
 							<span className="grid gap-1">
-								<strong>Local Studio</strong>
+								<strong>
+									<span translate="no">Local Studio</span>
+								</strong>
 								<small className="text-white/50">Your Mac and agents</small>
 							</span>
 						</div>
@@ -88,9 +118,17 @@ export function MobilePage() {
 				}
 			>
 				<ul className="page-intro__requirements">
-					<li>Local Studio 2.9.0 or newer on macOS</li>
-					<li>KittyLitter 1.6.0 or newer on iPhone, iPad, or Android</li>
-					<li>Local Studio running and your Mac reachable</li>
+					<li>
+						<span translate="no">Local Studio</span> 2.9.0 or newer on macOS
+					</li>
+					<li>
+						<span translate="no">KittyLitter</span> 1.6.0 or newer on iPhone,
+						iPad, or Android
+					</li>
+					<li>
+						<span translate="no">Local Studio</span> running and your Mac
+						reachable
+					</li>
 				</ul>
 			</PageIntro>
 			<section
@@ -99,11 +137,12 @@ export function MobilePage() {
 			>
 				<div className="max-w-3xl">
 					<h2 id="pair-title" className={sectionTitle}>
-						Three steps, no server setup.
+						3 steps, no server setup.
 					</h2>
 					<p className={`mt-6 ${prose}`}>
-						Local Studio creates the connection. KittyLitter saves it securely
-						so you do not need to scan again every time.
+						<span translate="no">Local Studio</span> creates the connection.
+						<span translate="no">KittyLitter</span> saves it securely so you do
+						not need to scan again every time.
 					</p>
 				</div>
 				<ol className="mt-16 grid grid-cols-3 border border-white/10 p-0 max-[900px]:grid-cols-1 max-[620px]:mt-12 max-[620px]:rounded-xl">
@@ -127,8 +166,10 @@ export function MobilePage() {
 						A window into the same runtime.
 					</h2>
 					<p className={`mt-6 ${prose}`}>
-						KittyLitter is not a separate cloud copy of Local Studio. It
-						connects to the controller and agent runtime you already use.
+						<span translate="no">KittyLitter</span> is not a separate cloud copy
+						of
+						<span translate="no">Local Studio</span>. It connects to the
+						controller and agent runtime you already use.
 					</p>
 				</div>
 				<div className="mt-16 grid grid-cols-3 gap-6 max-[900px]:grid-cols-1 max-[620px]:mt-12 max-[620px]:gap-0">
@@ -154,8 +195,9 @@ export function MobilePage() {
 					<p className={`mt-6 ${prose}`}>
 						The QR code and copied connection JSON contain a private controller
 						credential. They grant access to every agent enabled on that
-						controller—not only Local Studio. Scan only with a device you trust.
-						Never post, email, record, or paste the code into support chat.
+						controller—not only <span translate="no">Local Studio</span>. Scan
+						only with a device you trust. Never post, email, record, or paste
+						the code into support chat.
 					</p>
 				</div>
 				<div className="mt-16 grid grid-cols-[minmax(0,1fr)_200px] items-center gap-24 max-[900px]:grid-cols-1 max-[900px]:gap-12 max-[620px]:mt-12">
@@ -179,14 +221,17 @@ export function MobilePage() {
 				<div>
 					<h2 id="mobile-cta-title">Take the session with you.</h2>
 					<div className="hero__actions">
-						<DownloadButton iconSize={17} />
-						<TextLink
-							href="https://kittylitter.app"
-							target="_blank"
-							rel="noreferrer"
-						>
-							Open kittylitter.app
-						</TextLink>
+						<div className="button-group">
+							<DownloadButton iconSize={17} />
+							<TextLink
+								href="https://kittylitter.app"
+								arrow="up"
+								target="_blank"
+								rel="noreferrer"
+							>
+								Open kittylitter.app
+							</TextLink>
+						</div>
 					</div>
 				</div>
 			</section>

@@ -18,12 +18,12 @@ export function DownloadPage() {
 						The desktop app for running local controllers, models, providers,
 						and coding agents on Apple Silicon.
 						<small className="mt-4 block text-sm/5 text-white/50">
-							255 MB · arm64 · macOS · hosted on GitHub Releases
+							{"255\u00A0MB · arm64 · macOS · hosted on GitHub Releases"}
 						</small>
 					</>
 				}
 				actions={
-					<>
+					<div className="button-group">
 						<LocalLink className="button" href={downloadUrl}>
 							<DownloadIcon size={17} />
 							Download DMG
@@ -31,7 +31,7 @@ export function DownloadPage() {
 						<TextLink href="/docs#prerequisites" arrow="right">
 							Read prerequisites
 						</TextLink>
-					</>
+					</div>
 				}
 			/>
 		</PageShell>

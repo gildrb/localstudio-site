@@ -2,6 +2,7 @@ import { DownloadButton, TextLink } from "../components/Links";
 import { MediaFrame } from "../components/MediaFrame";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
+import { frameSizes, heroSizes, responsiveSrcSet } from "../images";
 
 const sections = [
 	{
@@ -12,13 +13,28 @@ const sections = [
 	},
 	{
 		title: "Run the backend that fits.",
-		text: "Configure vLLM, SGLang, llama.cpp, or MLX targets, then serve them through one OpenAI-compatible proxy. Runtime discovery and saved selections stay with the controller.",
+		text: (
+			<>
+				Configure <span translate="no">vLLM</span>,{" "}
+				<span translate="no">SGLang</span>,{" "}
+				<span translate="no">llama.cpp</span>, or{" "}
+				<span translate="no">MLX</span> targets, then serve them through one
+				OpenAI-compatible proxy. Runtime discovery and saved selections stay
+				with the controller.
+			</>
+		),
 		image: "/images/configure-models.png",
 		alt: "Local Studio Configure screen showing model and runtime settings.",
 	},
 	{
 		title: "Work where models run.",
-		text: "Use the Pi-powered Workbench for agent sessions with models, providers, browser, files, terminal, and registered tools in one timeline.",
+		text: (
+			<>
+				Use the <span translate="no">Pi</span>-powered Workbench for agent
+				sessions with models, providers, browser, files, terminal, and
+				registered tools in one timeline.
+			</>
+		),
 		image: "/images/workbench-terminal.png",
 		alt: "Local Studio Workbench showing an agent session, terminal output, and tool activity.",
 	},
@@ -33,14 +49,20 @@ export function ProductPage() {
 			<PageIntro
 				id="product-title"
 				title="One place to run local AI."
-				description="Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers."
-				actions={
+				description={
 					<>
+						<span translate="no">Local Studio</span> is a local-first
+						workstation for running, managing, and using self-hosted
+						language-model backends on local or remote controllers.
+					</>
+				}
+				actions={
+					<div className="button-group">
 						<DownloadButton iconSize={17} />
 						<TextLink href="/docs" arrow="right">
 							Read the docs
 						</TextLink>
-					</>
+					</div>
 				}
 			/>
 			<section
@@ -49,7 +71,9 @@ export function ProductPage() {
 			>
 				<MediaFrame
 					className="mb-30"
-					src="/images/workbench-browser.png"
+					src="/images/workbench-browser-1300.png"
+					srcSet={responsiveSrcSet("/images/workbench-browser.png")}
+					sizes={heroSizes}
 					alt="Local Studio Workbench showing a coding agent and integrated browser."
 					width="5118"
 					height="2800"
@@ -75,6 +99,8 @@ export function ProductPage() {
 						<MediaFrame
 							className={index % 2 ? "order-1 max-[900px]:order-none" : ""}
 							src={section.image}
+							srcSet={responsiveSrcSet(section.image)}
+							sizes={frameSizes}
 							alt={section.alt}
 							width="5118"
 							height="2800"

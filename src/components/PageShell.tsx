@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { LocalLink } from "./LocalLink";
 
 interface PageShellProps {
 	children: ReactNode;
@@ -8,10 +9,15 @@ interface PageShellProps {
 
 export function PageShell({ children }: PageShellProps) {
 	return (
-		<main className="site-shell">
+		<div className="site-shell">
+			<LocalLink className="skip-link" href="#content">
+				Skip to content
+			</LocalLink>
 			<Header />
-			{children}
+			<main className="site-main" id="content" tabIndex={-1}>
+				{children}
+			</main>
 			<Footer />
-		</main>
+		</div>
 	);
 }

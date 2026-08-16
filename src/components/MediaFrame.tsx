@@ -1,18 +1,18 @@
 import type { ImgHTMLAttributes, ReactNode } from "react";
 
 interface MediaFrameProps extends ImgHTMLAttributes<HTMLImageElement> {
-	caption?: ReactNode;
+  caption?: ReactNode | undefined;
 }
 
 export function MediaFrame({
-	caption,
-	className = "",
-	...image
+  caption,
+  className = "",
+  ...image
 }: MediaFrameProps) {
-	return (
-		<figure className={`media-frame ${className}`}>
-			{caption ? <figcaption>{caption}</figcaption> : null}
-			<img {...image} />
-		</figure>
-	);
+  return (
+    <figure className={`media-frame ${className}`}>
+      {caption ? <figcaption>{caption}</figcaption> : null}
+      <img {...image} />
+    </figure>
+  );
 }

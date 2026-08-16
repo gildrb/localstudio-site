@@ -4,6 +4,7 @@ import { DownloadButton, TextLink } from "../components/Links";
 import { MediaFrame } from "../components/MediaFrame";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
+import { frameSizes, responsiveSrcSet, storySizes } from "../images";
 
 const scope = [
 	"Controllers stay saved; switching is non-destructive.",
@@ -26,15 +27,26 @@ export function AgentsPage() {
 				id="agents-title"
 				layout="left"
 				title="Set up the stack."
-				description="A compact DLTL for controllers, providers, runtimes, and Pi."
-				actions={
+				description={
 					<>
-						<DownloadButton iconSize={17} />
-						<TextLink href="/" arrow="right">Back to overview</TextLink>
+						A compact <span translate="no">DLTL</span> — a copy-paste
+						instruction sheet for coding agents — covering controllers,
+						providers, runtimes, and <span translate="no">Pi</span>.
 					</>
 				}
+				actions={
+					<div className="button-group">
+						<DownloadButton iconSize={17} />
+						<TextLink href="/" arrow="right">
+							Back to overview
+						</TextLink>
+					</div>
+				}
 			/>
-			<section className="mx-auto w-[min(1240px,calc(100%_-_48px))] pb-30 max-[620px]:w-[calc(100%_-_24px)]" aria-label="Agent setup">
+			<section
+				className="mx-auto w-[min(1240px,calc(100%_-_48px))] pb-30 max-[620px]:w-[calc(100%_-_24px)]"
+				aria-label="Agent setup"
+			>
 				<div className="mt-16 grid grid-cols-[minmax(240px,.72fr)_minmax(0,1.28fr)] items-start gap-10 max-[900px]:grid-cols-[minmax(0,1fr)]">
 					<aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-8">
 						<section>
@@ -55,7 +67,7 @@ export function AgentsPage() {
 							</ul>
 						</section>
 						<section>
-							<h3>Useful probes</h3>
+							<h2>Useful probes</h2>
 							<pre className="mt-4 overflow-x-auto rounded-lg border border-white/10 p-5 font-mono text-sm/5 text-white/80">
 								{probes}
 							</pre>
@@ -73,7 +85,7 @@ export function AgentsPage() {
 								Agent instructions
 							</h2>
 							<span className="rounded-full border border-white/10 px-2 py-1 font-mono text-sm/5 text-white/50">
-								DLTL
+								<span translate="no">DLTL</span>
 							</span>
 						</div>
 						<pre className="max-h-[1320px] overflow-auto whitespace-pre-wrap p-6 font-mono text-sm/5 text-white/80">
@@ -97,8 +109,15 @@ export function AgentsPage() {
 				</div>
 				<div className="mt-16 grid grid-cols-[1.12fr_.72fr] gap-5 max-[900px]:grid-cols-1">
 					<MediaFrame
-						caption={<><strong>Workbench</strong><span>live app capture</span></>}
+						caption={
+							<>
+								<strong>Workbench</strong>
+								<span>live app capture</span>
+							</>
+						}
 						src="/images/workbench-browser.png"
+						srcSet={responsiveSrcSet("/images/workbench-browser.png")}
+						sizes={storySizes}
 						alt="Local Studio workbench with a coding agent and integrated browser."
 						width="5118"
 						height="2800"
@@ -107,8 +126,15 @@ export function AgentsPage() {
 					/>
 					<div className="grid gap-5">
 						<MediaFrame
-							caption={<><strong>Tools</strong><span>live app capture</span></>}
+							caption={
+								<>
+									<strong>Tools</strong>
+									<span>live app capture</span>
+								</>
+							}
 							src="/images/workbench-terminal.png"
+							srcSet={responsiveSrcSet("/images/workbench-terminal.png")}
+							sizes={frameSizes}
 							alt="Local Studio workbench showing terminal and agent tool activity."
 							width="5118"
 							height="2800"
@@ -116,8 +142,15 @@ export function AgentsPage() {
 							decoding="async"
 						/>
 						<MediaFrame
-							caption={<><strong>Configure</strong><span>live app capture</span></>}
+							caption={
+								<>
+									<strong>Configure</strong>
+									<span>live app capture</span>
+								</>
+							}
 							src="/images/configure-models.png"
+							srcSet={responsiveSrcSet("/images/configure-models.png")}
+							sizes={frameSizes}
 							alt="Local Studio model configuration screen."
 							width="5118"
 							height="2800"
@@ -132,7 +165,15 @@ export function AgentsPage() {
 							className="min-h-56 border-r border-white/10 p-8 last:border-r-0 max-[900px]:min-h-0 max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:last:border-b-0"
 							key={title}
 						>
-							<h3>{title}</h3>
+							<h3>
+								{title === "Pi agents" ? (
+									<>
+										<span translate="no">Pi</span> agents
+									</>
+								) : (
+									title
+								)}
+							</h3>
 							<p className="mt-4 text-base/6 text-white/70">{text}</p>
 						</article>
 					))}

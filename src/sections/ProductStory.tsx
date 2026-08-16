@@ -1,15 +1,10 @@
-import {
-type FocusEvent,
-type KeyboardEvent,
-useEffect,
-useRef,
-useState,
-} from "react";
-import { useReducedMotion } from "motion/react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { responsiveSrcSet, storySizes } from "../images";
 
 const features = [
 	{
 		title: "Control",
+		slug: "control",
 		description:
 			"Local and remote controllers, live status, launch state, logs, and metrics.",
 		image: "/images/usage-proxy.png",
@@ -17,13 +12,21 @@ const features = [
 	},
 	{
 		title: "Serve",
-		description:
-			"vLLM, SGLang, MLX, and llama.cpp behind one OpenAI-compatible surface.",
+		slug: "serve",
+		description: (
+			<>
+				<span translate="no">vLLM</span>, <span translate="no">SGLang</span>,{" "}
+				<span translate="no">MLX</span>, and{" "}
+				<span translate="no">llama.cpp</span> behind one OpenAI-compatible
+				surface.
+			</>
+		),
 		image: "/images/configure-models.png",
 		alt: "Local Studio model configuration screen showing searchable Hugging Face models, hardware fit, and downloads.",
 	},
 	{
 		title: "Work",
+		slug: "work",
 		description:
 			"Models, providers, browser, files, terminal, and agents in the same session.",
 		image: "/images/workbench-terminal.png",
@@ -31,36 +34,39 @@ const features = [
 	},
 ] as const;
 
+function featureIndexFromHash(hash: string) {
+	const slug = /^#media=([a-z-]+)$/.exec(hash)?.[1];
+	const index = features.findIndex((feature) => feature.slug === slug);
+	return index === -1 ? 0 : index;
+}
+
 export function ProductStory() {
-	const [activeIndex, setActiveIndex] = useState(0);
-	const [isVisible, setIsVisible] = useState(false);
-	const [isPaused, setIsPaused] = useState(false);
-	const reduceMotion = useReducedMotion();
-	const sectionRef = useRef<HTMLElement>(null);
+	const [activeIndex, setActiveIndex] = useState(() =>
+		featureIndexFromHash(window.location.hash),
+	);
 	const buttonsRef = useRef<Array<HTMLButtonElement | null>>([]);
 	const activeFeature = features[activeIndex];
 
 	useEffect(() => {
-		const section = sectionRef.current;
-		if (!section) return;
-		const observer = new IntersectionObserver(
-			([entry]) => setIsVisible(entry.isIntersecting),
-			{ threshold: 0.3 },
-		);
-		observer.observe(section);
-		return () => observer.disconnect();
+		function syncFromHash() {
+			setActiveIndex(featureIndexFromHash(window.location.hash));
+		}
+		window.addEventListener("hashchange", syncFromHash);
+		return () => window.removeEventListener("hashchange", syncFromHash);
 	}, []);
 
-	useEffect(() => {
-		if (!isVisible || isPaused || reduceMotion) return;
-		const interval = window.setInterval(
-			() => setActiveIndex((index) => (index + 1) % features.length),
-			6000,
-		);
-		return () => window.clearInterval(interval);
-	}, [activeIndex, isPaused, isVisible, reduceMotion]);
+	function selectFeature(index: number) {
+		setActiveIndex(index);
+		const hash = `#media=${features[index].slug}`;
+		if (window.location.hash !== hash) {
+			window.history.replaceState({}, "", hash);
+		}
+	}
 
-	function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+	function handleKeyDown(
+		event: KeyboardEvent<HTMLButtonElement>,
+		index: number,
+	) {
 		let nextIndex: number | undefined;
 		if (event.key === "ArrowDown" || event.key === "ArrowRight") {
 			nextIndex = (index + 1) % features.length;
@@ -73,17 +79,12 @@ export function ProductStory() {
 		}
 		if (nextIndex === undefined) return;
 		event.preventDefault();
-		setActiveIndex(nextIndex);
+		selectFeature(nextIndex);
 		buttonsRef.current[nextIndex]?.focus();
-	}
-
-	function handleBlur(event: FocusEvent<HTMLDivElement>) {
-		if (!event.currentTarget.contains(event.relatedTarget)) setIsPaused(false);
 	}
 
 	return (
 		<section
-			ref={sectionRef}
 			id="media"
 			className="story section-width"
 			aria-labelledby="system-title"
@@ -91,45 +92,60 @@ export function ProductStory() {
 			<div className="story__intro">
 				<h2 id="system-title">Local AI is hard, this will make it easier.</h2>
 				<p>
-					Local Studio keeps the model, the runtime, and the hardware together.
-					Nothing important disappears behind a provider abstraction.
+					<span translate="no">Local Studio</span> keeps the model, the runtime,
+					and the hardware together. Nothing important disappears behind a
+					provider abstraction.
 				</p>
 			</div>
-			<div
-				className="story__showcase"
-				onPointerEnter={() => setIsPaused(true)}
-				onPointerLeave={() => setIsPaused(false)}
-				onFocus={() => setIsPaused(true)}
-				onBlur={handleBlur}
-			>
-				<ul className="story__options" aria-label="Local Studio capabilities">
+			<div className="story__showcase">
+				<ul
+					className="story__options"
+					role="tablist"
+					aria-label="Local Studio capabilities"
+				>
 					{features.map((feature, index) => {
 						const selected = activeIndex === index;
 						const descriptionId = `feature-description-${index + 1}`;
+						const tabId = `feature-tab-${index + 1}`;
 						return (
-							<li className={selected ? "is-active" : undefined} key={feature.title}>
+							<li
+								className={selected ? "is-active" : undefined}
+								key={feature.title}
+								role="none"
+							>
 								<button
 									ref={(button) => {
 										buttonsRef.current[index] = button;
 									}}
 									type="button"
-									aria-expanded={selected}
-									aria-controls={descriptionId}
-									onClick={() => setActiveIndex(index)}
+									role="tab"
+									id={tabId}
+									aria-selected={selected}
+									onClick={() => selectFeature(index)}
 									onKeyDown={(event) => handleKeyDown(event, index)}
 								>
 									<span className="story__option-title">{feature.title}</span>
 								</button>
-								<div id={descriptionId} hidden={!selected}>
+								<div
+									id={descriptionId}
+									role="tabpanel"
+									aria-labelledby={tabId}
+									hidden={!selected}
+								>
 									<p className="story__description">{feature.description}</p>
 								</div>
 							</li>
 						);
 					})}
 				</ul>
-				<figure className="story__visual" data-active-feature={activeFeature.title}>
+				<figure
+					className="story__visual"
+					data-active-feature={activeFeature.title}
+				>
 					<img
 						key={activeFeature.image}
+						srcSet={responsiveSrcSet(activeFeature.image)}
+						sizes={storySizes}
 						src={activeFeature.image}
 						alt={activeFeature.alt}
 						width="5118"
@@ -137,6 +153,9 @@ export function ProductStory() {
 						loading="lazy"
 						decoding="async"
 					/>
+					<p className="sr-only" role="status">
+						{activeFeature.title}. {activeFeature.description}
+					</p>
 				</figure>
 			</div>
 		</section>

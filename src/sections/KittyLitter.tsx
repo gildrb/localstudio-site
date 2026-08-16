@@ -22,21 +22,22 @@ export function KittyLitter() {
 			<div className="kitty__intro">
 				<h2 id="kittylitter-title">Your agents, in your pocket.</h2>
 				<div className="kitty__copy">
-					<p>
-						Pair your phone from Local Studio, then keep working with Codex,
-						Claude, OpenCode, Pi, and Droid from anywhere.
-					</p>
+				<p>
+					Pair your phone from <span translate="no">Local Studio</span>, then keep
+					working with Codex, Claude, OpenCode, <span translate="no">Pi</span>, and
+					Droid from anywhere.
+				</p>
 					<div className="kitty__actions">
-						<TextLink href="/mobile" arrow="right">
-							See how mobile works
-						</TextLink>
-						<TextLink
-							href="https://kittylitter.app"
-							target="_blank"
-							rel="noreferrer"
-						>
-							Get KittyLitter
-						</TextLink>
+							<TextLink href="/mobile" arrow="right">
+								See how mobile works
+							</TextLink>
+							<TextLink
+										href="https://kittylitter.app"
+										arrow="up"
+								rel="noreferrer"
+							>
+									<span translate="no">Get KittyLitter</span>
+							</TextLink>
 					</div>
 				</div>
 			</div>

@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-	["/", "Local Studio", "Run your intelligence"],
-	["/product", "Product — Local Studio", "One place to run local AI"],
-	["/mobile", "Mobile — Local Studio", "Your local agents"],
-	["/docs", "Docs — Local Studio", "Get Local Studio running"],
-	["/prompt", "Setup Prompt — Local Studio", "Give this to any coding model"],
-	["/agents", "Agents — Local Studio", "Set up the stack"],
-	["/download/macos", "Download — Local Studio", "Download for macOS"],
+	["/", "Run your intelligence at home - Local Studio", "Run your intelligence"],
+	["/product", "Product - Local Studio", "One place to run local AI"],
+	["/mobile", "Mobile - Local Studio", "Your local agents"],
+	["/docs", "Docs - Local Studio", "Get Local Studio running"],
+	["/prompt", "Setup Prompt - Local Studio", "Give this to any coding model"],
+	["/agents", "Agents - Local Studio", "Set up the stack"],
+	["/download/macos", "Download - Local Studio", "Download for macOS"],
 ] as const;
 
 for (const [route, title, heading] of routes) {
@@ -71,7 +71,7 @@ test("homepage repeats the hero actions in the final callout", async ({ page }) 
 	const finalActions = page.locator(".final-callout .hero__actions");
 	for (const actions of [heroActions, finalActions]) {
 		await expect(actions.getByRole("link", { name: "Download for macOS" })).toHaveAttribute("href", "/download/macos");
-		await expect(actions.getByRole("link", { name: "Setup" })).toHaveAttribute("href", "/prompt");
+		await expect(actions.getByRole("link", { name: "Setup prompt" })).toHaveAttribute("href", "/prompt");
 		await expect(actions.getByRole("link")).toHaveCount(2);
 	}
 	await expect(page.getByRole("link", { name: "View on GitHub" })).toHaveCount(0);
@@ -113,29 +113,32 @@ test("homepage hero, product story, and mobile story have no separators", async 
 	expect(boundaries).toEqual({ borders: ["0px", "0px"], firstGap: 240, secondGap: 240 });
 });
 
-test("homepage reveals one fixed Workbench screenshot after the hero copy", async ({ page }) => {
+test("homepage hero reveals through CSS with a responsive screenshot", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
-	await page.addInitScript(() => {
-		const observer = new MutationObserver(() => {
-			const stage = document.querySelector(".hero__stage");
-			const gradient = document.querySelector(".hero__gradient");
-			if (!stage || !gradient) return;
-			document.documentElement.dataset.heroInitialStageOpacity = getComputedStyle(stage).opacity;
-			document.documentElement.dataset.heroInitialGradientOpacity = getComputedStyle(gradient).opacity;
-			observer.disconnect();
-		});
-		observer.observe(document, { childList: true, subtree: true });
-	});
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await expect(page.locator(".signal, .macbook-scroll, .hero__macbook")).toHaveCount(0);
 	const gradient = page.locator(".hero__gradient");
 	const stage = page.locator(".hero__stage");
 	const image = page.locator(".hero__screenshot");
 	await stage.waitFor({ state: "attached" });
-	expect(await page.evaluate(() => [
-		document.documentElement.dataset.heroInitialStageOpacity,
-		document.documentElement.dataset.heroInitialGradientOpacity,
-	])).toEqual(["0", "0"]);
+	const entrance = await page.evaluate(() => {
+		const mark = getComputedStyle(document.querySelector(".hero__mark")!);
+		const title = getComputedStyle(document.querySelector(".hero h1")!);
+		const lead = getComputedStyle(document.querySelector(".story__intro p")!);
+		const stageStyle = getComputedStyle(document.querySelector(".hero__stage")!);
+		const gradientStyle = getComputedStyle(document.querySelector(".hero__gradient")!);
+		const texture = getComputedStyle(document.querySelector(".hero__texture")!);
+		return {
+			names: [mark.animationName, title.animationName, stageStyle.animationName, gradientStyle.animationName],
+			textNodeTransforms: [title.transform, lead.transform],
+			textureGradient: texture.backgroundImage.includes("linear-gradient"),
+			grid: getComputedStyle(document.querySelector(".hero__texture")!, "::before").animationName,
+		};
+	});
+	expect(entrance.names).toEqual(["hero-rise", "hero-fade", "hero-rise", "hero-fade"]);
+	expect(entrance.textNodeTransforms).toEqual(["none", "none"]);
+	expect(entrance.textureGradient).toBe(false);
+	expect(entrance.grid).toBe("grid-drift");
 	await expect(stage).toHaveCSS("opacity", "1");
 	await expect(gradient).toHaveCSS("opacity", "1");
 	await image.evaluate(element => (element as HTMLImageElement).decode());
@@ -153,34 +156,44 @@ test("homepage reveals one fixed Workbench screenshot after the hero copy", asyn
 			imageInset: Math.round(imageBounds.left - gradientBounds.left),
 			bottomOffsets: [Math.round(hero.bottom - gradientBounds.bottom), Math.round(hero.bottom - stageBounds.bottom), Math.round(hero.bottom - imageBounds.bottom)],
 			intrinsic: [screenshot.naturalWidth, screenshot.naturalHeight],
+			currentSrc: new URL(screenshot.currentSrc).pathname,
 			neutral: !getComputedStyle(gradientElement).backgroundImage.includes("8, 9, 10"),
 		};
 	});
-	expect(layout).toEqual({ gap: 72, widths: [1240, 1240, 920], imageInset: 160, bottomOffsets: [0, 0, 24], intrinsic: [5118, 2800], neutral: true });
+	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1240, 1240], imageInset: 100, bottomOffsets: [0, 0, 24], currentSrc: "/images/workbench-browser-1300.png", neutral: true });
+	expect(layout.intrinsic[0]).toBeLessThanOrEqual(1300);
+	expect(Math.abs(layout.intrinsic[1] - Math.round((layout.intrinsic[0] * 2800) / 5118))).toBeLessThanOrEqual(1);
+	const srcset = await image.evaluate(element => (element as HTMLImageElement).srcset);
+	expect(srcset).toContain("workbench-browser-800.png 800w");
+	expect(srcset).toContain("workbench-browser-2600.png 2600w");
 	const documentTop = await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY));
 	await page.evaluate(() => globalThis.scrollTo(0, 500));
 	await page.waitForTimeout(100);
 	expect(await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY))).toBe(documentTop);
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto("/");
+	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await expect(stage).toHaveCSS("opacity", "1");
 	const mobile = await page.evaluate(() => {
+		const screenshot = document.querySelector(".hero__screenshot") as HTMLImageElement;
 		const gradientBounds = document.querySelector(".hero__gradient")!.getBoundingClientRect();
-		const stageBounds = document.querySelector(".hero__stage")!.getBoundingClientRect();
-		const imageBounds = document.querySelector(".hero__screenshot")!.getBoundingClientRect();
+		const imageBounds = screenshot.getBoundingClientRect();
 		const heroBottom = document.querySelector(".hero")!.getBoundingClientRect().bottom;
 		return {
-			gap: Math.round(stageBounds.top - document.querySelector(".hero__copy")!.getBoundingClientRect().bottom),
+			gap: Math.round(document.querySelector(".hero__stage")!.getBoundingClientRect().top - document.querySelector(".hero__copy")!.getBoundingClientRect().bottom),
 			widths: [Math.round(gradientBounds.width), Math.round(imageBounds.width)],
 			bottomOffsets: [Math.round(heroBottom - gradientBounds.bottom), Math.round(heroBottom - imageBounds.bottom)],
+			currentSrc: new URL(screenshot.currentSrc).pathname,
 		};
 	});
-	expect(mobile).toEqual({ gap: 56, widths: [342, 294], bottomOffsets: [0, 16] });
+	expect(mobile).toEqual({ gap: 56, widths: [1440, 342], bottomOffsets: [0, 16], currentSrc: "/images/workbench-browser-800.png" });
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await stage.waitFor({ state: "attached" });
-	expect(await stage.evaluate(element => [getComputedStyle(element).opacity, getComputedStyle(element).transform])).toEqual(["1", "none"]);
-	expect(await gradient.evaluate(element => getComputedStyle(element).opacity)).toBe("1");
+	const reduced = await page.evaluate(() => ({
+		stage: [getComputedStyle(document.querySelector(".hero__stage")!).animationName, getComputedStyle(document.querySelector(".hero__stage")!).opacity],
+		grid: getComputedStyle(document.querySelector(".hero__texture")!, "::before").animationName,
+	}));
+	expect(reduced).toEqual({ stage: ["none", "1"], grid: "none" });
 });
 
 test("mobile sections stack their hierarchy without separators", async ({ page }) => {
@@ -232,17 +245,19 @@ test("mobile page keeps stable gutters, type, and actions at narrow widths", asy
 			heading: ["32px", "40px"],
 		}));
 		const actions = await page
-			.locator(".page-intro .hero__actions, .page-cta .hero__actions")
+			.locator(".page-intro .button-group, .page-cta .button-group")
 			.evaluateAll(groups => groups.map(group => {
 				const links = [...group.children].map(element => element.getBoundingClientRect());
 				return {
+					group: [Math.round(group.getBoundingClientRect().left), Math.round(group.getBoundingClientRect().width)],
 					links: links.map(bounds => [Math.round(bounds.left), Math.round(bounds.width), Math.round(bounds.height)]),
 					gap: Math.round(links[1].top - links[0].bottom),
 				};
 			}));
 		expect(actions).toEqual(Array(2).fill({
+			group: [24, width - 48],
 			links: [[24, width - 48, 48], [24, width - 48, 48]],
-			gap: 12,
+			gap: 8,
 		}));
 	}
 });
@@ -275,9 +290,9 @@ test("shared action links fully brighten within 130ms", async ({ page }) => {
 	const rest = await link.evaluate(element => {
 		const style = getComputedStyle(element);
 		const arrow = getComputedStyle(element.querySelector("span")!);
-		return { color: style.color, duration: style.transitionDuration, arrowColor: arrow.color, arrowDuration: arrow.transitionDuration };
+		return { color: style.color, duration: style.transitionDuration, arrowColor: arrow.color, arrowTransform: arrow.transform };
 	});
-	expect(rest).toEqual({ color: "rgb(118, 118, 118)", duration: "0.13s", arrowColor: "rgb(118, 118, 118)", arrowDuration: "0.13s" });
+	expect(rest).toEqual({ color: "rgb(143, 143, 143)", duration: "0.13s", arrowColor: "rgb(143, 143, 143)", arrowTransform: "none" });
 	await link.hover();
 	await page.waitForTimeout(150);
 	const hover = await link.evaluate(element => ({
@@ -288,28 +303,50 @@ test("shared action links fully brighten within 130ms", async ({ page }) => {
 	for (const route of ["/mobile", "/docs", "/prompt"]) {
 		await page.goto(route);
 		const action = page.locator(".page-intro .text-link");
-		expect(await action.evaluate(element => getComputedStyle(element).transitionDuration)).toBe("0.13s");
+		expect(await action.evaluate(element => getComputedStyle(element).transitionDuration.split(", ").every(d => d === "0.13s"))).toBe(true);
 	}
 });
 
-test("homepage capability selector controls one synchronized image", async ({ page }) => {
+test("homepage capability selector is a deep-linkable tablist", async ({ page }) => {
 	await page.goto("/");
-	const options = page.getByRole("list", { name: "Local Studio capabilities" });
-	const control = options.getByRole("button", { name: "Control" });
-	const serve = options.getByRole("button", { name: "Serve" });
-	const work = options.getByRole("button", { name: "Work" });
-	await expect(control).toHaveAttribute("aria-expanded", "true");
-	await expect(page.getByText("Local and remote controllers, live status, launch state, logs, and metrics.")).toBeVisible();
+	const options = page.getByRole("tablist", { name: "Local Studio capabilities" });
+	const control = options.getByRole("tab", { name: "Control" });
+	const serve = options.getByRole("tab", { name: "Serve" });
+	const work = options.getByRole("tab", { name: "Work" });
+	await expect(control).toHaveAttribute("aria-selected", "true");
+	await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
 	await expect(page.locator('.story__visual[data-active-feature="Control"] img')).toHaveAttribute("src", "/images/usage-proxy.png");
 	await serve.click();
-	await expect(serve).toHaveAttribute("aria-expanded", "true");
-	await expect(page.getByText("vLLM, SGLang, MLX, and llama.cpp behind one OpenAI-compatible surface.")).toBeVisible();
+	await expect(page).toHaveURL(/#media=serve$/);
+	await expect(serve).toHaveAttribute("aria-selected", "true");
+	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
 	await expect(page.locator('.story__visual[data-active-feature="Serve"] img')).toHaveAttribute("src", "/images/configure-models.png");
 	await serve.press("ArrowDown");
 	await expect(work).toBeFocused();
-	await expect(work).toHaveAttribute("aria-expanded", "true");
+	await expect(work).toHaveAttribute("aria-selected", "true");
+	await expect(page).toHaveURL(/#media=work$/);
 	await expect(page.locator('.story__visual[data-active-feature="Work"] img')).toHaveAttribute("src", "/images/workbench-terminal.png");
 	await expect(page.locator(".story__visual img")).toHaveCount(1);
+	await page.reload();
+	await expect(work).toHaveAttribute("aria-selected", "true");
+	await expect(page.locator('.story__visual[data-active-feature="Work"] img')).toHaveAttribute("src", "/images/workbench-terminal.png");
+});
+
+test("tabbing reaches every story tab in order", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/");
+	const seen: string[] = [];
+	for (let index = 0; index < 30 && seen.length < 3; index += 1) {
+		await page.keyboard.press("Tab");
+		const label = await page.evaluate(() => {
+			const element = document.activeElement as HTMLElement;
+			return element.getAttribute("role") === "tab"
+				? (element.textContent ?? "").trim()
+				: "";
+		});
+		if (label) seen.push(label);
+	}
+	expect(seen).toEqual(["Control", "Serve", "Work"]);
 });
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {
@@ -480,7 +517,7 @@ test("setup prompt copies", async ({ page, context }) => {
 
 test("unknown routes render a local not-found page", async ({ page }) => {
 	await page.goto("/not-a-route");
-	await expect(page).toHaveTitle("Page not found — Local Studio");
+	await expect(page).toHaveTitle("Page not found - Local Studio");
 	await expect(
 		page.getByRole("heading", { level: 1, name: "This page is not local." }),
 	).toBeVisible();

@@ -11,7 +11,7 @@ interface TextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 export function TextLink({
 	children,
 	href,
-	arrow = "up",
+	arrow = "right",
 	className = "",
 	...props
 }: TextLinkProps) {

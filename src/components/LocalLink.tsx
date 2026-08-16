@@ -1,5 +1,5 @@
 import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from "react";
-import { scrollToHash } from "../routing";
+import { emitNavigation, scrollToHash } from "../routing";
 
 interface LocalLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 	children: ReactNode;
@@ -36,7 +36,7 @@ export function LocalLink({
 		const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
 		if (next !== current) {
 			window.history.pushState({}, "", next);
-			window.dispatchEvent(new PopStateEvent("popstate"));
+			emitNavigation();
 		} else if (target.hash) {
 			scrollToHash(target.hash);
 		} else {

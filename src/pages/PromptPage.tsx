@@ -29,10 +29,10 @@ export function PromptPage() {
 				title="Give this to any coding model."
 				description="It will inspect the machine, choose the right runtime, install Local Studio, and prove a real inference request works."
 				actions={
-					<>
+					<div className="button-group">
 						<DownloadButton iconSize={17} />
 						<TextLink href="/docs" arrow="right">Read the docs</TextLink>
-					</>
+					</div>
 				}
 			/>
 			<section className="section-width pb-30" aria-label="Setup handoff">
