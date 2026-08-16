@@ -1,11 +1,13 @@
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { DownloadButton, TextLink } from "../components/Links";
 import { heroSizes, responsiveSrcSet } from "../images";
+import { useMachine } from "../machine";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 export function Hero() {
 	const reduceMotion = useReducedMotion();
+	const { toggleMachine } = useMachine();
 	const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
 
 	return (
@@ -21,21 +23,28 @@ export function Hero() {
 				<div className="hero__texture" aria-hidden="true" />
 				<div className="hero__inner">
 					<div className="hero__copy">
-						<m.img
+					<m.button
+						className="hero__mark-button"
+						type="button"
+						onClick={() => toggleMachine(true)}
+						aria-label="Machine-readable page"
+						initial={
+							reduceMotion
+								? false
+								: { opacity: 0, y: 12, filter: "blur(6px)" }
+						}
+						animate={settle}
+						transition={{ duration: 0.9, ease, delay: 0.05 }}
+					>
+						<img
 							className="hero__mark"
 							src="/images/optimized.svg"
 							alt=""
 							width="525"
 							height="525"
 							aria-hidden="true"
-							initial={
-								reduceMotion
-									? false
-									: { opacity: 0, y: 12, filter: "blur(6px)" }
-							}
-							animate={settle}
-							transition={{ duration: 0.9, ease, delay: 0.05 }}
 						/>
+					</m.button>
 						<m.h1
 							id="landing-title"
 							tabIndex={-1}

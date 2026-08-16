@@ -1,5 +1,5 @@
 import setupPrompt from "../content/setup-prompt.txt?raw";
-import { CopyButton } from "../components/CopyButton";
+import { CopyIcon } from "../components/CopyIcon";
 import { DownloadButton, TextLink } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
@@ -34,21 +34,11 @@ export function PromptPage() {
 			/>
 			<section className="section-width pb-30" aria-label="Setup handoff">
 				<section
-					className="overflow-hidden rounded-2xl border border-white/15"
+					className="prompt-block overflow-hidden rounded-2xl border border-white/15"
 					aria-label="Portable setup prompt"
 				>
-					<div className="flex items-center justify-between gap-6 border-b border-white/10 p-5 max-[620px]:items-start">
-						<div>
-							<strong className="font-mono text-sm/5">
-								local-studio / setup
-							</strong>
-							<small className="mt-1 block text-sm/5 text-white/50">
-								Portable agent prompt
-							</small>
-						</div>
-						<CopyButton label="Copy prompt" text={setupPrompt} />
-					</div>
-					<pre className="max-h-[660px] overflow-auto whitespace-pre-wrap p-8 font-mono text-sm/5 text-white/80 max-[620px]:p-5">
+					<CopyIcon text={setupPrompt} />
+					<pre className="max-h-[660px] overflow-auto whitespace-pre-wrap p-8 pr-20 pt-14 font-mono text-sm/5 text-white/80 max-[620px]:p-5 max-[620px]:pr-12 max-[620px]:pt-12">
 						<code>{setupPrompt}</code>
 					</pre>
 				</section>

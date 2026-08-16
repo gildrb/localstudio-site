@@ -1,13 +1,118 @@
+import { useEffect, useRef, useState } from "react";
 import { LocalLink } from "./LocalLink";
 
-const links = [
-	{ label: "Mobile", href: "/mobile" },
-	{ label: "Docs", href: "/docs" },
-	{ label: "Setup", href: "/prompt", className: "nav__setup" },
-	{ label: "Agents", href: "/agents", className: "nav__optional" },
+const products = [
+	{ label: "Local AI", href: "https://local.ai", external: true },
+	{ label: "Local Studio", href: "/download/macos" },
+	{ label: "KittyLitter", href: "https://kittylitter.app", external: true },
 ];
 
+const resources = [
+	{ label: "Overview", href: "/resources" },
+	{ label: "Setup prompt", href: "/prompt" },
+	{ label: "Agent setup", href: "/agents" },
+	{ label: "GitHub", href: "https://github.com/sybil-solutions/local-studio", external: true },
+];
+
+const githubUrl = "https://github.com/sybil-solutions/local-studio";
+
+function Chevron({ open }: { open: boolean }) {
+	return (
+		<svg
+			viewBox="0 0 16 16"
+			height="14"
+			width="14"
+			aria-hidden="true"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="0.75"
+			className={open ? "nav__chevron is-open" : "nav__chevron"}
+		>
+			<path
+				fill="currentColor"
+				fillRule="evenodd"
+				d="m12.06 6.75-.53.53-2.82 2.82a1 1 0 0 1-1.42 0L4.47 7.28l-.53-.53L5 5.69l.53.53L8 8.69l2.47-2.47.53-.53z"
+				clipRule="evenodd"
+			/>
+		</svg>
+	);
+}
+
+function MenuItems({
+	items,
+	onNavigate,
+}: {
+	items: typeof products;
+	onNavigate: () => void;
+}) {
+	return (
+		<div className="nav__menu-items">
+			{items.map((item) =>
+				item.external ? (
+					<a role="menuitem" href={item.href} key={item.label} target="_blank" rel="noreferrer">
+						{item.label}
+					</a>
+				) : (
+					<LocalLink role="menuitem" href={item.href} key={item.label} onClick={onNavigate}>
+						{item.label}
+					</LocalLink>
+				),
+			)}
+		</div>
+	);
+}
+
 export function Header() {
+	const [openMenu, setOpenMenu] = useState<string | null>(null);
+	const menusRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!openMenu) return;
+		function onPointerDown(event: PointerEvent) {
+			if (!menusRef.current?.contains(event.target as Node)) {
+				setOpenMenu(null);
+			}
+		}
+		function onKeyDown(event: KeyboardEvent) {
+			if (event.key === "Escape") setOpenMenu(null);
+		}
+		document.addEventListener("pointerdown", onPointerDown);
+		document.addEventListener("keydown", onKeyDown);
+		return () => {
+			document.removeEventListener("pointerdown", onPointerDown);
+			document.removeEventListener("keydown", onKeyDown);
+		};
+	}, [openMenu]);
+
+	const close = () => setOpenMenu(null);
+
+	function menu(id: string, label: string, items: typeof products) {
+		const open = openMenu === id;
+		return (
+			<div
+				className="nav__menu"
+				onPointerLeave={() => setOpenMenu((current) => (current === id ? null : current))}
+			>
+				<button
+					type="button"
+					className="nav__menu-trigger"
+					aria-haspopup="menu"
+					aria-expanded={open}
+					onClick={() => setOpenMenu(open ? null : id)}
+					onPointerEnter={() => setOpenMenu(id)}
+				>
+					{label}
+					<Chevron open={open} />
+				</button>
+				{open ? (
+					<div className="nav__menu-panel" role="menu" aria-label={label}>
+						<MenuItems items={items} onNavigate={close} />
+					</div>
+				) : null}
+			</div>
+		);
+	}
+
 	return (
 		<header className="nav">
 			<LocalLink className="brand" href="/" aria-label="Local Studio">
@@ -19,23 +124,11 @@ export function Header() {
 					height="525"
 				/>
 			</LocalLink>
-			<nav className="nav__links" aria-label="Landing navigation">
-				{links.map((link) => (
-					<LocalLink
-						className={link.className}
-						href={link.href}
-						key={link.label}
-					>
-						{link.label}
-					</LocalLink>
-				))}
-				<LocalLink
-					className="nav__github"
-					href="https://github.com/sybil-solutions/local-studio"
-					target="_blank"
-					rel="noreferrer"
-					aria-label="Local Studio on GitHub"
-				>
+			<nav className="nav__links" aria-label="Landing navigation" ref={menusRef}>
+				{menu("products", "Products", products)}
+				{menu("resources", "Resources", resources)}
+				<a href="https://www.sybilsolutions.ai/">Company</a>
+				<LocalLink className="nav__github" href={githubUrl} target="_blank" rel="noreferrer" aria-label="Local Studio on GitHub">
 					<svg viewBox="0 0 24 24" aria-hidden="true">
 						<path
 							fill="currentColor"

@@ -131,7 +131,8 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 			)
 		.toBe("1");
 	const entrance = await page.evaluate(() => {
-		const mark = document.querySelector(".hero__mark") as HTMLElement;
+		const mark = (document.querySelector(".hero__mark") as HTMLElement)
+			.closest(".hero__mark-button") as HTMLElement;
 		const title = document.querySelector(".hero h1") as HTMLElement;
 		const actions = document.querySelector(".hero__actions") as HTMLElement;
 		const stage = document.querySelector(".hero__stage") as HTMLElement;
@@ -486,15 +487,16 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 	await page.goto("/");
 	const navigation = page.getByRole("navigation", { name: "Landing navigation" });
 	await expect(navigation.getByRole("link", { name: "Media", exact: true })).toHaveCount(0);
-	await expect(navigation.getByRole("link", { name: "Product", exact: true })).toHaveCount(0);
-	await navigation.getByRole("link", { name: "Mobile", exact: true }).click();
-	await expect(page).toHaveURL("/mobile");
-	await navigation.getByRole("link", { name: "Docs", exact: true }).click();
-	await expect(page).toHaveURL("/docs");
-	await navigation.getByRole("link", { name: "Setup", exact: true }).click();
-	await expect(page).toHaveURL("/prompt");
+	await expect(navigation.getByRole("link", { name: "Setup", exact: true })).toHaveCount(0);
+	await expect(
+		navigation.getByRole("link", { name: "Company", exact: true }),
+	).toHaveAttribute("href", "https://www.sybilsolutions.ai/");
+	await navigation.getByRole("button", { name: /Resources/ }).click();
+	const panel = page.locator(".nav__menu-panel");
+	await panel.getByRole("link", { name: "Overview", exact: true }).click();
+	await expect(page).toHaveURL("/resources");
 	await page.goBack();
-	await expect(page).toHaveURL("/docs");
+	await expect(page).toHaveURL("/");
 });
 
 test("all Local Studio links resolve locally", async ({ page }) => {
@@ -516,11 +518,23 @@ test("all Local Studio links resolve locally", async ({ page }) => {
 	}
 });
 
-test("setup prompt copies", async ({ page, context }) => {
+test("setup prompt copies from the floating copy icon", async ({ page, context }) => {
 	await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 	await page.goto("/prompt");
-	await page.getByRole("button", { name: "Copy prompt" }).click();
-	await expect(page.getByRole("button", { name: "Copied" })).toBeVisible();
+	const icon = page.getByRole("button", { name: "Copy to clipboard" });
+	await expect
+		.poll(() => icon.evaluate((el) => getComputedStyle(el).opacity))
+		.toBe("0");
+	await page.locator(".prompt-block").hover();
+	await expect
+		.poll(() => icon.evaluate((el) => getComputedStyle(el).opacity))
+		.toBe("1");
+	const copyPath = await icon.evaluate((el) => el.querySelector("path")!.getAttribute("d"));
+	await icon.click();
+	await page.waitForTimeout(250);
+	const checkPath = await icon.evaluate((el) => el.querySelector("path")!.getAttribute("d"));
+	expect(copyPath).not.toBe(checkPath);
+	await expect(page.getByRole("status")).toContainText("Copied to clipboard");
 	const clipboard = await page.evaluate(() => navigator.clipboard.readText());
 	expect(clipboard).toContain("Set up Local Studio completely");
 });

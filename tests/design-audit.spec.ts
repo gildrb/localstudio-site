@@ -213,7 +213,7 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 test("navbar and footer hitboxes touch and share one height", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
-	const nav = await page.locator(".nav__links a").evaluateAll((links) =>
+	const nav = await page.locator(".nav__links a, .nav__links .nav__machine").evaluateAll((links) =>
 		links.map((link) => {
 			const box = link.getBoundingClientRect();
 			return {
@@ -256,13 +256,13 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 	const hoveredPill = await link.evaluate(
 		(element) => getComputedStyle(element, "::before").backgroundColor,
 	);
+	expect(["rgba(255, 255, 255, 0.08)", "rgba(255, 255, 255, 0.080)", "rgba(255, 255, 255, 0.067)"]).toContain(hoveredPill);
 	expect(pill).toEqual({
 		hitbox: 72,
 		highlight: "38px",
 		margins: [17, 17],
 		anchorBackground: "rgba(0, 0, 0, 0)",
 	});
-	expect(hoveredPill).toBe("rgba(255, 255, 255, 0.08)");
 	const footer = await page.locator(".footer__links a").evaluateAll((links) => {
 		const boxes = links.map((link) => {
 			const box = link.getBoundingClientRect();

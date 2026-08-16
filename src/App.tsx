@@ -3,11 +3,15 @@ import { AgentsPage } from "./pages/AgentsPage";
 import { DocsPage } from "./pages/DocsPage";
 import { DownloadPage } from "./pages/DownloadPage";
 import { HomePage } from "./pages/HomePage";
+import { MachinePage } from "./pages/MachinePage";
 import { MobilePage } from "./pages/MobilePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ProductPage } from "./pages/ProductPage";
 import { PromptPage } from "./pages/PromptPage";
+import { ResourcesPage } from "./pages/ResourcesPage";
+import { MachineContext } from "./machine";
 import {
+	emitNavigation,
 	isRoutePath,
 	normalizePath,
 	scrollToHash,
@@ -22,9 +26,24 @@ const titles = {
 	"/prompt": "Setup Prompt - Local Studio",
 	"/agents": "Agents - Local Studio",
 	"/download/macos": "Download - Local Studio",
+	"/resources": "Resources - Local Studio",
+	"/machine": "Machines - Local Studio",
 } as const;
 
 type NavigationSource = "load" | "push" | "pop";
+
+function routeFor(pathname: string) {
+	if (pathname === "/machine") return <MachinePage />;
+	if (!isRoutePath(pathname)) return <NotFoundPage />;
+	if (pathname === "/product") return <ProductPage />;
+	if (pathname === "/mobile") return <MobilePage />;
+	if (pathname === "/docs") return <DocsPage />;
+	if (pathname === "/prompt") return <PromptPage />;
+	if (pathname === "/agents") return <AgentsPage />;
+	if (pathname === "/download/macos") return <DownloadPage />;
+	if (pathname === "/resources") return <ResourcesPage />;
+	return <HomePage />;
+}
 
 export default function App() {
 	const [location, setLocation] = useState(
@@ -32,6 +51,15 @@ export default function App() {
 	);
 	const navigationSource = useRef<NavigationSource>("load");
 	const pathname = normalizePath(location.split("#")[0]);
+	const machineMode = pathname === "/machine";
+
+	const machine = {
+		machineMode,
+		toggleMachine: (next: boolean) => {
+			window.history.pushState({}, "", next ? "/machine" : "/");
+			emitNavigation();
+		},
+	};
 
 	useEffect(() => {
 		function updateLocation(source: NavigationSource) {
@@ -50,8 +78,8 @@ export default function App() {
 	}, []);
 
 	useEffect(() => {
-		document.title = isRoutePath(pathname)
-			? titles[pathname]
+		document.title = isRoutePath(pathname) || pathname === "/machine"
+			? titles[pathname as keyof typeof titles]
 			: "Page not found - Local Studio";
 		const hash = window.location.hash;
 		if (hash) {
@@ -59,17 +87,14 @@ export default function App() {
 		} else if (navigationSource.current === "push") {
 			window.scrollTo({ top: 0 });
 			document
-				.querySelector<HTMLElement>("main h1")
+				.querySelector<HTMLElement>("main h1, .machine")
 				?.focus({ preventScroll: true });
 		}
 	}, [location, pathname]);
 
-	if (!isRoutePath(pathname)) return <NotFoundPage />;
-	if (pathname === "/product") return <ProductPage />;
-	if (pathname === "/mobile") return <MobilePage />;
-	if (pathname === "/docs") return <DocsPage />;
-	if (pathname === "/prompt") return <PromptPage />;
-	if (pathname === "/agents") return <AgentsPage />;
-	if (pathname === "/download/macos") return <DownloadPage />;
-	return <HomePage />;
+	return (
+		<MachineContext.Provider value={machine}>
+			{routeFor(pathname)}
+		</MachineContext.Provider>
+	);
 }

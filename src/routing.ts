@@ -5,7 +5,9 @@ export type RoutePath =
 	| "/docs"
 	| "/prompt"
 	| "/agents"
-	| "/download/macos";
+	| "/download/macos"
+	| "/resources"
+	| "/machine";
 
 const routes = new Set<RoutePath>([
 	"/",
@@ -15,6 +17,8 @@ const routes = new Set<RoutePath>([
 	"/prompt",
 	"/agents",
 	"/download/macos",
+	"/resources",
+	"/machine",
 ]);
 
 type NavigationListener = () => void;
