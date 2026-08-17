@@ -1,4 +1,5 @@
 import { LocalLink } from "./LocalLink";
+import type { RoutePath } from "../routing";
 
 const links = [
 	["Machines", "/machine"],
@@ -7,7 +8,7 @@ const links = [
 	["Setup", "/prompt"],
 	["Agents", "/agents"],
 	["Download", "/download/macos"],
-] as const;
+] as const satisfies readonly (readonly [string, RoutePath])[];
 
 export function Footer() {
 	return (

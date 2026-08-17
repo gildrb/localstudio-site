@@ -6,8 +6,14 @@
     <meta name="theme-color" content="#050505" />
     <meta
       name="description"
-      content="One operating surface for controllers, GPUs, models, providers, and local coding agents."
+      content="Local Studio by Sybil Solutions — local-first workstation for self-hosted LLM backends. Companion: KittyLitter."
     />
+    <link rel="canonical" href="https://localstudio.ai/" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+    <link rel="alternate" type="text/markdown" href="/index.md" title="Markdown homepage" />
+    <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM reference" />
+    <link rel="describedby" type="text/markdown" href="/llms.txt" />
+    <link rel="api-catalog" href="/.well-known/api-catalog" type="application/linkset+json" />
     <link rel="icon" href="/images/favicon.ico" sizes="any" />
     <link
       rel="preload"
@@ -16,6 +22,46 @@
       type="font/woff2"
       crossorigin
     />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Sybil Solutions",
+            "url": "https://www.sybilsolutions.ai/",
+            "email": "sherif@sybilsolutions.ai",
+            "sameAs": [
+              "https://sybilsolutions.ai",
+              "https://github.com/sybil-solutions",
+              "https://x.com/0xsero"
+            ]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Local Studio",
+            "url": "https://localstudio.ai/",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "macOS",
+            "license": "https://www.apache.org/licenses/LICENSE-2.0",
+            "downloadUrl": "https://github.com/sybil-solutions/local-studio/releases/latest/download/Local-Studio-arm64.dmg",
+            "publisher": {
+              "@type": "Organization",
+              "name": "Sybil Solutions",
+              "url": "https://www.sybilsolutions.ai/"
+            }
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "KittyLitter",
+            "url": "https://kittylitter.app/",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "iOS, Android",
+            "isRelatedTo": { "@type": "SoftwareApplication", "name": "Local Studio" }
+          }
+        ]
+      }
+    </script>
     <title>Local intelligence. - Local Studio</title>
   </head>
   <body>

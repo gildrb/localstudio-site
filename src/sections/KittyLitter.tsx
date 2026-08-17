@@ -1,5 +1,12 @@
 import { TextLink } from "../components/Links";
 
+type KittyFeature = {
+	readonly title: string;
+	readonly text: string;
+	readonly image: string;
+	readonly alt: string;
+}
+
 const features = [
 	{
 		title: "Multi-agent",
@@ -49,7 +56,7 @@ const features = [
 		image: "/images/kittylitter-feature-open-source.png",
 		alt: "KittyLitter repository page on GitHub.",
 	},
-] as const;
+] as const satisfies readonly KittyFeature[];
 
 export function KittyLitter() {
 	return (

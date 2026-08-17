@@ -1,101 +1,17 @@
-import { useMachine } from "../machine";
+import { machineSections, type MachineSection } from "../agent/catalog";
 import { LocalLink } from "../components/LocalLink";
 import { PageShell } from "../components/PageShell";
+import { useMachine } from "../machine";
 
-const sections: Array<[string, string[]]> = [
-	[
-		"ABOUT",
-		[
-			"name .......... local studio",
-			"aka ........... localstudio",
-			"platform ...... macOS desktop app (Apple Silicon)",
-			"website ....... this site",
-			"repository .... github.com/sybil-solutions/local-studio",
-			"license ....... open source",
-			"companion ..... KittyLitter (iOS + Android client)",
-		],
-	],
-	[
-		"PRODUCT",
-		[
-			"local-studio is a local-first workstation for running, managing, and using",
-			"self-hosted language-model backends on local or remote controllers.",
-			"",
-			"one controller api serves two modules: a bun/hono backend and a",
-			"next.js + react frontend with an electron desktop shell.",
-			"",
-			"keeps the model, the runtime, and the hardware together. nothing",
-			"important disappears behind a provider abstraction.",
-		],
-	],
-	[
-		"CAPABILITIES",
-		[
-			"* control",
-			"  local and remote controllers, live status, launch state, logs,",
-			"  and metrics from one surface.",
-			"* serve",
-			"  vllm, sglang, mlx, and llama.cpp behind one openai-compatible proxy.",
-			"* work",
-			"  models, providers, browser, files, terminal, and agents in the same",
-			"  session through the pi-powered workbench.",
-		],
-	],
-	[
-		"RUNTIMES",
-		[
-			"- vllm ........ cuda throughput serving (linux/nvidia)",
-			"- sglang ...... structured and multi-turn serving (python)",
-			"- llama.cpp ... gguf models through llama-server (cpu and modest gpus)",
-			"- mlx ......... apple silicon serving through mlx_lm.server (mac default)",
-		],
-	],
-	[
-		"MOBILE",
-		[
-			"kittylitter is a native ios + android client for codex, claude,",
-			"opencode, pi, and droid. connect from your local network, over ssh,",
-			"or via alleycat peer-to-peer pairing — from anywhere.",
-			"",
-			"features: multi-agent, auto-discovery, alleycat, ssh connections,",
-			"voice input, 70+ themes. open source and always free.",
-			"url: kittylitter.app",
-		],
-	],
-	[
-		"DOWNLOAD",
-		[
-			"artifact ...... local-studio-arm64.dmg",
-			"size .......... 255 mb",
-			"arch .......... arm64",
-			"platform ...... macos",
-			"hosted ........ github releases v2.11.2",
-			"url ........... /download/macos",
-		],
-	],
-	[
-		"AGENTS",
-		[
-			"provider keys live in controller config, not prompts.",
-			"provider/model routes to that provider; default model names hit the",
-			"active backend. pi sessions load selected skills and local tools.",
-			"the full runbook lives at /agents.",
-		],
-	],
-	[
-		"ROUTES",
-		[
-			"/ ............. home",
-			"/product ...... product tour",
-			"/mobile ....... kittylitter pairing and features",
-			"/docs ......... installation and operations guide",
-			"/prompt ....... portable setup prompt for coding models",
-			"/agents ....... agent setup runbook",
-			"/resources .... everything around local studio",
-			"/download/macos release download",
-		],
-	],
-];
+function routeLinesFrom(sections: readonly MachineSection[]): string[] {
+	for (const [name, lines] of sections) {
+		if (name === "ROUTES") return lines;
+	}
+	throw new Error("ROUTES");
+}
+
+const sections = machineSections();
+const routeLines = routeLinesFrom(sections);
 
 export function MachinePage() {
 	const { toggleMachine } = useMachine();
@@ -114,23 +30,23 @@ export function MachinePage() {
 						STUDIO
 					</button>
 					<p className="machine__title">
+						<span translate="no">sybil solutions</span> /{" "}
 						<span translate="no">local studio</span> :: machine-readable index
 					</p>
 					<p className="machine__note">
-						plain-text mirror of the site for agents, crawlers, and humans who
-						prefer it raw.
+						dense plain-text index of the company, products, APIs, and discovery
+						files. agents: prefer /llms.txt or Accept: text/markdown.
 					</p>
 					<nav className="machine__routes" aria-label="Site routes">
-						{sections
-							.find(([name]) => name === "ROUTES")?.[1]
-							.map((line) => {
-								const route = line.split(" ")[0];
-								return (
-									<LocalLink href={route} key={route}>
-										{route}
-									</LocalLink>
-								);
-							})}
+						{routeLines.map((line) => {
+							const route = line.split(" ")[0];
+							if (route === undefined) return null;
+							return (
+								<LocalLink href={route} key={route}>
+									{route}
+								</LocalLink>
+							);
+						})}
 					</nav>
 					{sections.map(([name, lines]) => (
 						<section className="machine__section" key={name}>
@@ -138,20 +54,6 @@ export function MachinePage() {
 							<pre>{lines.join("\n")}</pre>
 						</section>
 					))}
-					<section className="machine__section" aria-label="For agents">
-						<h2>── FOR_AGENTS</h2>
-						<pre>{`llms.txt ....... /llms.txt
-agents.md ...... /agents.md
-sitemap.md ..... /sitemap.md
-index.md ....... /index.md
-services.md .... /services.md
-people.md ...... /people.md
-showcase.md .... /showcase.md
-faq.md ......... /faq.md
-
-every page also serves markdown: append .md to a URL, or request it
-with Accept: text/markdown`}</pre>
-					</section>
 					<p className="machine__end">:: end of index ::</p>
 				</div>
 			</main>

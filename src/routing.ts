@@ -1,25 +1,4 @@
-export type RoutePath =
-	| "/"
-	| "/product"
-	| "/mobile"
-	| "/docs"
-	| "/prompt"
-	| "/agents"
-	| "/download/macos"
-	| "/resources"
-	| "/machine";
-
-const routes = new Set<RoutePath>([
-	"/",
-	"/product",
-	"/mobile",
-	"/docs",
-	"/prompt",
-	"/agents",
-	"/download/macos",
-	"/resources",
-	"/machine",
-]);
+export { isRoutePath, routePaths, type RoutePath } from "./routes";
 
 type NavigationListener = () => void;
 
@@ -58,15 +37,16 @@ export function scrollToHash(hash: string) {
 	const heading = target.matches("h1, h2, h3")
 		? target
 		: target.querySelector("h1, h2, h3");
-	// SAFETY: heading/target come from heading/anchor selectors that only match HTMLElements.
-	const focusTarget = (heading ?? target) as HTMLElement;
+	const focusTarget =
+		heading instanceof HTMLElement
+			? heading
+			: target instanceof HTMLElement
+				? target
+				: null;
+	if (focusTarget === null) return;
 	if (!focusTarget.hasAttribute("tabindex")) {
 		focusTarget.tabIndex = -1;
 	}
 	focusTarget.focus({ preventScroll: true });
 }
 
-export function isRoutePath(pathname: string): pathname is RoutePath {
-	// SAFETY: routes is keyed by RoutePath, so has() only accepts RoutePath values.
-	return routes.has(pathname as RoutePath);
-}

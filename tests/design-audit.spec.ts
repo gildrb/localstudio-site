@@ -26,9 +26,8 @@ test("landmarks are separate and a skip link targets main content", async ({
 	expect(await skip.evaluate((element) => element.getBoundingClientRect().top)).toBeLessThan(0);
 	await page.keyboard.press("Tab");
 	await expect(skip).toBeFocused();
-	// SAFETY: skip.evaluate passes the element from an anchor locator.
-	const focused = await skip.evaluate((element) => ({
-		href: (element as HTMLAnchorElement).hash,
+	const focused = await skip.evaluate((element: HTMLAnchorElement) => ({
+		href: element.hash,
 		withinViewport: element.getBoundingClientRect().top >= 0,
 		ring: [getComputedStyle(element).outlineWidth, getComputedStyle(element).outlineStyle, getComputedStyle(element).outlineColor],
 	}));
@@ -43,16 +42,24 @@ test("focus rings appear only after real keyboard use", async ({ page }) => {
 	await page.goto("/");
 	const reload = await page.goto("/docs#quick-start");
 	expect(reload?.ok()).toBeTruthy();
-	const loadState = await page.evaluate(() => ({
-		focused: document.activeElement?.tagName,
-		ring: getComputedStyle(document.activeElement!).outlineStyle,
-	}));
+	const loadState = await page.evaluate(() => {
+		const active = document.activeElement;
+		if (!(active instanceof Element)) throw new Error("active");
+		return {
+			focused: active.tagName,
+			ring: getComputedStyle(active).outlineStyle,
+		};
+	});
 	expect(loadState).toEqual({ focused: "H2", ring: "none" });
 	await page.getByRole("navigation", { name: "Landing navigation" }).getByRole("button", { name: "Resources" }).click();
 	await page.getByRole("menuitem", { name: "Mobile", exact: true }).click();
 	await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
 	expect(
-		await page.evaluate(() => getComputedStyle(document.activeElement!).outlineStyle),
+		await page.evaluate(() => {
+			const active = document.activeElement;
+			if (!(active instanceof Element)) throw new Error("active");
+			return getComputedStyle(active).outlineStyle;
+		}),
 		"click navigation must not draw a ring",
 	).toBe("none");
 	await page.goto("/");
@@ -137,7 +144,8 @@ test("hash jumps account for the sticky navigation and move focus", async ({
 	await page.goto("/");
 	await page.evaluate(() => document.fonts.ready);
 	await page.evaluate(() => {
-		const element = document.querySelector("#media h2")!;
+		const element = document.querySelector("#media h2");
+		if (!(element instanceof HTMLElement)) throw new Error("#media h2");
 		globalThis.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY, behavior: "instant" });
 	});
 	const withoutMargin = await page
@@ -172,8 +180,13 @@ test("touch interactions avoid double-tap zoom and tap highlight flash", async (
 }) => {
 	await page.goto("/");
 	const interactions = await page.evaluate(() => {
-		const link = document.querySelector(".nav__links a, .nav__toggle")!;
-		const button = document.querySelector(".button")!;
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const link = html(".nav__links a, .nav__toggle");
+		const button = html(".button");
 		const tap = getComputedStyle(document.documentElement).getPropertyValue(
 			"-webkit-tap-highlight-color",
 		);
@@ -194,10 +207,13 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");
 	const sizes = await page.evaluate(() => {
-		// SAFETY: ".nav__toggle" matches the rendered toggle button.
-		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
-		// SAFETY: ".footer__links a" matches a rendered anchor.
-		const footerLink = document.querySelector(".footer__links a") as HTMLElement;
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const toggle = html(".nav__toggle");
+		const footerLink = html(".footer__links a");
 		return {
 			toggle: [toggle.getBoundingClientRect().width, toggle.getBoundingClientRect().height],
 			footer: footerLink.getBoundingClientRect().height,
@@ -219,10 +235,13 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 		expect(target.width).toBeGreaterThanOrEqual(44);
 	}
 	const chrome = await page.evaluate(() => {
-		// SAFETY: ".brand" matches the rendered brand element.
-		const brand = document.querySelector(".brand") as HTMLElement;
-		// SAFETY: ".nav__toggle" matches the rendered toggle button.
-		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const brand = html(".brand");
+		const toggle = html(".nav__toggle");
 		const brandBox = brand.getBoundingClientRect();
 		const toggleBox = toggle.getBoundingClientRect();
 		const brandHit = document.elementFromPoint(brandBox.left + 8, brandBox.top + brandBox.height / 2);
@@ -240,12 +259,14 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	expect(chrome.toggleVisible).toBe(true);
 	await expect(page.getByRole("button", { name: "Close menu" })).toBeVisible();
 	const hit = await page.evaluate(() => {
-		// SAFETY: "header.nav" matches the rendered header element.
-		const header = document.querySelector("header.nav") as HTMLElement;
-		// SAFETY: ".nav__sheet" matches the rendered sheet element.
-		const sheet = document.querySelector(".nav__sheet") as HTMLElement;
-		// SAFETY: ".nav__sheet-summary" matches the rendered summary element.
-		const first = document.querySelector(".nav__sheet-summary") as HTMLElement;
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const header = html("header.nav");
+		const sheet = html(".nav__sheet");
+		const first = html(".nav__sheet-summary");
 		const headerBottom = header.getBoundingClientRect().bottom;
 		const firstBox = first.getBoundingClientRect();
 		const mid = document.elementFromPoint(firstBox.left + 24, firstBox.top + firstBox.height / 2);
@@ -265,10 +286,13 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	expect(scrolled).toBeGreaterThan(500);
 	await page.getByRole("button", { name: "Open menu" }).click();
 	const afterScroll = await page.evaluate(() => {
-		// SAFETY: ".brand" matches the rendered brand element.
-		const brand = document.querySelector(".brand") as HTMLElement;
-		// SAFETY: ".nav__toggle" matches the rendered toggle button.
-		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const brand = html(".brand");
+		const toggle = html(".nav__toggle");
 		return {
 			scrollY: Math.round(window.scrollY),
 			brandTop: Math.round(brand.getBoundingClientRect().top),
@@ -305,8 +329,13 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 	}
 	expect(new Set(nav.map((link) => link.bottom - link.top)).size).toBe(1);
 	const between = await page.evaluate(() => {
-		const company = document.querySelector<HTMLElement>('.nav__links a[href="https://www.sybilsolutions.ai/"]')!;
-		const github = document.querySelector<HTMLElement>(".nav__github")!;
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const company = html('.nav__links a[href="https://www.sybilsolutions.ai/"]');
+		const github = html(".nav__github");
 		const companyBox = company.getBoundingClientRect();
 		const githubBox = github.getBoundingClientRect();
 		const x = (companyBox.right + githubBox.left) / 2;
@@ -315,17 +344,15 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 	});
 	expect(["https://www.sybilsolutions.ai/", "https://github.com/sybil-solutions/local-studio"]).toContain(between);
 	const link = page.locator(".nav__links a").first();
-	// SAFETY: link.evaluate passes the element from an anchor locator.
 	const pill = await link.evaluate((element) => {
 		const box = element.getBoundingClientRect();
 		const style = getComputedStyle(element, "::before");
 		const height = Number.parseInt(style.height, 10);
 		const visualTop = Number.parseInt(style.top, 10) - height / 2;
-		// SAFETY: both values come from numeric parseInt results and box.height.
 		return {
 			hitbox: Math.round(box.height),
 			highlight: style.height,
-			margins: [visualTop, box.height - (visualTop + height)] as [number, number],
+			margins: [visualTop, box.height - (visualTop + height)],
 			anchorBackground: getComputedStyle(element).backgroundColor,
 		};
 	});
@@ -363,10 +390,17 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 
 test("typography avoids widows and the first paint is preloaded", async ({ page }) => {
 	await page.goto("/docs");
-	const wrapping = await page.evaluate(() => ({
-		body: getComputedStyle(document.querySelector(".page-intro p")!).textWrap,
-		title: getComputedStyle(document.querySelector("h1")!).textWrap,
-	}));
+	const wrapping = await page.evaluate(() => {
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		return {
+			body: getComputedStyle(html(".page-intro p")).textWrap,
+			title: getComputedStyle(html("h1")).textWrap,
+		};
+	});
 	expect(wrapping).toEqual({ body: "pretty", title: "balance" });
 	await page.goto("/");
 	const font = page.locator('link[rel="preload"][as="font"]');
@@ -383,16 +417,12 @@ test("below-the-fold imagery is responsive", async ({ page }) => {
 	await page.goto("/product");
 	const images = await page
 		.locator("section[aria-label='Product capabilities'] img")
-		.evaluateAll((elements) =>
-			elements.map((element) => {
-			// SAFETY: the locator is scoped to img elements.
-			const image = element as HTMLImageElement;
-				return {
-					srcset: image.srcset.length > 0,
-					sizes: image.sizes.length > 0,
-					width: image.getAttribute("width"),
-				};
-			}),
+		.evaluateAll((elements: HTMLImageElement[]) =>
+			elements.map((image) => ({
+				srcset: image.srcset.length > 0,
+				sizes: image.sizes.length > 0,
+				width: image.getAttribute("width"),
+			})),
 		);
 	expect(images.length).toBe(4);
 	for (const image of images) {

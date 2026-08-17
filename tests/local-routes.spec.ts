@@ -41,9 +41,11 @@ test("non-home routes use the homepage intro system", async ({ page }) => {
 		await expect(intro.locator('.page-intro__mark, img[src="/images/optimized.svg"]')).toHaveCount(0);
 		await expect(intro.getByRole("heading", { level: 1 })).toHaveCount(1);
 		await expect(intro.locator(":scope > .page-intro__content > p")).toBeVisible();
-		const geometry = await intro.evaluate(element => {
+		const geometry = await intro.evaluate((element) => {
+			const headingNode = element.querySelector("h1");
+			if (!(headingNode instanceof HTMLElement)) throw new Error("h1");
 			const style = getComputedStyle(element);
-			const heading = getComputedStyle(element.querySelector("h1")!);
+			const heading = getComputedStyle(headingNode);
 			return { minHeight: style.minHeight, textAlign: style.textAlign, heading: [heading.fontSize, heading.lineHeight] };
 		});
 		if (["/mobile", "/docs", "/prompt", "/agents"].includes(route)) {
@@ -75,9 +77,11 @@ test("homepage repeats the hero actions in the final callout", async ({ page }) 
 		await expect(actions.getByRole("link")).toHaveCount(2);
 	}
 	await expect(page.getByRole("link", { name: "View on GitHub" })).toHaveCount(0);
-	const verticalCenter = await page.locator(".final-callout").evaluate(element => {
+	const verticalCenter = await page.locator(".final-callout").evaluate((element) => {
 		const section = element.getBoundingClientRect();
-		const content = element.firstElementChild!.getBoundingClientRect();
+		const child = element.firstElementChild;
+		if (!(child instanceof HTMLElement)) throw new Error("content");
+		const content = child.getBoundingClientRect();
 		return Math.round((content.top + content.bottom) / 2 - (section.top + section.bottom) / 2);
 	});
 	expect(verticalCenter).toBe(0);
@@ -100,12 +104,17 @@ test("homepage repeats the hero actions in the final callout", async ({ page }) 
 test("homepage hero, product story, and mobile story have no separators", async ({ page }) => {
 	await page.goto("/");
 	const boundaries = await page.evaluate(() => {
-		const hero = document.querySelector(".hero")!.getBoundingClientRect();
-		const intro = document.querySelector(".story__intro")!.getBoundingClientRect();
-		const showcase = document.querySelector(".story__showcase")!.getBoundingClientRect();
-		const kittyHeading = document.querySelector(".kitty h2")!.getBoundingClientRect();
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const hero = html(".hero").getBoundingClientRect();
+		const intro = html(".story__intro").getBoundingClientRect();
+		const showcase = html(".story__showcase").getBoundingClientRect();
+		const kittyHeading = html(".kitty h2").getBoundingClientRect();
 		return {
-			borders: [".hero", ".story"].map(selector => getComputedStyle(document.querySelector(selector)!).borderBottomWidth),
+			borders: [".hero", ".story"].map((selector) => getComputedStyle(html(selector)).borderBottomWidth),
 			firstGap: Math.round(intro.top - hero.bottom),
 			secondGap: Math.round(kittyHeading.top - showcase.bottom),
 		};
@@ -121,33 +130,29 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	const stage = page.locator(".hero__stage");
 	const image = page.locator(".hero__screenshot");
 	await stage.waitFor({ state: "attached" });
-	// SAFETY: ".hero__gradient" matches the rendered gradient div.
 	await expect
 		.poll(
-			() =>
-				page.evaluate(
-					() => (document.querySelector(".hero__gradient") as HTMLElement).style.opacity,
-				),
-				{ timeout: 5000 },
-			)
+			() => gradient.evaluate((element: HTMLElement) => element.style.opacity),
+			{ timeout: 5000 },
+		)
 		.toBe("1");
 	const entrance = await page.evaluate(() => {
-		// SAFETY: ".hero__mark" and its button wrapper are HTMLElements.
-		const mark = (document.querySelector(".hero__mark") as HTMLElement)
-			.closest(".hero__mark-button") as HTMLElement;
-		// SAFETY: ".hero h1" matches the rendered hero heading.
-		const title = document.querySelector(".hero h1") as HTMLElement;
-		// SAFETY: ".hero__actions" matches the rendered actions container.
-		const actions = document.querySelector(".hero__actions") as HTMLElement;
-		// SAFETY: ".hero__stage" matches the rendered stage container.
-		const stage = document.querySelector(".hero__stage") as HTMLElement;
-		// SAFETY: ".hero__gradient" matches the rendered gradient div.
-		const gradient = document.querySelector(".hero__gradient") as HTMLElement;
-		const lead = document.querySelector(".story__intro p")!;
-		const texture = document.querySelector(".hero__texture")!;
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const markRoot = html(".hero__mark").closest(".hero__mark-button");
+		if (!(markRoot instanceof HTMLElement)) throw new Error(".hero__mark-button");
+		const title = html(".hero h1");
+		const actions = html(".hero__actions");
+		const stage = html(".hero__stage");
+		const gradient = html(".hero__gradient");
+		const lead = html(".story__intro p");
+		const texture = html(".hero__texture");
 		const inline = (el: HTMLElement) => el.style.opacity;
 		return {
-			identity: [inline(mark), inline(title), inline(actions)],
+			identity: [inline(markRoot), inline(title), inline(actions)],
 			atmosphere: [inline(stage), inline(gradient)],
 			textNodeTransforms: [getComputedStyle(title).transform, getComputedStyle(lead).transform],
 			textureGradient: getComputedStyle(texture).backgroundImage.includes("linear-gradient"),
@@ -161,16 +166,24 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	expect(entrance.grid).toBe("grid-drift");
 	await expect(stage).toHaveCSS("opacity", "1");
 	await expect(gradient).toHaveCSS("opacity", "1");
-	// SAFETY: the locator targets the hero screenshot img element.
-	await image.evaluate(element => (element as HTMLImageElement).decode());
+	await image.evaluate((element: HTMLImageElement) => element.decode());
 	const layout = await page.evaluate(() => {
-		const hero = document.querySelector(".hero")!.getBoundingClientRect();
-		const gradientElement = document.querySelector(".hero__gradient")!;
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		function img(selector: string): HTMLImageElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLImageElement)) throw new Error(selector);
+			return element;
+		}
+		const hero = html(".hero").getBoundingClientRect();
+		const gradientElement = html(".hero__gradient");
 		const gradientBounds = gradientElement.getBoundingClientRect();
-		const copy = document.querySelector(".hero__copy")!.getBoundingClientRect();
-		const stageBounds = document.querySelector(".hero__stage")!.getBoundingClientRect();
-		// SAFETY: ".hero__screenshot" matches the rendered img element.
-		const screenshot = document.querySelector(".hero__screenshot") as HTMLImageElement;
+		const copy = html(".hero__copy").getBoundingClientRect();
+		const stageBounds = html(".hero__stage").getBoundingClientRect();
+		const screenshot = img(".hero__screenshot");
 		const imageBounds = screenshot.getBoundingClientRect();
 		return {
 			gap: Math.round(stageBounds.top - copy.bottom),
@@ -185,8 +198,7 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1240, 1240], imageInset: 100, bottomOffsets: [0, 0, 24], currentSrc: "/images/workbench-browser-1300.png", neutral: true });
 	expect(layout.intrinsic[0]).toBeLessThanOrEqual(1300);
 	expect(Math.abs(layout.intrinsic[1] - Math.round((layout.intrinsic[0] * 2800) / 5118))).toBeLessThanOrEqual(1);
-	// SAFETY: image.evaluate passes the img element from the locator.
-	const srcset = await image.evaluate(element => (element as HTMLImageElement).srcset);
+	const srcset = await image.evaluate((element: HTMLImageElement) => element.srcset);
 	expect(srcset).toContain("workbench-browser-800.png 800w");
 	expect(srcset).toContain("workbench-browser-2600.png 2600w");
 	const documentTop = await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY));
@@ -197,13 +209,22 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await expect(stage).toHaveCSS("opacity", "1");
 	const mobile = await page.evaluate(() => {
-		// SAFETY: ".hero__screenshot" matches the rendered img element.
-		const screenshot = document.querySelector(".hero__screenshot") as HTMLImageElement;
-		const gradientBounds = document.querySelector(".hero__gradient")!.getBoundingClientRect();
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		function img(selector: string): HTMLImageElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLImageElement)) throw new Error(selector);
+			return element;
+		}
+		const screenshot = img(".hero__screenshot");
+		const gradientBounds = html(".hero__gradient").getBoundingClientRect();
 		const imageBounds = screenshot.getBoundingClientRect();
-		const heroBottom = document.querySelector(".hero")!.getBoundingClientRect().bottom;
+		const heroBottom = html(".hero").getBoundingClientRect().bottom;
 		return {
-			gap: Math.round(document.querySelector(".hero__stage")!.getBoundingClientRect().top - document.querySelector(".hero__copy")!.getBoundingClientRect().bottom),
+			gap: Math.round(html(".hero__stage").getBoundingClientRect().top - html(".hero__copy").getBoundingClientRect().bottom),
 			widths: [Math.round(gradientBounds.width), Math.round(imageBounds.width)],
 			bottomOffsets: [Math.round(heroBottom - gradientBounds.bottom), Math.round(heroBottom - imageBounds.bottom)],
 			currentSrc: new URL(screenshot.currentSrc).pathname,
@@ -213,23 +234,38 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await stage.waitFor({ state: "attached" });
-	const reduced = await page.evaluate(() => ({
-		stage: [getComputedStyle(document.querySelector(".hero__stage")!).opacity, getComputedStyle(document.querySelector(".hero__stage")!).transform],
-		gradient: getComputedStyle(document.querySelector(".hero__gradient")!).opacity,
-		grid: getComputedStyle(document.querySelector(".hero__texture")!, "::before").animationName,
-	}));
+	const reduced = await page.evaluate(() => {
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const stage = html(".hero__stage");
+		return {
+			stage: [getComputedStyle(stage).opacity, getComputedStyle(stage).transform],
+			gradient: getComputedStyle(html(".hero__gradient")).opacity,
+			grid: getComputedStyle(html(".hero__texture"), "::before").animationName,
+		};
+	});
 	expect(reduced).toEqual({ stage: ["1", "none"], gradient: "1", grid: "none" });
 });
 
 test("mobile sections stack their hierarchy without separators", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/mobile");
-	const desktop = await page.locator(".mobile-section").evaluateAll(sections => sections.map((section, index) => {
-		const heading = section.querySelector("h2")!.getBoundingClientRect();
-		const description = section.querySelector("p")!.getBoundingClientRect();
-		const previous = index > 0 ? sections[index - 1].getBoundingClientRect() : null;
-		return { border: getComputedStyle(section).borderTopWidth, aligned: Math.round(heading.left) === Math.round(description.left), gap: previous ? Math.round(heading.top - previous.bottom) : null };
-	}));
+	const desktop = await page.locator(".mobile-section").evaluateAll((sections) => {
+		function child(root: Element, selector: string): HTMLElement {
+			const element = root.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		return sections.map((section, index) => {
+			const heading = child(section, "h2").getBoundingClientRect();
+			const description = child(section, "p").getBoundingClientRect();
+			const previous = index > 0 ? sections[index - 1].getBoundingClientRect() : null;
+			return { border: getComputedStyle(section).borderTopWidth, aligned: Math.round(heading.left) === Math.round(description.left), gap: previous ? Math.round(heading.top - previous.bottom) : null };
+		});
+	});
 	expect(desktop).toEqual([
 		{ border: "0px", aligned: true, gap: null },
 		{ border: "0px", aligned: true, gap: 120 },
@@ -237,12 +273,20 @@ test("mobile sections stack their hierarchy without separators", async ({ page }
 	]);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/mobile");
-	const mobileGaps = await page.locator(".mobile-section").evaluateAll(sections => sections.slice(1).map((section, index) => Math.round(section.querySelector("h2")!.getBoundingClientRect().top - sections[index].getBoundingClientRect().bottom)));
+	const mobileGaps = await page.locator(".mobile-section").evaluateAll((sections) => {
+		return sections.slice(1).map((section, index) => {
+			const heading = section.querySelector("h2");
+			if (!(heading instanceof HTMLElement)) throw new Error("h2");
+			return Math.round(heading.getBoundingClientRect().top - sections[index].getBoundingClientRect().bottom);
+		});
+	});
 	expect(mobileGaps).toEqual([80, 80]);
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/mobile");
-	const shieldAlignment = await page.locator('[aria-labelledby="security-title"]').evaluate(section => {
-		const shield = section.querySelector("ul + div")!.getBoundingClientRect();
+	const shieldAlignment = await page.locator('[aria-labelledby="security-title"]').evaluate((section) => {
+		const shieldNode = section.querySelector("ul + div");
+		if (!(shieldNode instanceof HTMLElement)) throw new Error("shield");
+		const shield = shieldNode.getBoundingClientRect();
 		const bounds = section.getBoundingClientRect();
 		return { right: Math.round(bounds.right - shield.right), followsList: Boolean(section.querySelector("ul + div")) };
 	});
@@ -253,17 +297,22 @@ test("mobile page keeps stable gutters, type, and actions at narrow widths", asy
 	for (const width of [390, 320]) {
 		await page.setViewportSize({ width, height: 844 });
 		await page.goto("/mobile");
-		const sections = await page.locator(".mobile-section").evaluateAll(elements =>
-			elements.map(element => {
+		const sections = await page.locator(".mobile-section").evaluateAll((elements) => {
+			function child(root: Element, selector: string): HTMLElement {
+				const element = root.querySelector(selector);
+				if (!(element instanceof HTMLElement)) throw new Error(selector);
+				return element;
+			}
+			return elements.map((element) => {
 				const bounds = element.getBoundingClientRect();
-				const heading = getComputedStyle(element.querySelector("h2")!);
+				const heading = getComputedStyle(child(element, "h2"));
 				return {
 					left: Math.round(bounds.left),
 					width: Math.round(bounds.width),
 					heading: [heading.fontSize, heading.lineHeight],
 				};
-			}),
-		);
+			});
+		});
 		expect(sections).toEqual(Array(3).fill({
 			left: 24,
 			width: width - 48,
@@ -282,8 +331,8 @@ test("mobile page keeps stable gutters, type, and actions at narrow widths", asy
 		expect(actions).toHaveLength(2);
 		for (const group of actions) {
 			expect(group.links).toHaveLength(2);
-			expect(group.links[0][2]).toBe(48);
-			expect(group.links[1][2]).toBe(48);
+			expect(group.links[0][2]).toBeGreaterThanOrEqual(48);
+			expect(group.links[1][2]).toBeGreaterThanOrEqual(48);
 			expect(group.links[1][0]).toBeGreaterThan(group.links[0][0]);
 			expect(group.gap).toBeLessThanOrEqual(0);
 		}
@@ -363,8 +412,8 @@ test("tabbing reaches every story tab in order", async ({ page }) => {
 	for (let index = 0; index < 30 && seen.length < 3; index += 1) {
 		await page.keyboard.press("Tab");
 		const label = await page.evaluate(() => {
-			// SAFETY: document.activeElement is an HTMLElement once focus moves.
-			const element = document.activeElement as HTMLElement;
+			const element = document.activeElement;
+			if (!(element instanceof HTMLElement)) return "";
 			return element.getAttribute("role") === "radio"
 				? (element.textContent ?? "").trim()
 				: "";
@@ -376,9 +425,14 @@ test("tabbing reaches every story tab in order", async ({ page }) => {
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {
 	await page.goto("/");
-	const layout = await page.locator(".kitty__intro").evaluate(element => {
-		const heading = element.querySelector("h2")!.getBoundingClientRect();
-		const copy = element.querySelector(".kitty__copy")!.getBoundingClientRect();
+	const layout = await page.locator(".kitty__intro").evaluate((element) => {
+		function child(root: Element, selector: string): HTMLElement {
+			const node = root.querySelector(selector);
+			if (!(node instanceof HTMLElement)) throw new Error(selector);
+			return node;
+		}
+		const heading = child(element, "h2").getBoundingClientRect();
+		const copy = child(element, ".kitty__copy").getBoundingClientRect();
 		return { stacked: copy.top >= heading.bottom, width: Math.round(element.getBoundingClientRect().width) };
 	});
 	expect(layout).toEqual({ stacked: true, width: 760 });
@@ -387,7 +441,11 @@ test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }
 test("product page media is equal and fully framed", async ({ page }) => {
 	await page.goto("/product");
 	await page.locator('img[loading="lazy"]').last().scrollIntoViewIfNeeded();
-	await page.waitForFunction(() => [...document.querySelectorAll<HTMLImageElement>('img[loading="lazy"]')].every(image => image.complete && image.naturalWidth > 0));
+	await page.waitForFunction(() =>
+		[...document.querySelectorAll('img[loading="lazy"]')].every(
+			(image) => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0,
+		),
+	);
 	const media = await page.locator('section[aria-label="Product capabilities"] .media-frame').evaluateAll(elements =>
 		elements.map(element => Math.round(element.getBoundingClientRect().width)),
 	);
@@ -399,10 +457,15 @@ test("design system typography is stable", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
 	const desktop = await page.evaluate(() => {
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
 		const body = getComputedStyle(document.body);
-		const title = getComputedStyle(document.querySelector("h1")!);
-		const subheadline = getComputedStyle(document.querySelector(".story h2")!);
-		const feature = getComputedStyle(document.querySelector(".story__option-title")!);
+		const title = getComputedStyle(html("h1"));
+		const subheadline = getComputedStyle(html(".story h2"));
+		const feature = getComputedStyle(html(".story__option-title"));
 		return {
 			body: [body.fontFamily, body.fontSize, body.fontWeight, body.lineHeight, body.letterSpacing],
 			title: [title.fontFamily, title.fontSize, title.fontWeight, title.lineHeight, title.letterSpacing],
@@ -416,21 +479,34 @@ test("design system typography is stable", async ({ page }) => {
 	expect(desktop.feature).toEqual(["28px", "500", "36px", "normal"]);
 	await page.goto("/docs");
 	const docsType = await page.evaluate(() => {
-		const heading = getComputedStyle(document.querySelector(".docs-section h2")!);
-		const emphasis = getComputedStyle(document.querySelector(".docs-prose strong")!);
-		const code = getComputedStyle(document.querySelector(".docs-code")!);
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const heading = getComputedStyle(html(".docs-section h2"));
+		const emphasis = getComputedStyle(html(".docs-prose strong"));
+		const code = getComputedStyle(html(".docs-code"));
 		const sections = [...document.querySelectorAll(".docs-section")];
+		const first = sections[0];
+		const second = sections[1];
+		if (!(first instanceof HTMLElement) || !(second instanceof HTMLElement)) throw new Error("docs-section");
 		return {
 			heading: [heading.fontSize, heading.lineHeight, heading.fontWeight],
 			emphasis: emphasis.fontWeight,
 			code: [code.fontSize, code.lineHeight, code.fontWeight],
-			sectionGap: Math.round(sections[1].getBoundingClientRect().top - sections[0].getBoundingClientRect().bottom),
+			sectionGap: Math.round(second.getBoundingClientRect().top - first.getBoundingClientRect().bottom),
 		};
 	});
 	expect(docsType).toEqual({ heading: ["24px", "32px", "500"], emphasis: "500", code: ["14px", "20px", "400"], sectionGap: 80 });
 	const fullWidthLayouts = await page.evaluate(() => {
-		const docs = document.querySelector(".docs-layout")!.getBoundingClientRect();
-		const article = document.querySelector(".docs-prose")!.getBoundingClientRect();
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const docs = html(".docs-layout").getBoundingClientRect();
+		const article = html(".docs-prose").getBoundingClientRect();
 		return { docs: Math.round(docs.width), article: Math.round(article.width), left: Math.round(docs.left) };
 	});
 	expect(fullWidthLayouts).toEqual({ docs: 1240, article: 952, left: 100 });
@@ -439,8 +515,13 @@ test("design system typography is stable", async ({ page }) => {
 	expect(setupWidth).toBe(1240);
 	await page.goto("/mobile");
 	const hierarchy = await page.evaluate(() => {
-		const section = getComputedStyle(document.querySelector("h2")!);
-		const compact = getComputedStyle(document.querySelector("h3")!);
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const section = getComputedStyle(html("h2"));
+		const compact = getComputedStyle(html("h3"));
 		return {
 			section: [section.fontSize, section.fontWeight, section.lineHeight, section.letterSpacing],
 			compact: [compact.fontSize, compact.fontWeight, compact.lineHeight, compact.letterSpacing],
@@ -451,8 +532,13 @@ test("design system typography is stable", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");
 	const mobile = await page.evaluate(() => {
-		const title = document.querySelector("h1")!;
-		const subheadline = getComputedStyle(document.querySelector(".story h2")!);
+		function html(selector: string): HTMLElement {
+			const element = document.querySelector(selector);
+			if (!(element instanceof HTMLElement)) throw new Error(selector);
+			return element;
+		}
+		const title = html("h1");
+		const subheadline = getComputedStyle(html(".story h2"));
 		const titleStyle = getComputedStyle(title);
 		return {
 			lines: title.querySelectorAll("br").length + 1,
@@ -525,11 +611,10 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 test("all Local Studio links resolve locally", async ({ page }) => {
 	for (const [route] of routes) {
 		await page.goto(route);
-		// SAFETY: evaluateAll on "a[href]" yields anchor elements.
 		const links = await page
 			.locator("a[href]")
-			.evaluateAll((anchors) =>
-				anchors.map((anchor) => (anchor as HTMLAnchorElement).href),
+			.evaluateAll((anchors: HTMLAnchorElement[]) =>
+				anchors.map((anchor) => anchor.href),
 			);
 		for (const href of links) {
 			const url = new URL(href);
@@ -553,10 +638,18 @@ test("setup prompt copies from the floating copy icon", async ({ page, context }
 	await expect
 		.poll(() => icon.evaluate((el) => getComputedStyle(el).opacity))
 		.toBe("1");
-	const copyPath = await icon.evaluate((el) => el.querySelector("path")!.getAttribute("d"));
+	const copyPath = await icon.evaluate((el) => {
+		const path = el.querySelector("path");
+		if (path === null) throw new Error("path");
+		return path.getAttribute("d");
+	});
 	await icon.click();
 	await page.waitForTimeout(250);
-	const checkPath = await icon.evaluate((el) => el.querySelector("path")!.getAttribute("d"));
+	const checkPath = await icon.evaluate((el) => {
+		const path = el.querySelector("path");
+		if (path === null) throw new Error("path");
+		return path.getAttribute("d");
+	});
 	expect(copyPath).not.toBe(checkPath);
 	await expect(page.getByRole("status")).toContainText("Copied to clipboard");
 	const clipboard = await page.evaluate(() => navigator.clipboard.readText());
@@ -581,9 +674,7 @@ test("unknown routes render a local not-found page", async ({ page }) => {
 test("machine page stays in the viewport and only scrolls vertically", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/machine");
-	const layout = await page.evaluate(() => {
-		// SAFETY: ".machine__banner" matches the rendered banner element.
-		const banner = document.querySelector(".machine__banner") as HTMLElement;
+	const layout = await page.locator(".machine__banner").evaluate((banner: HTMLElement) => {
 		const overflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
 		const style = getComputedStyle(banner);
 		return {

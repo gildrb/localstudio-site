@@ -2,11 +2,28 @@ import { ChevronDown, Equal, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { LocalLink } from "./LocalLink";
 
+type NavLink = {
+	readonly label: string;
+	readonly href: string;
+	readonly external?: true;
+}
+
+type MenuId = "products" | "resources";
+
+type ChevronProps = {
+	open: boolean;
+}
+
+type MenuListProps = {
+	items: readonly NavLink[];
+	onNavigate: () => void;
+}
+
 const products = [
 	{ label: "Local AI", href: "https://local.ai", external: true },
 	{ label: "Local Studio", href: "/download/macos" },
 	{ label: "KittyLitter", href: "https://kittylitter.app", external: true },
-];
+] as const satisfies readonly NavLink[];
 
 const resources = [
 	{ label: "Documentation", href: "/docs" },
@@ -14,12 +31,12 @@ const resources = [
 	{ label: "Agents", href: "/agents" },
 	{ label: "Mobile", href: "/mobile" },
 	{ label: "Overview", href: "/resources" },
-];
+] as const satisfies readonly NavLink[];
 
 const githubUrl = "https://github.com/sybil-solutions/local-studio";
 const mobileQuery = "(max-width: 900px)";
 
-function Chevron({ open }: { open: boolean }) {
+function Chevron({ open }: ChevronProps) {
 	return (
 		<ChevronDown
 			size={14}
@@ -41,13 +58,7 @@ function GitHubMark() {
 	);
 }
 
-function MenuItems({
-	items,
-	onNavigate,
-}: {
-	items: typeof products;
-	onNavigate: () => void;
-}) {
+function MenuItems({ items, onNavigate }: MenuListProps) {
 	return (
 		<div className="nav__menu-items">
 			{items.map((item) =>
@@ -76,13 +87,7 @@ function MenuItems({
 	);
 }
 
-function SheetItems({
-	items,
-	onNavigate,
-}: {
-	items: typeof products;
-	onNavigate: () => void;
-}) {
+function SheetItems({ items, onNavigate }: MenuListProps) {
 	return (
 		<ul className="nav__sheet-items">
 			{items.map((item) => (
@@ -108,7 +113,7 @@ function SheetItems({
 }
 
 export function Header() {
-	const [openMenu, setOpenMenu] = useState<string | null>(null);
+	const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const menusRef = useRef<HTMLDivElement>(null);
 	const toggleRef = useRef<HTMLButtonElement>(null);
@@ -118,8 +123,9 @@ export function Header() {
 	useEffect(() => {
 		if (!openMenu) return;
 		function onPointerDown(event: PointerEvent) {
-			// SAFETY: pointerdown event targets are DOM Nodes by specification.
-			if (!menusRef.current?.contains(event.target as Node)) {
+			const target = event.target;
+			if (!(target instanceof Node)) return;
+			if (!menusRef.current?.contains(target)) {
 				setOpenMenu(null);
 			}
 		}
@@ -177,7 +183,7 @@ export function Header() {
 	const close = () => setOpenMenu(null);
 	const closeMobile = () => setMobileOpen(false);
 
-	function menu(id: string, label: string, items: typeof products) {
+	function menu(id: MenuId, label: string, items: readonly NavLink[]) {
 		const open = openMenu === id;
 		return (
 			<div

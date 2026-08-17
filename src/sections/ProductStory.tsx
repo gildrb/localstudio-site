@@ -1,6 +1,14 @@
-import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { responsiveSrcSet, storySizes } from "../images";
+
+type Feature = {
+	readonly title: string;
+	readonly slug: string;
+	readonly description: ReactNode;
+	readonly image: string;
+	readonly alt: string;
+}
 
 const features = [
 	{
@@ -33,15 +41,24 @@ const features = [
 		image: "/images/workbench-terminal.png",
 		alt: "Local Studio workbench with agent reasoning, terminal output, repository changes, and tool activity.",
 	},
-] as const;
+] as const satisfies readonly Feature[];
+
+function optionControls(root: HTMLElement): HTMLElement[] {
+	const controls: HTMLElement[] = [];
+	for (const element of root.querySelectorAll(".story__option-control")) {
+		if (element instanceof HTMLElement) controls.push(element);
+	}
+	return controls;
+}
 
 export function ProductStory() {
 	const [activeIndex, setActiveIndex] = useState(0);
 	const optionsRef = useRef<HTMLDivElement>(null);
 	const reduceMotion = useReducedMotion();
-	const activeFeature = features[activeIndex];
+	const activeFeature = features[activeIndex] ?? features[0];
 
 	function selectFeature(index: number) {
+		if (features[index] === undefined) return;
 		setActiveIndex(index);
 	}
 
@@ -59,18 +76,15 @@ export function ProductStory() {
 		if (nextIndex === undefined) return;
 		event.preventDefault();
 		selectFeature(nextIndex);
-		const controls = optionsRef.current?.querySelectorAll<HTMLElement>(
-			".story__option-control",
-		);
-		controls?.[nextIndex]?.focus();
+		const controls = optionsRef.current
+			? optionControls(optionsRef.current)
+			: [];
+		controls[nextIndex]?.focus();
 	}
 
 	useEffect(() => {
 		if (!optionsRef.current?.contains(document.activeElement)) return;
-		const controls = optionsRef.current.querySelectorAll<HTMLElement>(
-			".story__option-control",
-		);
-		controls[activeIndex]?.focus();
+		optionControls(optionsRef.current)[activeIndex]?.focus();
 	}, [activeIndex]);
 
 	return (

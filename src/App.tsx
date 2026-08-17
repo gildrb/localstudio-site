@@ -14,6 +14,7 @@ import {
 	emitNavigation,
 	isRoutePath,
 	normalizePath,
+	type RoutePath,
 	scrollToHash,
 	subscribeToNavigation,
 } from "./routing";
@@ -28,7 +29,7 @@ const titles = {
 	"/download/macos": "Download - Local Studio",
 	"/resources": "Resources - Local Studio",
 	"/machine": "Machines - Local Studio",
-} as const;
+} as const satisfies Record<RoutePath, string>;
 
 type NavigationSource = "load" | "push" | "pop";
 
@@ -78,19 +79,18 @@ export default function App() {
 	}, []);
 
 	useEffect(() => {
-		// SAFETY: the isRoutePath() or /machine check guarantees pathname is a titles key.
-		document.title =
-			isRoutePath(pathname) || pathname === "/machine"
-				? titles[pathname as keyof typeof titles]
-				: "Page not found - Local Studio";
+		document.title = isRoutePath(pathname)
+			? titles[pathname]
+			: "Page not found - Local Studio";
 		const hash = window.location.hash;
 		if (hash) {
 			window.requestAnimationFrame(() => scrollToHash(hash));
 		} else if (navigationSource.current === "push") {
 			window.scrollTo({ top: 0 });
-			document
-				.querySelector<HTMLElement>("main h1, .machine")
-				?.focus({ preventScroll: true });
+			const heading = document.querySelector("main h1, .machine");
+			if (heading instanceof HTMLElement) {
+				heading.focus({ preventScroll: true });
+			}
 		}
 	}, [location, pathname]);
 

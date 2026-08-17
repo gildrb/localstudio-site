@@ -1,7 +1,10 @@
 import { ArrowDown, Laptop, Shield, Smartphone } from "lucide-react";
+import type { ReactNode } from "react";
 import { DownloadButton, TextLink } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
+
+type CopyBlock = readonly [title: string, body: ReactNode];
 
 const steps = [
 	[
@@ -27,7 +30,7 @@ const steps = [
 			new phone turns return to the same session on your Mac.
 		</>,
 	],
-] as const;
+] as const satisfies readonly CopyBlock[];
 
 const capabilities = [
 	[
@@ -50,7 +53,7 @@ const capabilities = [
 			receives your sessions or files.
 		</>,
 	],
-] as const;
+] as const satisfies readonly CopyBlock[];
 
 const container = "mx-auto w-[min(1240px,calc(100%_-_48px))]";
 const sectionTitle = "max-w-3xl";
