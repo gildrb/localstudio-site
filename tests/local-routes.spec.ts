@@ -397,7 +397,7 @@ test("design system typography is stable", async ({ page }) => {
 		};
 	});
 	expect(desktop.body).toEqual([expect.stringContaining("Geist Sans"), "16px", "400", "24px", "normal"]);
-	expect(desktop.title).toEqual([expect.stringContaining("Geist Sans"), "64px", "500", "64px", "-1.28px"]);
+	expect(desktop.title).toEqual([expect.stringContaining("Geist Sans"), "88px", "500", "96px", "-1.76px"]);
 	expect(desktop.subheadline).toEqual(["42px", "500", "48px", "normal"]);
 	expect(desktop.feature).toEqual(["28px", "500", "36px", "normal"]);
 	await page.goto("/docs");

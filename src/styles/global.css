@@ -32,7 +32,7 @@
 	--hover: rgba(255, 255, 255, 0.08);
 	--font-sans:
 		"Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	--type-hero-title: 500 64px / 64px var(--font-sans);
+	--type-hero-title: 500 88px / 96px var(--font-sans);
 	--type-header-title: 500 56px / 60px var(--font-sans);
 	--type-subheadline: 500 42px / 48px var(--font-sans);
 	--type-section-title: 500 28px / 36px var(--font-sans);
@@ -1041,22 +1041,18 @@ button {
 		width: auto;
 	}
 
-	.hero__actions,
 	.page-intro .hero__actions,
 	.mobile-cta .hero__actions {
 		width: 100%;
 		margin-top: 32px;
 	}
 
-	.hero__actions > .button-group,
 	.page-intro .hero__actions > .button-group,
 	.mobile-cta .hero__actions > .button-group {
 		width: 100%;
 		flex-direction: column;
 	}
 
-	.hero__actions .button-group > .button,
-	.hero__actions .button-group > .text-link,
 	.page-intro .button-group > .button,
 	.page-intro .button-group > .text-link,
 	.mobile-cta .button-group > .button,
@@ -1093,7 +1089,7 @@ button {
 	}
 
 	.hero h1 {
-		font-size: clamp(32px, 9vw, 40px);
+		font-size: clamp(44px, 12vw, 56px);
 		line-height: 1.1;
 		white-space: nowrap;
 	}
