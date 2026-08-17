@@ -121,6 +121,7 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	const stage = page.locator(".hero__stage");
 	const image = page.locator(".hero__screenshot");
 	await stage.waitFor({ state: "attached" });
+	// SAFETY: ".hero__gradient" matches the rendered gradient div.
 	await expect
 		.poll(
 			() =>
@@ -131,11 +132,16 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 			)
 		.toBe("1");
 	const entrance = await page.evaluate(() => {
+		// SAFETY: ".hero__mark" and its button wrapper are HTMLElements.
 		const mark = (document.querySelector(".hero__mark") as HTMLElement)
 			.closest(".hero__mark-button") as HTMLElement;
+		// SAFETY: ".hero h1" matches the rendered hero heading.
 		const title = document.querySelector(".hero h1") as HTMLElement;
+		// SAFETY: ".hero__actions" matches the rendered actions container.
 		const actions = document.querySelector(".hero__actions") as HTMLElement;
+		// SAFETY: ".hero__stage" matches the rendered stage container.
 		const stage = document.querySelector(".hero__stage") as HTMLElement;
+		// SAFETY: ".hero__gradient" matches the rendered gradient div.
 		const gradient = document.querySelector(".hero__gradient") as HTMLElement;
 		const lead = document.querySelector(".story__intro p")!;
 		const texture = document.querySelector(".hero__texture")!;
@@ -155,6 +161,7 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	expect(entrance.grid).toBe("grid-drift");
 	await expect(stage).toHaveCSS("opacity", "1");
 	await expect(gradient).toHaveCSS("opacity", "1");
+	// SAFETY: the locator targets the hero screenshot img element.
 	await image.evaluate(element => (element as HTMLImageElement).decode());
 	const layout = await page.evaluate(() => {
 		const hero = document.querySelector(".hero")!.getBoundingClientRect();
@@ -162,6 +169,7 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 		const gradientBounds = gradientElement.getBoundingClientRect();
 		const copy = document.querySelector(".hero__copy")!.getBoundingClientRect();
 		const stageBounds = document.querySelector(".hero__stage")!.getBoundingClientRect();
+		// SAFETY: ".hero__screenshot" matches the rendered img element.
 		const screenshot = document.querySelector(".hero__screenshot") as HTMLImageElement;
 		const imageBounds = screenshot.getBoundingClientRect();
 		return {
@@ -177,6 +185,7 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1240, 1240], imageInset: 100, bottomOffsets: [0, 0, 24], currentSrc: "/images/workbench-browser-1300.png", neutral: true });
 	expect(layout.intrinsic[0]).toBeLessThanOrEqual(1300);
 	expect(Math.abs(layout.intrinsic[1] - Math.round((layout.intrinsic[0] * 2800) / 5118))).toBeLessThanOrEqual(1);
+	// SAFETY: image.evaluate passes the img element from the locator.
 	const srcset = await image.evaluate(element => (element as HTMLImageElement).srcset);
 	expect(srcset).toContain("workbench-browser-800.png 800w");
 	expect(srcset).toContain("workbench-browser-2600.png 2600w");
@@ -188,6 +197,7 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await expect(stage).toHaveCSS("opacity", "1");
 	const mobile = await page.evaluate(() => {
+		// SAFETY: ".hero__screenshot" matches the rendered img element.
 		const screenshot = document.querySelector(".hero__screenshot") as HTMLImageElement;
 		const gradientBounds = document.querySelector(".hero__gradient")!.getBoundingClientRect();
 		const imageBounds = screenshot.getBoundingClientRect();
@@ -353,6 +363,7 @@ test("tabbing reaches every story tab in order", async ({ page }) => {
 	for (let index = 0; index < 30 && seen.length < 3; index += 1) {
 		await page.keyboard.press("Tab");
 		const label = await page.evaluate(() => {
+			// SAFETY: document.activeElement is an HTMLElement once focus moves.
 			const element = document.activeElement as HTMLElement;
 			return element.getAttribute("role") === "radio"
 				? (element.textContent ?? "").trim()
@@ -514,6 +525,7 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 test("all Local Studio links resolve locally", async ({ page }) => {
 	for (const [route] of routes) {
 		await page.goto(route);
+		// SAFETY: evaluateAll on "a[href]" yields anchor elements.
 		const links = await page
 			.locator("a[href]")
 			.evaluateAll((anchors) =>
@@ -570,6 +582,7 @@ test("machine page stays in the viewport and only scrolls vertically", async ({ 
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/machine");
 	const layout = await page.evaluate(() => {
+		// SAFETY: ".machine__banner" matches the rendered banner element.
 		const banner = document.querySelector(".machine__banner") as HTMLElement;
 		const overflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
 		const style = getComputedStyle(banner);

@@ -26,6 +26,7 @@ test("landmarks are separate and a skip link targets main content", async ({
 	expect(await skip.evaluate((element) => element.getBoundingClientRect().top)).toBeLessThan(0);
 	await page.keyboard.press("Tab");
 	await expect(skip).toBeFocused();
+	// SAFETY: skip.evaluate passes the element from an anchor locator.
 	const focused = await skip.evaluate((element) => ({
 		href: (element as HTMLAnchorElement).hash,
 		withinViewport: element.getBoundingClientRect().top >= 0,
@@ -193,7 +194,9 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");
 	const sizes = await page.evaluate(() => {
+		// SAFETY: ".nav__toggle" matches the rendered toggle button.
 		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
+		// SAFETY: ".footer__links a" matches a rendered anchor.
 		const footerLink = document.querySelector(".footer__links a") as HTMLElement;
 		return {
 			toggle: [toggle.getBoundingClientRect().width, toggle.getBoundingClientRect().height],
@@ -216,7 +219,9 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 		expect(target.width).toBeGreaterThanOrEqual(44);
 	}
 	const chrome = await page.evaluate(() => {
+		// SAFETY: ".brand" matches the rendered brand element.
 		const brand = document.querySelector(".brand") as HTMLElement;
+		// SAFETY: ".nav__toggle" matches the rendered toggle button.
 		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
 		const brandBox = brand.getBoundingClientRect();
 		const toggleBox = toggle.getBoundingClientRect();
@@ -235,8 +240,11 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	expect(chrome.toggleVisible).toBe(true);
 	await expect(page.getByRole("button", { name: "Close menu" })).toBeVisible();
 	const hit = await page.evaluate(() => {
+		// SAFETY: "header.nav" matches the rendered header element.
 		const header = document.querySelector("header.nav") as HTMLElement;
+		// SAFETY: ".nav__sheet" matches the rendered sheet element.
 		const sheet = document.querySelector(".nav__sheet") as HTMLElement;
+		// SAFETY: ".nav__sheet-summary" matches the rendered summary element.
 		const first = document.querySelector(".nav__sheet-summary") as HTMLElement;
 		const headerBottom = header.getBoundingClientRect().bottom;
 		const firstBox = first.getBoundingClientRect();
@@ -257,7 +265,9 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	expect(scrolled).toBeGreaterThan(500);
 	await page.getByRole("button", { name: "Open menu" }).click();
 	const afterScroll = await page.evaluate(() => {
+		// SAFETY: ".brand" matches the rendered brand element.
 		const brand = document.querySelector(".brand") as HTMLElement;
+		// SAFETY: ".nav__toggle" matches the rendered toggle button.
 		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
 		return {
 			scrollY: Math.round(window.scrollY),
@@ -305,11 +315,13 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 	});
 	expect(["https://www.sybilsolutions.ai/", "https://github.com/sybil-solutions/local-studio"]).toContain(between);
 	const link = page.locator(".nav__links a").first();
+	// SAFETY: link.evaluate passes the element from an anchor locator.
 	const pill = await link.evaluate((element) => {
 		const box = element.getBoundingClientRect();
 		const style = getComputedStyle(element, "::before");
 		const height = Number.parseInt(style.height, 10);
 		const visualTop = Number.parseInt(style.top, 10) - height / 2;
+		// SAFETY: both values come from numeric parseInt results and box.height.
 		return {
 			hitbox: Math.round(box.height),
 			highlight: style.height,
@@ -373,7 +385,8 @@ test("below-the-fold imagery is responsive", async ({ page }) => {
 		.locator("section[aria-label='Product capabilities'] img")
 		.evaluateAll((elements) =>
 			elements.map((element) => {
-				const image = element as HTMLImageElement;
+			// SAFETY: the locator is scoped to img elements.
+			const image = element as HTMLImageElement;
 				return {
 					srcset: image.srcset.length > 0,
 					sizes: image.sizes.length > 0,
