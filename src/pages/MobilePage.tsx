@@ -1,6 +1,6 @@
 import { ArrowDown, Laptop, Shield, Smartphone } from "lucide-react";
 import type { ReactNode } from "react";
-import { DownloadButton, TextLink } from "../components/Links";
+import { StoreButtons } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
@@ -73,18 +73,7 @@ export function MobilePage() {
 						from your phone. The work still runs on your Mac.
 					</>
 				}
-				actions={
-					<div className="button-group">
-						<DownloadButton />
-						<TextLink
-							href="https://kittylitter.app"
-							target="_blank"
-							rel="noreferrer"
-						>
-							<span translate="no">Get KittyLitter</span>
-						</TextLink>
-					</div>
-				}
+				actions={<StoreButtons />}
 				aside={
 					<div className="grid rounded-3xl border border-white/15 p-3">
 						<div className="flex min-h-28 items-center gap-4 rounded-xl border border-white/10 p-6">
@@ -223,16 +212,7 @@ export function MobilePage() {
 				<div>
 					<h2 id="mobile-cta-title">Take the session with you.</h2>
 					<div className="hero__actions">
-						<div className="button-group">
-							<DownloadButton />
-							<TextLink
-								href="https://kittylitter.app"
-								target="_blank"
-								rel="noreferrer"
-							>
-								Open kittylitter.app
-							</TextLink>
-						</div>
+						<StoreButtons />
 					</div>
 				</div>
 			</section>

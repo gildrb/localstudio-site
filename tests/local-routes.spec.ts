@@ -336,6 +336,17 @@ test("mobile page keeps stable gutters, type, and actions at narrow widths", asy
 			expect(group.links[1][0]).toBeGreaterThan(group.links[0][0]);
 			expect(group.gap).toBeLessThanOrEqual(0);
 		}
+		const store = page.locator(".page-intro .button-group, .page-cta .button-group");
+		await expect(store.getByRole("link", { name: "Download on App Store" })).toHaveCount(2);
+		await expect(store.getByRole("link", { name: "Download on Google Play" })).toHaveCount(2);
+		await expect(store.getByRole("link", { name: "Download on App Store" }).first()).toHaveAttribute(
+			"href",
+			"https://apps.apple.com/us/app/kittylitter/id6759521788",
+		);
+		await expect(store.getByRole("link", { name: "Download on Google Play" }).first()).toHaveAttribute(
+			"href",
+			"https://play.google.com/store/apps/details?id=com.sigkitten.litter.android",
+		);
 	}
 });
 
@@ -425,17 +436,31 @@ test("tabbing reaches every story tab in order", async ({ page }) => {
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {
 	await page.goto("/");
-	const layout = await page.locator(".kitty__intro").evaluate((element) => {
+	const intro = page.locator(".kitty__intro");
+	const layout = await intro.evaluate((element) => {
 		function child(root: Element, selector: string): HTMLElement {
 			const node = root.querySelector(selector);
 			if (!(node instanceof HTMLElement)) throw new Error(selector);
 			return node;
 		}
+		const section = element.closest("section");
+		if (!(section instanceof HTMLElement)) throw new Error("section");
 		const heading = child(element, "h2").getBoundingClientRect();
 		const copy = child(element, ".kitty__copy").getBoundingClientRect();
-		return { stacked: copy.top >= heading.bottom, width: Math.round(element.getBoundingClientRect().width) };
+		const box = element.getBoundingClientRect();
+		return {
+			stacked: copy.top >= heading.bottom,
+			width: Math.round(box.width),
+			align: getComputedStyle(element).textAlign,
+			pinnedRight: Math.abs(box.right - section.getBoundingClientRect().right) <= 1,
+		};
 	});
-	expect(layout).toEqual({ stacked: true, width: 760 });
+	expect(layout).toEqual({ stacked: true, width: 760, align: "right", pinnedRight: true });
+	await expect(intro.getByRole("link")).toHaveCount(1);
+	await expect(intro.getByRole("link", { name: "See how mobile works" })).toHaveAttribute("href", "/mobile");
+	await expect(page.getByRole("link", { name: "Download on App Store" })).toHaveCount(0);
+	await expect(page.getByRole("link", { name: "Download on Google Play" })).toHaveCount(0);
+	await expect(page.getByRole("link", { name: "Get KittyLitter" })).toHaveCount(0);
 });
 
 test("product page media is equal and fully framed", async ({ page }) => {
@@ -597,9 +622,13 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 	).toHaveAttribute("href", "https://www.sybilsolutions.ai/");
 	await navigation.getByRole("button", { name: /Resources/ }).hover();
 	const panel = page.locator(".nav__menu-panel");
-	await expect(panel.getByRole("menuitem", { name: "Documentation", exact: true })).toBeVisible();
-	await expect(panel.getByRole("menuitem", { name: "Setup", exact: true })).toBeVisible();
-	await expect(panel.getByRole("menuitem", { name: "Agents", exact: true })).toBeVisible();
+	await expect.poll(async () => panel.getByRole("menuitem").allTextContents()).toEqual([
+		"Overview",
+		"Documentation",
+		"Setup",
+		"Agents",
+		"Mobile",
+	]);
 	await expect(panel.getByRole("menuitem", { name: "GitHub", exact: true })).toHaveCount(0);
 	await expect(panel.getByRole("menuitem", { name: "Download", exact: true })).toHaveCount(0);
 	await panel.getByRole("menuitem", { name: "Overview", exact: true }).click();
@@ -672,18 +701,43 @@ test("unknown routes render a local not-found page", async ({ page }) => {
 });
 
 test("machine page stays in the viewport and only scrolls vertically", async ({ page }) => {
-	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto("/machine");
-	const layout = await page.locator(".machine__banner").evaluate((banner: HTMLElement) => {
-		const overflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
-		const style = getComputedStyle(banner);
-		return {
-			overflow,
-			bannerSize: [style.fontSize, style.lineHeight],
-			bannerBreaks: banner.querySelectorAll("br").length,
-		};
-	});
-	expect(layout.overflow).toBeLessThanOrEqual(0);
-	expect(layout.bannerBreaks).toBe(1);
-	expect(Number.parseFloat(layout.bannerSize[0])).toBeGreaterThanOrEqual(40);
+	for (const size of [
+		{ width: 320, height: 568 },
+		{ width: 390, height: 844 },
+		{ width: 1440, height: 900 },
+	]) {
+		await page.setViewportSize(size);
+		await page.goto("/machine");
+		const layout = await page.locator(".machine__inner").evaluate((inner: HTMLElement) => {
+			const banner = inner.querySelector(".machine__banner");
+			if (!(banner instanceof HTMLElement)) throw new Error("banner");
+			const overflow = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+			const style = getComputedStyle(banner);
+			const rect = banner.getBoundingClientRect();
+			const box = inner.getBoundingClientRect();
+			const nav = document.querySelector("header");
+			if (!(nav instanceof HTMLElement)) throw new Error("header");
+			const navBox = nav.getBoundingClientRect();
+			return {
+				overflow,
+				bannerAlign: style.textAlign,
+				bannerHeight: rect.height,
+				innerWidth: box.width,
+				asciiLines: banner.querySelector("pre")?.textContent?.split("\n").length ?? 0,
+				asciiMark: banner.querySelector("pre")?.textContent?.includes("█████") ?? false,
+				belowNav: rect.top >= navBox.bottom,
+				containerCentered: Math.abs(box.left + box.width / 2 - window.innerWidth / 2) <= 2,
+				bannerFits: banner.scrollWidth <= banner.clientWidth + 1,
+			};
+		});
+		expect(layout.overflow, `${size.width} overflow`).toBeLessThanOrEqual(0);
+		expect(layout.asciiLines, `${size.width} ascii`).toBe(16);
+		expect(layout.asciiMark, `${size.width} mark`).toBe(true);
+		expect(layout.bannerAlign, `${size.width} align`).toBe("left");
+		expect(layout.belowNav, `${size.width} below nav`).toBe(true);
+		expect(layout.containerCentered, `${size.width} container`).toBe(true);
+		expect(layout.bannerFits, `${size.width} fit`).toBe(true);
+		expect(layout.bannerHeight, `${size.width} stacked`).toBeGreaterThan(80);
+		if (size.width >= 1440) expect(layout.innerWidth, "desktop width").toBeGreaterThan(700);
+	}
 });

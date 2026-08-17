@@ -808,7 +808,8 @@ KittyLitter is not a cloud copy. One session list. Complete timeline (content, r
 
 QR and connection JSON are private controller credentials. Treat them like a password. This site has no pairing upload. Bridge requests are signed and replay-protected.
 
-Get KittyLitter: https://kittylitter.app
+Download on App Store: https://apps.apple.com/us/app/kittylitter/id6759521788
+Download on Google Play: https://play.google.com/store/apps/details?id=com.sigkitten.litter.android
 `,
 	);
 }

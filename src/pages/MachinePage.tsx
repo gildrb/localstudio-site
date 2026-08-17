@@ -1,3 +1,4 @@
+import localStudioAscii from "../content/local-studio-ascii.txt?raw";
 import { machineSections, type MachineSection } from "../agent/catalog";
 import { LocalLink } from "../components/LocalLink";
 import { PageShell } from "../components/PageShell";
@@ -25,9 +26,7 @@ export function MachinePage() {
 						onClick={() => toggleMachine(false)}
 						aria-label="Back to Local Studio"
 					>
-						LOCAL
-						<br />
-						STUDIO
+						<pre>{localStudioAscii}</pre>
 					</button>
 					<p className="machine__title">
 						<span translate="no">sybil solutions</span> /{" "}

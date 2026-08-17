@@ -26,11 +26,11 @@ const products = [
 ] as const satisfies readonly NavLink[];
 
 const resources = [
+	{ label: "Overview", href: "/resources" },
 	{ label: "Documentation", href: "/docs" },
 	{ label: "Setup", href: "/prompt" },
 	{ label: "Agents", href: "/agents" },
 	{ label: "Mobile", href: "/mobile" },
-	{ label: "Overview", href: "/resources" },
 ] as const satisfies readonly NavLink[];
 
 const githubUrl = "https://github.com/sybil-solutions/local-studio";
