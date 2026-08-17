@@ -19,7 +19,7 @@ import {
 } from "./routing";
 
 const titles = {
-	"/": "Run your intelligence at home - Local Studio",
+	"/": "Local intelligence. - Local Studio",
 	"/product": "Product - Local Studio",
 	"/mobile": "Mobile - Local Studio",
 	"/docs": "Docs - Local Studio",

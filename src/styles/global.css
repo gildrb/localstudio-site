@@ -32,14 +32,15 @@
 	--hover: rgba(255, 255, 255, 0.08);
 	--font-sans:
 		"Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	--type-hero-title: 500 64px / 64px var(--font-sans);
-	--type-header-title: 500 56px / 60px var(--font-sans);
-	--type-subheadline: 500 42px / 48px var(--font-sans);
-	--type-section-title: 500 28px / 36px var(--font-sans);
-	--type-compact-heading: 500 19px / 28px var(--font-sans);
+	--type-hero-title: 500 88px / 80px var(--font-sans);
+	--type-header-title: 500 56px / 56px var(--font-sans);
+	--type-subheadline: 500 40px / 40px var(--font-sans);
+	--type-section-title: 500 28px / 32px var(--font-sans);
+	--type-compact-heading: 500 20px / 24px var(--font-sans);
 	--type-body: 400 16px / 24px var(--font-sans);
-	--type-meta: 400 14px / 20px var(--font-sans);
-	--tracking-header-title: -0.02em;
+	--type-meta: 400 13px / 18px var(--font-mono);
+	--tracking-header-title: -0.03em;
+	--tracking-hero-title: -0.055em;
 	--focus-ring: #0070f3;
 	--homepage-story-gap: 240px;
 }
@@ -101,9 +102,8 @@ h3 {
 
 code,
 pre {
-	font-family: "Geist Mono", ui-monospace, monospace;
+	font-family: var(--font-mono);
 }
-
 button,
 a {
 	font: inherit;
@@ -274,15 +274,12 @@ img {
 	line-height: 32px;
 	letter-spacing: 0;
 }
-
 .docs-section > h2 + * {
 	margin-top: 24px;
 }
 
 .docs-code {
-	font-size: 14px;
-	font-weight: 400;
-	line-height: 20px;
+	font: var(--type-meta);
 }
 
 .page-intro__requirements li {
@@ -608,7 +605,8 @@ button {
 .hero h1 {
 	margin-top: 0;
 	font: var(--type-hero-title);
-	letter-spacing: var(--tracking-header-title);
+	letter-spacing: var(--tracking-hero-title);
+	white-space: nowrap;
 }
 
 .hero__actions {
@@ -926,6 +924,9 @@ button {
 
 
 	.nav.is-open {
+		position: fixed;
+		right: 0;
+		left: 0;
 		background: var(--background);
 	}
 
@@ -945,13 +946,7 @@ button {
 	html.nav-open,
 	html.nav-open body {
 		overflow: hidden;
-		height: 100%;
 		overscroll-behavior: none;
-	}
-
-	.nav-open .site-shell {
-		height: 100%;
-		overflow: hidden;
 	}
 
 
@@ -1085,7 +1080,6 @@ button {
 		font-size: 32px;
 		line-height: 40px;
 	}
-
 	.hero__mark {
 		width: 56px;
 		height: 56px;
@@ -1098,10 +1092,11 @@ button {
 	}
 
 	.hero h1 {
-		font-size: clamp(26px, 8.4vw, 36px);
-		line-height: 1.15;
+		font-size: clamp(48px, 13vw, 64px);
+		line-height: 0.9;
 		white-space: nowrap;
 	}
+
 	.story__option-control {
 		min-height: 88px;
 		grid-template-columns: 1fr;
@@ -1119,7 +1114,8 @@ button {
 
 	.story h2,
 	.kitty h2,
-	.page-cta h2 {
+	.page-cta h2,
+	.mobile-section h2 {
 		font-size: 32px;
 		line-height: 40px;
 	}
@@ -1465,8 +1461,7 @@ button {
 	border: 0;
 	color: var(--dim);
 	background: transparent;
-	font-size: 14px;
-	line-height: 20px;
+	font: var(--type-meta);
 	cursor: pointer;
 	transition: color 130ms ease-out;
 }
@@ -1510,8 +1505,7 @@ button {
 	padding: 0 12px;
 	border-radius: 6px;
 	color: var(--dim);
-	font-size: 14px;
-	line-height: 20px;
+	font: var(--type-meta);
 	text-decoration: none;
 	text-align: left;
 	transition:

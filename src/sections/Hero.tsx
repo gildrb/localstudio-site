@@ -56,9 +56,9 @@ export function Hero() {
 							animate={settle}
 							transition={{ duration: 0.9, ease, delay: 0.12 }}
 						>
-							Run your intelligence
+							Local
 							<br />
-							at home.
+							intelligence.
 						</m.h1>
 						<m.div
 							className="hero__actions"

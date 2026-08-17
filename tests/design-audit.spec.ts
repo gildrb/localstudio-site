@@ -236,20 +236,26 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	await expect(page.getByRole("button", { name: "Close menu" })).toBeVisible();
 	await page.getByRole("button", { name: "Close menu" }).click();
 	await page.evaluate(() => window.scrollTo(0, 900));
+	const scrolled = await page.evaluate(() => Math.round(window.scrollY));
+	expect(scrolled).toBeGreaterThan(500);
 	await page.getByRole("button", { name: "Open menu" }).click();
 	const afterScroll = await page.evaluate(() => {
 		const brand = document.querySelector(".brand") as HTMLElement;
 		const toggle = document.querySelector(".nav__toggle") as HTMLElement;
 		return {
+			scrollY: Math.round(window.scrollY),
 			brandTop: Math.round(brand.getBoundingClientRect().top),
 			toggleTop: Math.round(toggle.getBoundingClientRect().top),
 			toggleHeight: Math.round(toggle.getBoundingClientRect().height),
 		};
 	});
+	expect(afterScroll.scrollY).toBe(scrolled);
 	expect(afterScroll.brandTop).toBeGreaterThanOrEqual(0);
 	expect(afterScroll.toggleTop).toBeGreaterThanOrEqual(0);
 	expect(afterScroll.toggleHeight).toBeGreaterThanOrEqual(44);
 	await expect(page.getByRole("button", { name: "Close menu" })).toBeVisible();
+	await page.getByRole("button", { name: "Close menu" }).click();
+	expect(await page.evaluate(() => Math.round(window.scrollY))).toBe(scrolled);
 });
 
 test("navbar and footer hitboxes touch and share one height", async ({ page }) => {
@@ -327,12 +333,13 @@ test("navbar and footer hitboxes touch and share one height", async ({ page }) =
 });
 
 test("typography avoids widows and the first paint is preloaded", async ({ page }) => {
-	await page.goto("/");
+	await page.goto("/docs");
 	const wrapping = await page.evaluate(() => ({
-		body: getComputedStyle(document.querySelector(".story__intro p")!).textWrap,
+		body: getComputedStyle(document.querySelector(".page-intro p")!).textWrap,
 		title: getComputedStyle(document.querySelector("h1")!).textWrap,
 	}));
 	expect(wrapping).toEqual({ body: "pretty", title: "balance" });
+	await page.goto("/");
 	const font = page.locator('link[rel="preload"][as="font"]');
 	await expect(font).toHaveAttribute("href", "/fonts/geist-sans.woff2");
 	const hero = page.locator('link[rel="preload"][as="image"]');

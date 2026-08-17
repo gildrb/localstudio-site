@@ -87,7 +87,7 @@ export function ProductPage() {
 								index % 2 ? "order-2 max-[900px]:order-none" : undefined
 							}
 						>
-							<h2 className="text-[42px]/12 font-medium max-[620px]:text-[32px]/10">
+							<h2>
 								{section.title}
 							</h2>
 							<p className="mt-6 max-w-md text-base/6 text-white/70">

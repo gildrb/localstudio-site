@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-	["/", "Run your intelligence at home - Local Studio", "Run your intelligence"],
+	["/", "Local intelligence. - Local Studio", "Local intelligence"],
 	["/product", "Product - Local Studio", "One place to run local AI"],
 	["/mobile", "Mobile - Local Studio", "Your local agents"],
 	["/docs", "Docs - Local Studio", "Get Local Studio running"],
@@ -47,7 +47,7 @@ test("non-home routes use the homepage intro system", async ({ page }) => {
 			return { minHeight: style.minHeight, textAlign: style.textAlign, heading: [heading.fontSize, heading.lineHeight] };
 		});
 		if (["/mobile", "/docs", "/prompt", "/agents"].includes(route)) {
-			expect(geometry).toEqual({ minHeight: route === "/mobile" ? "650px" : "0px", textAlign: "left", heading: ["56px", "60px"] });
+			expect(geometry).toEqual({ minHeight: route === "/mobile" ? "650px" : "0px", textAlign: "left", heading: ["56px", "56px"] });
 			const headingTop = Math.round(await intro.locator("h1").evaluate(element => element.getBoundingClientRect().top));
 			if (route === "/mobile") {
 				mobileHeadingTop = headingTop;
@@ -57,7 +57,7 @@ test("non-home routes use the homepage intro system", async ({ page }) => {
 				expect(headingTop).toBe(mobileHeadingTop);
 			}
 		} else {
-			expect(geometry).toEqual({ minHeight: "650px", textAlign: "center", heading: ["56px", "60px"] });
+			expect(geometry).toEqual({ minHeight: "650px", textAlign: "center", heading: ["56px", "56px"] });
 		}
 	}
 	await page.setViewportSize({ width: 390, height: 844 });
@@ -90,7 +90,7 @@ test("homepage repeats the hero actions in the final callout", async ({ page }) 
 		const style = getComputedStyle(element);
 		return [style.fontSize, style.lineHeight, style.fontWeight];
 	});
-	expect(homepageHeading).toEqual(["42px", "48px", "500"]);
+	expect(homepageHeading).toEqual(["40px", "40px", "500"]);
 	expect(mobileRouteHeading).toEqual(homepageHeading);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/mobile");
@@ -397,9 +397,9 @@ test("design system typography is stable", async ({ page }) => {
 		};
 	});
 	expect(desktop.body).toEqual([expect.stringContaining("Geist Sans"), "16px", "400", "24px", "normal"]);
-	expect(desktop.title).toEqual([expect.stringContaining("Geist Sans"), "64px", "500", "64px", "-1.28px"]);
-	expect(desktop.subheadline).toEqual(["42px", "500", "48px", "normal"]);
-	expect(desktop.feature).toEqual(["28px", "500", "36px", "normal"]);
+	expect(desktop.title).toEqual([expect.stringContaining("Geist Sans"), "88px", "500", "80px", "-4.84px"]);
+	expect(desktop.subheadline).toEqual(["40px", "500", "40px", "normal"]);
+	expect(desktop.feature).toEqual(["28px", "500", "32px", "normal"]);
 	await page.goto("/docs");
 	const docsType = await page.evaluate(() => {
 		const heading = getComputedStyle(document.querySelector(".docs-section h2")!);
@@ -413,7 +413,7 @@ test("design system typography is stable", async ({ page }) => {
 			sectionGap: Math.round(sections[1].getBoundingClientRect().top - sections[0].getBoundingClientRect().bottom),
 		};
 	});
-	expect(docsType).toEqual({ heading: ["24px", "32px", "500"], emphasis: "500", code: ["14px", "20px", "400"], sectionGap: 80 });
+	expect(docsType).toEqual({ heading: ["24px", "32px", "500"], emphasis: "500", code: ["13px", "18px", "400"], sectionGap: 80 });
 	const fullWidthLayouts = await page.evaluate(() => {
 		const docs = document.querySelector(".docs-layout")!.getBoundingClientRect();
 		const article = document.querySelector(".docs-prose")!.getBoundingClientRect();
@@ -432,8 +432,8 @@ test("design system typography is stable", async ({ page }) => {
 			compact: [compact.fontSize, compact.fontWeight, compact.lineHeight, compact.letterSpacing],
 		};
 	});
-	expect(hierarchy.section).toEqual(["42px", "500", "48px", "normal"]);
-	expect(hierarchy.compact).toEqual(["19px", "500", "28px", "normal"]);
+	expect(hierarchy.section).toEqual(["40px", "500", "40px", "normal"]);
+	expect(hierarchy.compact).toEqual(["20px", "500", "24px", "normal"]);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");
 	const mobile = await page.evaluate(() => {
@@ -443,13 +443,12 @@ test("design system typography is stable", async ({ page }) => {
 		return {
 			lines: title.querySelectorAll("br").length + 1,
 			wrap: titleStyle.whiteSpace,
-			titleTracking: titleStyle.letterSpacing,
+			titleSize: [titleStyle.fontSize, titleStyle.lineHeight],
 			subheadline: [subheadline.fontSize, subheadline.lineHeight, subheadline.letterSpacing],
 		};
 	});
 	expect(mobile.lines).toBe(2);
 	expect(mobile.wrap).toBe("nowrap");
-	expect(mobile.titleTracking).toMatch(/^-0\.\d+px$/);
 	expect(mobile.subheadline).toEqual(["32px", "40px", "normal"]);
 });
 

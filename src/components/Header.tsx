@@ -254,7 +254,6 @@ export function Header() {
 				ref={sheetRef}
 				className="nav__sheet"
 				role="dialog"
-				tabIndex={-1}
 				aria-modal={mobileOpen || undefined}
 				aria-label="Navigation menu"
 				aria-hidden={!mobileOpen}
