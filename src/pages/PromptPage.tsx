@@ -38,7 +38,7 @@ export function PromptPage() {
 					aria-label="Portable setup prompt"
 				>
 					<CopyIcon text={setupPrompt} />
-					<pre className="max-h-[660px] overflow-auto whitespace-pre-wrap p-8 pr-20 pt-14 font-mono text-sm/5 text-white/80 max-[620px]:p-5 max-[620px]:pr-12 max-[620px]:pt-12">
+					<pre className="max-h-[420px] w-full min-w-0 overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words p-8 pr-20 pt-14 font-mono text-sm/5 text-white/80 max-[620px]:max-h-[320px] max-[620px]:p-5 max-[620px]:pr-12 max-[620px]:pt-12">
 						<code>{setupPrompt}</code>
 					</pre>
 				</section>

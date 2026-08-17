@@ -547,6 +547,13 @@ test("setup prompt copies from the floating copy icon", async ({ page, context }
 	await expect(page.getByRole("status")).toContainText("Copied to clipboard");
 	const clipboard = await page.evaluate(() => navigator.clipboard.readText());
 	expect(clipboard).toContain("Set up Local Studio completely");
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/prompt");
+	const overflow = await page.locator(".prompt-block pre").evaluate((element) => ({
+		size: element.scrollWidth - element.clientWidth,
+		wrap: getComputedStyle(element).overflowWrap,
+	}));
+	expect(overflow.size).toBeLessThanOrEqual(0);
 });
 
 test("unknown routes render a local not-found page", async ({ page }) => {

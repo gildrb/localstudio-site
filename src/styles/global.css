@@ -1222,6 +1222,15 @@ button {
 
 .prompt-block {
 	position: relative;
+	min-width: 0;
+}
+
+.prompt-block pre,
+ .prompt-block code {
+	max-width: 100%;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	word-break: break-word;
 }
 
 .nav__machine {
