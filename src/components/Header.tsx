@@ -118,6 +118,7 @@ export function Header() {
 	useEffect(() => {
 		if (!openMenu) return;
 		function onPointerDown(event: PointerEvent) {
+			// SAFETY: pointerdown event targets are DOM Nodes by specification.
 			if (!menusRef.current?.contains(event.target as Node)) {
 				setOpenMenu(null);
 			}
@@ -146,6 +147,12 @@ export function Header() {
 		const root = document.documentElement;
 		const main = document.getElementById("content");
 		const footer = document.querySelector("footer");
+		const header = toggleRef.current?.closest("header");
+		function syncNavHeight() {
+			if (!header) return;
+			root.style.setProperty("--nav-height", `${Math.round(header.getBoundingClientRect().height)}px`);
+		}
+		syncNavHeight();
 		root.classList.toggle("nav-open", mobileOpen);
 		main?.toggleAttribute("inert", mobileOpen);
 		footer?.toggleAttribute("inert", mobileOpen);
@@ -156,11 +163,13 @@ export function Header() {
 				toggleRef.current?.focus();
 			}
 		}
+		window.addEventListener("resize", syncNavHeight);
 		document.addEventListener("keydown", onKeyDown);
 		return () => {
 			root.classList.remove("nav-open");
 			main?.removeAttribute("inert");
 			footer?.removeAttribute("inert");
+			window.removeEventListener("resize", syncNavHeight);
 			document.removeEventListener("keydown", onKeyDown);
 		};
 	}, [mobileOpen]);

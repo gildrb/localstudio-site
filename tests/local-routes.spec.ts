@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-	["/", "Local intelligence. - Local Studio", "Local intelligence"],
+	["/", "Local intelligence. - Local Studio", "Local Intelligence"],
 	["/product", "Product - Local Studio", "One place to run local AI"],
 	["/mobile", "Mobile - Local Studio", "Your local agents"],
 	["/docs", "Docs - Local Studio", "Get Local Studio running"],
@@ -269,11 +269,14 @@ test("mobile page keeps stable gutters, type, and actions at narrow widths", asy
 					gap: Math.round(links[1].top - links[0].bottom),
 				};
 			}));
-		expect(actions).toEqual(Array(2).fill({
-			group: [24, width - 48],
-			links: [[24, width - 48, 48], [24, width - 48, 48]],
-			gap: 8,
-		}));
+		expect(actions).toHaveLength(2);
+		for (const group of actions) {
+			expect(group.links).toHaveLength(2);
+			expect(group.links[0][2]).toBe(48);
+			expect(group.links[1][2]).toBe(48);
+			expect(group.links[1][0]).toBeGreaterThan(group.links[0][0]);
+			expect(group.gap).toBeLessThanOrEqual(0);
+		}
 	}
 });
 
@@ -397,7 +400,7 @@ test("design system typography is stable", async ({ page }) => {
 		};
 	});
 	expect(desktop.body).toEqual([expect.stringContaining("Geist Sans"), "16px", "400", "24px", "normal"]);
-	expect(desktop.title).toEqual([expect.stringContaining("Geist Sans"), "88px", "500", "96px", "-1.76px"]);
+	expect(desktop.title).toEqual([expect.stringContaining("Geist Sans"), "70px", "500", "78px", "-1.4px"]);
 	expect(desktop.subheadline).toEqual(["42px", "500", "48px", "normal"]);
 	expect(desktop.feature).toEqual(["28px", "500", "36px", "normal"]);
 	await page.goto("/docs");

@@ -23,28 +23,6 @@ export function Hero() {
 				<div className="hero__texture" aria-hidden="true" />
 				<div className="hero__inner">
 					<div className="hero__copy">
-					<m.button
-						className="hero__mark-button"
-						type="button"
-						onClick={() => toggleMachine(true)}
-						aria-label="Machine-readable page"
-						initial={
-							reduceMotion
-								? false
-								: { opacity: 0, y: 12, filter: "blur(6px)" }
-						}
-						animate={settle}
-						transition={{ duration: 0.9, ease, delay: 0.05 }}
-					>
-						<img
-							className="hero__mark"
-							src="/images/optimized.svg"
-							alt=""
-							width="525"
-							height="525"
-							aria-hidden="true"
-						/>
-					</m.button>
 						<m.h1
 							id="landing-title"
 							tabIndex={-1}
@@ -58,7 +36,7 @@ export function Hero() {
 						>
 							Local
 							<br />
-							intelligence.
+							Intelligence
 						</m.h1>
 						<m.div
 							className="hero__actions"
@@ -75,7 +53,29 @@ export function Hero() {
 								<TextLink href="/prompt">Setup prompt</TextLink>
 							</div>
 						</m.div>
-					</div>
+				</div>
+				<m.button
+					className="hero__mark-button"
+					type="button"
+					onClick={() => toggleMachine(true)}
+					aria-label="Machine-readable page"
+					initial={
+						reduceMotion
+							? false
+							: { opacity: 0, y: 12, filter: "blur(6px)" }
+					}
+					animate={settle}
+					transition={{ duration: 0.9, ease, delay: 0.05 }}
+				>
+					<img
+						className="hero__mark"
+						src="/images/optimized.svg"
+						alt=""
+						width="525"
+						height="525"
+						aria-hidden="true"
+					/>
+				</m.button>
 				</div>
 				<m.div
 					className="hero__stage section-width"

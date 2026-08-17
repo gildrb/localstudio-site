@@ -78,6 +78,7 @@ export default function App() {
 	}, []);
 
 	useEffect(() => {
+		// SAFETY: the isRoutePath() or /machine check guarantees pathname is a titles key.
 		document.title =
 			isRoutePath(pathname) || pathname === "/machine"
 				? titles[pathname as keyof typeof titles]

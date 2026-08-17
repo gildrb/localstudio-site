@@ -234,6 +234,23 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	expect(chrome.brandVisible).toBe(true);
 	expect(chrome.toggleVisible).toBe(true);
 	await expect(page.getByRole("button", { name: "Close menu" })).toBeVisible();
+	const hit = await page.evaluate(() => {
+		const header = document.querySelector("header.nav") as HTMLElement;
+		const sheet = document.querySelector(".nav__sheet") as HTMLElement;
+		const first = document.querySelector(".nav__sheet-summary") as HTMLElement;
+		const headerBottom = header.getBoundingClientRect().bottom;
+		const firstBox = first.getBoundingClientRect();
+		const mid = document.elementFromPoint(firstBox.left + 24, firstBox.top + firstBox.height / 2);
+		return {
+			gap: Math.round(firstBox.top - headerBottom),
+			sheetTop: Math.round(sheet.getBoundingClientRect().top),
+			headerBottom: Math.round(headerBottom),
+			hit: mid?.textContent?.trim() ?? "",
+		};
+	});
+	expect(hit.sheetTop).toBe(hit.headerBottom);
+	expect(hit.gap).toBeGreaterThanOrEqual(0);
+	expect(hit.hit).toContain("Products");
 	await page.getByRole("button", { name: "Close menu" }).click();
 	await page.evaluate(() => window.scrollTo(0, 900));
 	const scrolled = await page.evaluate(() => Math.round(window.scrollY));

@@ -58,6 +58,7 @@ export function scrollToHash(hash: string) {
 	const heading = target.matches("h1, h2, h3")
 		? target
 		: target.querySelector("h1, h2, h3");
+	// SAFETY: heading/target come from heading/anchor selectors that only match HTMLElements.
 	const focusTarget = (heading ?? target) as HTMLElement;
 	if (!focusTarget.hasAttribute("tabindex")) {
 		focusTarget.tabIndex = -1;
@@ -66,5 +67,6 @@ export function scrollToHash(hash: string) {
 }
 
 export function isRoutePath(pathname: string): pathname is RoutePath {
+	// SAFETY: routes is keyed by RoutePath, so has() only accepts RoutePath values.
 	return routes.has(pathname as RoutePath);
 }
