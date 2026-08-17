@@ -11,18 +11,18 @@ Operating rules
 3. Never print, commit, or expose secrets. Store machine-specific values in .env.local.
 4. Do not bypass hooks or security checks. With vLLM or SGLang, never disable CUDA graphs and never use enforce eager.
 5. Prefer supported, reproducible installation paths. Do not silently substitute a different product or inference stack.
-6. You must figure it out — no quitting. It is not done until one functional, proper model is running that fits the user's hardware (preferably Qwen3.6 or Gemma-4), and the recipe is saved.
+6. You must figure it out. No quitting. It is not done until one functional, proper model is running that fits the user's hardware (preferably Qwen3.6 or Gemma-4), and the recipe is saved.
 7. Test the entire app with agent-browser: use the site end to end and confirm all functionality is proper. Inform the user when done by opening a visual-explainer HTML file in their default browser.
 
-Phase 1 — inspect
+Phase 1 - inspect
 
 Determine and report the operating system, CPU architecture, available RAM, free disk space, GPU model and memory or Apple unified memory, existing model directories, and whether ports 3000 and 8080 are available. Check Git, Node.js 20+, npm, Bun 1.x, Python 3.10+, uv, Docker, NVIDIA driver/CUDA, and relevant existing inference runtimes. Do not install anything until this inventory is complete.
 
-Phase 2 — acquire and preflight
+Phase 2 - acquire and preflight
 
 Clone the repository into a normal user-owned project directory if it is absent. If it exists, inspect its current branch and worktree before updating it. Install only missing prerequisites using the platform's normal package manager. From the repository root, run npm run doctor and resolve every actionable failure.
 
-Phase 3 — choose the correct runtime
+Phase 3 - choose the correct runtime
 
 - Apple Silicon macOS: prefer MLX for model serving.
 - Linux with a supported NVIDIA GPU: choose vLLM or SGLang based on the installed stack and model requirements.
@@ -32,7 +32,7 @@ Phase 3 — choose the correct runtime
 
 Explain the choice in one short paragraph, including the hardware constraint that drove it.
 
-Phase 4 — install Local Studio
+Phase 4 - install Local Studio
 
 Install controller dependencies with:
 
@@ -48,13 +48,13 @@ For local-only use, keep the controller bound to 127.0.0.1. For LAN or remote ac
 
 Point the frontend at the controller with BACKEND_URL or NEXT_PUBLIC_API_URL when it is not using http://localhost:8080.
 
-Phase 5 — launch
+Phase 5 - launch
 
 Start the controller with bun src/main.ts from controller/. Start the frontend in a second process. For initial interactive setup, use npm run dev from frontend/ and open http://localhost:3000/setup. For a durable production run, use npm run build followed by npm run start; never use plain next start.
 
 On macOS, build the Electron desktop app only after the web and controller paths are healthy. Use the repository's documented desktop build and installation commands rather than inventing a bundle path.
 
-Phase 6 — prove it works
+Phase 6 - prove it works
 
 Do not claim success until all applicable checks pass:
 
@@ -71,7 +71,7 @@ Do not claim success until all applicable checks pass:
 
 If a check fails, diagnose and fix it, then rerun the check. Do not hide degraded behavior.
 
-Phase 7 — handoff
+Phase 7 - handoff
 
 Leave the required processes running. If appropriate, create a reversible launchd or systemd service only after the manual path is proven. Finish with a compact handoff containing:
 

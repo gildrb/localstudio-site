@@ -199,19 +199,19 @@ export function machineSections(): MachineSection[] {
 		[
 			"PRODUCTS",
 			[
-				"1. Local Studio — macOS workstation for local/remote LLM controllers",
+				"1. Local Studio - macOS workstation for local/remote LLM controllers",
 				"   url ......... https://localstudio.ai",
 				"   repo ........ https://github.com/sybil-solutions/local-studio",
 				"   license ..... Apache-2.0",
 				"   stars ....... 1706+",
 				"",
-				"2. KittyLitter — native iOS + Android client for coding agents",
+				"2. KittyLitter - native iOS + Android client for coding agents",
 				"   url ......... https://kittylitter.app",
 				"   repo ........ https://github.com/dnakov/litter",
 				"   license ..... GPL-3.0 with App Store / Play exception",
 				"   companion ... pairs to Local Studio sessions",
 				"",
-				"3. Codex Shim — local Responses-API shim for Codex Desktop BYOK",
+				"3. Codex Shim - local Responses-API shim for Codex Desktop BYOK",
 				"   repo ........ https://github.com/sybil-solutions/codex-shim",
 				"   license ..... MIT",
 				"   stars ....... 1067+",
@@ -400,7 +400,7 @@ export function machineSections(): MachineSection[] {
 				"",
 				"What it does",
 				"  Connects to agents on your local network, over SSH, or via",
-				"  Alleycat peer-to-peer pairing — from anywhere. It is not a cloud",
+				"  Alleycat peer-to-peer pairing from anywhere. It is not a cloud",
 				"  copy of Local Studio. Work still runs on the Mac / server.",
 				"  Sessions, threads, and context follow the phone.",
 				"",
@@ -425,10 +425,10 @@ export function machineSections(): MachineSection[] {
 				"* watch .......... LitterWatch companion (Apple Watch).",
 				"",
 				"How it works (three steps, zero extra server setup)",
-				"1. find your server — LAN auto-discovery, Alleycat QR, or SSH URL.",
-				"2. pick an agent — Codex / Claude / OpenCode / Pi / Droid;",
+				"1. find your server - LAN auto-discovery, Alleycat QR, or SSH URL.",
+				"2. pick an agent - Codex / Claude / OpenCode / Pi / Droid;",
 				"   Litter starts it on the server.",
-				"3. get to work — sessions and threads follow you.",
+				"3. get to work - sessions and threads follow you.",
 				"",
 				"Local Studio pairing",
 				"  Settings → Profile & phone → Connect your phone.",
@@ -588,7 +588,7 @@ export function machineSections(): MachineSection[] {
 export function machineText(): string {
 	const lines = [
 		"local studio :: machine-readable index",
-		"company: Sybil Solutions — https://www.sybilsolutions.ai/",
+		"company: Sybil Solutions - https://www.sybilsolutions.ai/",
 		"plain-text mirror for agents, crawlers, and humans who prefer it raw.",
 		"",
 	];
@@ -606,7 +606,7 @@ function markdownPage(title: string, body: string): string {
 function robotsTxt(): string {
 	const blocks = [
 		"# Site: https://localstudio.ai/",
-		"# Company: Sybil Solutions — https://www.sybilsolutions.ai/",
+		"# Company: Sybil Solutions - https://www.sybilsolutions.ai/",
 		"# Products: Local Studio, KittyLitter, Codex Shim",
 		"# LLM reference: https://localstudio.ai/llms.txt",
 		"# Machine index: https://localstudio.ai/machine",
@@ -661,7 +661,7 @@ function sitemapXml(): string {
 }
 
 function llmsTxt(): string {
-	return `# Local Studio — Sybil Solutions
+	return `# Local Studio - Sybil Solutions
 
 > Canonical LLM / agent reference for Local Studio and the Sybil Solutions products listed here.
 
@@ -743,7 +743,7 @@ function indexMarkdown(): string {
 
 Local intelligence. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
 
-- [Download for macOS](${SITE_ORIGIN}/download/macos) — v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
+- [Download for macOS](${SITE_ORIGIN}/download/macos) - v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
 - [Setup prompt](${SITE_ORIGIN}/prompt)
 - [Product](${SITE_ORIGIN}/product)
 - [KittyLitter](${SITE_ORIGIN}/mobile)
@@ -769,7 +769,7 @@ Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. LAN, SSH
 
 function productMarkdown(): string {
 	return markdownPage(
-		"Product — Local Studio",
+		"Product - Local Studio",
 		`One place to run local AI. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
 
 ## Control the runtime
@@ -789,7 +789,7 @@ Use the Pi-powered Workbench for agent sessions with models, providers, browser,
 
 function mobileMarkdown(): string {
 	return markdownPage(
-		"Mobile — KittyLitter + Local Studio",
+		"Mobile - KittyLitter + Local Studio",
 		`Pair KittyLitter once, then read and continue the same Local Studio sessions from your phone. The work still runs on your Mac.
 
 Requirements: Local Studio 2.9.0+, KittyLitter 1.6.0+, Mac reachable.
@@ -816,7 +816,7 @@ Download on Google Play: https://play.google.com/store/apps/details?id=com.sigki
 
 function docsMarkdown(): string {
 	return markdownPage(
-		"Docs — Get Local Studio running",
+		"Docs - Get Local Studio running",
 		`Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference.
 
 Two modules share one controller API: Bun/Hono backend + Next.js/React/Electron frontend.
@@ -847,10 +847,10 @@ Models directory → install engine → download model → launch → benchmark.
 
 ## Runtime backends
 
-- vLLM — CUDA throughput
-- SGLang — structured / multi-turn
-- llama.cpp — GGUF / llama-server
-- MLX — Apple Silicon / mlx_lm.server
+- vLLM - CUDA throughput
+- SGLang - structured / multi-turn
+- llama.cpp - GGUF / llama-server
+- MLX - Apple Silicon / mlx_lm.server
 
 ## Agent runtime
 
@@ -881,7 +881,7 @@ Copy the entire prompt. Do not accept completion until health, model launch, and
 
 function agentsMarkdown(): string {
 	return markdownPage(
-		"Agents — Local Studio DLTL",
+		"Agents - Local Studio DLTL",
 		`Compact instruction sheet for coding agents covering controllers, providers, runtimes, and Pi.
 
 ## Scope
@@ -959,7 +959,7 @@ Prerequisites: ${SITE_ORIGIN}/docs#prerequisites
 
 function servicesMarkdown(): string {
 	return markdownPage(
-		"Services / products — Sybil Solutions",
+		"Services / products - Sybil Solutions",
 		`Operator: Sybil Solutions (https://www.sybilsolutions.ai/).
 
 | Product | What | URL |
@@ -978,16 +978,16 @@ function peopleMarkdown(): string {
 		"People",
 		`## Organization
 
-- **Sybil Solutions** — Software · AI · Automation. https://www.sybilsolutions.ai/
+- **Sybil Solutions** - Software · AI · Automation. https://www.sybilsolutions.ai/
 - Contact: sherif@sybilsolutions.ai
 - GitHub org: https://github.com/sybil-solutions
 - X: https://x.com/0xsero
 
 ## Products and source
 
-- Local Studio — https://github.com/sybil-solutions/local-studio
-- Codex Shim — https://github.com/sybil-solutions/codex-shim
-- KittyLitter / Litter — https://github.com/dnakov/litter (also associated with 0xSero)
+- Local Studio - https://github.com/sybil-solutions/local-studio
+- Codex Shim - https://github.com/sybil-solutions/codex-shim
+- KittyLitter / Litter - https://github.com/dnakov/litter (also associated with 0xSero)
 
 This marketing site source: https://github.com/gildrb/ls-web
 `,
@@ -1051,7 +1051,7 @@ Yes. \`Content-Signal: search=yes, ai-input=yes, ai-train=yes\`. Explicit allow 
 function sitemapMarkdown(): string {
 	const rows = HTML_ROUTES.map(
 		(route) =>
-			`- [${route.path}](${SITE_ORIGIN}${route.path}) — ${route.summary}`,
+			`- [${route.path}](${SITE_ORIGIN}${route.path}) - ${route.summary}`,
 	);
 	return markdownPage("Sitemap", rows.join("\n"));
 }

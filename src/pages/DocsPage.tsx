@@ -60,13 +60,13 @@ export function DocsPage() {
 								<strong>
 									<span translate="no">Bun</span> 1.x
 								</strong>{" "}
-								— for the controller.
+								for the controller.
 							</li>
 							<li>
-								<strong>Node.js 20+ and npm</strong> — for the frontend.
+								<strong>Node.js 20+ and npm</strong> for the frontend.
 							</li>
 							<li>
-								<strong>Python 3.10+ on PATH</strong> — engine installs use{" "}
+								<strong>Python 3.10+ on PATH.</strong> Engine installs use{" "}
 								<code>uv</code> when present, pip otherwise.
 							</li>
 							<li>
@@ -85,7 +85,7 @@ export function DocsPage() {
 					<section id="quick-start" className={sectionClass}>
 						<h2>Quick start</h2>
 						<p className="mt-4">
-							Run the preflight check first — it verifies toolchain, ports,
+							Run the preflight check first. It verifies toolchain, ports,
 							directories, and network:
 						</p>
 						<pre className={codeClass}>npm run doctor</pre>
@@ -108,7 +108,7 @@ export function DocsPage() {
 						<p className="rounded-lg border border-white/10 p-4">
 							<code>npm ci</code> runs a postinstall patch against{" "}
 							<code>@earendil-works/pi-ai</code>. If that step prints a warning,
-							agent streaming may misrender — re-run <code>npm ci</code> to fix
+							agent streaming may misrender. Re-run <code>npm ci</code> to fix
 							it.
 						</p>
 					</section>
@@ -136,28 +136,28 @@ export function DocsPage() {
 								<strong>
 									<span translate="no">vLLM</span>
 								</strong>{" "}
-								— CUDA throughput serving through configured, discovered,
+								- CUDA throughput serving through configured, discovered,
 								system, Docker, or bundled targets.
 							</li>
 							<li>
 								<strong>
 									<span translate="no">SGLang</span>
 								</strong>{" "}
-								— Structured and multi-turn serving through discovered or
+								- Structured and multi-turn serving through discovered or
 								configured Python targets.
 							</li>
 							<li>
 								<strong>
 									<span translate="no">llama.cpp</span>
 								</strong>{" "}
-								— GGUF models through the llama-server binary. Great for CPU and
+								- GGUF models through the llama-server binary. Great for CPU and
 								modest hardware.
 							</li>
 							<li>
 								<strong>
 									<span translate="no">MLX</span>
 								</strong>{" "}
-								— Apple Silicon serving through mlx_lm.server. The default path
+								- Apple Silicon serving through mlx_lm.server. The default path
 								on Mac.
 							</li>
 						</ul>
@@ -187,7 +187,7 @@ export function DocsPage() {
 						<p className="mt-4">
 							The controller binds <code>127.0.0.1</code> by default. Binding a
 							non-loopback host (e.g. <code>LOCAL_STUDIO_HOST=0.0.0.0</code>)
-							requires <code>LOCAL_STUDIO_API_KEY</code> — startup throws
+							requires <code>LOCAL_STUDIO_API_KEY</code>. Startup throws
 							without it. On a trusted LAN you may instead set{" "}
 							<code>LOCAL_STUDIO_ALLOW_UNAUTHENTICATED=true</code> to opt out of
 							authentication.
@@ -242,8 +242,8 @@ export function DocsPage() {
 							integration + frontend regression
 						</pre>
 						<p>
-							For the full agent runbook — controllers, providers, runtimes, and{" "}
-							<span translate="no">Pi</span> sessions — see{" "}
+							For the full agent runbook covering controllers, providers, runtimes, and{" "}
+							<span translate="no">Pi</span> sessions, see{" "}
 							<LocalLink
 								className="text-white underline underline-offset-4"
 								href="/agents"

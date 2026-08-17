@@ -29,8 +29,8 @@ export function AgentsPage() {
 				title="Set up the stack."
 				description={
 					<>
-						A compact <span translate="no">DLTL</span> — a copy-paste
-						instruction sheet for coding agents — covering controllers,
+						A compact <span translate="no">DLTL</span>, a copy-paste
+						instruction sheet for coding agents covering controllers,
 						providers, runtimes, and <span translate="no">Pi</span>.
 					</>
 				}

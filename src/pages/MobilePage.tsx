@@ -186,7 +186,7 @@ export function MobilePage() {
 					<p className={`mt-6 ${prose}`}>
 						The QR code and copied connection JSON contain a private controller
 						credential. They grant access to every agent enabled on that
-						controller—not only <span translate="no">Local Studio</span>. Scan
+						controller, not only <span translate="no">Local Studio</span>. Scan
 						only with a device you trust. Never post, email, record, or paste
 						the code into support chat.
 					</p>

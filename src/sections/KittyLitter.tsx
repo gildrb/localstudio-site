@@ -10,7 +10,7 @@ type KittyFeature = {
 const features = [
 	{
 		title: "Multi-agent",
-		text: "Codex, Claude, OpenCode, Pi, and Droid — all in one app. Switch between them per session, or run several in parallel.",
+		text: "Codex, Claude, OpenCode, Pi, and Droid, all in one app. Switch between them per session, or run several in parallel.",
 		image: "/images/kittylitter-feature-multi-agent.png",
 		alt: "KittyLitter conversation with a Codex model picker and an interactive widget.",
 	},
@@ -22,7 +22,7 @@ const features = [
 	},
 	{
 		title: "Alleycat",
-		text: "Peer-to-peer pairing via QR code. Connect through NATs and corporate firewalls — no VPN, no public IP, no port forwarding.",
+		text: "Peer-to-peer pairing via QR code. Connect through NATs and corporate firewalls. No VPN, no public IP, no port forwarding.",
 		image: "/images/kittylitter-feature-alleycat.png",
 		alt: "KittyLitter remote session running over a cat wallpaper.",
 	},
@@ -34,13 +34,13 @@ const features = [
 	},
 	{
 		title: "Voice input",
-		text: "Real-time voice with your agent — transcription and conversation happen seamlessly while you walk, drive, or think.",
+		text: "Real-time voice with your agent. Transcription and conversation happen seamlessly while you walk, drive, or think.",
 		image: "/images/kittylitter-feature-voice.png",
 		alt: "KittyLitter realtime voice session with Codex speaking.",
 	},
 	{
 		title: "70+ themes",
-		text: "Dozens of editor themes — Catppuccin, Dracula, Nord, Gruvbox, Solarized, and more. Dark and light.",
+		text: "Dozens of editor themes: Catppuccin, Dracula, Nord, Gruvbox, Solarized, and more. Dark and light.",
 		image: "/images/kittylitter-feature-themes.png",
 		alt: "KittyLitter session info in a light theme, with wallpaper and conversation stats.",
 	},
@@ -74,7 +74,7 @@ export function KittyLitter() {
 						<span translate="no">Claude</span>,{" "}
 						<span translate="no">OpenCode</span>, <span translate="no">Pi</span>
 						, and <span translate="no">Droid</span>. Connect from your local
-						network, over SSH, or via <span translate="no">alleycat</span> —
+						network, over SSH, or via <span translate="no">alleycat</span>,
 						from anywhere.
 					</p>
 					<div className="kitty__actions">
