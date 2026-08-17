@@ -12,7 +12,7 @@ export function MediaFrame({
   return (
     <figure className={`media-frame ${className}`}>
       {caption ? <figcaption>{caption}</figcaption> : null}
-      <img {...image} />
+      <img {...image} draggable={false} />
     </figure>
   );
 }

@@ -229,6 +229,7 @@ export function Header() {
 					alt=""
 					width="4667"
 					height="525"
+					draggable={false}
 				/>
 			</LocalLink>
 			<nav

@@ -14,8 +14,21 @@ function syncKeyboardMode(event: Event) {
 	}
 }
 
+function isSiteImage(target: EventTarget | null) {
+	return target instanceof Element && target.closest("img, picture") !== null;
+}
+
+function preventImageAction(event: Event) {
+	if (isSiteImage(event.target)) {
+		event.preventDefault();
+	}
+}
+
 document.addEventListener("keydown", syncKeyboardMode);
 document.addEventListener("pointerdown", syncKeyboardMode);
+document.addEventListener("contextmenu", preventImageAction);
+document.addEventListener("dragstart", preventImageAction);
+document.addEventListener("selectstart", preventImageAction);
 
 if (heroImageRoutes.has(window.location.pathname)) {
 	const preload = document.createElement("link");

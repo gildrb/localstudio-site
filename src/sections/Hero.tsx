@@ -74,6 +74,7 @@ export function Hero() {
 						width="525"
 						height="525"
 						aria-hidden="true"
+						draggable={false}
 					/>
 				</m.button>
 				</div>
@@ -95,6 +96,7 @@ export function Hero() {
 						width="5118"
 						height="2800"
 						fetchPriority="high"
+						draggable={false}
 					/>
 				</m.div>
 			</section>

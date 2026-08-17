@@ -53,3 +53,46 @@ test("navbar uses compact text and an accessible GitHub icon", async ({ page }) 
 	await expect(github).toHaveAttribute("href", "https://github.com/sybil-solutions/local-studio");
 	await expect(github.locator("svg")).toBeVisible();
 });
+
+test("site images cannot be copied, dragged, or saved", async ({ page }) => {
+	for (const route of ["/", "/product"]) {
+		await page.goto(route);
+		const result = await page.evaluate(() => {
+			const images = [...document.images];
+			if (images.length === 0) throw new Error("img");
+			const heading = document.querySelector("h1");
+			if (!(heading instanceof HTMLElement)) throw new Error("h1");
+			const textMenu = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
+			heading.dispatchEvent(textMenu);
+			return {
+				textMenu: textMenu.defaultPrevented,
+				images: images.map((image) => {
+					const style = getComputedStyle(image);
+					const context = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
+					const drag = new Event("dragstart", { bubbles: true, cancelable: true });
+					const select = new Event("selectstart", { bubbles: true, cancelable: true });
+					image.dispatchEvent(context);
+					image.dispatchEvent(drag);
+					image.dispatchEvent(select);
+					return {
+						userSelect: style.userSelect,
+						drag: style.getPropertyValue("-webkit-user-drag"),
+						context: context.defaultPrevented,
+						dragStart: drag.defaultPrevented,
+						selectStart: select.defaultPrevented,
+					};
+				}),
+			};
+		});
+		expect(result.textMenu).toBe(false);
+		for (const image of result.images) {
+			expect(image).toEqual({
+				userSelect: "none",
+				drag: "none",
+				context: true,
+				dragStart: true,
+				selectStart: true,
+			});
+		}
+	}
+});

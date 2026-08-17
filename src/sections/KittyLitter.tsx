@@ -92,6 +92,7 @@ export function KittyLitter() {
 								width="1320"
 								height="1320"
 								loading="lazy"
+								draggable={false}
 							/>
 						</div>
 						<h3>{feature.title}</h3>
