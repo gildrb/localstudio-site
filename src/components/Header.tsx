@@ -143,7 +143,7 @@ export function Header() {
 	useEffect(() => {
 		const media = window.matchMedia(mobileQuery);
 		function onChange() {
-			if (!media.matches) setMobileOpen(false);
+			if (!media.matches) setSheetOpen(false);
 		}
 		media.addEventListener("change", onChange);
 		return () => media.removeEventListener("change", onChange);
@@ -151,37 +151,49 @@ export function Header() {
 
 	useEffect(() => {
 		const root = document.documentElement;
-		const main = document.getElementById("content");
-		const footer = document.querySelector("footer");
 		const header = toggleRef.current?.closest("header");
 		function syncNavHeight() {
-			if (!header) return;
-			root.style.setProperty("--nav-height", `${Math.round(header.getBoundingClientRect().height)}px`);
+			if (!(header instanceof HTMLElement)) return;
+			root.style.setProperty(
+				"--nav-height",
+				`${Math.round(header.getBoundingClientRect().height)}px`,
+			);
 		}
 		syncNavHeight();
-		root.classList.toggle("nav-open", mobileOpen);
+		window.addEventListener("resize", syncNavHeight);
+		return () => {
+			window.removeEventListener("resize", syncNavHeight);
+			root.classList.remove("nav-open");
+		};
+	}, []);
+
+	useEffect(() => {
+		const main = document.getElementById("content");
+		const footer = document.querySelector("footer");
 		main?.toggleAttribute("inert", mobileOpen);
 		footer?.toggleAttribute("inert", mobileOpen);
 		if (!mobileOpen) return;
 		function onKeyDown(event: KeyboardEvent) {
 			if (event.key === "Escape") {
-				setMobileOpen(false);
+				setSheetOpen(false);
 				toggleRef.current?.focus();
 			}
 		}
-		window.addEventListener("resize", syncNavHeight);
 		document.addEventListener("keydown", onKeyDown);
 		return () => {
-			root.classList.remove("nav-open");
 			main?.removeAttribute("inert");
 			footer?.removeAttribute("inert");
-			window.removeEventListener("resize", syncNavHeight);
 			document.removeEventListener("keydown", onKeyDown);
 		};
 	}, [mobileOpen]);
 
+	function setSheetOpen(open: boolean) {
+		document.documentElement.classList.toggle("nav-open", open);
+		setMobileOpen(open);
+	}
+
 	const close = () => setOpenMenu(null);
-	const closeMobile = () => setMobileOpen(false);
+	const closeMobile = () => setSheetOpen(false);
 
 	function menu(id: MenuId, label: string, items: readonly NavLink[]) {
 		const open = openMenu === id;
@@ -257,7 +269,7 @@ export function Header() {
 				aria-label={mobileOpen ? "Close menu" : "Open menu"}
 				aria-expanded={mobileOpen}
 				aria-controls={sheetId}
-				onClick={() => setMobileOpen((open) => !open)}
+				onClick={() => setSheetOpen(!mobileOpen)}
 			>
 				{mobileOpen ? (
 					<X size={22} strokeWidth={1.5} aria-hidden="true" />

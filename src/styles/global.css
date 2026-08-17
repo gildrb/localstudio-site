@@ -942,9 +942,6 @@ button {
 		visibility: hidden;
 		opacity: 0;
 		pointer-events: none;
-		transition:
-			opacity 180ms ease-out,
-			visibility 180ms ease-out;
 	}
 
 
@@ -959,6 +956,13 @@ button {
 		right: 0;
 		left: 0;
 		background: var(--background);
+	}
+
+	.site-shell:has(> .nav.is-open)::before {
+		content: "";
+		display: block;
+		height: var(--nav-height, 72px);
+		flex-shrink: 0;
 	}
 
 

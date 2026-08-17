@@ -284,6 +284,7 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	await page.evaluate(() => window.scrollTo(0, 900));
 	const scrolled = await page.evaluate(() => Math.round(window.scrollY));
 	expect(scrolled).toBeGreaterThan(500);
+	const headingTop = await page.locator("h1").evaluate((element) => Math.round(element.getBoundingClientRect().top));
 	await page.getByRole("button", { name: "Open menu" }).click();
 	const afterScroll = await page.evaluate(() => {
 		function html(selector: string): HTMLElement {
@@ -293,14 +294,17 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 		}
 		const brand = html(".brand");
 		const toggle = html(".nav__toggle");
+		const heading = html("h1");
 		return {
 			scrollY: Math.round(window.scrollY),
 			brandTop: Math.round(brand.getBoundingClientRect().top),
 			toggleTop: Math.round(toggle.getBoundingClientRect().top),
 			toggleHeight: Math.round(toggle.getBoundingClientRect().height),
+			headingTop: Math.round(heading.getBoundingClientRect().top),
 		};
 	});
 	expect(afterScroll.scrollY).toBe(scrolled);
+	expect(afterScroll.headingTop).toBe(headingTop);
 	expect(afterScroll.brandTop).toBeGreaterThanOrEqual(0);
 	expect(afterScroll.toggleTop).toBeGreaterThanOrEqual(0);
 	expect(afterScroll.toggleHeight).toBeGreaterThanOrEqual(44);
