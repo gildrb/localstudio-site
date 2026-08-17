@@ -1,4 +1,4 @@
-import { DownloadButton, TextLink } from "../components/Links";
+import { CtaPair } from "../components/Links";
 export function FinalCallout() {
 	return (
 		<section
@@ -9,10 +9,9 @@ export function FinalCallout() {
 			<div>
 				<h2 id="download-title">Your models. Your hardware. One surface.</h2>
 				<div className="hero__actions">
-					<div className="button-group">
-						<DownloadButton />
-						<TextLink href="/prompt">Setup prompt</TextLink>
-					</div>
+					<CtaPair
+						secondary={{ href: "/prompt", label: "Setup prompt" }}
+					/>
 				</div>
 			</div>
 		</section>

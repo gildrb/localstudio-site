@@ -1,6 +1,6 @@
 import instructions from "../content/agent-instructions.txt?raw";
 import probes from "../content/agent-probes.txt?raw";
-import { DownloadButton, TextLink } from "../components/Links";
+import { CtaPair } from "../components/Links";
 import { MediaFrame } from "../components/MediaFrame";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -35,10 +35,9 @@ export function AgentsPage() {
 					</>
 				}
 				actions={
-					<div className="button-group">
-						<DownloadButton />
-						<TextLink href="/">Back to overview</TextLink>
-					</div>
+					<CtaPair
+						secondary={{ href: "/", label: "Back to overview" }}
+					/>
 				}
 			/>
 			<section

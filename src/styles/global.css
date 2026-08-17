@@ -525,6 +525,11 @@ button {
 	}
 }
 
+.cta-pair > .button,
+.cta-pair > .text-link {
+	white-space: nowrap;
+}
+
 .docs-toc a {
 	color: var(--subtlest);
 	transition: color 130ms ease-out;
@@ -1082,19 +1087,15 @@ button {
 		margin-top: 32px;
 	}
 
-	.page-intro .hero__actions > .button-group,
-	.mobile-cta .hero__actions > .button-group {
+	.button-group {
 		display: flex;
 		width: 100%;
 		max-width: 100%;
 		min-width: 0;
-		flex-direction: row;
 	}
 
-	.page-intro .button-group > .button,
-	.page-intro .button-group > .text-link,
-	.mobile-cta .button-group > .button,
-	.mobile-cta .button-group > .text-link {
+	.button-group > .button,
+	.button-group > .text-link {
 		flex: 1 1 0;
 		width: auto;
 		min-width: 0;
@@ -1102,14 +1103,23 @@ button {
 		min-height: 48px;
 		padding-inline: 12px;
 		padding-block: 8px;
-		white-space: normal;
 		text-align: center;
 		line-height: 16px;
 	}
 
-	.page-intro .button-group > .text-link,
-	.mobile-cta .button-group > .text-link {
+	.button-group > .text-link {
 		justify-content: center;
+	}
+
+	.cta-pair {
+		flex-wrap: wrap;
+	}
+
+	.cta-pair > .button,
+	.cta-pair > .text-link {
+		flex: 1 1 auto;
+		min-width: max-content;
+		white-space: nowrap;
 	}
 
 	.mobile-cta > div {

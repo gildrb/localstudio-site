@@ -1,4 +1,4 @@
-import { DownloadButton, TextLink } from "../components/Links";
+import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -26,10 +26,9 @@ export function DocsPage() {
 				title="Get Local Studio running"
 				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
 				actions={
-					<div className="button-group">
-						<DownloadButton />
-						<TextLink href="/prompt">Setup prompt</TextLink>
-					</div>
+					<CtaPair
+						secondary={{ href: "/prompt", label: "Setup prompt" }}
+					/>
 				}
 			/>
 			<div className="docs-layout section-width grid grid-cols-[240px_minmax(0,1fr)] gap-12 pb-30 max-[900px]:grid-cols-1 max-[900px]:gap-12">

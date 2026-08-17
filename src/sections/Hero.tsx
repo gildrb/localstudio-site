@@ -1,5 +1,5 @@
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
-import { DownloadButton, TextLink } from "../components/Links";
+import { CtaPair } from "../components/Links";
 import { heroSizes, responsiveSrcSet } from "../images";
 import { useMachine } from "../machine";
 
@@ -48,10 +48,7 @@ export function Hero() {
 							animate={settle}
 							transition={{ duration: 0.9, ease, delay: 0.24 }}
 						>
-							<div className="button-group">
-								<DownloadButton />
-								<TextLink href="/prompt">Setup prompt</TextLink>
-							</div>
+						<CtaPair secondary={{ href: "/prompt", label: "Setup prompt" }} />
 						</m.div>
 				</div>
 				<m.button

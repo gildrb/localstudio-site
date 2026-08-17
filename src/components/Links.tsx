@@ -18,15 +18,39 @@ export function TextLink({
 		</LocalLink>
 	);
 }
+interface Cta {
+	href: string;
+	label: ReactNode;
+}
+
+const downloadCta = {
+	href: "/download/macos",
+	label: "Download for macOS",
+} satisfies Cta;
 
 export function DownloadButton() {
 	return (
-		<LocalLink className="button" href="/download/macos">
-			Download for macOS
+		<LocalLink className="button" href={downloadCta.href}>
+			{downloadCta.label}
 		</LocalLink>
 	);
 }
 
+interface CtaPairProps {
+	primary?: Cta;
+	secondary: Cta;
+}
+
+export function CtaPair({ primary = downloadCta, secondary }: CtaPairProps) {
+	return (
+		<div className="button-group cta-pair">
+			<LocalLink className="button" href={primary.href}>
+				{primary.label}
+			</LocalLink>
+			<TextLink href={secondary.href}>{secondary.label}</TextLink>
+		</div>
+	);
+}
 const appStoreHref =
 	"https://apps.apple.com/us/app/kittylitter/id6759521788";
 const playStoreHref =

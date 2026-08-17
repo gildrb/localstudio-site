@@ -1,6 +1,6 @@
 import setupPrompt from "../content/setup-prompt.txt?raw";
 import { CopyIcon } from "../components/CopyIcon";
-import { DownloadButton, TextLink } from "../components/Links";
+import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -26,10 +26,9 @@ export function PromptPage() {
 				title="Give this to any coding model."
 				description="It will inspect the machine, choose the right runtime, install Local Studio, and prove a real inference request works."
 				actions={
-					<div className="button-group">
-						<DownloadButton />
-						<TextLink href="/docs">Read the docs</TextLink>
-					</div>
+					<CtaPair
+						secondary={{ href: "/docs", label: "Read the docs" }}
+					/>
 				}
 			/>
 			<section className="section-width pb-30" aria-label="Setup handoff">

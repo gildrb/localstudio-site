@@ -1,5 +1,4 @@
-import { LocalLink } from "../components/LocalLink";
-import { TextLink } from "../components/Links";
+import { CtaPair } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
@@ -22,14 +21,10 @@ export function DownloadPage() {
 					</>
 				}
 				actions={
-					<div className="button-group">
-						<LocalLink className="button" href={downloadUrl}>
-							Download DMG
-						</LocalLink>
-						<TextLink href="/docs#prerequisites">
-							Read prerequisites
-						</TextLink>
-					</div>
+					<CtaPair
+						primary={{ href: downloadUrl, label: "Download DMG" }}
+						secondary={{ href: "/docs#prerequisites", label: "Read prerequisites" }}
+					/>
 				}
 			/>
 		</PageShell>
