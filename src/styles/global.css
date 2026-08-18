@@ -646,10 +646,30 @@ button {
 	max-width: 790px;
 }
 
+.hero__title-end {
+	white-space: nowrap;
+
+}
+
+ .hero__mark-button {
+	display: inline-flex;
+	width: 0.78em;
+	height: 0.78em;
+	min-width: 0;
+	min-height: 0;
+	margin: 0 0 0 0.14em;
+	padding: 0;
+	border: 0;
+	vertical-align: -0.06em;
+	background: transparent;
+	cursor: pointer;
+
+}
+
 .hero__mark {
 	display: block;
-	width: 56px;
-	height: 56px;
+	width: 100%;
+	height: 100%;
 }
 
 .hero h1 {
@@ -684,6 +704,15 @@ button {
 	margin: 72px auto 0;
 }
 
+ .hero:has(.demo[data-clip-right]) .hero__stage {
+	--hero-stage-pad: calc(
+		(100% - min(var(--page-width), calc(100% - var(--page-gutter)))) / 2
+	);
+	width: calc(100% - var(--hero-stage-pad));
+	margin-left: var(--hero-stage-pad);
+	margin-right: 0;
+	overflow: clip;
+}
 
 .story {
 	padding: var(--homepage-story-gap) 0 0;
@@ -1247,16 +1276,6 @@ button {
 	.hero__inner {
 		flex-direction: column;
 	}
-	.hero__mark-button {
-		order: -1;
-		align-self: center;
-		margin: 0 0 56px;
-	}
-	.hero__mark {
-		width: 40px;
-		height: 40px;
-	}
-
 	h1 {
 		font-size: 40px;
 		line-height: 44px;
@@ -1487,12 +1506,15 @@ button {
 }
 
 .hero__mark-button {
-	display: block;
-	min-width: 44px;
-	min-height: 44px;
-	margin: 0;
+	display: inline-flex;
+	width: 0.78em;
+	height: 0.78em;
+	min-width: 0;
+	min-height: 0;
+	margin: 0 0 0 0.14em;
 	padding: 0;
 	border: 0;
+	vertical-align: -0.06em;
 	background: transparent;
 	cursor: pointer;
 }

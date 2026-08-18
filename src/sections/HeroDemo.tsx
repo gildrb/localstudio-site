@@ -51,18 +51,32 @@ function useDemoFrame(): {
 	hostRef: RefObject<HTMLElement | null>;
 	mobile: boolean;
 	scale: number;
+	clipRight: boolean;
+	clipBottom: boolean;
 } {
 	const hostRef = useRef<HTMLElement>(null);
-	const [frame, setFrame] = useState({ mobile: false, scale: 1 });
+	const [frame, setFrame] = useState({
+		mobile: false,
+		scale: 1,
+		clipRight: false,
+		clipBottom: false,
+	});
 
 	useLayoutEffect(() => {
 		const host = hostRef.current;
 		if (!host) return;
 		const update = () => {
 			const mobile = window.matchMedia(`(max-width: ${DEMO_MOBILE}px)`).matches;
+			const scale = mobile ? host.clientWidth / DEMO_FIT : 1;
+			const tokens = getComputedStyle(document.documentElement);
+			const pageWidth = Number.parseFloat(tokens.getPropertyValue("--page-width"));
+			const gutter = Number.parseFloat(tokens.getPropertyValue("--page-gutter"));
+			const centered = Math.min(pageWidth, window.innerWidth - gutter);
 			setFrame({
 				mobile,
-				scale: mobile ? host.clientWidth / DEMO_FIT : 1,
+				scale,
+				clipRight: centered < DEMO_WIDTH * scale - 1,
+				clipBottom: host.clientHeight < DEMO_HEIGHT * scale - 1,
 			});
 		};
 		update();
@@ -76,8 +90,8 @@ function useDemoFrame(): {
 		};
 	}, []);
 
-	return { hostRef, mobile: frame.mobile, scale: frame.scale };
-}
+	return { hostRef, ...frame };
+ }
 
 const demoModel: AgentModel = {
 	id: "qwen38-27b",
@@ -118,7 +132,7 @@ const composerMessages: ChatMessage[] = [
 function ignore(): void {}
 
 export function HeroDemo() {
-	const { hostRef, mobile, scale } = useDemoFrame();
+	const { hostRef, mobile, scale, clipRight, clipBottom } = useDemoFrame();
 	const reduceMotion = useReducedMotion() === true;
 	const [state, dispatch] = useReducer(
 		demoReducer,
@@ -300,6 +314,8 @@ export function HeroDemo() {
 			data-phase={state.phase}
 			data-task={activeTask}
 			data-mobile={mobile ? "true" : undefined}
+			data-clip-right={clipRight ? "true" : undefined}
+			data-clip-bottom={clipBottom ? "true" : undefined}
 			aria-label="Local Studio workbench"
 		>
 			<p className="sr-only" role="status">

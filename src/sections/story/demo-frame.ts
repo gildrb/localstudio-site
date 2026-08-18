@@ -11,6 +11,13 @@ export type DemoCrop = {
 	cropH?: number;
 };
 
+export const STORY_CROP: DemoCrop = {
+	fit: 580,
+	shiftX: -224,
+	shiftY: 0,
+	cropH: 580,
+};
+
 export function mobileStoryQuery(): string {
 	return `(max-width: ${DEMO_MOBILE}px)`;
 }
@@ -33,10 +40,7 @@ export function useStoryMobile(): boolean {
 	return mobile;
 }
 
-export function useDemoFrame(
-	crop: DemoCrop,
-	mobileCrop: DemoCrop = crop,
-): {
+export function useDemoFrame(crop: DemoCrop): {
 	hostRef: RefObject<HTMLElement | null>;
 	mobile: boolean;
 	scale: number;
@@ -45,16 +49,14 @@ export function useDemoFrame(
 	cropH: number;
 } {
 	const hostRef = useRef<HTMLElement>(null);
-	const [frame, setFrame] = useState(() =>
-		resolveFrame(false, 1, crop, mobileCrop),
-	);
+	const [frame, setFrame] = useState(() => resolveFrame(false, 1, crop));
 
 	useLayoutEffect(() => {
 		const host = hostRef.current;
 		if (!host) return;
 		const update = () => {
 			const mobile = window.matchMedia(mobileStoryQuery()).matches;
-			setFrame(resolveFrame(mobile, host.clientWidth, crop, mobileCrop));
+			setFrame(resolveFrame(mobile, host.clientWidth, crop));
 		};
 		update();
 		const query = window.matchMedia(mobileStoryQuery());
@@ -65,33 +67,18 @@ export function useDemoFrame(
 			query.removeEventListener("change", update);
 			observer.disconnect();
 		};
-	}, [
-		crop.fit,
-		crop.shiftX,
-		crop.shiftY,
-		crop.cropH,
-		mobileCrop.fit,
-		mobileCrop.shiftX,
-		mobileCrop.shiftY,
-		mobileCrop.cropH,
-	]);
+	}, [crop.fit, crop.shiftX, crop.shiftY, crop.cropH]);
 
 	return { hostRef, ...frame };
 }
 
-function resolveFrame(
-	mobile: boolean,
-	hostWidth: number,
-	crop: DemoCrop,
-	mobileCrop: DemoCrop,
-) {
-	const used = mobile ? mobileCrop : crop;
-	const fit = used.fit;
+function resolveFrame(mobile: boolean, hostWidth: number, crop: DemoCrop) {
+	const fit = crop.fit;
 	return {
 		mobile,
 		scale: hostWidth > 0 ? hostWidth / fit : 1,
-		shiftX: used.shiftX ?? 0,
-		shiftY: used.shiftY ?? 0,
-		cropH: used.cropH ?? fit,
+		shiftX: crop.shiftX ?? 0,
+		shiftY: crop.shiftY ?? 0,
+		cropH: crop.cropH ?? fit,
 	};
 }

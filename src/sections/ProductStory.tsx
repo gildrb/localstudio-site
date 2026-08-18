@@ -102,17 +102,15 @@ export function ProductStory() {
 						behind a provider abstraction.
 					</p>
 				</div>
-				<div
-					className="story__showcase"
-					onPointerEnter={mobile ? undefined : () => setPaused(true)}
-					onPointerLeave={mobile ? undefined : () => setPaused(false)}
-				>
+				<div className="story__showcase">
 					<div
 						className="story__options"
 						ref={optionsRef}
 						role="radiogroup"
 						aria-label="Local Studio capabilities"
 						onKeyDown={handleKeyDown}
+						onPointerEnter={mobile ? undefined : () => setPaused(true)}
+						onPointerLeave={mobile ? undefined : () => setPaused(false)}
 					>
 						{productFeatures.map((feature, index) => {
 							const selected = activeIndex === index;

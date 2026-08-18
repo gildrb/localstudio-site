@@ -98,6 +98,22 @@ test("homepage stays inside the viewport at 320", async ({ page }) => {
 	expect(overflow).toBeLessThanOrEqual(0);
 });
 
+test("hero demo is only rounded when the full app is visible", async ({
+	page,
+}) => {
+	const demo = page.locator(".hero .demo");
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto("/");
+	await expect(demo).toBeVisible();
+	await expect(demo).not.toHaveAttribute("data-clip-right");
+	expect(await demo.evaluate((el) => getComputedStyle(el).borderTopRightRadius)).toBe("10px");
+	await page.setViewportSize({ width: 1200, height: 900 });
+	await expect(demo).toHaveAttribute("data-clip-right", "true");
+	expect(await demo.evaluate((el) => getComputedStyle(el).borderTopRightRadius)).toBe("0px");
+	expect(await demo.evaluate((el) => getComputedStyle(el).borderTopLeftRadius)).toBe("10px");
+	expect(await demo.evaluate((el) => Math.round(el.getBoundingClientRect().right))).toBe(1200);
+});
+
 test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 	page,
 }) => {

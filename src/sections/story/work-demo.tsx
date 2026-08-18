@@ -1,5 +1,6 @@
 import { UserMessage } from "@/features/agent/ui/timeline/user-message-block";
 import { DEMO_PROMPT, DEMO_RESULT } from "../../demo/sequence";
+import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 
 export function WorkDemo() {
@@ -8,8 +9,7 @@ export function WorkDemo() {
 			scene="work"
 			pathname="/agent"
 			label="Local Studio workbench"
-			crop={{ fit: 580, shiftX: -224, cropH: 580 }}
-			mobileCrop={{ fit: 580, shiftX: -224, cropH: 580 }}
+			crop={STORY_CROP}
 		>
 			<div className="flex min-h-0 min-w-0 flex-1 flex-col px-8 py-7">
 				<h3 className="text-[length:var(--fs-xl)] font-medium">

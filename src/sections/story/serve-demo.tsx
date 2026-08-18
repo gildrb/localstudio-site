@@ -8,6 +8,7 @@ import {
 	ModelStatus,
 } from "@/features/recipes/recipes-content/model-page";
 import { ModelButton, ModelInput } from "@/ui";
+import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 
 const SERVES = [
@@ -119,8 +120,7 @@ export function ServeDemo() {
 			scene="serve"
 			pathname="/models"
 			label="Serve configuration"
-			crop={{ fit: 580, shiftX: -224, cropH: 580 }}
-			mobileCrop={{ fit: 580, shiftX: -224, cropH: 580 }}
+			crop={STORY_CROP}
 		>
 			<div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
 				<ModelSection

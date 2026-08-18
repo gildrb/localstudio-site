@@ -37,7 +37,26 @@ export function Hero() {
 							animate={settle}
 							transition={{ duration: 0.9, ease, delay: 0.12 }}
 						>
-							Intelligence should not be rented.
+							Intelligence should not be{" "}
+							<span className="hero__title-end">
+								rented.
+								<button
+									className="hero__mark-button"
+									type="button"
+									onClick={() => toggleMachine(true)}
+									aria-label="Machine-readable page"
+								>
+									<img
+										className="hero__mark"
+										src="/images/optimized.svg"
+										alt=""
+										width="525"
+										height="525"
+										aria-hidden="true"
+										draggable={false}
+									/>
+								</button>
+							</span>
 						</m.h1>
 						<m.p
 							className="hero__lede"
@@ -65,30 +84,7 @@ export function Hero() {
 						>
 						<CtaPair secondary={{ href: "/prompt", label: "Setup prompt" }} />
 						</m.div>
-				</div>
-				<m.button
-					className="hero__mark-button"
-					type="button"
-					onClick={() => toggleMachine(true)}
-					aria-label="Machine-readable page"
-					initial={
-						reduceMotion
-							? false
-							: { opacity: 0, y: 12, filter: "blur(6px)" }
-					}
-					animate={settle}
-					transition={{ duration: 0.9, ease, delay: 0.05 }}
-				>
-					<img
-						className="hero__mark"
-						src="/images/optimized.svg"
-						alt=""
-						width="525"
-						height="525"
-						aria-hidden="true"
-						draggable={false}
-					/>
-				</m.button>
+					</div>
 				</div>
 				<m.div
 					className="hero__stage section-width"

@@ -147,14 +147,16 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 		const texture = html(".hero__texture");
 		const inline = (el: HTMLElement) => el.style.opacity;
 		return {
-			identity: [inline(markRoot), inline(title), inline(actions)],
+			markInTitle: title.contains(markRoot),
+			identity: [inline(title), inline(actions)],
 			atmosphere: [inline(stage), inline(gradient)],
 			textNodeTransforms: [getComputedStyle(title).transform, getComputedStyle(lead).transform],
 			textureGradient: getComputedStyle(texture).backgroundImage.includes("linear-gradient"),
 			grid: getComputedStyle(texture, "::before").animationName,
 		};
 	});
-	expect(entrance.identity).toEqual(["1", "1", "1"]);
+	expect(entrance.markInTitle).toBe(true);
+	expect(entrance.identity).toEqual(["1", "1"]);
 	expect(entrance.atmosphere).toEqual(["1", "1"]);
 	expect(entrance.textNodeTransforms).toEqual(["none", "none"]);
 	expect(entrance.textureGradient).toBe(false);
@@ -479,6 +481,17 @@ test("mobile story shows one demo under the active copy", async ({ page }) => {
 		};
 	});
 	expect(after).toEqual({ demoUnderServe: true, workAfterDemo: true });
+	await options.getByRole("radio", { name: "Automate" }).click();
+	const demo = page.locator(".story__option.is-active .story__visual .demo");
+	await expect(demo).toHaveAttribute("data-scene", "automate");
+	await expect(demo.getByRole("heading", { name: "Automations" })).toBeVisible();
+	await expect(demo.getByText("Proxy health check")).toBeVisible();
+	const transform = await demo.locator(".demo__app").evaluate((element) => {
+		if (!(element instanceof HTMLElement)) return "";
+		return element.style.transform;
+	});
+	expect(transform.startsWith("scale(")).toBe(true);
+	expect(transform.includes("translate(-224px, 0px)")).toBe(true);
 });
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {

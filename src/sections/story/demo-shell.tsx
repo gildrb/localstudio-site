@@ -13,20 +13,15 @@ export function DemoShell({
 	label,
 	scene,
 	crop,
-	mobileCrop = crop,
 	children,
 }: {
 	pathname: string;
 	label: string;
 	scene: FeatureScene;
 	crop: DemoCrop;
-	mobileCrop?: DemoCrop;
 	children: ReactNode;
 }) {
-	const { hostRef, mobile, scale, shiftX, shiftY, cropH } = useDemoFrame(
-		crop,
-		mobileCrop,
-	);
+	const { hostRef, mobile, scale, shiftX, shiftY, cropH } = useDemoFrame(crop);
 	return (
 		<section
 			ref={hostRef}
@@ -38,9 +33,7 @@ export function DemoShell({
 			<div
 				className="demo__viewport"
 				style={{
-					height: mobile
-						? cropH * scale
-						: DEMO_HEIGHT * Math.min(scale, 1),
+					height: mobile ? cropH * scale : DEMO_HEIGHT * Math.min(scale, 1),
 				}}
 			>
 				<div
@@ -48,7 +41,9 @@ export function DemoShell({
 					style={{
 						width: DEMO_WIDTH,
 						height: DEMO_HEIGHT,
-						transform: `translate(${shiftX}px, ${shiftY}px) scale(${scale})`,
+						transform: mobile
+							? `scale(${scale}) translate(${shiftX}px, ${shiftY}px)`
+							: `translate(${shiftX}px, ${shiftY}px) scale(${scale})`,
 						transformOrigin: "top left",
 					}}
 				>
