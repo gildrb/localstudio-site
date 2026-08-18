@@ -4,13 +4,25 @@ import {
 	SidebarSectionHeader,
 } from "@/features/agent/ui/projects-nav/nav-chrome";
 
+export type HeroTaskId = "proxy" | "composer";
+
 const focusedRow =
 	"group relative flex h-[var(--sidebar-row-height)] items-center rounded-[var(--sidebar-row-radius)] pl-2 pr-0 bg-(--active) text-(--fg) transition-[color,background-color,opacity]";
 
 const idleRow =
 	"group relative flex h-[var(--sidebar-row-height)] items-center rounded-[var(--sidebar-row-radius)] pl-2 pr-0 text-(--fg)/85 transition-[color,background-color,opacity] hover:bg-(--hover) hover:text-(--fg)";
 
-export function HeroProjectsNav({ expanded }: { expanded: boolean }) {
+export function HeroProjectsNav({
+	expanded,
+	activeTask,
+	onSelectTask,
+	titles,
+}: {
+	expanded: boolean;
+	activeTask: HeroTaskId;
+	onSelectTask: (task: HeroTaskId) => void;
+	titles: Record<HeroTaskId, string>;
+}) {
 	if (!expanded) return null;
 	return (
 		<>
@@ -34,22 +46,30 @@ export function HeroProjectsNav({ expanded }: { expanded: boolean }) {
 			</div>
 			<SidebarSectionHeader label="Tasks" open onToggle={() => undefined} />
 			<SidebarRail>
-				<div className={focusedRow}>
-					<span className="min-w-0 flex-1 truncate px-0 text-[length:var(--fs-md)]">
-						Standup notes
+				<button
+					type="button"
+					className={activeTask === "proxy" ? focusedRow : idleRow}
+					onClick={() => onSelectTask("proxy")}
+				>
+					<span className="min-w-0 flex-1 truncate px-0 text-left text-[length:var(--fs-md)]">
+						{titles.proxy}
 					</span>
 					<span className="pr-2 text-[length:var(--fs-xs)] text-(--hl2)">
 						now
 					</span>
-				</div>
-				<div className={idleRow}>
-					<span className="min-w-0 flex-1 truncate px-0 text-[length:var(--fs-md)]">
-						Composer context
+				</button>
+				<button
+					type="button"
+					className={activeTask === "composer" ? focusedRow : idleRow}
+					onClick={() => onSelectTask("composer")}
+				>
+					<span className="min-w-0 flex-1 truncate px-0 text-left text-[length:var(--fs-md)]">
+						{titles.composer}
 					</span>
 					<span className="pr-2 text-[length:var(--fs-xs)] text-(--hl2)">
 						3h
 					</span>
-				</div>
+				</button>
 			</SidebarRail>
 			<SidebarSectionHeader label="Terminals" open onToggle={() => undefined} />
 		</>

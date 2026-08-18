@@ -9,18 +9,21 @@ test("hero demo autoplays the local inference sequence once", async ({
 	await expect(demo).toBeVisible();
 	await expect(demo.locator("canvas, video")).toHaveCount(0);
 	await expect(demo).toHaveAttribute("data-phase", "prompt");
-	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 15000 });
+	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 20000 });
 	await expect(demo.locator(".chat-markdown").first()).toContainText(
-		"Open tasks",
+		"What I changed",
 	);
 	await expect(demo.locator(".chat-markdown").first()).toContainText(
 		"Qwen3.8-27B",
 	);
-	await expect(demo.getByText("Standup notes").first()).toBeVisible();
+	await expect(demo.getByText("Proxy health check").first()).toBeVisible();
 	await expect(demo.getByText("New task").first()).toBeVisible();
 	await expect(demo.getByText("Session").first()).toBeVisible();
 	await expect(
 		demo.getByRole("button", { name: "Status", exact: true }),
+	).toBeVisible();
+	await expect(
+		demo.getByRole("button", { name: "Review", exact: true }),
 	).toBeVisible();
 });
 
@@ -54,8 +57,8 @@ test("hero demo result copies with the clipboard API", async ({
 	await demo.getByRole("button", { name: "Copy response" }).click();
 	await expect(demo.getByRole("button", { name: "Copied" })).toBeVisible();
 	const copied = await page.evaluate(() => navigator.clipboard.readText());
-	expect(copied).toContain("Open tasks");
-	expect(copied).toContain("Do not upload the notes folder");
+	expect(copied).toContain("What I changed");
+	expect(copied).toContain("Qwen3.8-27B");
 });
 
 test("reduced motion shows the finished result immediately", async ({
@@ -66,8 +69,22 @@ test("reduced motion shows the finished result immediately", async ({
 	const demo = page.locator(".demo");
 	await expect(demo).toHaveAttribute("data-phase", "done");
 	await expect(demo.locator(".chat-markdown").first()).toHaveText(
-		/I'll read the standup notes on this machine[\s\S]*Open tasks/,
+		/I'll read the standup notes[\s\S]*What I changed/,
 	);
+});
+
+test("hero demo chat follows new messages", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto("/");
+	const demo = page.locator(".demo");
+	const scroller = demo.locator("[data-timeline-scroller]");
+	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 20000 });
+	await expect(scroller).toBeVisible();
+	const pinned = await scroller.evaluate((element) => {
+		if (!(element instanceof HTMLElement)) return false;
+		return element.scrollHeight - element.scrollTop - element.clientHeight <= 8;
+	});
+	expect(pinned).toBe(true);
 });
 
 test("homepage stays inside the viewport at 320", async ({ page }) => {

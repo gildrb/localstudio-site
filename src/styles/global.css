@@ -547,6 +547,7 @@ button {
 	position: relative;
 	background: #000;
 	overflow: clip;
+	padding-bottom: 40px;
 }
 
 .hero__gradient {
@@ -554,23 +555,36 @@ button {
 	pointer-events: none;
 	top: 0;
 	bottom: 0;
-	left: 50%;
-	width: min(1440px);
-	border-radius: 6px;
-	background:
-		radial-gradient(
-			52.53% 57.5% at 50% 100%,
-			rgba(0, 0, 0, 0) 0%,
-			rgba(0, 0, 0, 0.5) 100%
-		),
-		linear-gradient(
-			rgba(184, 187, 192, 0) 0%,
-			rgba(184, 187, 192, 0) 34%,
-			#b8bbc0 100%
-		);
-	transform: translateX(-50%);
+	left: 0;
+	width: 100%;
+	isolation: isolate;
+	background: radial-gradient(
+		52% 118% at 50% 100% in oklab,
+		#b8bbc0 0%,
+		#000 75%
+	);
+	-webkit-mask-image: url("/images/hero-gradient-mask.svg");
+	mask-image: url("/images/hero-gradient-mask.svg");
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-position: center bottom;
+	mask-position: center bottom;
+	-webkit-mask-size: 100% auto;
+	mask-size: 100% auto;
+	-webkit-mask-mode: alpha;
+	mask-mode: alpha;
 }
 
+.hero__gradient::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background: url("/images/hero-grain.png") repeat;
+	background-size: 70px 70px;
+	mix-blend-mode: multiply;
+	opacity: 0.42;
+}
 .hero__texture {
 	position: absolute;
 	inset: 0;
@@ -618,8 +632,8 @@ button {
 
 .hero__mark {
 	display: block;
-	width: 128px;
-	height: 128px;
+	width: 56px;
+	height: 56px;
 }
 
 .hero h1 {
@@ -990,10 +1004,13 @@ button {
 		padding-top: 76px;
 	}
 
+	.hero {
+		padding-bottom: 28px;
+	}
+
 	.hero__stage {
 		margin-top: 56px;
 	}
-
 
 	.story {
 		padding: var(--homepage-story-gap) 0 0;
@@ -1127,9 +1144,8 @@ button {
 		margin: 0 0 30px;
 	}
 	.hero__mark {
-		width: 72px;
-		height: 72px;
-		margin-bottom: 24px;
+		width: 40px;
+		height: 40px;
 	}
 
 	h1 {
@@ -1377,6 +1393,8 @@ button {
 
 .hero__mark-button {
 	display: block;
+	min-width: 44px;
+	min-height: 44px;
 	margin: 0;
 	padding: 0;
 	border: 0;

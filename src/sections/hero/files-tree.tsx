@@ -10,6 +10,13 @@ const entries: FsEntry[] = [
 		kind: "directory",
 	},
 	{
+		name: "health.ts",
+		path: "/Users/sero/local-studio/src/proxy/health.ts",
+		rel: "src/proxy/health.ts",
+		kind: "file",
+		size: 640,
+	},
+	{
 		name: "standup.md",
 		path: "/Users/sero/local-studio/notes/standup.md",
 		rel: "notes/standup.md",
@@ -32,7 +39,13 @@ const entries: FsEntry[] = [
 	},
 ];
 
-export function HeroFilesystemTree({ openFile }: { openFile: string | null }) {
+export function HeroFilesystemTree({
+	openFile,
+	onOpenFile,
+}: {
+	openFile: string | null;
+	onOpenFile: (rel: string) => void;
+}) {
 	return (
 		<section className="flex min-h-0 flex-1 flex-col">
 			<div className="flex h-9 shrink-0 items-center gap-0.5 overflow-x-auto px-2 text-[length:var(--fs-sm)] text-(--dim)">
@@ -48,23 +61,30 @@ export function HeroFilesystemTree({ openFile }: { openFile: string | null }) {
 						<div
 							key={entry.path}
 							className={`relative flex w-full items-center gap-1 rounded-sm py-0.5 text-left text-[length:var(--fs-sm)] hover:bg-(--hover) ${isActive ? "bg-(--color-selected) font-medium text-(--fg)" : "text-(--dim)"}`}
-							style={{ paddingLeft: "8px", paddingRight: "8px" }}
+							style={{
+								paddingLeft: isDir ? "8px" : "20px",
+								paddingRight: "8px",
+							}}
 						>
 							{isActive ? (
 								<span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-(--link)" />
 							) : null}
 							{isDir ? (
 								<span className="flex h-3 w-3 shrink-0 items-center justify-center">
-									{isActive ? (
-										<ChevronDown className="h-3 w-3" />
-									) : (
-										<ChevronRight className="h-3 w-3" />
-									)}
+									<ChevronDown className="h-3 w-3" />
 								</span>
 							) : (
-								<span className="w-3 shrink-0" />
+								<span className="flex h-3 w-3 shrink-0 items-center justify-center">
+									<ChevronRight className="h-3 w-3 opacity-0" />
+								</span>
 							)}
-							<span className="flex min-w-0 flex-1 items-center gap-1 text-left">
+							<button
+								type="button"
+								className="flex min-w-0 flex-1 items-center gap-1 text-left"
+								onClick={() => {
+									if (!isDir) onOpenFile(entry.rel);
+								}}
+							>
 								{isDir ? (
 									<Folder className="h-3.5 w-3.5 shrink-0 text-(--dim)" />
 								) : (
@@ -73,7 +93,7 @@ export function HeroFilesystemTree({ openFile }: { openFile: string | null }) {
 									/>
 								)}
 								<span className="flex-1 truncate">{entry.name}</span>
-							</span>
+							</button>
 						</div>
 					);
 				})}

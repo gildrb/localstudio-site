@@ -186,7 +186,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 			neutral: !getComputedStyle(gradientElement).backgroundImage.includes("8, 9, 10"),
 		};
 	});
-	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1240, 1240], bottomOffsets: [0, 0], selectable: "text", neutral: true });
+	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1240, 1240], bottomOffsets: [0, 40], selectable: "text", neutral: true });
 	const documentTop = await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY));
 	await page.evaluate(() => globalThis.scrollTo(0, 500));
 	await page.waitForTimeout(100);
@@ -210,7 +210,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 			overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
 		};
 	});
-	expect(mobile).toEqual({ gap: 56, widths: [1440, 342], bottomOffsets: [0, 0], overflow: 0 });
+	expect(mobile).toEqual({ gap: 56, widths: [390, 342], bottomOffsets: [0, 28], overflow: 0 });
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await stage.waitFor({ state: "attached" });
@@ -230,7 +230,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 		};
 	});
 	expect(reduced).toMatchObject({ stage: ["1", "none"], gradient: "1", grid: "none", phase: "done" });
-	expect(reduced.output).toContain("Open tasks");
+	expect(reduced.output).toContain("What I changed");
 	expect(reduced.output).toContain("Qwen3.8-27B");
 });
 

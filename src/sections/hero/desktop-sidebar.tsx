@@ -15,12 +15,20 @@ import {
 } from "@/features/shell/left-sidebar-nav";
 import { DEFAULT_SIDEBAR_WIDTH } from "@/store";
 import { ProfileAvatar, useLocalProfile } from "@/features/shell/local-profile";
-import { HeroProjectsNav } from "./projects-nav";
+import { HeroProjectsNav, type HeroTaskId } from "./projects-nav";
 
 const HISTORY_STEPPER_CLASS =
 	"flex h-6 w-6 items-center justify-center rounded-md text-(--hl2) transition-colors hover:bg-(--hover) hover:text-(--fg)";
 
-export function HeroDesktopSidebar() {
+export function HeroDesktopSidebar({
+	activeTask,
+	onSelectTask,
+	titles,
+}: {
+	activeTask: HeroTaskId;
+	onSelectTask: (task: HeroTaskId) => void;
+	titles: Record<HeroTaskId, string>;
+}) {
 	const pathname = "/agent";
 	return (
 		<aside
@@ -87,7 +95,12 @@ export function HeroDesktopSidebar() {
 							active={isRouteActive(pathname, tab.href)}
 						/>
 					))}
-					<HeroProjectsNav expanded />
+					<HeroProjectsNav
+						expanded
+						activeTask={activeTask}
+						onSelectTask={onSelectTask}
+						titles={titles}
+					/>
 				</nav>
 				<div className="shrink-0 bg-(--sidebar-bg) px-[var(--sidebar-padding-x)] pb-2 pt-1">
 					<HeroProfileFooter />

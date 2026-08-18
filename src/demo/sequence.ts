@@ -1,20 +1,69 @@
-export const DEMO_PROMPT = "Summarize notes/standup.md and list open tasks.";
-
 export const DEMO_MODEL = "Qwen3.8-27B";
 
 export const DEMO_RUNTIME = "MLX";
 
+export const DEMO_PROMPT =
+	"The /health probe 500s while Qwen3.8-27B is warm on this Mac. Read notes/standup.md and src/proxy/health.ts, then patch the probe so a loaded local model counts as healthy.";
+
 export const DEMO_STREAM =
-	"I'll read the standup notes on this machine, then extract open tasks.";
+	"I'll read the standup notes and the health probe, then patch the check so a warm Qwen3.8-27B counts as ready.";
 
-export const DEMO_TOOL = "read_file";
+export const DEMO_RESULT = `The probe 500ed because it required an empty GPU queue. A warm Qwen3.8-27B still had a short decode in flight, so /health lied.
 
-export const DEMO_TOOL_PATH = "notes/standup.md";
+What I changed
+- src/proxy/health.ts treats a loaded local model as healthy when the last stream finished in under 2s
+- /health stays red only when the runtime process is gone
 
-export const DEMO_RESULT = `Open tasks
-- Ship the local proxy health check
-- Keep Qwen3.8-27B warm on the studio Mac
-- Do not upload the notes folder`;
+Verify
+- GET /health returns 200 while Qwen3.8-27B is loaded
+- The standup proxy check can ship`;
+
+export const DEMO_DIFF = `diff --git a/src/proxy/health.ts b/src/proxy/health.ts
+--- a/src/proxy/health.ts
++++ b/src/proxy/health.ts
+@@ -1,8 +1,11 @@
+ export function isHealthy(runtime) {
+-  return runtime.queueLength === 0;
++  if (!runtime.processAlive) return false;
++  return runtime.loaded && runtime.lastStreamMs < 2000;
+ }
+`;
+
+export type DemoToolSpec = {
+	id: string;
+	name: string;
+	args: Record<string, unknown>;
+	resultText: string;
+};
+
+export const DEMO_TOOLS: readonly DemoToolSpec[] = [
+	{
+		id: "read-notes",
+		name: "read_file",
+		args: { path: "notes/standup.md" },
+		resultText: `Standup
+- Proxy /health 500s even with Qwen3.8-27B warm
+- Do not upload the notes folder
+- Ship the health check today`,
+	},
+	{
+		id: "read-health",
+		name: "read_file",
+		args: { path: "src/proxy/health.ts" },
+		resultText: `export function isHealthy(runtime) {
+  return runtime.queueLength === 0;
+}`,
+	},
+	{
+		id: "patch-health",
+		name: "apply_patch",
+		args: { path: "src/proxy/health.ts" },
+		resultText: `*** Update File: src/proxy/health.ts
+-  return runtime.queueLength === 0;
++  if (!runtime.processAlive) return false;
++  return runtime.loaded && runtime.lastStreamMs < 2000;`,
+	},
+];
 
 export type DemoPhase =
 	| "prompt"
@@ -22,7 +71,6 @@ export type DemoPhase =
 	| "load"
 	| "stream"
 	| "tool"
-	| "meters"
 	| "result"
 	| "done";
 
@@ -33,12 +81,13 @@ export interface DemoState {
 	modelSelected: boolean;
 	load: number;
 	streamChars: number;
-	toolStarted: boolean;
-	toolDone: boolean;
+	toolsStarted: number;
+	toolsDone: number;
 	cpu: number;
 	gpu: number;
 	ram: number;
 	resultVisible: boolean;
+	reviewReady: boolean;
 }
 
 export type DemoAction =
@@ -55,12 +104,13 @@ export const initialDemoState: DemoState = {
 	modelSelected: false,
 	load: 0,
 	streamChars: 0,
-	toolStarted: false,
-	toolDone: false,
+	toolsStarted: 0,
+	toolsDone: 0,
 	cpu: 8,
 	gpu: 0,
 	ram: 4.2,
 	resultVisible: false,
+	reviewReady: false,
 };
 
 export const finishedDemoState: DemoState = {
@@ -70,12 +120,13 @@ export const finishedDemoState: DemoState = {
 	modelSelected: true,
 	load: 100,
 	streamChars: DEMO_STREAM.length,
-	toolStarted: true,
-	toolDone: true,
+	toolsStarted: DEMO_TOOLS.length,
+	toolsDone: DEMO_TOOLS.length,
 	cpu: 14,
 	gpu: 12,
 	ram: 19.8,
 	resultVisible: true,
+	reviewReady: true,
 };
 
 export function demoOutput(state: DemoState): string {
@@ -83,6 +134,12 @@ export function demoOutput(state: DemoState): string {
 	if (!state.resultVisible) return stream;
 	if (stream.length === 0) return DEMO_RESULT;
 	return `${stream}\n\n${DEMO_RESULT}`;
+}
+
+export function demoActivePath(state: DemoState): string | null {
+	const tool = DEMO_TOOLS[Math.max(0, state.toolsStarted - 1)];
+	const path = tool?.args.path;
+	return typeof path === "string" ? path : null;
 }
 
 export function demoStatus(state: DemoState): string {
@@ -95,12 +152,15 @@ export function demoStatus(state: DemoState): string {
 			return `Loading ${DEMO_MODEL} ${state.load}%`;
 		case "stream":
 			return "Streaming tokens";
-		case "tool":
-			return state.toolDone ? `${DEMO_TOOL} finished` : `Running ${DEMO_TOOL}`;
-		case "meters":
-			return "Updating CPU, GPU, and RAM";
+		case "tool": {
+			const tool = DEMO_TOOLS[state.toolsStarted - 1];
+			if (!tool) return "Running tools";
+			return state.toolsDone >= state.toolsStarted
+				? `${tool.name} finished`
+				: `Running ${tool.name}`;
+		}
 		case "result":
-			return "Private result ready";
+			return "Local patch ready for review";
 		case "done":
 			return "Demonstration complete";
 	}
@@ -109,19 +169,17 @@ export function demoStatus(state: DemoState): string {
 export function demoDelay(state: DemoState): number {
 	switch (state.phase) {
 		case "prompt":
-			return 22;
+			return 14;
 		case "select":
-			return 480;
-		case "load":
-			return 64;
-		case "stream":
-			return 16;
-		case "tool":
-			return state.toolStarted && !state.toolDone ? 640 : 360;
-		case "meters":
 			return 420;
+		case "load":
+			return 56;
+		case "stream":
+			return 14;
+		case "tool":
+			return state.toolsDone < state.toolsStarted ? 720 : 280;
 		case "result":
-			return 280;
+			return 360;
 		case "done":
 			return 0;
 	}
@@ -166,7 +224,7 @@ function advanceDemo(state: DemoState): DemoState {
 			};
 		}
 		case "stream": {
-			const streamChars = Math.min(DEMO_STREAM.length, state.streamChars + 3);
+			const streamChars = Math.min(DEMO_STREAM.length, state.streamChars + 4);
 			const t = streamChars / DEMO_STREAM.length;
 			return {
 				...state,
@@ -178,26 +236,34 @@ function advanceDemo(state: DemoState): DemoState {
 			};
 		}
 		case "tool": {
-			if (!state.toolStarted) {
-				return { ...state, toolStarted: true, cpu: 28, gpu: 64, ram: 21.4 };
+			if (state.toolsStarted === state.toolsDone) {
+				if (state.toolsDone === DEMO_TOOLS.length) {
+					return { ...state, phase: "result", reviewReady: true };
+				}
+				return {
+					...state,
+					toolsStarted: state.toolsStarted + 1,
+					cpu: 28,
+					gpu: 64,
+					ram: 21.4,
+				};
 			}
-			if (!state.toolDone) {
-				return { ...state, toolDone: true };
-			}
-			return { ...state, phase: "meters" };
-		}
-		case "meters":
+			const toolsDone = state.toolsDone + 1;
 			return {
 				...state,
-				cpu: 14,
-				gpu: 12,
-				ram: 19.8,
-				phase: "result",
+				toolsDone,
+				reviewReady: toolsDone === DEMO_TOOLS.length,
+				phase: toolsDone === DEMO_TOOLS.length ? "result" : "tool",
 			};
+		}
 		case "result":
 			return {
 				...state,
 				resultVisible: true,
+				reviewReady: true,
+				cpu: 14,
+				gpu: 12,
+				ram: 19.8,
 				phase: "done",
 				playing: false,
 			};
