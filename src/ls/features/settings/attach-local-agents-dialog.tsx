@@ -24,7 +24,10 @@ export function AttachLocalAgentsDialog({ modelId, modelName, onClose }: Props) 
 
   useMountSubscription(() => {
     void fetch("/api/local-agents", { cache: "no-store" })
-      .then((res) => res.json() as Promise<{ agents?: LocalAgentTarget[] }>)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Local agents failed (HTTP ${res.status})`);
+        return res.json() as Promise<{ agents?: LocalAgentTarget[] }>;
+      })
       .then((payload) => {
         const detected = payload.agents ?? [];
         setAgents(detected);

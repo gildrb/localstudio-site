@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AgentsPage } from "./pages/AgentsPage";
 import { DocsPage } from "./pages/DocsPage";
 import { DownloadPage } from "./pages/DownloadPage";
@@ -54,13 +54,11 @@ export default function App() {
 	const pathname = normalizePath(location.split("#")[0]);
 	const machineMode = pathname === "/machine";
 
-	const machine = {
-		machineMode,
-		toggleMachine: (next: boolean) => {
-			window.history.pushState({}, "", next ? "/machine" : "/");
-			emitNavigation();
-		},
-	};
+	const toggleMachine = useCallback((next: boolean) => {
+		window.history.pushState({}, "", next ? "/machine" : "/");
+		emitNavigation();
+	}, []);
+	const machine = useMemo(() => ({ machineMode, toggleMachine }), [machineMode, toggleMachine]);
 
 	useEffect(() => {
 		function updateLocation(source: NavigationSource) {

@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { Settings, SquarePen, X } from "@/ui/icon-registry";
+import { useMountSubscription } from "@/hooks/use-mount-subscription";
 import type { ProjectsNavSectionComponent } from "@/features/shell/left-sidebar-lazy";
 import {
   NavItemMobile,
@@ -22,14 +24,37 @@ export function MobileNavigationDrawer({
   onClose: () => void;
   onNewTask: () => void;
 }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useMountSubscription(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, []);
+
+  // The top bar is mobile-only; if the viewport leaves the mobile range while
+  // open, the hidden modal would keep the page inert, so close it instead.
+  useMountSubscription(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const closeOnDesktop = () => {
+      if (media.matches) onClose();
+    };
+    closeOnDesktop();
+    media.addEventListener("change", closeOnDesktop);
+    return () => media.removeEventListener("change", closeOnDesktop);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
-      <button
-        type="button"
-        className="absolute inset-0 h-full w-full bg-black/60"
-        aria-label="Close navigation menu"
-        onClick={onClose}
-      />
+    <dialog
+      ref={dialogRef}
+      className="fixed inset-0 z-50 m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-black/60 md:hidden"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
       <aside
         id="mobile-navigation-drawer"
         className="mobile-pwa-drawer absolute right-0 top-0 flex h-full w-full flex-col bg-(--bg) md:w-[min(22rem,88vw)] md:border-l md:border-(--border)"

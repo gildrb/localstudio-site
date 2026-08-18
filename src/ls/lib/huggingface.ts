@@ -191,6 +191,14 @@ function quantRank(label: string): number {
   return 50;
 }
 
+async function readErrorPayload(
+  response: Response,
+  fallback: { error?: string; detail?: string },
+): Promise<{ error?: string; detail?: string }> {
+  if (response.ok) return fallback;
+  return (await response.json().catch(() => fallback)) as { error?: string; detail?: string };
+}
+
 export async function fetchHuggingFaceModels(params: URLSearchParams): Promise<HuggingFaceModel[]> {
   const query = params.toString();
   const directUrl = `/api/huggingface/models?${query}`;
@@ -202,12 +210,12 @@ export async function fetchHuggingFaceModels(params: URLSearchParams): Promise<H
   const proxyResponse = await fetch(proxyUrl);
   if (proxyResponse.ok) return (await proxyResponse.json()) as HuggingFaceModel[];
 
-  const directError = await directResponse
-    .json()
-    .catch(() => ({ error: "Direct Hugging Face fallback failed" }));
-  const proxyError = await proxyResponse
-    .json()
-    .catch(() => ({ detail: "Controller proxy failed" }));
+  const directError = await readErrorPayload(directResponse, {
+    error: "Direct Hugging Face fallback failed",
+  });
+  const proxyError = await readErrorPayload(proxyResponse, {
+    detail: "Controller proxy failed",
+  });
   throw new Error(
     directError.error || directError.detail || proxyError.detail || "Failed to fetch models",
   );

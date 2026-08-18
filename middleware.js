@@ -57,6 +57,7 @@ export default async function middleware(request) {
 	const markdownPath = markdownPages.get(pathname);
 	if (markdownPath === undefined) return;
 	const upstream = await fetch(new URL(markdownPath, url.origin));
+	if (!upstream.ok) return;
 	const body = await upstream.text();
 	const headers = {
 		"Cache-Control": "public, max-age=0, must-revalidate",

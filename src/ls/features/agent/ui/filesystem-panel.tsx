@@ -102,6 +102,7 @@ export function FilesystemPanel({ cwd }: Props) {
           `/api/agent/fs?cwd=${encodeURIComponent(requestRoot)}&path=${encodeURIComponent(dirRel)}`,
           { cache: "no-store" },
         );
+        if (!response.ok) throw new Error(`Directory listing failed: ${response.status}`);
         const payload = (await response.json()) as { entries?: FsEntry[]; error?: string };
         if (rootRef.current !== requestRoot) return;
         setDirChildren((prev) => new Map(prev).set(dirRel, payload.entries ?? []));
@@ -210,6 +211,7 @@ export function FilesystemPanel({ cwd }: Props) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cwd: root, path: openFile, line, body }),
         });
+        if (!response.ok) throw new Error(`Comment failed: ${response.status}`);
         const payload = (await response.json()) as { comment?: FileComment; error?: string };
         if (payload.comment) setComments((current) => [...current, payload.comment!]);
       } catch {}

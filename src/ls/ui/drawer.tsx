@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties, ReactNode } from "react";
+import { useRef, type CSSProperties, type ReactNode } from "react";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
 import { X } from "@/ui/icon-registry";
 import { Button } from "./button";
@@ -36,29 +36,28 @@ export function Drawer({
 }
 
 export function DrawerOverlay({ children, onClose }: { children: ReactNode; onClose: () => void }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
   useMountSubscription(() => {
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [onClose]);
+    const dialog = dialogRef.current;
+    if (!dialog || dialog.open) return;
+    dialog.showModal();
+  }, []);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex justify-end bg-black/30"
-      onClick={onClose}
-      role="presentation"
+    <dialog
+      ref={dialogRef}
+      className="fixed inset-0 z-50 m-0 flex h-full max-h-none w-full max-w-none justify-end bg-transparent p-0 backdrop:bg-black/30"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
-      <div
-        aria-modal="true"
-        className="flex h-full"
-        onClick={(event) => event.stopPropagation()}
-        role="dialog"
-      >
-        {children}
-      </div>
-    </div>
+      {children}
+    </dialog>
   );
 }
 

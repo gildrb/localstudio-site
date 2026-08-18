@@ -131,7 +131,10 @@ export function SetupChecksSettings() {
 
   useMountSubscription(() => {
     void fetch("/api/agent/setup-checks", { cache: "no-store" })
-      .then((res) => res.json() as Promise<{ checks?: Check[] }>)
+      .then((res) => {
+        if (!res.ok) throw new Error(`Setup checks failed (HTTP ${res.status})`);
+        return res.json() as Promise<{ checks?: Check[] }>;
+      })
       .then((payload) => setChecks(payload.checks ?? []))
       .catch(() => setChecks([]));
   }, []);

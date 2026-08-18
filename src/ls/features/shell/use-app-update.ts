@@ -117,7 +117,10 @@ export function useAppUpdate(): AppUpdate {
   useMountSubscription(() => {
     let cancelled = false;
     void fetch("/api/app-update", { cache: "no-store" })
-      .then((response) => response.json() as Promise<{ latest?: string }>)
+      .then((response) => {
+        if (!response.ok) throw new Error(`App update check failed (HTTP ${response.status})`);
+        return response.json() as Promise<{ latest?: string }>;
+      })
       .then((body) => {
         if (!cancelled) setLatestVersion(body.latest ?? null);
       })

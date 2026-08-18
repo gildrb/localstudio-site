@@ -120,6 +120,7 @@ export function useFilesystemPanelEffects({
           `/api/agent/fs?cwd=${encodeURIComponent(root)}&path=${encodeURIComponent(relPath)}`,
           { cache: "no-store" },
         );
+        if (!response.ok) throw new Error(`Directory listing failed: ${response.status}`);
         const payload = (await response.json()) as { entries?: FsEntry[]; error?: string };
         if (!cancelled) setEntries(payload.entries ?? []);
       } catch {

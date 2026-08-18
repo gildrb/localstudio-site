@@ -135,6 +135,7 @@ export function ScreencastSurface({ url, onState, onUnavailable, visible = true 
       body: JSON.stringify({ url: target }),
     })
       .then(async (response) => {
+        if (!response.ok) throw new Error(`Navigation failed (HTTP ${response.status})`);
         const payload = (await response.json()) as { ok: boolean; error?: string };
         if (cancelled) return;
         setNavError(payload.ok ? null : (payload.error ?? "Navigation failed"));

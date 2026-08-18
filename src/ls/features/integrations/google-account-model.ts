@@ -18,8 +18,11 @@ export async function requestJson<T>(
   init?: RequestInit,
 ): Promise<T> {
   const response = await fetch(url, init);
+  if (!response.ok) {
+    const errorBody: unknown = await response.json().catch(() => null);
+    throw new Error(responseError(errorBody, `Request failed (${response.status})`));
+  }
   const body: unknown = await response.json().catch(() => null);
-  if (!response.ok) throw new Error(responseError(body, `Request failed (${response.status})`));
   return decode(body);
 }
 

@@ -557,6 +557,7 @@ async function handleCd(target: string, refs: TerminalRefs, session: FallbackSes
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ target, from: session.cwd, previous: session.previousCwd }),
     });
+    if (!response.ok) throw new Error(`cd failed (HTTP ${response.status})`);
     const payload = (await response.json()) as { ok: boolean; cwd?: string; error?: string };
     if (!payload.ok || !payload.cwd) {
       term.writeln(`\x1b[31mcd: ${payload.error ?? "failed"}\x1b[0m`);
@@ -600,6 +601,7 @@ async function runFallbackCommand(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ command }),
     });
+    if (!response.ok) throw new Error(`Command failed (HTTP ${response.status})`);
     const payload = (await response.json()) as TerminalRunResult;
     if (payload.stdout) term.write(payload.stdout.replace(/\n/g, "\r\n"));
     if (payload.stderr) term.write(`\x1b[31m${payload.stderr.replace(/\n/g, "\r\n")}\x1b[0m`);
