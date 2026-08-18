@@ -32,7 +32,7 @@ export function HeroDesktopSidebar({
 	const pathname = "/agent";
 	return (
 		<aside
-			className="relative hidden md:flex sticky top-0 h-full border-r border-(--border) bg-(--sidebar-bg) flex-col shrink-0 z-40 overflow-hidden"
+			className="relative flex sticky top-0 h-full border-r border-(--border) bg-(--sidebar-bg) flex-col shrink-0 z-40 overflow-hidden"
 			style={{ width: DEFAULT_SIDEBAR_WIDTH }}
 		>
 			<div className="flex min-h-0 flex-1 flex-col overflow-hidden opacity-100">

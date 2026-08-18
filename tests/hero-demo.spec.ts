@@ -18,13 +18,13 @@ test("hero demo autoplays the local inference sequence once", async ({
 	);
 	await expect(demo.getByText("Proxy health check").first()).toBeVisible();
 	await expect(demo.getByText("New task").first()).toBeVisible();
-	await expect(demo.getByText("Session").first()).toBeVisible();
 	await expect(
 		demo.getByRole("button", { name: "Status", exact: true }),
 	).toBeVisible();
 	await expect(
 		demo.getByRole("button", { name: "Review", exact: true }),
 	).toBeVisible();
+	await expect(demo.getByText("src/proxy/health.ts").first()).toBeVisible();
 });
 
 test("hero demo computer panel tabs are clickable", async ({ page }) => {
@@ -96,4 +96,47 @@ test("homepage stays inside the viewport at 320", async ({ page }) => {
 			document.documentElement.clientWidth,
 	);
 	expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test("mobile hero shows a cropped desktop app, not a compact shell", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/");
+	const title = await page.locator(".hero h1").evaluate((element) => {
+		const style = getComputedStyle(element);
+		return [style.fontSize, style.lineHeight];
+	});
+	expect(title).toEqual(["40px", "44px"]);
+	const layout = await page.evaluate(() => {
+		const demo = document.querySelector(".demo");
+		const app = document.querySelector(".demo__app");
+		const sidebar = document.querySelector(".demo__app > aside");
+		const computer = document.querySelector(".agent-computer-panel");
+		if (
+			!(demo instanceof HTMLElement) ||
+			!(app instanceof HTMLElement) ||
+			!(sidebar instanceof HTMLElement) ||
+			!(computer instanceof HTMLElement)
+		) {
+			throw new Error("demo chrome");
+		}
+		const demoBox = demo.getBoundingClientRect();
+		const appBox = app.getBoundingClientRect();
+		return {
+			sidebar: getComputedStyle(sidebar).display !== "none",
+			computer: getComputedStyle(computer).display !== "none",
+			height: Math.round(demoBox.height),
+			appHeight: Math.round(appBox.height),
+			appWidth: Math.round(appBox.width),
+			demoWidth: Math.round(demoBox.width),
+			pointer: getComputedStyle(demo).pointerEvents,
+		};
+	});
+	expect(layout.sidebar).toBe(true);
+	expect(layout.computer).toBe(true);
+	expect(layout.height).toBe(394);
+	expect(layout.appHeight).toBe(787);
+	expect(layout.appWidth).toBeGreaterThan(layout.demoWidth);
+	expect(layout.pointer).toBe("none");
 });

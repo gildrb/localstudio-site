@@ -265,7 +265,8 @@ export function HeroDemo() {
 			<p className="sr-only" role="status">
 				{demoStatus(state)}
 			</p>
-			<div className="flex h-[787px] min-h-0 w-full overflow-hidden max-md:h-[520px]">
+			<div className="demo__viewport">
+				<div className="demo__app">
 				<HeroDesktopSidebar
 					activeTask={activeTask}
 					onSelectTask={selectTask}
@@ -419,7 +420,7 @@ export function HeroDemo() {
 							</section>
 							{panelOpen ? (
 								<aside
-									className="agent-computer-panel relative hidden min-h-0 shrink-0 flex-col border-l border-(--border) bg-(--color-panel) md:flex"
+									className="agent-computer-panel relative flex min-h-0 shrink-0 flex-col border-l border-(--border) bg-(--color-panel)"
 									style={{ width: HERO_COMPUTER_WIDTH }}
 								>
 									<ComputerHeader
@@ -501,6 +502,7 @@ export function HeroDemo() {
 						</div>
 					</div>
 				</main>
+				</div>
 			</div>
 		</section>
 	);

@@ -13,9 +13,57 @@
 	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.44);
 }
 
+.demo__viewport {
+	position: relative;
+	overflow: clip;
+}
+
+.demo__app {
+	display: flex;
+	width: 100%;
+	height: 787px;
+	min-height: 0;
+	overflow: hidden;
+}
+
 .demo .agent-chat-scroller,
 .demo .chat-markdown,
 .demo .agent-thread-shell {
 	user-select: text;
 	-webkit-user-select: text;
+}
+
+@media (max-width: 900px) {
+	.demo {
+		height: 394px;
+		pointer-events: none;
+	}
+
+	.demo__viewport {
+		height: 100%;
+		touch-action: none;
+		overscroll-behavior: none;
+	}
+
+	.demo__viewport::after {
+		content: "";
+		position: absolute;
+		inset: auto 0 0;
+		z-index: 2;
+		height: 42%;
+		pointer-events: none;
+		background: linear-gradient(180deg, transparent, #000);
+	}
+
+	.demo__app {
+		width: 1100px;
+	}
+
+	.demo .agent-chat-scroller,
+	.demo .sidebar-scroller,
+	.demo .overflow-y-auto {
+		overflow: hidden !important;
+		overscroll-behavior: none;
+		touch-action: none;
+	}
 }
