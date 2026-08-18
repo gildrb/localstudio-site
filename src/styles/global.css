@@ -1010,7 +1010,10 @@ button {
 	}
 
 	.hero__stage {
+		width: calc(100% - var(--page-gutter) / 2);
 		margin-top: 56px;
+		margin-right: 0;
+		margin-left: calc(var(--page-gutter) / 2);
 		overflow: clip;
 	}
 

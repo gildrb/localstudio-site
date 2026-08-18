@@ -210,7 +210,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 			overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
 		};
 	});
-	expect(mobile).toEqual({ gap: 56, widths: [390, 342], bottomOffsets: [0, 28], overflow: 0 });
+	expect(mobile).toEqual({ gap: 56, widths: [390, 366], bottomOffsets: [0, 28], overflow: 0 });
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await stage.waitFor({ state: "attached" });

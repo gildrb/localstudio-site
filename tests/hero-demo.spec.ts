@@ -114,16 +114,18 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 		const app = document.querySelector(".demo__app");
 		const sidebar = document.querySelector(".demo__app > aside");
 		const computer = document.querySelector(".agent-computer-panel");
+		const copy = document.querySelector(".hero__copy");
 		if (
 			!(demo instanceof HTMLElement) ||
 			!(viewport instanceof HTMLElement) ||
 			!(app instanceof HTMLElement) ||
 			!(sidebar instanceof HTMLElement) ||
-			!(computer instanceof HTMLElement)
+			!(computer instanceof HTMLElement) ||
+			!(copy instanceof HTMLElement)
 		) {
 			throw new Error("demo chrome");
 		}
-		const scale = demo.clientWidth / 1392;
+		const demoBox = demo.getBoundingClientRect();
 		return {
 			sidebar: sidebar.offsetWidth,
 			computer: computer.offsetWidth,
@@ -131,16 +133,23 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 			layoutHeight: Math.round(Number.parseFloat(getComputedStyle(app).height)),
 			visualWidth: Math.round(app.getBoundingClientRect().width),
 			demoWidth: demo.clientWidth,
-			cropHeight: Math.round(viewport.getBoundingClientRect().height),
-			halfHeight: Math.round(787 * 0.5 * scale),
+			demoLeft: Math.round(demoBox.left),
+			demoRight: Math.round(demoBox.right),
+			copyLeft: Math.round(copy.getBoundingClientRect().left),
+			frameHeight: Math.round(viewport.getBoundingClientRect().height),
 			pointer: getComputedStyle(demo).pointerEvents,
+			mask: getComputedStyle(demo).maskImage || getComputedStyle(demo).webkitMaskImage,
 		};
 	});
 	expect(layout.sidebar).toBe(224);
 	expect(layout.computer).toBe(320);
 	expect(layout.layoutWidth).toBe(1392);
 	expect(layout.layoutHeight).toBe(787);
-	expect(layout.visualWidth).toBe(layout.demoWidth);
-	expect(layout.cropHeight).toBe(layout.halfHeight);
+	expect(layout.visualWidth).toBe(1392);
+	expect(layout.demoWidth).toBeLessThan(1392);
+	expect(layout.demoLeft).toBe(layout.copyLeft);
+	expect(layout.demoRight).toBe(390);
+	expect(layout.frameHeight).toBe(787);
 	expect(layout.pointer).toBe("none");
+	expect(layout.mask).toContain("linear-gradient");
 });
