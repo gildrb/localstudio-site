@@ -55,7 +55,7 @@ const capabilities = [
 	],
 ] as const satisfies readonly CopyBlock[];
 
-const container = "mx-auto w-[min(1240px,calc(100%_-_48px))]";
+const container = "mx-auto w-[min(1399px,calc(100%_-_48px))]";
 const sectionTitle = "max-w-3xl";
 const prose = "text-base/6 text-white/70";
 

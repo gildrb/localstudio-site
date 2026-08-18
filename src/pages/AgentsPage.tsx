@@ -41,7 +41,7 @@ export function AgentsPage() {
 				}
 			/>
 			<section
-				className="mx-auto w-[min(1240px,calc(100%_-_48px))] pb-30"
+				className="mx-auto w-[min(1399px,calc(100%_-_48px))] pb-30"
 				aria-label="Agent setup"
 			>
 				<div className="mt-16 grid grid-cols-[minmax(240px,.72fr)_minmax(0,1.28fr)] items-start gap-10 max-[900px]:grid-cols-[minmax(0,1fr)]">
@@ -93,7 +93,7 @@ export function AgentsPage() {
 			</section>
 
 			<section
-				className="mx-auto w-[min(1240px,calc(100%_-_48px))] border-t border-white/10 py-30"
+				className="mx-auto w-[min(1399px,calc(100%_-_48px))] border-t border-white/10 py-30"
 				aria-labelledby="agents-media-title"
 			>
 				<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-8">

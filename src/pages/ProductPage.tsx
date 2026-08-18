@@ -6,7 +6,7 @@ import { productFeatures } from "../content/product-features";
 import { frameSizes, heroSizes, responsiveSrcSet } from "../images";
 
 const container =
-	"mx-auto w-[min(1240px,calc(100%_-_48px))]";
+	"mx-auto w-[min(1399px,calc(100%_-_48px))]";
 
 export function ProductPage() {
 	return (

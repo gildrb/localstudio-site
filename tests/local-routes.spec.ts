@@ -186,7 +186,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 			neutral: !getComputedStyle(gradientElement).backgroundImage.includes("8, 9, 10"),
 		};
 	});
-	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1240, 1240], bottomOffsets: [0, 40], selectable: "text", neutral: true });
+	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1392, 1392], bottomOffsets: [0, 40], selectable: "text", neutral: true });
 	const documentTop = await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY));
 	await page.evaluate(() => globalThis.scrollTo(0, 500));
 	await page.waitForTimeout(100);
@@ -511,10 +511,10 @@ test("design system typography is stable", async ({ page }) => {
 		const article = html(".docs-prose").getBoundingClientRect();
 		return { docs: Math.round(docs.width), article: Math.round(article.width), left: Math.round(docs.left) };
 	});
-	expect(fullWidthLayouts).toEqual({ docs: 1240, article: 952, left: 100 });
+	expect(fullWidthLayouts).toEqual({ docs: 1392, article: 1104, left: 24 });
 	await page.goto("/prompt");
 	const setupWidth = await page.locator('section[aria-label="Setup handoff"]').evaluate(element => Math.round(element.getBoundingClientRect().width));
-	expect(setupWidth).toBe(1240);
+	expect(setupWidth).toBe(1392);
 	await page.goto("/mobile");
 	const hierarchy = await page.evaluate(() => {
 		function html(selector: string): HTMLElement {

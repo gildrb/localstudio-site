@@ -265,7 +265,7 @@ export function HeroDemo() {
 			<p className="sr-only" role="status">
 				{demoStatus(state)}
 			</p>
-			<div className="flex h-[680px] min-h-0 w-full overflow-hidden max-md:h-[520px]">
+			<div className="flex h-[787px] min-h-0 w-full overflow-hidden max-md:h-[520px]">
 				<HeroDesktopSidebar
 					activeTask={activeTask}
 					onSelectTask={selectTask}
