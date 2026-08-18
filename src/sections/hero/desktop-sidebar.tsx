@@ -21,15 +21,18 @@ const HISTORY_STEPPER_CLASS =
 	"flex h-6 w-6 items-center justify-center rounded-md text-(--hl2) transition-colors hover:bg-(--hover) hover:text-(--fg)";
 
 export function HeroDesktopSidebar({
+	pathname = "/agent",
+	showProjects = true,
 	activeTask,
 	onSelectTask,
 	titles,
 }: {
-	activeTask: HeroTaskId;
-	onSelectTask: (task: HeroTaskId) => void;
-	titles: Record<HeroTaskId, string>;
+	pathname?: string;
+	showProjects?: boolean;
+	activeTask?: HeroTaskId;
+	onSelectTask?: (task: HeroTaskId) => void;
+	titles?: Record<HeroTaskId, string>;
 }) {
-	const pathname = "/agent";
 	return (
 		<aside
 			className="relative flex sticky top-0 h-full border-r border-(--border) bg-(--sidebar-bg) flex-col shrink-0 z-40 overflow-hidden"
@@ -95,12 +98,14 @@ export function HeroDesktopSidebar({
 							active={isRouteActive(pathname, tab.href)}
 						/>
 					))}
-					<HeroProjectsNav
-						expanded
-						activeTask={activeTask}
-						onSelectTask={onSelectTask}
-						titles={titles}
-					/>
+					{showProjects && activeTask && onSelectTask && titles ? (
+						<HeroProjectsNav
+							expanded
+							activeTask={activeTask}
+							onSelectTask={onSelectTask}
+							titles={titles}
+						/>
+					) : null}
 				</nav>
 				<div className="shrink-0 bg-(--sidebar-bg) px-[var(--sidebar-padding-x)] pb-2 pt-1">
 					<HeroProfileFooter />

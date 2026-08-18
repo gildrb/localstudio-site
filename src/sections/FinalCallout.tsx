@@ -7,7 +7,7 @@ export function FinalCallout() {
 			aria-labelledby="download-title"
 		>
 			<div>
-				<h2 id="download-title">Your models. Your hardware. One surface.</h2>
+				<h2 id="download-title">Bring intelligence home</h2>
 				<div className="hero__actions">
 					<CtaPair
 						secondary={{ href: "/prompt", label: "Setup prompt" }}

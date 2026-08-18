@@ -1,7 +1,7 @@
-import { type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { type CSSProperties, type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { productFeatures } from "../content/product-features";
-import { responsiveSrcSet, storySizes } from "../images";
+import { FeatureDemo, type FeatureScene } from "./story/FeatureDemo";
 
 
 
@@ -13,8 +13,12 @@ function optionControls(root: HTMLElement): HTMLElement[] {
 	return controls;
 }
 
+const STORY_MS = 8000;
+
 export function ProductStory() {
 	const [activeIndex, setActiveIndex] = useState(0);
+	const [progress, setProgress] = useState(0);
+	const [paused, setPaused] = useState(false);
 	const optionsRef = useRef<HTMLDivElement>(null);
 	const reduceMotion = useReducedMotion();
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
@@ -22,6 +26,7 @@ export function ProductStory() {
 	function selectFeature(index: number) {
 		if (productFeatures[index] === undefined) return;
 		setActiveIndex(index);
+		setProgress(0);
 	}
 
 	function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -49,6 +54,19 @@ export function ProductStory() {
 		optionControls(optionsRef.current)[activeIndex]?.focus();
 	}, [activeIndex]);
 
+	useEffect(() => {
+		if (reduceMotion || paused) return;
+		const started = Date.now();
+		const id = window.setInterval(() => {
+			const next = (Date.now() - started) / STORY_MS;
+			if (next >= 1) {
+				selectFeature((activeIndex + 1) % productFeatures.length);
+				return;
+			}
+			setProgress(next);
+		}, 50);
+		return () => window.clearInterval(id);
+	}, [activeIndex, paused, reduceMotion]);
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section
@@ -57,14 +75,18 @@ export function ProductStory() {
 				aria-labelledby="system-title"
 			>
 				<div className="story__intro">
-					<h2 id="system-title">Local AI is hard, this will make it easier.</h2>
+					<h2 id="system-title">Local AI is hard. Running it shouldn’t be.</h2>
 					<p>
 						<span translate="no">Local Studio</span> keeps the model, the
 						runtime, and the hardware together. Nothing important disappears
 						behind a provider abstraction.
 					</p>
 				</div>
-				<div className="story__showcase">
+				<div
+					className="story__showcase"
+					onPointerEnter={() => setPaused(true)}
+					onPointerLeave={() => setPaused(false)}
+				>
 					<div
 						className="story__options"
 						ref={optionsRef}
@@ -78,6 +100,11 @@ export function ProductStory() {
 								<div
 									className={`story__option ${selected ? "is-active" : ""}`}
 									key={feature.storyTitle}
+									style={
+										selected
+											? ({ "--story-progress": String(progress) } as CSSProperties)
+											: undefined
+									}
 								>
 									<div
 										className="story__option-control"
@@ -92,6 +119,7 @@ export function ProductStory() {
 									<div hidden={!selected}>
 										<p className="story__description">{feature.storyDescription}</p>
 									</div>
+									{selected ? <span className="story__timer" aria-hidden="true" /> : null}
 								</div>
 							);
 						})}
@@ -100,22 +128,16 @@ export function ProductStory() {
 						className="story__visual"
 						data-active-feature={activeFeature.storyTitle}
 					>
-						<m.img
-							key={activeFeature.image}
-							srcSet={responsiveSrcSet(activeFeature.image)}
-							sizes={storySizes}
-							src={activeFeature.image}
-							alt={activeFeature.alt}
-							width="5118"
-							height="2800"
-							loading="lazy"
-							decoding="async"
+						<m.div
+							key={activeFeature.slug}
 							initial={
 								reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }
 							}
 							animate={{ opacity: 1, filter: "blur(0px)" }}
 							transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-						/>
+						>
+							<FeatureDemo scene={activeFeature.slug as FeatureScene} />
+						</m.div>
 						<p className="sr-only" role="status">
 							{activeFeature.storyTitle}. {activeFeature.storyDescription}
 						</p>

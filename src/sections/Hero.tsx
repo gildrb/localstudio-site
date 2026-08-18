@@ -37,8 +37,22 @@ export function Hero() {
 							animate={settle}
 							transition={{ duration: 0.9, ease, delay: 0.12 }}
 						>
-							Intelligence should not be rented
+							Intelligence should not be rented.
 						</m.h1>
+						<m.p
+							className="hero__lede"
+							initial={
+								reduceMotion
+									? false
+									: { opacity: 0, y: 12, filter: "blur(6px)" }
+							}
+							animate={settle}
+							transition={{ duration: 0.9, ease, delay: 0.18 }}
+						>
+							Run AI at home, on hardware you own. Keep your models,
+							prompts, files, and agent workflows private, secure, and
+							entirely under your control.
+						</m.p>
 						<m.div
 							className="hero__actions"
 							initial={

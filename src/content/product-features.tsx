@@ -63,4 +63,26 @@ export const productFeatures = [
 		image: "/images/workbench-terminal.png",
 		alt: "Local Studio workbench with agent reasoning, terminal output, repository changes, and tool activity.",
 	},
+	{
+		slug: "automate",
+		storyTitle: "Automate",
+		storyDescription:
+			"Scheduled health checks, downloads, and reports that run on this machine.",
+		productTitle: "Keep the machine working.",
+		productText:
+			"Automations run on the controller. Proxy checks, model pulls, and recap jobs stay on your hardware.",
+		image: "/images/workbench-terminal.png",
+		alt: "Local Studio automations list with scheduled controller tasks.",
+	},
+	{
+		slug: "configure",
+		storyTitle: "Configure",
+		storyDescription:
+			"Hardware, runtimes, and controller identity for the machine the models run on.",
+		productTitle: "Name the hardware.",
+		productText:
+			"Runtimes, devices, and controller settings stay with the machine. Nothing important is hidden in a cloud console.",
+		image: "/images/configure-models.png",
+		alt: "Local Studio configure screen showing local hardware and runtime targets.",
+	},
 ] as const satisfies readonly ProductFeature[];

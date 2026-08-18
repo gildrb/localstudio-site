@@ -5,7 +5,7 @@ test("hero demo autoplays the local inference sequence once", async ({
 }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/");
-	const demo = page.locator(".demo");
+	const demo = page.locator(".hero .demo");
 	await expect(demo).toBeVisible();
 	await expect(demo.locator("canvas, video")).toHaveCount(0);
 	await expect(demo).toHaveAttribute("data-phase", "prompt");
@@ -30,7 +30,7 @@ test("hero demo autoplays the local inference sequence once", async ({
 test("hero demo computer panel tabs are clickable", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/");
-	const demo = page.locator(".demo");
+	const demo = page.locator(".hero .demo");
 	await demo.getByRole("button", { name: "Show tools" }).click();
 	await demo
 		.getByRole("button", { name: "Files Browse project files" })
@@ -52,7 +52,7 @@ test("hero demo result copies with the clipboard API", async ({
 	await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/");
-	const demo = page.locator(".demo");
+	const demo = page.locator(".hero .demo");
 	await expect(demo).toHaveAttribute("data-phase", "done");
 	await demo.getByRole("button", { name: "Copy response" }).click();
 	await expect(demo.getByRole("button", { name: "Copied" })).toBeVisible();
@@ -66,7 +66,7 @@ test("reduced motion shows the finished result immediately", async ({
 }) => {
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/");
-	const demo = page.locator(".demo");
+	const demo = page.locator(".hero .demo");
 	await expect(demo).toHaveAttribute("data-phase", "done");
 	await expect(demo.locator(".chat-markdown").first()).toHaveText(
 		/I'll read the standup notes[\s\S]*What I changed/,
@@ -76,7 +76,7 @@ test("reduced motion shows the finished result immediately", async ({
 test("hero demo chat follows new messages", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/");
-	const demo = page.locator(".demo");
+	const demo = page.locator(".hero .demo");
 	const scroller = demo.locator("[data-timeline-scroller]");
 	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 20000 });
 	await expect(scroller).toBeVisible();
@@ -109,10 +109,10 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 	});
 	expect(title).toEqual(["40px", "44px"]);
 	const layout = await page.evaluate(() => {
-		const demo = document.querySelector(".demo");
-		const viewport = document.querySelector(".demo__viewport");
-		const app = document.querySelector(".demo__app");
-		const sidebar = document.querySelector(".demo__app > aside");
+		const demo = document.querySelector(".hero .demo");
+		const viewport = document.querySelector(".hero .demo__viewport");
+		const app = document.querySelector(".hero .demo__app");
+		const sidebar = document.querySelector(".hero .demo__app > aside");
 		const computer = document.querySelector(".agent-computer-panel");
 		const copy = document.querySelector(".hero__copy");
 		if (

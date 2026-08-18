@@ -128,7 +128,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 	await expect(page.locator(".signal, .macbook-scroll, .hero__macbook, .hero__screenshot, .hero canvas, .hero video")).toHaveCount(0);
 	const gradient = page.locator(".hero__gradient");
 	const stage = page.locator(".hero__stage");
-	const demo = page.locator(".demo");
+	const demo = page.locator(".hero .demo");
 	await stage.waitFor({ state: "attached" });
 	await expect.poll(() => gradient.evaluate((element: HTMLElement) => element.style.opacity), { timeout: 5000 }).toBe("1");
 	const entrance = await page.evaluate(() => {
@@ -176,8 +176,8 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 		const gradientBounds = gradientElement.getBoundingClientRect();
 		const copy = html(".hero__copy").getBoundingClientRect();
 		const stageBounds = html(".hero__stage").getBoundingClientRect();
-		const demoBounds = html(".demo").getBoundingClientRect();
-		const code = html(".demo .chat-markdown");
+		const demoBounds = html(".hero .demo").getBoundingClientRect();
+		const code = html(".hero .demo .chat-markdown");
 		return {
 			gap: Math.round(stageBounds.top - copy.bottom),
 			widths: [Math.round(gradientBounds.width), Math.round(stageBounds.width), Math.round(demoBounds.width)],
@@ -200,7 +200,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 			if (!(element instanceof HTMLElement)) throw new Error(selector);
 			return element;
 		}
-		const demoBounds = html(".demo").getBoundingClientRect();
+		const demoBounds = html(".hero .demo").getBoundingClientRect();
 		const gradientBounds = html(".hero__gradient").getBoundingClientRect();
 		const heroBottom = html(".hero").getBoundingClientRect().bottom;
 		return {
@@ -225,8 +225,8 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 			stage: [getComputedStyle(stage).opacity, getComputedStyle(stage).transform],
 			gradient: getComputedStyle(html(".hero__gradient")).opacity,
 			grid: getComputedStyle(html(".hero__texture"), "::before").animationName,
-			phase: html(".demo").dataset.phase,
-			output: html(".demo .chat-markdown").textContent,
+			phase: html(".hero .demo").dataset.phase,
+			output: html(".hero .demo .chat-markdown").textContent,
 		};
 	});
 	expect(reduced).toMatchObject({ stage: ["1", "none"], gradient: "1", grid: "none", phase: "done" });
@@ -385,27 +385,27 @@ test("homepage capability selector responds to hover, focus, and keys", async ({
 	const work = options.getByRole("radio", { name: "Work" });
 	await expect(control).toHaveAttribute("aria-checked", "true");
 	await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
-	await expect(page.locator('.story__visual[data-active-feature="Control"] img')).toHaveAttribute("src", "/images/usage-proxy.png");
+	await expect(page.locator('.story__visual[data-active-feature="Control"] .demo')).toHaveAttribute("data-scene", "control");
 	await serve.hover();
 	await expect(serve).toHaveAttribute("aria-checked", "true");
 	await expect(page).toHaveURL(/\/$/);
 	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
-	await expect(page.locator('.story__visual[data-active-feature="Serve"] img')).toHaveAttribute("src", "/images/configure-models.png");
+	await expect(page.locator('.story__visual[data-active-feature="Serve"] .demo')).toHaveAttribute("data-scene", "serve");
 	await serve.focus();
 	await serve.press("ArrowDown");
 	await expect(work).toBeFocused();
 	await expect(work).toHaveAttribute("aria-checked", "true");
 	await expect(page).toHaveURL(/\/$/);
-	await expect(page.locator('.story__visual[data-active-feature="Work"] img')).toHaveAttribute("src", "/images/workbench-terminal.png");
-	await expect(page.locator(".story__visual img")).toHaveCount(1);
+	await expect(page.locator('.story__visual[data-active-feature="Work"] .demo')).toBeVisible();
+	await expect(page.locator(".story__visual img")).toHaveCount(0);
 });
 
 test("tabbing reaches every story tab in order", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
 	const radios = page.locator('.story__options [role="radio"]');
-	await expect(radios).toHaveCount(3);
-	await expect(radios).toHaveText(["Control", "Serve", "Work"]);
+	await expect(radios).toHaveCount(5);
+	await expect(radios).toHaveText(["Control", "Serve", "Work", "Automate", "Configure"]);
 	await radios.nth(0).focus();
 	await page.keyboard.press("ArrowDown");
 	await expect(radios.nth(1)).toBeFocused();

@@ -20,3 +20,18 @@ export type GPU = {
 
 export type Metrics = null;
 export type ProcessInfo = { backend?: string } | null;
+
+export interface UsageStats {
+	daily: Array<{ date: string; requests: number; total_tokens: number }>;
+}
+
+export interface HuggingFaceModel {
+	_id: string;
+	modelId: string;
+	downloads: number;
+	likes: number;
+	tags: string[];
+	private: boolean;
+	lastModified?: string;
+	createdAt?: string;
+}
