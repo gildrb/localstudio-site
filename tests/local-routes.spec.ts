@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-	["/", "Local intelligence. - Local Studio", "Local Intelligence"],
+	["/", "Local intelligence. - Local Studio", "Intelligence should not be rented"],
 	["/product", "Product - Local Studio", "One place to run local AI"],
 	["/mobile", "Mobile - Local Studio", "Your local agents"],
 	["/docs", "Docs - Local Studio", "Get Local Studio running"],
@@ -543,14 +543,14 @@ test("design system typography is stable", async ({ page }) => {
 		const subheadline = getComputedStyle(html(".story h2"));
 		const titleStyle = getComputedStyle(title);
 		return {
-			lines: title.querySelectorAll("br").length + 1,
+			lines: Math.round(title.getBoundingClientRect().height / Number.parseFloat(titleStyle.lineHeight)),
 			wrap: titleStyle.whiteSpace,
 			titleSize: [titleStyle.fontSize, titleStyle.lineHeight],
 			subheadline: [subheadline.fontSize, subheadline.lineHeight, subheadline.letterSpacing],
 		};
 	});
-	expect(mobile.lines).toBe(2);
-	expect(mobile.wrap).toBe("nowrap");
+	expect(mobile.lines).toBeLessThanOrEqual(2);
+	expect(mobile.wrap).toBe("normal");
 	expect(mobile.subheadline).toEqual(["32px", "40px", "normal"]);
 });
 

@@ -37,9 +37,7 @@ export function Hero() {
 							animate={settle}
 							transition={{ duration: 0.9, ease, delay: 0.12 }}
 						>
-							Local
-							<br />
-							Intelligence
+							Intelligence should not be rented
 						</m.h1>
 						<m.div
 							className="hero__actions"

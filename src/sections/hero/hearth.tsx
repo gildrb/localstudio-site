@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
-const SPARSE = "\u00a0\u00a0\u00a0\u00a0·.:";
+const SPARSE = "    ·.:";
 const EMBERS = "*+#";
 const POOL = 10;
+const MARK_W = 435;
+const MARK_H = 287;
+const MARK_D =
+	"M69.631,114.589c1.816,5.392 4.192,10.684 7.147,15.799c19.153,33.145 56.912,48.899 92.488,41.7c-11.566,-34.404 -44.099,-59.215 -82.38,-59.215c-5.907,0 -11.678,0.591 -17.255,1.716c-12.926,-38.382 2.498,-81.865 38.904,-102.902c36.434,-21.054 81.853,-12.676 108.645,17.747c-3.738,4.249 -7.114,8.926 -10.05,14.014c-19.134,33.144 -13.921,73.709 10.075,100.927c23.984,-27.228 29.18,-67.795 10.032,-100.931c-2.939,-5.086 -6.316,-9.763 -10.056,-14.01c26.78,-30.434 72.195,-38.831 108.637,-17.793c36.43,21.031 51.871,64.537 38.93,102.937c-5.561,-1.119 -11.313,-1.706 -17.202,-1.706c-38.275,0 -70.803,24.802 -82.374,59.198c35.574,7.176 73.316,-8.594 92.453,-41.742c2.944,-5.1 5.312,-10.375 7.123,-15.75c39.726,7.992 69.684,43.115 69.684,85.181c0,47.954 -38.932,86.886 -86.886,86.886c-0.376,0 -0.751,-0.002 -1.126,-0.007l-258.401,-0c-0.377,0.005 -0.754,0.007 -1.132,0.007c-47.954,0 -86.886,-38.932 -86.886,-86.886c0,-42.047 29.931,-77.158 69.631,-85.17Z";
 
 function pick(source: string): string {
 	return source[(Math.random() * source.length) | 0] ?? "*";
@@ -18,13 +22,57 @@ function metrics(root: HTMLElement): { col: number; row: number } {
 	return { col: Math.max(6, box.width), row: Math.max(12, box.height) };
 }
 
-function fieldFor(cols: number, rows: number): string {
+function markLayout(width: number, height: number) {
+	const maskH = width * (MARK_H / MARK_W);
+	return { left: 0, top: height - maskH, width, height: maskH };
+}
+
+function toMark(
+	x: number,
+	y: number,
+	box: { left: number; top: number; width: number; height: number },
+) {
+	return {
+		x: ((x - box.left) / box.width) * MARK_W,
+		y: ((y - box.top) / box.height) * MARK_H,
+	};
+}
+
+function createInside(): (x: number, y: number) => boolean {
+	const canvas = document.createElement("canvas");
+	const ctx = canvas.getContext("2d");
+	if (!(ctx instanceof CanvasRenderingContext2D)) return () => false;
+	const path = new Path2D(MARK_D);
+	return (x, y) => ctx.isPointInPath(path, x, y, "evenodd");
+}
+
+function fieldFor(
+	cols: number,
+	rows: number,
+	col: number,
+	row: number,
+	width: number,
+	height: number,
+): string {
+	const inside = createInside();
+	const box = markLayout(width, height);
 	let out = "";
 	for (let y = 0; y < rows; y += 1) {
-		const heat = y / Math.max(1, rows - 1);
+		const top = y * row;
+		const cy = top + row / 2;
 		for (let x = 0; x < cols; x += 1) {
-			const bowl = 1 - Math.abs(x / Math.max(1, cols - 1) - 0.5) * 2;
-			const chance = 0.04 + heat * heat * (0.3 + 0.75 * bowl);
+			const left = x * col;
+			const cx = left + col / 2;
+			const mark = toMark(cx, cy, box);
+			const fits =
+				left >= 0 && top >= 0 && left + col <= width && top + row <= height;
+			if (!fits || !inside(mark.x, mark.y)) {
+				out += " ";
+				continue;
+			}
+			const heat = mark.y / MARK_H;
+			const bowl = 1 - Math.abs(mark.x / MARK_W - 0.5) * 2;
+			const chance = 0.08 + heat * heat * (0.28 + 0.7 * bowl);
 			if (Math.random() > chance) out += " ";
 			else if (heat > 0.68 && Math.random() < 0.45) out += pick(EMBERS);
 			else out += pick(SPARSE);
@@ -45,9 +93,11 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 		if (!root || !host) return;
 		const fill = () => {
 			const { col, row } = metrics(host);
-			const cols = Math.ceil(root.clientWidth / col) + 4;
-			const rows = Math.ceil(root.clientHeight / row) + 8;
-			setField(fieldFor(cols, rows));
+			const cols = Math.ceil(root.clientWidth / col) + 2;
+			const rows = Math.ceil(root.clientHeight / row) + 2;
+			setField(
+				fieldFor(cols, rows, col, row, root.clientWidth, root.clientHeight),
+			);
 		};
 		fill();
 		const observer = new ResizeObserver(fill);
@@ -63,6 +113,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 			(node): node is HTMLElement => node instanceof HTMLElement,
 		);
 		if (nodes.length === 0) return;
+		const inside = createInside();
 
 		let timer = 0;
 		let cursor = 0;
@@ -70,21 +121,36 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 			const node = nodes[cursor % nodes.length];
 			cursor += 1;
 			if (!node) return;
-			const x = 50 + (Math.random() - 0.5) * (Math.random() < 0.2 ? 48 : 30);
-			const y =
-				98 - Math.pow(Math.random(), 0.7) * (Math.random() < 0.15 ? 50 : 28);
-			node.textContent = pick(EMBERS);
-			node.style.left = `${x}%`;
-			node.style.top = `${y}%`;
-			node.animate(
-				[
-					{ opacity: 0, color: "#7a2a12" },
-					{ opacity: 1, color: "#ffd27a" },
-					{ opacity: 0.7, color: "#ff6a00" },
-					{ opacity: 0, color: "#4a120c" },
-				],
-				{ duration: 1100 + Math.random() * 900, easing: "ease-in-out" },
-			);
+			const box = markLayout(root.clientWidth, root.clientHeight);
+			for (let attempt = 0; attempt < 14; attempt += 1) {
+				const x = 50 + (Math.random() - 0.5) * (Math.random() < 0.2 ? 48 : 30);
+				const y =
+					98 - Math.pow(Math.random(), 0.7) * (Math.random() < 0.15 ? 50 : 28);
+				const px = (x / 100) * root.clientWidth;
+				const py = (y / 100) * root.clientHeight;
+				if (
+					px < 8 ||
+					py < 8 ||
+					px > root.clientWidth - 8 ||
+					py > root.clientHeight - 8
+				)
+					continue;
+				const mark = toMark(px, py, box);
+				if (!inside(mark.x, mark.y)) continue;
+				node.textContent = pick(EMBERS);
+				node.style.left = `${x}%`;
+				node.style.top = `${y}%`;
+				node.animate(
+					[
+						{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
+						{ opacity: 1, color: "#8f8f8f" },
+						{ opacity: 0.65, color: "#6a6a6a" },
+						{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
+					],
+					{ duration: 1100 + Math.random() * 900, easing: "ease-in-out" },
+				);
+				return;
+			}
 		};
 		const tick = () => {
 			if (Math.random() < 0.7) spark();
@@ -105,7 +171,6 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 			<div className="hero__hearth-field" ref={fieldRef}>
 				{field}
 			</div>
-			<div className="hero__hearth-grain" />
 			{Array.from({ length: POOL }, (_, index) => (
 				<span className="hero__ember" key={index} />
 			))}
