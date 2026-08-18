@@ -5,6 +5,7 @@ import {
 	useRef,
 	useState,
 	type FormEvent,
+	type RefObject,
 } from "react";
 import { useReducedMotion } from "motion/react";
 import { ArrowUp, ChevronDown, Plus } from "@/ui/icon-registry";
@@ -41,6 +42,42 @@ import { HeroReviewPanel } from "./hero/review-panel";
 
 const contextWindow = 202144;
 const HERO_COMPUTER_WIDTH = 320;
+const DEMO_WIDTH = 1392;
+const DEMO_HEIGHT = 787;
+const DEMO_FIT = 950;
+const DEMO_MOBILE = 900;
+
+function useDemoFrame(): {
+	hostRef: RefObject<HTMLElement | null>;
+	mobile: boolean;
+	scale: number;
+} {
+	const hostRef = useRef<HTMLElement>(null);
+	const [frame, setFrame] = useState({ mobile: false, scale: 1 });
+
+	useLayoutEffect(() => {
+		const host = hostRef.current;
+		if (!host) return;
+		const update = () => {
+			const mobile = window.matchMedia(`(max-width: ${DEMO_MOBILE}px)`).matches;
+			setFrame({
+				mobile,
+				scale: mobile ? host.clientWidth / DEMO_FIT : 1,
+			});
+		};
+		update();
+		const query = window.matchMedia(`(max-width: ${DEMO_MOBILE}px)`);
+		query.addEventListener("change", update);
+		const observer = new ResizeObserver(update);
+		observer.observe(host);
+		return () => {
+			query.removeEventListener("change", update);
+			observer.disconnect();
+		};
+	}, []);
+
+	return { hostRef, mobile: frame.mobile, scale: frame.scale };
+}
 
 const demoModel: AgentModel = {
 	id: "qwen38-27b",
@@ -81,6 +118,7 @@ const composerMessages: ChatMessage[] = [
 function ignore(): void {}
 
 export function HeroDemo() {
+	const { hostRef, mobile, scale } = useDemoFrame();
 	const reduceMotion = useReducedMotion() === true;
 	const [state, dispatch] = useReducer(
 		demoReducer,
@@ -256,17 +294,31 @@ export function HeroDemo() {
 
 	return (
 		<section
+			ref={hostRef}
 			className="demo ls-app"
 			data-theme="zai-dark"
 			data-phase={state.phase}
 			data-task={activeTask}
+			data-mobile={mobile ? "true" : undefined}
 			aria-label="Local Studio workbench"
 		>
 			<p className="sr-only" role="status">
 				{demoStatus(state)}
 			</p>
-			<div className="demo__viewport">
-				<div className="demo__app">
+			<div
+				className="demo__viewport"
+				style={mobile ? { height: DEMO_HEIGHT * scale } : undefined}
+			>
+				<div
+					className="demo__app"
+					style={{
+						width: DEMO_WIDTH,
+						height: DEMO_HEIGHT,
+						...(mobile
+							? { transform: `scale(${scale})`, transformOrigin: "top left" }
+							: {}),
+					}}
+				>
 				<HeroDesktopSidebar
 					activeTask={activeTask}
 					onSelectTask={selectTask}

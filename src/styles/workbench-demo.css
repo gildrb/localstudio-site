@@ -4,6 +4,10 @@
 .demo {
 	--hero-demo-width: 1392px;
 	--hero-demo-height: 787px;
+	/* Sidebar 224 + left chat inset 122 + thread 605. Gray + computer hang off. */
+	--hero-demo-fit: 950px;
+	--composer-w: 42rem;
+	--thread-w: 900px;
 	position: relative;
 	display: block;
 	min-width: 0;
@@ -22,10 +26,19 @@
 
 .demo__app {
 	display: flex;
-	width: 100%;
+	width: var(--hero-demo-width);
 	height: var(--hero-demo-height);
 	min-height: 0;
 	overflow: hidden;
+}
+
+.demo button[aria-label="Open navigation menu"] {
+	display: none !important;
+}
+
+.demo .agent-thread-shell {
+	width: 90%;
+	max-width: calc(var(--composer-w) * 0.9);
 }
 
 .demo .agent-chat-scroller,
@@ -35,46 +48,32 @@
 	-webkit-user-select: text;
 }
 
-@media (max-width: 900px) {
-	.demo {
-		--hero-demo-fit: 1072px;
-		container-type: inline-size;
-		pointer-events: none;
-		box-shadow: none;
-		border-right: 0;
-		border-radius: 10px 0 0 10px;
-		-webkit-mask-image: linear-gradient(
-			180deg,
-			#000 0% 68%,
-			rgb(0 0 0 / 0.55) 86%,
-			transparent 100%
-		);
-		mask-image: linear-gradient(
-			180deg,
-			#000 0% 68%,
-			rgb(0 0 0 / 0.55) 86%,
-			transparent 100%
-		);
-	}
+.demo[data-mobile] {
+	pointer-events: none;
+	box-shadow: none;
+	border-right: 0;
+	border-radius: 10px 0 0 10px;
+}
 
-	.demo__viewport {
-		height: calc(var(--hero-demo-height) * 100cqi / var(--hero-demo-fit));
-		touch-action: none;
-		overscroll-behavior: none;
-	}
+.demo[data-mobile]::after {
+	content: "";
+	position: absolute;
+	inset: auto 0 0;
+	z-index: 3;
+	height: 28%;
+	pointer-events: none;
+	background: linear-gradient(180deg, transparent 0%, #000 78%, #000 100%);
+}
 
-	.demo__app {
-		width: var(--hero-demo-width);
-		height: var(--hero-demo-height);
-		transform: scale(calc(100cqi / var(--hero-demo-fit)));
-		transform-origin: top left;
-	}
+.demo[data-mobile] .demo__viewport {
+	touch-action: none;
+	overscroll-behavior: none;
+}
 
-	.demo .agent-chat-scroller,
-	.demo .sidebar-scroller,
-	.demo .overflow-y-auto {
-		overflow: hidden !important;
-		overscroll-behavior: none;
-		touch-action: none;
-	}
+.demo[data-mobile] .agent-chat-scroller,
+.demo[data-mobile] .sidebar-scroller,
+.demo[data-mobile] .overflow-y-auto {
+	overflow: hidden !important;
+	overscroll-behavior: none;
+	touch-action: none;
 }

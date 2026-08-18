@@ -554,6 +554,7 @@ button {
 
 .hero__gradient {
 	position: absolute;
+	z-index: 0;
 	pointer-events: none;
 	top: 0;
 	bottom: 0;
@@ -565,6 +566,7 @@ button {
 
 .hero__texture {
 	position: absolute;
+	z-index: 0;
 	inset: 0;
 	overflow: clip;
 	pointer-events: none;
@@ -671,7 +673,7 @@ button {
 
 .hero__stage {
 	position: relative;
-	z-index: 2;
+	z-index: 4;
 	width: min(var(--page-width), calc(100% - var(--page-gutter)));
 	margin: 72px auto 0;
 }
