@@ -28,7 +28,7 @@ export function PromptPage() {
 					<CopyIcon text={setupPrompt} />
 					<pre
 						id="setup-prompt"
-						className="prompt-block__pre w-full min-w-0 overflow-hidden whitespace-pre-wrap break-words p-8 pr-20 pt-14 font-mono text-sm/5 text-white/80 max-[620px]:p-5 max-[620px]:pr-12 max-[620px]:pt-12"
+						className="prompt-block__pre w-full min-w-0 overflow-hidden whitespace-pre-wrap break-words p-8 pr-20 font-mono text-sm/5 text-white/80 max-[620px]:p-5 max-[620px]:pr-12"
 					>
 						<code>{setupPrompt}</code>
 					</pre>
