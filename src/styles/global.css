@@ -1106,24 +1106,35 @@ button {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 0;
 	}
+	.story__options {
+		display: flex;
+		flex-direction: column;
+		align-self: stretch;
+	}
 	.story__visual-home:empty {
 		display: none;
 	}
 	.story__option {
 		justify-content: flex-start;
+		flex: none;
 	}
 	.story__option-control {
 		min-height: 44px;
 		align-items: center;
-		padding: 18px 0 12px;
+		padding: 16px 0 10px;
 	}
 	.story__option.is-active .story__description {
-		margin: 8px 0 28px;
+		margin: 8px 0 0;
+	}
+	.story__option.is-active .story__timer {
+		position: relative;
+		bottom: auto;
+		margin: 20px 0 16px;
 	}
 	.story__option-demo {
 		width: 100%;
 		overflow: clip;
-		margin: 4px 0 28px;
+		margin: 0 0 8px;
 	}
 	.kitty__grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1238,7 +1249,8 @@ button {
 	}
 	.hero__mark-button {
 		order: -1;
-		margin: 0 0 30px;
+		align-self: center;
+		margin: 0 0 56px;
 	}
 	.hero__mark {
 		width: 40px;

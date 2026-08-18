@@ -33,13 +33,14 @@ export function DemoShell({
 			className="demo ls-app"
 			data-theme="zai-dark"
 			data-scene={scene}
-			data-mobile={mobile ? "true" : undefined}
 			aria-label={label}
 		>
 			<div
 				className="demo__viewport"
 				style={{
-					height: mobile ? cropH * scale : DEMO_HEIGHT * Math.min(scale, 1),
+					height: mobile
+						? cropH * scale
+						: DEMO_HEIGHT * Math.min(scale, 1),
 				}}
 			>
 				<div

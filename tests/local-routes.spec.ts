@@ -422,29 +422,63 @@ test("mobile story shows one demo under the active copy", async ({ page }) => {
 	await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
 	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeHidden();
 	const stacked = await page.evaluate(() => {
-		const controlCopy = document.querySelector(".story__option.is-active .story__description");
-		const demo = document.querySelector(".story__option.is-active .story__visual .demo");
-		const serveCopy = [...document.querySelectorAll(".story__description")].find((node) =>
-			node.textContent?.includes("OpenAI-compatible surface"),
-		);
-		if (!(controlCopy instanceof HTMLElement) || !(demo instanceof HTMLElement)) {
+		const options = [...document.querySelectorAll(".story__option")];
+		const control = options[0];
+		const serve = options[1];
+		const work = options[2];
+		const copy = control?.querySelector(".story__description");
+		const demo = control?.querySelector(".story__visual .demo");
+		if (
+			!(control instanceof HTMLElement) ||
+			!(serve instanceof HTMLElement) ||
+			!(work instanceof HTMLElement) ||
+			!(copy instanceof HTMLElement) ||
+			!(demo instanceof HTMLElement)
+		) {
 			return null;
 		}
+		const copyBox = copy.getBoundingClientRect();
+		const demoBox = demo.getBoundingClientRect();
+		const serveBox = serve.getBoundingClientRect();
+		const workBox = work.getBoundingClientRect();
 		return {
-			demoBelowCopy: demo.getBoundingClientRect().top >= controlCopy.getBoundingClientRect().bottom - 1,
-			inActiveOption: Boolean(demo.closest(".story__option.is-active")),
-			serveCopyHidden: serveCopy instanceof HTMLElement && serveCopy.hidden || serveCopy?.closest("[hidden]") !== null,
+			demoBelowCopy: demoBox.top >= copyBox.bottom - 1,
+			serveBelowDemo: serveBox.top >= demoBox.bottom - 1,
+			workBelowServe: workBox.top >= serveBox.bottom - 1,
+			serveCompact: serveBox.height < 80,
+			inGutter: demoBox.left >= 20 && demoBox.right <= window.innerWidth - 20,
 		};
 	});
 	expect(stacked).toEqual({
 		demoBelowCopy: true,
-		inActiveOption: true,
-		serveCopyHidden: true,
+		serveBelowDemo: true,
+		workBelowServe: true,
+		serveCompact: true,
+		inGutter: true,
 	});
 	await serve.click();
 	await expect(serve).toHaveAttribute("aria-checked", "true");
 	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
-	await expect(page.locator('.story__option.is-active .story__visual .demo')).toHaveAttribute("data-scene", "serve");
+	await expect(page.locator(".story__option.is-active .story__visual .demo")).toHaveAttribute("data-scene", "serve");
+	const after = await page.evaluate(() => {
+		const serve = document.querySelectorAll(".story__option")[1];
+		const work = document.querySelectorAll(".story__option")[2];
+		const copy = serve?.querySelector(".story__description");
+		const demo = serve?.querySelector(".story__visual .demo");
+		if (
+			!(serve instanceof HTMLElement) ||
+			!(work instanceof HTMLElement) ||
+			!(copy instanceof HTMLElement) ||
+			!(demo instanceof HTMLElement)
+		) {
+			return null;
+		}
+		return {
+			demoUnderServe: demo.getBoundingClientRect().top >= copy.getBoundingClientRect().bottom - 1,
+			workAfterDemo: work.getBoundingClientRect().top >= demo.getBoundingClientRect().bottom - 1,
+		};
+	});
+	expect(after).toEqual({ demoUnderServe: true, workAfterDemo: true });
 });
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {
