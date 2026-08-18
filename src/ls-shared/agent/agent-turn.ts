@@ -11,7 +11,6 @@ import {
   type AgentImageInput,
 } from "./agent-image-input";
 import { sanitizeComposerPromptTemplates, sanitizeComposerSkills } from "./composer-refs";
-import { Schema } from "effect";
 
 export type ParseResult<T> = { ok: true; value: T } | { ok: false; error: string };
 
@@ -61,9 +60,14 @@ export const AGENT_THINKING_LEVELS = [
   "xhigh",
   "max",
 ] as const;
-export const AgentThinkingLevelSchema = Schema.Literals(AGENT_THINKING_LEVELS);
+export const AgentThinkingLevelSchema = AGENT_THINKING_LEVELS;
 export type AgentThinkingLevel = (typeof AGENT_THINKING_LEVELS)[number];
-export const isAgentThinkingLevel = Schema.is(AgentThinkingLevelSchema);
+export function isAgentThinkingLevel(value: unknown): value is AgentThinkingLevel {
+  return (
+    typeof value === "string" &&
+    (AGENT_THINKING_LEVELS as readonly string[]).includes(value)
+  );
+}
 
 export type AgentTurnRequest = {
   sessionId: string;
