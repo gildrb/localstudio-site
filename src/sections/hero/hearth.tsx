@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 const SPARSE = "    ·.:";
 const EMBERS = "*+#";
 const POOL = 10;
+const STAR_POOL = 20;
+const STAR_GLYPHS = "*+·";
 const MARK_W = 435;
 const MARK_H = 287;
 const MARK_D =
@@ -52,6 +54,43 @@ function createInside(): (x: number, y: number) => boolean {
 	return (x, y) => ctx.isPointInPath(path, x, y, "evenodd");
 }
 
+function sampleCell(
+	root: HTMLElement,
+	inside: (x: number, y: number) => boolean,
+	col: number,
+	row: number,
+	wide: boolean,
+): { x: number; y: number } | null {
+	const box = markLayout(root.clientWidth, root.clientHeight);
+	const cols = Math.floor(root.clientWidth / col);
+	const rows = Math.floor(root.clientHeight / row);
+	for (let attempt = 0; attempt < 14; attempt += 1) {
+		const cx = wide
+			? (Math.random() * cols) | 0
+			: Math.floor(
+					cols / 2 +
+						(Math.random() - 0.5) * (Math.random() < 0.2 ? 0.48 : 0.3) * cols,
+				);
+		const cy = wide
+			? (Math.random() * rows) | 0
+			: rows -
+				1 -
+				Math.floor(
+					Math.pow(Math.random(), 0.7) *
+						(Math.random() < 0.15 ? 0.5 : 0.28) *
+						rows,
+				);
+		if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) continue;
+		const px = cx * col + col / 2;
+		const py = cy * row + row / 2;
+		const mark = toMark(px, py, box);
+		if (!inside(mark.x, mark.y)) continue;
+		return { x: px, y: py };
+	}
+
+	return null;
+}
+
 function fieldFor(
 	cols: number,
 	rows: number,
@@ -91,6 +130,7 @@ function fieldFor(
 export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 	const rootRef = useRef<HTMLDivElement>(null);
 	const fieldRef = useRef<HTMLDivElement>(null);
+	const cellRef = useRef({ col: 8, row: 18 });
 	const [field, setField] = useState("");
 
 	useEffect(() => {
@@ -99,6 +139,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 		if (!root || !host) return;
 		const fill = () => {
 			const { col, row } = metrics(host);
+			cellRef.current = { col, row };
 			const cols = Math.ceil(root.clientWidth / col) + 2;
 			const rows = Math.ceil(root.clientHeight / row) + 2;
 			setField(
@@ -127,36 +168,21 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 			const node = nodes[cursor % nodes.length];
 			cursor += 1;
 			if (!node) return;
-			const box = markLayout(root.clientWidth, root.clientHeight);
-			for (let attempt = 0; attempt < 14; attempt += 1) {
-				const x = 50 + (Math.random() - 0.5) * (Math.random() < 0.2 ? 48 : 30);
-				const y =
-					98 - Math.pow(Math.random(), 0.7) * (Math.random() < 0.15 ? 50 : 28);
-				const px = (x / 100) * root.clientWidth;
-				const py = (y / 100) * root.clientHeight;
-				if (
-					px < 8 ||
-					py < 8 ||
-					px > root.clientWidth - 8 ||
-					py > root.clientHeight - 8
-				)
-					continue;
-				const mark = toMark(px, py, box);
-				if (!inside(mark.x, mark.y)) continue;
-				node.textContent = pick(EMBERS);
-				node.style.left = `${x}%`;
-				node.style.top = `${y}%`;
-				node.animate(
-					[
-						{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
-						{ opacity: 1, color: "#8f8f8f" },
-						{ opacity: 0.65, color: "#6a6a6a" },
-						{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
-					],
-					{ duration: 1100 + Math.random() * 900, easing: "ease-in-out" },
-				);
-				return;
-			}
+			const { col, row } = cellRef.current;
+			const point = sampleCell(root, inside, col, row, false);
+			if (!point) return;
+			node.textContent = pick(EMBERS);
+			node.style.left = `${point.x}px`;
+			node.style.top = `${point.y}px`;
+			node.animate(
+				[
+					{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
+					{ opacity: 1, color: "#8f8f8f" },
+					{ opacity: 0.65, color: "#6a6a6a" },
+					{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
+				],
+				{ duration: 1100 + Math.random() * 900, easing: "ease-in-out" },
+			);
 		};
 		const tick = () => {
 			if (Math.random() < 0.7) spark();
@@ -172,6 +198,69 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 		};
 	}, [reduceMotion]);
 
+	useEffect(() => {
+		const root = rootRef.current;
+		if (!root) return;
+		const stars = [...root.querySelectorAll(".hero__star")].filter(
+			(node): node is HTMLElement => node instanceof HTMLElement,
+		);
+		if (stars.length === 0) return;
+		const inside = createInside();
+
+		const place = (node: HTMLElement) => {
+			const { col, row } = cellRef.current;
+			const point = sampleCell(root, inside, col, row, true);
+			if (!point) return;
+			node.textContent = pick(STAR_GLYPHS);
+			node.style.left = `${point.x}px`;
+			node.style.top = `${point.y}px`;
+		};
+		const placeAll = () => {
+			for (const star of stars) place(star);
+		};
+		placeAll();
+		const observer = new ResizeObserver(placeAll);
+		observer.observe(root);
+
+		if (reduceMotion) {
+			return () => observer.disconnect();
+		}
+
+		let timer = 0;
+		let cursor = 0;
+		const twinkle = () => {
+			const node = stars[cursor % stars.length];
+			cursor += 1;
+			if (!node) return;
+			place(node);
+			node.animate(
+				[
+					{ opacity: 0.42, transform: "translate(-50%, -50%) scale(0.9)" },
+					{
+						opacity: 1,
+						transform: "translate(-50%, -50%) scale(1.2)",
+						offset: 0.4,
+					},
+					{ opacity: 0.42, transform: "translate(-50%, -50%) scale(0.9)" },
+				],
+				{ duration: 1500 + Math.random() * 1700, easing: "ease-in-out" },
+			);
+		};
+		const tick = () => {
+			twinkle();
+			if (Math.random() < 0.45) twinkle();
+			timer = window.setTimeout(tick, 340 + Math.random() * 620);
+		};
+		timer = window.setTimeout(tick, 900);
+		return () => {
+			observer.disconnect();
+			window.clearTimeout(timer);
+			for (const node of stars) {
+				node.getAnimations().forEach((animation) => animation.cancel());
+			}
+		};
+	}, [reduceMotion]);
+
 	return (
 		<div className="hero__hearth" ref={rootRef} aria-hidden="true">
 			<div className="hero__hearth-field" ref={fieldRef}>
@@ -179,6 +268,9 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 			</div>
 			{Array.from({ length: POOL }, (_, index) => (
 				<span className="hero__ember" key={index} />
+			))}
+			{Array.from({ length: STAR_POOL }, (_, index) => (
+				<span className="hero__star" key={index} />
 			))}
 		</div>
 	);

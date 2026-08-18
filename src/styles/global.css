@@ -608,10 +608,28 @@ button {
 	text-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
 }
 
+.hero__star {
+	position: absolute;
+	left: 50%;
+	top: 100%;
+	font: 500 14px / 1 var(--font-mono);
+	color: #ffffff;
+	opacity: 0.42;
+	user-select: none;
+	transform: translate(-50%, -50%);
+	text-shadow:
+		0 0 6px rgba(255, 255, 255, 0.65),
+		0 0 20px rgba(255, 255, 255, 0.34);
+}
+
 @media (min-width: 901px) {
 	.hero__ember {
 		font-size: 16px;
 		text-shadow: 0 0 14px rgba(255, 255, 255, 0.22);
+	}
+
+	.hero__star {
+		font-size: 16px;
 	}
 }
 .hero__texture::before {
