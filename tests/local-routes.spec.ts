@@ -122,20 +122,15 @@ test("homepage hero, product story, and mobile story have no separators", async 
 	expect(boundaries).toEqual({ borders: ["0px", "0px"], firstGap: 240, secondGap: 240 });
 });
 
-test("homepage hero reveals through CSS with a responsive screenshot", async ({ page }) => {
+test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/", { waitUntil: "domcontentloaded" });
-	await expect(page.locator(".signal, .macbook-scroll, .hero__macbook")).toHaveCount(0);
+	await expect(page.locator(".signal, .macbook-scroll, .hero__macbook, .hero__screenshot, .hero canvas, .hero video")).toHaveCount(0);
 	const gradient = page.locator(".hero__gradient");
 	const stage = page.locator(".hero__stage");
-	const image = page.locator(".hero__screenshot");
+	const demo = page.locator(".demo");
 	await stage.waitFor({ state: "attached" });
-	await expect
-		.poll(
-			() => gradient.evaluate((element: HTMLElement) => element.style.opacity),
-			{ timeout: 5000 },
-		)
-		.toBe("1");
+	await expect.poll(() => gradient.evaluate((element: HTMLElement) => element.style.opacity), { timeout: 5000 }).toBe("1");
 	const entrance = await page.evaluate(() => {
 		function html(selector: string): HTMLElement {
 			const element = document.querySelector(selector);
@@ -166,16 +161,14 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 	expect(entrance.grid).toBe("grid-drift");
 	await expect(stage).toHaveCSS("opacity", "1");
 	await expect(gradient).toHaveCSS("opacity", "1");
-	await image.evaluate((element: HTMLImageElement) => element.decode());
+	await expect(demo).toBeVisible();
+	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 15000 });
+	await expect(demo.locator(".chat-markdown")).toHaveCount(1);
+	await expect(demo.getByText("New task").first()).toBeVisible();
 	const layout = await page.evaluate(() => {
 		function html(selector: string): HTMLElement {
 			const element = document.querySelector(selector);
 			if (!(element instanceof HTMLElement)) throw new Error(selector);
-			return element;
-		}
-		function img(selector: string): HTMLImageElement {
-			const element = document.querySelector(selector);
-			if (!(element instanceof HTMLImageElement)) throw new Error(selector);
 			return element;
 		}
 		const hero = html(".hero").getBoundingClientRect();
@@ -183,24 +176,17 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 		const gradientBounds = gradientElement.getBoundingClientRect();
 		const copy = html(".hero__copy").getBoundingClientRect();
 		const stageBounds = html(".hero__stage").getBoundingClientRect();
-		const screenshot = img(".hero__screenshot");
-		const imageBounds = screenshot.getBoundingClientRect();
+		const demoBounds = html(".demo").getBoundingClientRect();
+		const code = html(".demo .chat-markdown");
 		return {
 			gap: Math.round(stageBounds.top - copy.bottom),
-			widths: [Math.round(gradientBounds.width), Math.round(stageBounds.width), Math.round(imageBounds.width)],
-			imageInset: Math.round(imageBounds.left - gradientBounds.left),
-			bottomOffsets: [Math.round(hero.bottom - gradientBounds.bottom), Math.round(hero.bottom - stageBounds.bottom), Math.round(hero.bottom - imageBounds.bottom)],
-			intrinsic: [screenshot.naturalWidth, screenshot.naturalHeight],
-			currentSrc: new URL(screenshot.currentSrc).pathname,
+			widths: [Math.round(gradientBounds.width), Math.round(stageBounds.width), Math.round(demoBounds.width)],
+			bottomOffsets: [Math.round(hero.bottom - gradientBounds.bottom), Math.round(hero.bottom - stageBounds.bottom)],
+			selectable: getComputedStyle(code).userSelect,
 			neutral: !getComputedStyle(gradientElement).backgroundImage.includes("8, 9, 10"),
 		};
 	});
-	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1240, 1240], imageInset: 100, bottomOffsets: [0, 0, 24], currentSrc: "/images/workbench-browser-1300.png", neutral: true });
-	expect(layout.intrinsic[0]).toBeLessThanOrEqual(1300);
-	expect(Math.abs(layout.intrinsic[1] - Math.round((layout.intrinsic[0] * 2800) / 5118))).toBeLessThanOrEqual(1);
-	const srcset = await image.evaluate((element: HTMLImageElement) => element.srcset);
-	expect(srcset).toContain("workbench-browser-800.png 800w");
-	expect(srcset).toContain("workbench-browser-2600.png 2600w");
+	expect(layout).toMatchObject({ gap: 72, widths: [1440, 1240, 1240], bottomOffsets: [0, 0], selectable: "text", neutral: true });
 	const documentTop = await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY));
 	await page.evaluate(() => globalThis.scrollTo(0, 500));
 	await page.waitForTimeout(100);
@@ -214,23 +200,17 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 			if (!(element instanceof HTMLElement)) throw new Error(selector);
 			return element;
 		}
-		function img(selector: string): HTMLImageElement {
-			const element = document.querySelector(selector);
-			if (!(element instanceof HTMLImageElement)) throw new Error(selector);
-			return element;
-		}
-		const screenshot = img(".hero__screenshot");
+		const demoBounds = html(".demo").getBoundingClientRect();
 		const gradientBounds = html(".hero__gradient").getBoundingClientRect();
-		const imageBounds = screenshot.getBoundingClientRect();
 		const heroBottom = html(".hero").getBoundingClientRect().bottom;
 		return {
 			gap: Math.round(html(".hero__stage").getBoundingClientRect().top - html(".hero__copy").getBoundingClientRect().bottom),
-			widths: [Math.round(gradientBounds.width), Math.round(imageBounds.width)],
-			bottomOffsets: [Math.round(heroBottom - gradientBounds.bottom), Math.round(heroBottom - imageBounds.bottom)],
-			currentSrc: new URL(screenshot.currentSrc).pathname,
+			widths: [Math.round(gradientBounds.width), Math.round(demoBounds.width)],
+			bottomOffsets: [Math.round(heroBottom - gradientBounds.bottom), Math.round(heroBottom - html(".hero__stage").getBoundingClientRect().bottom)],
+			overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
 		};
 	});
-	expect(mobile).toEqual({ gap: 56, widths: [1440, 342], bottomOffsets: [0, 16], currentSrc: "/images/workbench-browser-800.png" });
+	expect(mobile).toEqual({ gap: 56, widths: [1440, 342], bottomOffsets: [0, 0], overflow: 0 });
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await stage.waitFor({ state: "attached" });
@@ -245,9 +225,13 @@ test("homepage hero reveals through CSS with a responsive screenshot", async ({ 
 			stage: [getComputedStyle(stage).opacity, getComputedStyle(stage).transform],
 			gradient: getComputedStyle(html(".hero__gradient")).opacity,
 			grid: getComputedStyle(html(".hero__texture"), "::before").animationName,
+			phase: html(".demo").dataset.phase,
+			output: html(".demo .chat-markdown").textContent,
 		};
 	});
-	expect(reduced).toEqual({ stage: ["1", "none"], gradient: "1", grid: "none" });
+	expect(reduced).toMatchObject({ stage: ["1", "none"], gradient: "1", grid: "none", phase: "done" });
+	expect(reduced.output).toContain("Open tasks");
+	expect(reduced.output).toContain("Qwen3.8-27B");
 });
 
 test("mobile sections stack their hierarchy without separators", async ({ page }) => {
@@ -419,19 +403,12 @@ test("homepage capability selector responds to hover, focus, and keys", async ({
 test("tabbing reaches every story tab in order", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
-	const seen: string[] = [];
-	for (let index = 0; index < 30 && seen.length < 3; index += 1) {
-		await page.keyboard.press("Tab");
-		const label = await page.evaluate(() => {
-			const element = document.activeElement;
-			if (!(element instanceof HTMLElement)) return "";
-			return element.getAttribute("role") === "radio"
-				? (element.textContent ?? "").trim()
-				: "";
-		});
-		if (label) seen.push(label);
-	}
-	expect(seen).toEqual(["Control", "Serve", "Work"]);
+	const radios = page.locator('.story__options [role="radio"]');
+	await expect(radios).toHaveCount(3);
+	await expect(radios).toHaveText(["Control", "Serve", "Work"]);
+	await radios.nth(0).focus();
+	await page.keyboard.press("ArrowDown");
+	await expect(radios.nth(1)).toBeFocused();
 });
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {
@@ -589,7 +566,10 @@ test("heading labels are absent", async ({ page }) => {
 		);
 		expect(findings, `${route} contains labels before headings`).toEqual([]);
 		const transformed = await page.locator("body *").evaluateAll(elements =>
-			elements.filter(element => getComputedStyle(element).textTransform === "uppercase").length,
+			elements.filter(element =>
+				!element.closest(".demo") &&
+				getComputedStyle(element).textTransform === "uppercase",
+			).length,
 		);
 		expect(transformed, `${route} contains uppercase text treatment`).toBe(0);
 	}

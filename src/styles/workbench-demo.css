@@ -1,0 +1,21 @@
+/* Official Local Studio tokens/base/chat, scoped to the hero stage. */
+@import "./ls-app.css";
+
+.demo {
+	position: relative;
+	display: block;
+	min-width: 0;
+	overflow: clip;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	background: var(--bg);
+	color: var(--fg);
+	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.44);
+}
+
+.demo .agent-chat-scroller,
+.demo .chat-markdown,
+.demo .agent-thread-shell {
+	user-select: text;
+	-webkit-user-select: text;
+}

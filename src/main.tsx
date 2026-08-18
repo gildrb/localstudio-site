@@ -4,7 +4,7 @@ import App from "./App";
 import { heroSizes, responsiveSrcSet } from "./images";
 import "./styles/global.css";
 
-const heroImageRoutes = new Set(["/", "/product"]);
+const heroImageRoutes = new Set(["/product"]);
 
 function syncKeyboardMode(event: Event) {
 	if (event.type === "keydown") {

@@ -1,7 +1,7 @@
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { CtaPair } from "../components/Links";
-import { heroSizes, responsiveSrcSet } from "../images";
 import { useMachine } from "../machine";
+import { HeroDemo } from "./HeroDemo";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -84,17 +84,7 @@ export function Hero() {
 					animate={settle}
 					transition={{ duration: 0.9, ease, delay: 0.75 }}
 				>
-					<img
-						className="hero__screenshot"
-						src="/images/workbench-browser-1300.png"
-						srcSet={responsiveSrcSet("/images/workbench-browser.png")}
-						sizes={heroSizes}
-						alt="Local Studio workbench showing a coding agent and a local document in the integrated browser."
-						width="5118"
-						height="2800"
-						fetchPriority="high"
-						draggable={false}
-					/>
+					<HeroDemo />
 				</m.div>
 			</section>
 		</LazyMotion>

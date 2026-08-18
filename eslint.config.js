@@ -6,7 +6,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-	globalIgnores(["dist", "tools/oxlint/anti-slop"]),
+	globalIgnores(["dist", "tools/oxlint/anti-slop", "src/ls", "src/ls-shared", "src/ls-contracts"]),
 	{
 		files: ["**/*.{ts,tsx}"],
 		extends: [

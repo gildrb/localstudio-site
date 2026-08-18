@@ -409,6 +409,8 @@ test("typography avoids widows and the first paint is preloaded", async ({ page 
 	await page.goto("/");
 	const font = page.locator('link[rel="preload"][as="font"]');
 	await expect(font).toHaveAttribute("href", "/fonts/geist-sans.woff2");
+	await expect(page.locator('link[rel="preload"][as="image"]')).toHaveCount(0);
+	await page.goto("/product");
 	const hero = page.locator('link[rel="preload"][as="image"]');
 	await expect(hero).toHaveCount(1);
 	expect(await hero.getAttribute("href")).toContain(

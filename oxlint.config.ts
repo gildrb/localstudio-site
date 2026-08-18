@@ -14,6 +14,9 @@ export default defineConfig({
 		".roo/**",
 		".windsurf/**",
 		"tools/oxlint/anti-slop/**",
+		"src/ls/**",
+		"src/ls-shared/**",
+		"src/ls-contracts/**",
 	],
 	jsPlugins: [
 		{ name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },
