@@ -755,6 +755,19 @@ test("setup prompt copies from the floating copy icon", async ({ page, context }
 	expect(overflow.size).toBeLessThanOrEqual(0);
 });
 
+test("setup prompt expands through Show more instead of an inner scrollbar", async ({ page }) => {
+	await page.goto("/prompt");
+	const pre = page.locator(".prompt-block pre");
+	const toggle = page.getByRole("button", { name: "Show more" });
+	await expect(toggle).toHaveAttribute("aria-expanded", "false");
+	expect(await pre.evaluate((el) => getComputedStyle(el).overflowY)).toBe("hidden");
+	const collapsed = await pre.evaluate((el) => el.clientHeight);
+	await toggle.click();
+	await expect(page.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true");
+	const grown = await pre.evaluate((el) => el.clientHeight);
+	expect(grown).toBeGreaterThan(collapsed);
+});
+
 test("unknown routes render a local not-found page", async ({ page }) => {
 	await page.goto("/not-a-route");
 	await expect(page).toHaveTitle("Page not found - Local Studio");
