@@ -1,26 +1,32 @@
 import type { ReactNode } from "react";
 import { HeroDesktopSidebar } from "../hero/desktop-sidebar";
-import { DEMO_HEIGHT, DEMO_WIDTH, useDemoFrame } from "./demo-frame";
+import {
+	DEMO_HEIGHT,
+	DEMO_WIDTH,
+	useDemoFrame,
+	type DemoCrop,
+} from "./demo-frame";
 import type { FeatureScene } from "./scenes";
 
 export function DemoShell({
 	pathname,
 	label,
 	scene,
-	fit,
-	shiftX = 0,
-	shiftY = 0,
+	crop,
+	mobileCrop = crop,
 	children,
 }: {
 	pathname: string;
 	label: string;
 	scene: FeatureScene;
-	fit: number;
-	shiftX?: number;
-	shiftY?: number;
+	crop: DemoCrop;
+	mobileCrop?: DemoCrop;
 	children: ReactNode;
 }) {
-	const { hostRef, mobile, scale } = useDemoFrame(fit);
+	const { hostRef, mobile, scale, shiftX, shiftY, cropH } = useDemoFrame(
+		crop,
+		mobileCrop,
+	);
 	return (
 		<section
 			ref={hostRef}
@@ -32,7 +38,9 @@ export function DemoShell({
 		>
 			<div
 				className="demo__viewport"
-				style={{ height: DEMO_HEIGHT * Math.min(scale, 1) }}
+				style={{
+					height: mobile ? cropH * scale : DEMO_HEIGHT * Math.min(scale, 1),
+				}}
 			>
 				<div
 					className="demo__app"

@@ -782,9 +782,20 @@ button {
 	transform-origin: left center;
 }
 
-.story__visual {
-	position: relative;
+.story__visual-home,
+ .story__option-demo,
+ .story__visual {
 	min-width: 0;
+	max-width: 100%;
+}
+
+ .story__option-demo:empty {
+	display: none;
+}
+
+ .story__visual {
+	position: relative;
+	width: 100%;
 	margin: 0;
 	overflow: clip;
 }
@@ -1088,11 +1099,32 @@ button {
 	.story__intro {
 		margin-bottom: 64px;
 	}
+	.story {
+		overflow-x: clip;
+	}
 	.story__showcase {
 		grid-template-columns: minmax(0, 1fr);
-		gap: 48px;
+		gap: 0;
 	}
-
+	.story__visual-home:empty {
+		display: none;
+	}
+	.story__option {
+		justify-content: flex-start;
+	}
+	.story__option-control {
+		min-height: 44px;
+		align-items: center;
+		padding: 18px 0 12px;
+	}
+	.story__option.is-active .story__description {
+		margin: 8px 0 28px;
+	}
+	.story__option-demo {
+		width: 100%;
+		overflow: clip;
+		margin: 4px 0 28px;
+	}
 	.kitty__grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
@@ -1224,21 +1256,6 @@ button {
 		letter-spacing: -0.022em;
 	}
 
-	.story__options {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.story__option-control {
-		min-height: 0;
-		grid-template-columns: 1fr;
-		padding: 20px 0;
-	}
-
-	.story__description {
-		margin-left: 0;
-	}
-
 	h2 {
 		font-size: 24px;
 		line-height: 32px;
@@ -1250,10 +1267,6 @@ button {
 	.mobile-section h2 {
 		font-size: 32px;
 		line-height: 40px;
-	}
-
-	.story__visual {
-		margin: 0 4px;
 	}
 
 	.kitty__grid {

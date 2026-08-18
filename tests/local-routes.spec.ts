@@ -391,8 +391,9 @@ test("homepage capability selector responds to hover, focus, and keys", async ({
 	await expect(page).toHaveURL(/\/$/);
 	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
 	await expect(page.locator('.story__visual[data-active-feature="Serve"] .demo')).toHaveAttribute("data-scene", "serve");
+	await page.mouse.move(0, 0);
 	await serve.focus();
-	await serve.press("ArrowDown");
+	await page.keyboard.press("ArrowDown");
 	await expect(work).toBeFocused();
 	await expect(work).toHaveAttribute("aria-checked", "true");
 	await expect(page).toHaveURL(/\/$/);
@@ -409,6 +410,41 @@ test("tabbing reaches every story tab in order", async ({ page }) => {
 	await radios.nth(0).focus();
 	await page.keyboard.press("ArrowDown");
 	await expect(radios.nth(1)).toBeFocused();
+});
+
+test("mobile story shows one demo under the active copy", async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto("/");
+	const options = page.getByRole("radiogroup", { name: "Local Studio capabilities" });
+	const control = options.getByRole("radio", { name: "Control" });
+	const serve = options.getByRole("radio", { name: "Serve" });
+	await expect(control).toHaveAttribute("aria-checked", "true");
+	await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
+	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeHidden();
+	const stacked = await page.evaluate(() => {
+		const controlCopy = document.querySelector(".story__option.is-active .story__description");
+		const demo = document.querySelector(".story__option.is-active .story__visual .demo");
+		const serveCopy = [...document.querySelectorAll(".story__description")].find((node) =>
+			node.textContent?.includes("OpenAI-compatible surface"),
+		);
+		if (!(controlCopy instanceof HTMLElement) || !(demo instanceof HTMLElement)) {
+			return null;
+		}
+		return {
+			demoBelowCopy: demo.getBoundingClientRect().top >= controlCopy.getBoundingClientRect().bottom - 1,
+			inActiveOption: Boolean(demo.closest(".story__option.is-active")),
+			serveCopyHidden: serveCopy instanceof HTMLElement && serveCopy.hidden || serveCopy?.closest("[hidden]") !== null,
+		};
+	});
+	expect(stacked).toEqual({
+		demoBelowCopy: true,
+		inActiveOption: true,
+		serveCopyHidden: true,
+	});
+	await serve.click();
+	await expect(serve).toHaveAttribute("aria-checked", "true");
+	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
+	await expect(page.locator('.story__option.is-active .story__visual .demo')).toHaveAttribute("data-scene", "serve");
 });
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {

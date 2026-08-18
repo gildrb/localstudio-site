@@ -25,8 +25,8 @@ export function AutomateDemo() {
 			scene="automate"
 			pathname="/agent/automations"
 			label="Automations"
-			fit={580}
-			shiftX={-224}
+			crop={{ fit: 580, shiftX: -224, cropH: 580 }}
+			mobileCrop={{ fit: 580, shiftX: -224, cropH: 580 }}
 		>
 			<div className="min-h-0 flex-1 overflow-hidden px-8 py-7">
 				<h3 className="text-[length:var(--fs-xl)] font-medium">Automations</h3>

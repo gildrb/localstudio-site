@@ -119,8 +119,8 @@ export function ServeDemo() {
 			scene="serve"
 			pathname="/models"
 			label="Serve configuration"
-			fit={580}
-			shiftX={-224}
+			crop={{ fit: 580, shiftX: -224, cropH: 580 }}
+			mobileCrop={{ fit: 580, shiftX: -224, cropH: 580 }}
 		>
 			<div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
 				<ModelSection

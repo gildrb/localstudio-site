@@ -21,8 +21,8 @@ export function ConfigureDemo() {
 			scene="configure"
 			pathname="/configure"
 			label="Hardware configuration"
-			fit={580}
-			shiftX={-224}
+			crop={{ fit: 580, shiftX: -224, cropH: 580 }}
+			mobileCrop={{ fit: 580, shiftX: -224, cropH: 580 }}
 		>
 			<div className="min-h-0 flex-1 overflow-y-auto px-8 py-7">
 				<h3 className="text-[length:var(--fs-xl)] font-medium">Hardware</h3>

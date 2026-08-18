@@ -8,8 +8,8 @@ export function WorkDemo() {
 			scene="work"
 			pathname="/agent"
 			label="Local Studio workbench"
-			fit={580}
-			shiftX={-224}
+			crop={{ fit: 580, shiftX: -224, cropH: 580 }}
+			mobileCrop={{ fit: 580, shiftX: -224, cropH: 580 }}
 		>
 			<div className="flex min-h-0 min-w-0 flex-1 flex-col px-8 py-7">
 				<h3 className="text-[length:var(--fs-xl)] font-medium">

@@ -1,9 +1,15 @@
-import { type CSSProperties, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+	type CSSProperties,
+	type KeyboardEvent,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { productFeatures } from "../content/product-features";
 import { FeatureDemo, type FeatureScene } from "./story/FeatureDemo";
-
-
+import { useStoryMobile } from "./story/demo-frame";
 
 function optionControls(root: HTMLElement): HTMLElement[] {
 	const controls: HTMLElement[] = [];
@@ -20,7 +26,11 @@ export function ProductStory() {
 	const [progress, setProgress] = useState(0);
 	const [paused, setPaused] = useState(false);
 	const optionsRef = useRef<HTMLDivElement>(null);
+	const visualHomeRef = useRef<HTMLDivElement>(null);
+	const visualRef = useRef<HTMLElement>(null);
+	const demoSlots = useRef<Array<HTMLDivElement | null>>([]);
 	const reduceMotion = useReducedMotion();
+	const mobile = useStoryMobile();
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
 
 	function selectFeature(index: number) {
@@ -34,7 +44,8 @@ export function ProductStory() {
 		if (event.key === "ArrowDown" || event.key === "ArrowRight") {
 			nextIndex = (activeIndex + 1) % productFeatures.length;
 		} else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-			nextIndex = (activeIndex - 1 + productFeatures.length) % productFeatures.length;
+			nextIndex =
+				(activeIndex - 1 + productFeatures.length) % productFeatures.length;
 		} else if (event.key === "Home") {
 			nextIndex = 0;
 		} else if (event.key === "End") {
@@ -67,6 +78,15 @@ export function ProductStory() {
 		}, 50);
 		return () => window.clearInterval(id);
 	}, [activeIndex, paused, reduceMotion]);
+
+	useLayoutEffect(() => {
+		const visual = visualRef.current;
+		const home = visualHomeRef.current;
+		if (!visual || !home) return;
+		const slot = mobile ? demoSlots.current[activeIndex] : null;
+		(slot ?? home).appendChild(visual);
+	}, [activeIndex, mobile]);
+
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section
@@ -84,8 +104,8 @@ export function ProductStory() {
 				</div>
 				<div
 					className="story__showcase"
-					onPointerEnter={() => setPaused(true)}
-					onPointerLeave={() => setPaused(false)}
+					onPointerEnter={mobile ? undefined : () => setPaused(true)}
+					onPointerLeave={mobile ? undefined : () => setPaused(false)}
 				>
 					<div
 						className="story__options"
@@ -102,7 +122,9 @@ export function ProductStory() {
 									key={feature.storyTitle}
 									style={
 										selected
-											? ({ "--story-progress": String(progress) } as CSSProperties)
+											? ({
+													"--story-progress": String(progress),
+												} as CSSProperties)
 											: undefined
 									}
 								>
@@ -111,37 +133,56 @@ export function ProductStory() {
 										role="radio"
 										aria-checked={selected}
 										tabIndex={0}
-										onPointerEnter={() => selectFeature(index)}
+										onPointerEnter={
+											mobile ? undefined : () => selectFeature(index)
+										}
+										onClick={mobile ? () => selectFeature(index) : undefined}
 										onFocus={() => selectFeature(index)}
+										onKeyDown={handleKeyDown}
 									>
-										<span className="story__option-title">{feature.storyTitle}</span>
+										<span className="story__option-title">
+											{feature.storyTitle}
+										</span>
 									</div>
 									<div hidden={!selected}>
-										<p className="story__description">{feature.storyDescription}</p>
+										<p className="story__description">
+											{feature.storyDescription}
+										</p>
 									</div>
-									{selected ? <span className="story__timer" aria-hidden="true" /> : null}
+									{selected ? (
+										<span className="story__timer" aria-hidden="true" />
+									) : null}
+									<div
+										className="story__option-demo"
+										ref={(node) => {
+											demoSlots.current[index] = node;
+										}}
+									/>
 								</div>
 							);
 						})}
 					</div>
-					<figure
-						className="story__visual"
-						data-active-feature={activeFeature.storyTitle}
-					>
-						<m.div
-							key={activeFeature.slug}
-							initial={
-								reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }
-							}
-							animate={{ opacity: 1, filter: "blur(0px)" }}
-							transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+					<div className="story__visual-home" ref={visualHomeRef}>
+						<figure
+							className="story__visual"
+							ref={visualRef}
+							data-active-feature={activeFeature.storyTitle}
 						>
-							<FeatureDemo scene={activeFeature.slug as FeatureScene} />
-						</m.div>
-						<p className="sr-only" role="status">
-							{activeFeature.storyTitle}. {activeFeature.storyDescription}
-						</p>
-					</figure>
+							<m.div
+								key={activeFeature.slug}
+								initial={
+									reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }
+								}
+								animate={{ opacity: 1, filter: "blur(0px)" }}
+								transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+							>
+								<FeatureDemo scene={activeFeature.slug as FeatureScene} />
+							</m.div>
+							<p className="sr-only" role="status">
+								{activeFeature.storyTitle}. {activeFeature.storyDescription}
+							</p>
+						</figure>
+					</div>
 				</div>
 			</section>
 		</LazyMotion>
