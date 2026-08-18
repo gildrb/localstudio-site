@@ -2,6 +2,8 @@
 @import "./ls-app.css";
 
 .demo {
+	--hero-demo-width: 1392px;
+	--hero-demo-height: 787px;
 	position: relative;
 	display: block;
 	min-width: 0;
@@ -21,7 +23,7 @@
 .demo__app {
 	display: flex;
 	width: 100%;
-	height: 787px;
+	height: var(--hero-demo-height);
 	min-height: 0;
 	overflow: hidden;
 }
@@ -35,12 +37,12 @@
 
 @media (max-width: 900px) {
 	.demo {
-		height: 394px;
+		container-type: inline-size;
 		pointer-events: none;
 	}
 
 	.demo__viewport {
-		height: 100%;
+		height: calc(var(--hero-demo-height) * 0.5 * 100cqi / var(--hero-demo-width));
 		touch-action: none;
 		overscroll-behavior: none;
 	}
@@ -56,7 +58,10 @@
 	}
 
 	.demo__app {
-		width: 1100px;
+		width: var(--hero-demo-width);
+		height: var(--hero-demo-height);
+		transform: scale(calc(100cqi / var(--hero-demo-width)));
+		transform-origin: top left;
 	}
 
 	.demo .agent-chat-scroller,

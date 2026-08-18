@@ -110,33 +110,37 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 	expect(title).toEqual(["40px", "44px"]);
 	const layout = await page.evaluate(() => {
 		const demo = document.querySelector(".demo");
+		const viewport = document.querySelector(".demo__viewport");
 		const app = document.querySelector(".demo__app");
 		const sidebar = document.querySelector(".demo__app > aside");
 		const computer = document.querySelector(".agent-computer-panel");
 		if (
 			!(demo instanceof HTMLElement) ||
+			!(viewport instanceof HTMLElement) ||
 			!(app instanceof HTMLElement) ||
 			!(sidebar instanceof HTMLElement) ||
 			!(computer instanceof HTMLElement)
 		) {
 			throw new Error("demo chrome");
 		}
-		const demoBox = demo.getBoundingClientRect();
-		const appBox = app.getBoundingClientRect();
+		const scale = demo.clientWidth / 1392;
 		return {
-			sidebar: getComputedStyle(sidebar).display !== "none",
-			computer: getComputedStyle(computer).display !== "none",
-			height: Math.round(demoBox.height),
-			appHeight: Math.round(appBox.height),
-			appWidth: Math.round(appBox.width),
-			demoWidth: Math.round(demoBox.width),
+			sidebar: sidebar.offsetWidth,
+			computer: computer.offsetWidth,
+			layoutWidth: Math.round(Number.parseFloat(getComputedStyle(app).width)),
+			layoutHeight: Math.round(Number.parseFloat(getComputedStyle(app).height)),
+			visualWidth: Math.round(app.getBoundingClientRect().width),
+			demoWidth: demo.clientWidth,
+			cropHeight: Math.round(viewport.getBoundingClientRect().height),
+			halfHeight: Math.round(787 * 0.5 * scale),
 			pointer: getComputedStyle(demo).pointerEvents,
 		};
 	});
-	expect(layout.sidebar).toBe(true);
-	expect(layout.computer).toBe(true);
-	expect(layout.height).toBe(394);
-	expect(layout.appHeight).toBe(787);
-	expect(layout.appWidth).toBeGreaterThan(layout.demoWidth);
+	expect(layout.sidebar).toBe(224);
+	expect(layout.computer).toBe(320);
+	expect(layout.layoutWidth).toBe(1392);
+	expect(layout.layoutHeight).toBe(787);
+	expect(layout.visualWidth).toBe(layout.demoWidth);
+	expect(layout.cropHeight).toBe(layout.halfHeight);
 	expect(layout.pointer).toBe("none");
 });
