@@ -2,6 +2,7 @@ import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { CtaPair } from "../components/Links";
 import { useMachine } from "../machine";
 import { HeroDemo } from "./HeroDemo";
+import { HeroHearth } from "./hero/hearth";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -19,7 +20,9 @@ export function Hero() {
 					initial={reduceMotion ? false : { opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={{ duration: 1.2, ease, delay: 0.6 }}
-				/>
+				>
+					<HeroHearth reduceMotion={Boolean(reduceMotion)} />
+				</m.div>
 				<div className="hero__texture" aria-hidden="true" />
 				<div className="hero__inner">
 					<div className="hero__copy">
