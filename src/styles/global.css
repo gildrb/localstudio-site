@@ -605,6 +605,13 @@ button {
 	transform: translate(-50%, -50%);
 	text-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
 }
+
+@media (min-width: 901px) {
+	.hero__ember {
+		font-size: 16px;
+		text-shadow: 0 0 14px rgba(255, 255, 255, 0.22);
+	}
+}
 .hero__texture::before {
 	content: "";
 	position: absolute;

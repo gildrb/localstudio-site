@@ -37,8 +37,12 @@
 
 @media (max-width: 900px) {
 	.demo {
+		--hero-demo-fit: 1072px;
+		container-type: inline-size;
 		pointer-events: none;
 		box-shadow: none;
+		border-right: 0;
+		border-radius: 10px 0 0 10px;
 		-webkit-mask-image: linear-gradient(
 			180deg,
 			#000 0% 68%,
@@ -54,7 +58,7 @@
 	}
 
 	.demo__viewport {
-		height: var(--hero-demo-height);
+		height: calc(var(--hero-demo-height) * 100cqi / var(--hero-demo-fit));
 		touch-action: none;
 		overscroll-behavior: none;
 	}
@@ -62,6 +66,8 @@
 	.demo__app {
 		width: var(--hero-demo-width);
 		height: var(--hero-demo-height);
+		transform: scale(calc(100cqi / var(--hero-demo-fit)));
+		transform-origin: top left;
 	}
 
 	.demo .agent-chat-scroller,

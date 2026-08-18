@@ -122,10 +122,12 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 			cursor += 1;
 			if (!node) return;
 			const box = markLayout(root.clientWidth, root.clientHeight);
-			for (let attempt = 0; attempt < 14; attempt += 1) {
-				const x = 50 + (Math.random() - 0.5) * (Math.random() < 0.2 ? 48 : 30);
+			let left = ((box.left + box.width * 0.5) / root.clientWidth) * 100;
+			let top = ((box.top + box.height * 0.8) / root.clientHeight) * 100;
+			for (let attempt = 0; attempt < 18; attempt += 1) {
+				const x = 50 + (Math.random() - 0.5) * (Math.random() < 0.25 ? 52 : 34);
 				const y =
-					98 - Math.pow(Math.random(), 0.7) * (Math.random() < 0.15 ? 50 : 28);
+					96 - Math.pow(Math.random(), 0.65) * (Math.random() < 0.2 ? 54 : 32);
 				const px = (x / 100) * root.clientWidth;
 				const py = (y / 100) * root.clientHeight;
 				if (
@@ -133,33 +135,54 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 					py < 8 ||
 					px > root.clientWidth - 8 ||
 					py > root.clientHeight - 8
-				)
+				) {
 					continue;
+				}
 				const mark = toMark(px, py, box);
 				if (!inside(mark.x, mark.y)) continue;
-				node.textContent = pick(EMBERS);
-				node.style.left = `${x}%`;
-				node.style.top = `${y}%`;
-				node.animate(
-					[
-						{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
-						{ opacity: 1, color: "#8f8f8f" },
-						{ opacity: 0.65, color: "#6a6a6a" },
-						{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
-					],
-					{ duration: 1100 + Math.random() * 900, easing: "ease-in-out" },
-				);
-				return;
+				left = x;
+				top = y;
+				break;
 			}
+			node.textContent = pick(EMBERS);
+			node.style.left = `${left}%`;
+			node.style.top = `${top}%`;
+			node.animate(
+				[
+					{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
+					{ opacity: 1, color: "#b3b3b3" },
+					{ opacity: 0.7, color: "#8f8f8f" },
+					{ opacity: 0, color: "rgba(255, 255, 255, 0.22)" },
+				],
+				{ duration: 1200 + Math.random() * 900, easing: "ease-in-out" },
+			);
 		};
 		const tick = () => {
-			if (Math.random() < 0.7) spark();
-			if (Math.random() < 0.16) spark();
-			timer = window.setTimeout(tick, 320 + Math.random() * 520);
+			if (Math.random() < 0.82) spark();
+			if (Math.random() < 0.28) spark();
+			timer = window.setTimeout(tick, 240 + Math.random() * 420);
+		};
+		let coals = 0;
+		const flicker = () => {
+			setField((current) => {
+				if (!current) return current;
+				const next = [...current];
+				let swapped = 0;
+				for (let i = 0; i < next.length && swapped < 6; i += 19) {
+					const glyph = next[i];
+					if (!glyph || glyph === " " || glyph === "\n") continue;
+					next[i] = pick(SPARSE + EMBERS);
+					swapped += 1;
+				}
+				return next.join("");
+			});
+			coals = window.setTimeout(flicker, 1600 + Math.random() * 1200);
 		};
 		timer = window.setTimeout(tick, 700);
+		coals = window.setTimeout(flicker, 900);
 		return () => {
 			window.clearTimeout(timer);
+			window.clearTimeout(coals);
 			for (const node of nodes) {
 				node.getAnimations().forEach((animation) => animation.cancel());
 			}

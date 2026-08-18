@@ -126,6 +126,9 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 			throw new Error("demo chrome");
 		}
 		const demoBox = demo.getBoundingClientRect();
+		const thread = document.querySelector(".agent-thread-shell");
+		const threadBox = thread instanceof HTMLElement ? thread.getBoundingClientRect() : null;
+		const scale = demo.clientWidth / 1072;
 		return {
 			sidebar: sidebar.offsetWidth,
 			computer: computer.offsetWidth,
@@ -137,6 +140,11 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 			demoRight: Math.round(demoBox.right),
 			copyLeft: Math.round(copy.getBoundingClientRect().left),
 			frameHeight: Math.round(viewport.getBoundingClientRect().height),
+			scaledHeight: Math.round(787 * scale),
+			rightRadius: getComputedStyle(demo).borderTopRightRadius,
+			chatVisible: Boolean(
+				threadBox && threadBox.left < demoBox.right && threadBox.right > demoBox.left,
+			),
 			pointer: getComputedStyle(demo).pointerEvents,
 			mask: getComputedStyle(demo).maskImage || getComputedStyle(demo).webkitMaskImage,
 		};
@@ -145,11 +153,12 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 	expect(layout.computer).toBe(320);
 	expect(layout.layoutWidth).toBe(1392);
 	expect(layout.layoutHeight).toBe(787);
-	expect(layout.visualWidth).toBe(1392);
-	expect(layout.demoWidth).toBeLessThan(1392);
+	expect(layout.visualWidth).toBeGreaterThan(layout.demoWidth);
 	expect(layout.demoLeft).toBe(layout.copyLeft);
 	expect(layout.demoRight).toBe(390);
-	expect(layout.frameHeight).toBe(787);
+	expect(layout.frameHeight).toBe(layout.scaledHeight);
+	expect(layout.rightRadius).toBe("0px");
+	expect(layout.chatVisible).toBe(true);
 	expect(layout.pointer).toBe("none");
 	expect(layout.mask).toContain("linear-gradient");
 });
