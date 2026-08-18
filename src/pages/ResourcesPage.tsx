@@ -1,10 +1,26 @@
-import { DownloadButton, TextLink } from "../components/Links";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { CtaPair } from "../components/Links";
+import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
-const groups = [
+interface ResourceItem {
+	name: string;
+	text: string;
+	href: string;
+	external: boolean;
+}
+
+interface ResourceGroup {
+	title: string;
+	description: string;
+	items: readonly ResourceItem[];
+}
+
+const groups: readonly ResourceGroup[] = [
 	{
 		title: "Getting started",
+		description: "Three paths into Local Studio, from zero to first inference.",
 		items: [
 			{
 				name: "Documentation",
@@ -28,6 +44,8 @@ const groups = [
 	},
 	{
 		title: "Agents",
+		description:
+			"Coding agents against your local controllers, on desktop and phone.",
 		items: [
 			{
 				name: "Agent setup",
@@ -45,6 +63,8 @@ const groups = [
 	},
 	{
 		title: "Project",
+		description:
+			"Source, releases, and identity for everything under Local Studio.",
 		items: [
 			{
 				name: "GitHub",
@@ -60,7 +80,31 @@ const groups = [
 			},
 		],
 	},
-] as const;
+];
+
+function ResourceCell({ item }: { item: ResourceItem }) {
+	const Icon = item.external ? ArrowUpRight : ArrowRight;
+	return (
+		<article className="group relative border-r border-white/10 p-8 transition-colors duration-[130ms] last:border-r-0 hover:bg-(--hover) max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:last:border-b-0">
+			<h3 className="flex items-center gap-2">
+				<LocalLink
+					className="text-link text-white after:absolute after:inset-0"
+					href={item.href}
+					{...(item.external ? { target: "_blank", rel: "noreferrer" } : {})}
+				>
+					{item.name}
+				</LocalLink>
+				<Icon
+					aria-hidden="true"
+					className="text-(--subtlest) transition-colors duration-[130ms] group-hover:text-white"
+					size={16}
+					strokeWidth={1.25}
+				/>
+			</h3>
+			<p className="mt-4 text-base/6 text-white/70">{item.text}</p>
+		</article>
+	);
+}
 
 export function ResourcesPage() {
 	return (
@@ -71,40 +115,30 @@ export function ResourcesPage() {
 				title="Everything around Local Studio."
 				description="Documentation, setup paths, downloads, and the surrounding ecosystem in one place."
 				actions={
-					<div className="button-group">
-						<DownloadButton />
-					</div>
+					<CtaPair secondary={{ href: "/docs", label: "Read the docs" }} />
 				}
 			/>
-			<section className="section-width pb-30" aria-label="Resource groups">
-				{groups.map((group) => (
-					<div className="mt-16 first:mt-0" key={group.title}>
-						<h2>{group.title}</h2>
-						<ul className="mt-6 grid gap-4 p-0">
-							{group.items.map((item) => (
-								<li className="border border-white/10 p-6" key={item.name}>
-									<div className="flex items-baseline justify-between gap-6">
-										<strong className="text-base/6">{item.name}</strong>
-										{item.external ? (
-											<a
-												className="text-link"
-												href={item.href}
-												target="_blank"
-												rel="noreferrer"
-											>
-												Visit
-											</a>
-										) : (
-											<TextLink href={item.href}>Open</TextLink>
-										)}
-									</div>
-									<p className="mt-2 text-base/6 text-white/70">{item.text}</p>
-								</li>
-							))}
-						</ul>
+			{groups.map((group, index) => (
+				<section
+					aria-labelledby={`resources-group-${index}`}
+					className="page-section mx-auto w-[min(1399px,calc(100%_-_48px))] border-t border-white/10 py-30 max-[900px]:py-16"
+					key={group.title}
+				>
+					<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-4">
+						<h2 id={`resources-group-${index}`}>{group.title}</h2>
+						<p className="text-base/6 text-white/70">{group.description}</p>
 					</div>
-				))}
-			</section>
+					<div
+						className={`mt-16 grid border border-white/10 max-[900px]:grid-cols-1 ${
+							group.items.length === 3 ? "grid-cols-3" : "grid-cols-2"
+						}`}
+					>
+						{group.items.map((item) => (
+							<ResourceCell item={item} key={item.name} />
+						))}
+					</div>
+				</section>
+			))}
 		</PageShell>
 	);
 }

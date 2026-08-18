@@ -90,6 +90,17 @@ function useDemoFrame(): {
 		};
 	}, []);
 
+	useEffect(() => {
+		const host = hostRef.current;
+		if (!host) return;
+		const block = (event: Event) => event.preventDefault();
+		host.addEventListener("wheel", block, { passive: false });
+		host.addEventListener("touchmove", block, { passive: false });
+		return () => {
+			host.removeEventListener("wheel", block);
+			host.removeEventListener("touchmove", block);
+		};
+	}, []);
 	return { hostRef, ...frame };
  }
 

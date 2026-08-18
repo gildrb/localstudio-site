@@ -23,7 +23,6 @@ export function Hero() {
 				>
 					<HeroHearth reduceMotion={Boolean(reduceMotion)} />
 				</m.div>
-				<div className="hero__texture" aria-hidden="true" />
 				<div className="hero__inner">
 					<div className="hero__copy">
 						<m.h1

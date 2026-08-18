@@ -144,23 +144,20 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 		const stage = html(".hero__stage");
 		const gradient = html(".hero__gradient");
 		const lead = html(".story__intro p");
-		const texture = html(".hero__texture");
 		const inline = (el: HTMLElement) => el.style.opacity;
 		return {
 			markInTitle: title.contains(markRoot),
 			identity: [inline(title), inline(actions)],
 			atmosphere: [inline(stage), inline(gradient)],
 			textNodeTransforms: [getComputedStyle(title).transform, getComputedStyle(lead).transform],
-			textureGradient: getComputedStyle(texture).backgroundImage.includes("linear-gradient"),
-			grid: getComputedStyle(texture, "::before").animationName,
+			texture: document.querySelectorAll(".hero__texture").length,
 		};
 	});
 	expect(entrance.markInTitle).toBe(true);
 	expect(entrance.identity).toEqual(["1", "1"]);
 	expect(entrance.atmosphere).toEqual(["1", "1"]);
 	expect(entrance.textNodeTransforms).toEqual(["none", "none"]);
-	expect(entrance.textureGradient).toBe(false);
-	expect(entrance.grid).toBe("grid-drift");
+	expect(entrance.texture).toBe(0);
 	await expect(stage).toHaveCSS("opacity", "1");
 	await expect(gradient).toHaveCSS("opacity", "1");
 	await expect(demo).toBeVisible();
@@ -226,20 +223,19 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 		return {
 			stage: [getComputedStyle(stage).opacity, getComputedStyle(stage).transform],
 			gradient: getComputedStyle(html(".hero__gradient")).opacity,
-			grid: getComputedStyle(html(".hero__texture"), "::before").animationName,
 			phase: html(".hero .demo").dataset.phase,
 			output: html(".hero .demo .chat-markdown").textContent,
 		};
 	});
-	expect(reduced).toMatchObject({ stage: ["1", "none"], gradient: "1", grid: "none", phase: "done" });
+	expect(reduced).toMatchObject({ stage: ["1", "none"], gradient: "1", phase: "done" });
 	expect(reduced.output).toContain("What I changed");
 	expect(reduced.output).toContain("Qwen3.8-27B");
 });
 
-test("mobile sections stack their hierarchy without separators", async ({ page }) => {
+test("mobile sections follow the hairline section system", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/mobile");
-	const desktop = await page.locator(".mobile-section").evaluateAll((sections) => {
+	const desktop = await page.locator(".page-section").evaluateAll((sections) => {
 		function child(root: Element, selector: string): HTMLElement {
 			const element = root.querySelector(selector);
 			if (!(element instanceof HTMLElement)) throw new Error(selector);
@@ -247,43 +243,37 @@ test("mobile sections stack their hierarchy without separators", async ({ page }
 		}
 		return sections.map((section, index) => {
 			const heading = child(section, "h2").getBoundingClientRect();
-			const description = child(section, "p").getBoundingClientRect();
 			const previous = index > 0 ? sections[index - 1].getBoundingClientRect() : null;
-			return { border: getComputedStyle(section).borderTopWidth, aligned: Math.round(heading.left) === Math.round(description.left), gap: previous ? Math.round(heading.top - previous.bottom) : null };
+			return {
+				border: getComputedStyle(section).borderTopWidth,
+				left: Math.round(heading.left),
+				gap: previous ? Math.round(heading.top - previous.bottom) : null,
+			};
 		});
 	});
 	expect(desktop).toEqual([
-		{ border: "0px", aligned: true, gap: null },
-		{ border: "0px", aligned: true, gap: 120 },
-		{ border: "0px", aligned: true, gap: 120 },
+		{ border: "0px", left: 24, gap: null },
+		{ border: "1px", left: 24, gap: 121 },
+		{ border: "1px", left: 24, gap: 121 },
 	]);
+	await expect(page.locator('[aria-labelledby="security-title"] ul + div')).toHaveCount(0);
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/mobile");
-	const mobileGaps = await page.locator(".mobile-section").evaluateAll((sections) => {
+	const mobileGaps = await page.locator(".page-section").evaluateAll((sections) => {
 		return sections.slice(1).map((section, index) => {
 			const heading = section.querySelector("h2");
 			if (!(heading instanceof HTMLElement)) throw new Error("h2");
 			return Math.round(heading.getBoundingClientRect().top - sections[index].getBoundingClientRect().bottom);
 		});
 	});
-	expect(mobileGaps).toEqual([80, 80]);
-	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto("/mobile");
-	const shieldAlignment = await page.locator('[aria-labelledby="security-title"]').evaluate((section) => {
-		const shieldNode = section.querySelector("ul + div");
-		if (!(shieldNode instanceof HTMLElement)) throw new Error("shield");
-		const shield = shieldNode.getBoundingClientRect();
-		const bounds = section.getBoundingClientRect();
-		return { right: Math.round(bounds.right - shield.right), followsList: Boolean(section.querySelector("ul + div")) };
-	});
-	expect(shieldAlignment).toEqual({ right: 0, followsList: true });
+	expect(mobileGaps).toEqual([65, 65]);
 });
 
 test("mobile page keeps stable gutters, type, and actions at narrow widths", async ({ page }) => {
 	for (const width of [390, 320]) {
 		await page.setViewportSize({ width, height: 844 });
 		await page.goto("/mobile");
-		const sections = await page.locator(".mobile-section").evaluateAll((elements) => {
+		const sections = await page.locator(".page-section").evaluateAll((elements) => {
 			function child(root: Element, selector: string): HTMLElement {
 				const element = root.querySelector(selector);
 				if (!(element instanceof HTMLElement)) throw new Error(selector);
