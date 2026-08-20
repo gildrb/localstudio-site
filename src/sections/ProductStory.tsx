@@ -4,7 +4,7 @@ import { productFeatures } from "../content/product-features";
 
 const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
 
-const DEMO_PLACEHOLDER = <div className="demo story__demo-placeholder" aria-hidden="true" />;
+const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
 
 function useStoryProgress() {
 	const [activeIndex, setActiveIndex] = useState(0);
@@ -14,18 +14,17 @@ function useStoryProgress() {
 		const showcase = showcaseRef.current;
 		const sticky = showcase?.querySelector<HTMLElement>(".story__sticky");
 		if (!showcase || !sticky) return;
-		let frame = 0;
+		let updateFrame = 0;
+		let measureFrame = 0;
+		let showcaseTop = 0;
+		let navHeight = 72;
+		let scrollRange = 1;
+		let disposed = false;
 
 		const update = () => {
-			frame = 0;
-			const navHeight =
-				Number.parseFloat(
-					getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
-				) || 72;
-			const stageHeight = Math.max(1, sticky.offsetHeight);
-			const scrollRange = Math.max(1, showcase.offsetHeight - stageHeight);
+			updateFrame = 0;
 			const traveled = Math.min(
-				Math.max(navHeight - showcase.getBoundingClientRect().top, 0),
+				Math.max(window.scrollY + navHeight - showcaseTop, 0),
 				scrollRange,
 			);
 			const scenePosition = (traveled / scrollRange) * productFeatures.length;
@@ -37,17 +36,42 @@ function useStoryProgress() {
 			setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
 		};
 
-		const scheduleUpdate = () => {
-			if (frame === 0) frame = window.requestAnimationFrame(update);
+		const measure = () => {
+			measureFrame = 0;
+			navHeight =
+				Number.parseFloat(
+					getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+				) || 72;
+			const stageHeight = Math.max(1, sticky.offsetHeight);
+			scrollRange = Math.max(1, showcase.offsetHeight - stageHeight);
+			showcaseTop = window.scrollY + showcase.getBoundingClientRect().top;
+			if (updateFrame !== 0) window.cancelAnimationFrame(updateFrame);
+			update();
 		};
 
-		update();
+		const scheduleUpdate = () => {
+			if (updateFrame === 0) updateFrame = window.requestAnimationFrame(update);
+		};
+		const scheduleMeasure = () => {
+			if (measureFrame === 0) measureFrame = window.requestAnimationFrame(measure);
+		};
+
+		const observer = new ResizeObserver(scheduleMeasure);
+		observer.observe(showcase);
+		observer.observe(sticky);
+		scheduleMeasure();
 		window.addEventListener("scroll", scheduleUpdate, { passive: true });
-		window.addEventListener("resize", scheduleUpdate);
+		window.addEventListener("resize", scheduleMeasure);
+		void document.fonts.ready.then(() => {
+			if (!disposed) scheduleMeasure();
+		});
 		return () => {
+			disposed = true;
+			observer.disconnect();
 			window.removeEventListener("scroll", scheduleUpdate);
-			window.removeEventListener("resize", scheduleUpdate);
-			if (frame !== 0) window.cancelAnimationFrame(frame);
+			window.removeEventListener("resize", scheduleMeasure);
+			if (updateFrame !== 0) window.cancelAnimationFrame(updateFrame);
+			if (measureFrame !== 0) window.cancelAnimationFrame(measureFrame);
 		};
 	}, []);
 
@@ -56,7 +80,7 @@ function useStoryProgress() {
 
 export function ProductStory() {
 	const { activeIndex, showcaseRef } = useStoryProgress();
-	const [demoReady, setDemoReady] = useState(false);
+	const [demoInRange, setDemoInRange] = useState(false);
 	const visualRef = useRef<HTMLElement>(null);
 	const reduceMotion = useReducedMotion();
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
@@ -65,12 +89,8 @@ export function ProductStory() {
 		const visual = visualRef.current;
 		if (!visual) return;
 		const observer = new IntersectionObserver(
-			(entries) => {
-				if (!entries[0]?.isIntersecting) return;
-				setDemoReady(true);
-				observer.disconnect();
-			},
-			{ rootMargin: "400px 0px" },
+			([entry]) => setDemoInRange(entry?.isIntersecting ?? false),
+			{ rootMargin: "800px 0px" },
 		);
 		observer.observe(visual);
 		return () => observer.disconnect();
@@ -120,7 +140,7 @@ export function ProductStory() {
 								ref={visualRef}
 								data-active-feature={activeFeature.storyTitle}
 							>
-								{demoReady ? (
+								{demoInRange ? (
 									<Suspense fallback={DEMO_PLACEHOLDER}>
 										<m.div
 											key={activeFeature.slug}

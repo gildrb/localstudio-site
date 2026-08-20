@@ -5,11 +5,12 @@ import {
 	useReducer,
 	useRef,
 	useState,
+	type CSSProperties,
 	type FormEvent,
-	type RefObject,
 } from "react";
 import { useReducedMotion } from "motion/react";
 import { useDemoTabBoundary } from "./demo-tab-boundary";
+import { useElementActive } from "../hooks/use-element-activity";
 import { ArrowUp, ChevronDown, Plus } from "@/ui/icon-registry";
 import { AgentChatPaneHeader } from "@/features/agent/ui/agent-chat-pane-header";
 import { AgentComposerStatusBar } from "@/features/agent/ui/agent-composer-status-bar";
@@ -48,17 +49,14 @@ const DEMO_WIDTH = 1392;
 const DEMO_HEIGHT = 787;
 const DEMO_FIT = 950;
 const DEMO_MOBILE = 900;
+const LOCAL_STUDIO_REPOSITORY =
+	"https://github.com/sybil-solutions/local-studio";
 const FOLLOW_UP_REPLY =
 	"This is an interactive preview. Run Local Studio with your own files, tools, and local models.";
 
-function useDemoFrame(): {
-	hostRef: RefObject<HTMLElement | null>;
-	mobile: boolean;
-	scale: number;
-	clipRight: boolean;
-	clipBottom: boolean;
-} {
+function useDemoFrame() {
 	const hostRef = useRef<HTMLElement>(null);
+	const active = useElementActive(hostRef);
 	const [frame, setFrame] = useState({
 		mobile: false,
 		scale: 1,
@@ -105,7 +103,7 @@ function useDemoFrame(): {
 			host.removeEventListener("touchmove", block);
 		};
 	}, []);
-	return { hostRef, ...frame };
+	return { hostRef, active, ...frame };
  }
 
 const demoModel: AgentModel = {
@@ -147,7 +145,7 @@ const inboxMessages: ChatMessage[] = [
 function ignore(): void {}
 
 function useHeroDemoModel() {
- const { hostRef, mobile, scale, clipRight, clipBottom } = useDemoFrame();
+ const { hostRef, active, mobile, scale, clipRight, clipBottom } = useDemoFrame();
  useDemoTabBoundary(hostRef);
 	const reduceMotion = useReducedMotion() === true;
 	const [state, dispatch] = useReducer(
@@ -199,18 +197,18 @@ function useHeroDemoModel() {
 			dispatch({ type: "finish" });
 			return;
 		}
-		if (!weekendTask || !state.playing || state.phase === "done") return;
+		if (!active || !weekendTask || !state.playing || state.phase === "done") return;
 		const id = window.setTimeout(() => {
 			dispatch({ type: "advance" });
 		}, demoDelay(state));
 		return () => {
 			window.clearTimeout(id);
 		};
-	}, [weekendTask, reduceMotion, state]);
+	}, [active, weekendTask, reduceMotion, state]);
 
 	useLayoutEffect(() => {
 		const scroller = scrollerRef.current;
-		if (!scroller || !submitted) return;
+		if (!active || !scroller || !submitted) return;
 		const followLive =
 			state.phase === "stream" || state.phase === "tool";
 		scroller.scrollTo({
@@ -218,6 +216,7 @@ function useHeroDemoModel() {
 			behavior: reduceMotion || followLive || state.resultVisible ? "auto" : "smooth",
 		});
 	}, [
+		active,
 		activeTask,
 		output,
 		reduceMotion,
@@ -234,14 +233,14 @@ function useHeroDemoModel() {
 
 	useLayoutEffect(() => {
 		const node = inputRef.current;
-		if (!node) return;
+		if (!active || !node) return;
 		if (!composerValue) {
 			node.style.height = "";
 			return;
 		}
 		node.style.height = "auto";
 		node.style.height = `${node.scrollHeight}px`;
-	}, [composerValue]);
+	}, [active, composerValue]);
 	const openFile = userFile ?? demoActivePath(state);
 	const tab =
 		pickedTab ??
@@ -328,6 +327,7 @@ function useHeroDemoModel() {
 
 	return {
 		hostRef,
+		active,
 		mobile,
 		scale,
 		clipRight,
@@ -375,19 +375,25 @@ export default HeroDemo;
 
 function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 	const {
-		hostRef, mobile, scale, clipRight, clipBottom, state, setPickedTab, panelOpen,
+		hostRef, active, mobile, scale, clipRight, clipBottom, state, setPickedTab, panelOpen,
 		setPanelOpen, activeTask, setUserFile, titles, inputRef, scrollerRef, weekendTask,
 		submitted, output, running, tools, title, extras, messages, session, autoPrompt,
 		composerValue, openFile, tab, openTabs, selectTab, closeTab, selectModel, selectTask,
 		renameTask, takeComposer, sendFollowUp, gitSummary,
 	} = model;
 	const sendDisabled = !composerValue.trim() || autoPrompt;
+	const appStyle: CSSProperties = { width: DEMO_WIDTH, height: DEMO_HEIGHT };
+	if (mobile) {
+		appStyle.transform = `scale(${scale})`;
+		appStyle.transformOrigin = "top left";
+	}
 	return (
 		<section
 			ref={hostRef}
 			className="demo ls-app"
 			data-theme="zai-dark"
 			data-phase={state.phase}
+			data-active={active ? "true" : "false"}
 			data-task={activeTask}
 			data-mobile={mobile ? "true" : undefined}
 			data-clip-right={clipRight ? "true" : undefined}
@@ -404,13 +410,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 			>
 				<div
 					className="demo__app"
-					style={{
-						width: DEMO_WIDTH,
-						height: DEMO_HEIGHT,
-						...(mobile
-							? { transform: `scale(${scale})`, transformOrigin: "top left" }
-							: {}),
-					}}
+					style={appStyle}
 				>
 				<HeroDesktopSidebar
 					activeTask={activeTask}
@@ -734,6 +734,19 @@ function StaticThread({
 							<div className="chat-markdown whitespace-pre-wrap">
 								{message.text}
 							</div>
+							{message.id.startsWith("assistant-extra-") ? (
+								<a
+									href={LOCAL_STUDIO_REPOSITORY}
+									target="_blank"
+									rel="noreferrer"
+									className="mt-3 flex w-full items-center justify-between rounded-lg border border-(--border) bg-(--color-panel) px-3 py-2.5 text-[length:var(--fs-sm)] font-medium text-(--fg) transition-colors hover:bg-(--hover)"
+								>
+									<span>Open Local Studio on GitHub</span>
+									<span aria-hidden="true" className="text-(--dim)">
+										↗
+									</span>
+								</a>
+							) : null}
 							<AssistantMessageActions copyText={message.text} />
 						</article>
 					)}

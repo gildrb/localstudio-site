@@ -3,12 +3,13 @@ import { useElementActivity } from "../../hooks/use-element-activity";
 
 const SPARSE = "    ·.:";
 const EMBERS = "*+#";
-const POOL = 10;
-const STAR_POOL = 20;
+const POOL = 4;
+const STAR_POOL = 12;
 const STAR_GLYPHS = "*+·";
+const AMBIENT_DURATION = 8_000;
 const MARK_W = 435;
 const MARK_H = 287;
-const MASK_SCALE = 4;
+const MASK_SCALE = 1;
 const MASK_W = MARK_W * MASK_SCALE;
 const MASK_H = MARK_H * MASK_SCALE;
 const MARK_D =
@@ -18,7 +19,7 @@ function pick(source: string): string {
 	return source[(Math.random() * source.length) | 0] ?? "*";
 }
 
-function metrics(root: HTMLElement): { col: number; row: number } {
+function metrics(root: HTMLElement) {
 	const probe = document.createElement("span");
 	probe.textContent = "0";
 	probe.style.cssText = "position:absolute;visibility:hidden;font:inherit";
@@ -165,7 +166,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 		const observer = new ResizeObserver(fill);
 		observer.observe(root);
 		return () => observer.disconnect();
-	}, []);
+	}, [rootRef]);
 
 	useEffect(() => {
 		if (reduceMotion || !active) return;
@@ -179,6 +180,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 
 		let timer = 0;
 		let cursor = 0;
+		const deadline = performance.now() + AMBIENT_DURATION;
 		const spark = () => {
 			const node = nodes[cursor % nodes.length];
 			cursor += 1;
@@ -191,23 +193,23 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 			node.style.left = `${point.x}px`;
 			node.style.top = `${point.y}px`;
 			node.animate([{ opacity: 0 }, { opacity: 1 }, { opacity: 0.65 }, { opacity: 0 }], {
-				duration: 1100 + Math.random() * 900,
+				duration: 900 + Math.random() * 400,
 				easing: "ease-in-out",
 			});
 		};
 		const tick = () => {
-			if (Math.random() < 0.7) spark();
-			if (Math.random() < 0.16) spark();
-			timer = window.setTimeout(tick, 320 + Math.random() * 520);
+			if (performance.now() >= deadline) return;
+			spark();
+			timer = window.setTimeout(tick, 1600 + Math.random() * 800);
 		};
-		timer = window.setTimeout(tick, 700);
+		timer = window.setTimeout(tick, 500);
 		return () => {
 			window.clearTimeout(timer);
 			for (const node of nodes) {
 				node.getAnimations().forEach((animation) => animation.cancel());
 			}
 		};
-	}, [active, reduceMotion]);
+	}, [active, reduceMotion, rootRef]);
 
 	useEffect(() => {
 		const root = rootRef.current;
@@ -241,6 +243,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 
 		let timer = 0;
 		let cursor = 0;
+		const deadline = performance.now() + AMBIENT_DURATION;
 		const twinkle = () => {
 			const node = stars[cursor % stars.length];
 			cursor += 1;
@@ -248,23 +251,23 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 			place(node);
 			node.animate(
 				[
-					{ opacity: 0.42, transform: "translate(-50%, -50%) scale(0.9)" },
+					{ opacity: 0.42, transform: "translate(-50%, -50%) scale(0.96)" },
 					{
-						opacity: 1,
-						transform: "translate(-50%, -50%) scale(1.2)",
+						opacity: 0.9,
+						transform: "translate(-50%, -50%) scale(1.08)",
 						offset: 0.4,
 					},
-					{ opacity: 0.42, transform: "translate(-50%, -50%) scale(0.9)" },
+					{ opacity: 0.42, transform: "translate(-50%, -50%) scale(0.96)" },
 				],
-				{ duration: 1500 + Math.random() * 1700, easing: "ease-in-out" },
+				{ duration: 1200 + Math.random() * 500, easing: "ease-in-out" },
 			);
 		};
 		const tick = () => {
+			if (performance.now() >= deadline) return;
 			twinkle();
-			if (Math.random() < 0.45) twinkle();
-			timer = window.setTimeout(tick, 340 + Math.random() * 620);
+			timer = window.setTimeout(tick, 1900 + Math.random() * 1000);
 		};
-		timer = window.setTimeout(tick, 900);
+		timer = window.setTimeout(tick, 700);
 		return () => {
 			observer.disconnect();
 			window.clearTimeout(timer);
@@ -272,7 +275,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 				node.getAnimations().forEach((animation) => animation.cancel());
 			}
 		};
-	}, [active, reduceMotion]);
+	}, [active, reduceMotion, rootRef]);
 
 	return (
 		<div className="hero__hearth" ref={rootRef} aria-hidden="true">

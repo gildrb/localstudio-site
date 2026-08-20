@@ -131,7 +131,7 @@ function DesktopMenu({
 					...event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'),
 				];
 				if (items.length === 0) return;
-				const current = items.indexOf(document.activeElement as HTMLElement);
+				const current = items.findIndex((item) => item === document.activeElement);
 				const next =
 					event.key === "Home"
 						? 0

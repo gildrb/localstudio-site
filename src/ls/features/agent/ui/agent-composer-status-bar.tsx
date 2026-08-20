@@ -116,7 +116,7 @@ function ContextReadout({
   contextWindow: number;
   onClick: () => void;
 }) {
-  const title = `Open status · Context ${formatTokenCount(current)} / ${formatTokenCount(contextWindow)}`;
+  const title = `Open status · Context ${formatTokenCount(current)}/${formatTokenCount(contextWindow)}`;
 
   return (
     <button

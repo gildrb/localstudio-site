@@ -34,10 +34,13 @@ export function ControlDemo() {
 	const [sessions, setSessions] = useState(86);
 
 	useEffect(() => {
+		let steps = 0;
 		const id = window.setInterval(() => {
+			steps += 1;
 			setTokens((value) => Math.min(1_284_200, value + 2400));
 			setRequests((value) => Math.min(2288, value + 3));
 			setSessions((value) => Math.min(94, value + 1));
+			if (steps >= 50) window.clearInterval(id);
 		}, 180);
 		return () => window.clearInterval(id);
 	}, []);

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 
-export function useElementActivity<T extends HTMLElement>(): readonly [
-	RefObject<T | null>,
-	boolean,
-] {
-	const ref = useRef<T>(null);
+const MIN_VISIBLE_RATIO = 0.1;
+
+export function useElementActive<T extends HTMLElement>(
+	ref: RefObject<T | null>,
+): boolean {
 	const [active, setActive] = useState(false);
 
 	useEffect(() => {
@@ -13,10 +13,15 @@ export function useElementActivity<T extends HTMLElement>(): readonly [
 		let intersecting = false;
 
 		const sync = () => setActive(intersecting && !document.hidden);
-		const observer = new IntersectionObserver(([entry]) => {
-			intersecting = entry?.isIntersecting ?? false;
-			sync();
-		});
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				intersecting = Boolean(
+					entry?.isIntersecting && entry.intersectionRatio >= MIN_VISIBLE_RATIO,
+				);
+				sync();
+			},
+			{ threshold: [0, MIN_VISIBLE_RATIO] },
+		);
 
 		observer.observe(element);
 		document.addEventListener("visibilitychange", sync);
@@ -24,7 +29,16 @@ export function useElementActivity<T extends HTMLElement>(): readonly [
 			observer.disconnect();
 			document.removeEventListener("visibilitychange", sync);
 		};
-	}, []);
+	}, [ref]);
 
+	return active;
+}
+
+export function useElementActivity<T extends HTMLElement>(): readonly [
+	RefObject<T | null>,
+	boolean,
+] {
+	const ref = useRef<T>(null);
+	const active = useElementActive(ref);
 	return [ref, active];
 }

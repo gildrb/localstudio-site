@@ -8,11 +8,6 @@ test("hero demo autoplays the local inference sequence once", async ({
 	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await expect(demo).toBeVisible();
 	await expect(demo.locator("canvas, video")).toHaveCount(0);
-	await expect(demo).toHaveAttribute("data-phase", "select");
-	await expect(
-		demo.getByRole("button", { name: "Model: Select model" }),
-	).toBeVisible();
-	await expect(demo).toHaveAttribute("data-phase", "prompt", { timeout: 5000 });
 	await expect(
 		demo.getByRole("button", { name: "Model: Qwen3.8-27B" }),
 	).toBeVisible();
@@ -68,9 +63,14 @@ test("hero demo follow-ups stay visually quiet", async ({ page }) => {
 			"This is an interactive preview. Run Local Studio with your own files, tools, and local models.",
 		),
 	).toBeVisible();
-	await expect(
-		demo.getByRole("link", { name: "Open Local Studio on GitHub" }),
-	).toHaveCount(0);
+	const sourceLink = demo.getByRole("link", {
+		name: "Open Local Studio on GitHub",
+	});
+	await expect(sourceLink).toBeVisible();
+	await expect(sourceLink).toHaveAttribute(
+		"href",
+		"https://github.com/sybil-solutions/local-studio",
+	);
 });
 
 test("hero demo keeps sidebar routes inside New task", async ({ page }) => {

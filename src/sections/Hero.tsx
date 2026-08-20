@@ -7,7 +7,8 @@ import { HeroHearth } from "./hero/hearth";
 const HeroDemo = lazy(() => import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })));
 
 const ease = [0.16, 1, 0.3, 1] as const;
-const SETTLE = { opacity: 1, y: 0, filter: "blur(0px)" };
+const ENTER = { opacity: 0, y: 8 };
+const SETTLE = { opacity: 1, y: 0 };
 
 export function Hero() {
 	const reduceMotion = useReducedMotion();
@@ -15,23 +16,17 @@ export function Hero() {
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section className="hero" id="top" aria-labelledby="landing-title">
-				<m.div
-					className="hero__gradient"
-					aria-hidden="true"
-					initial={reduceMotion ? false : { opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ duration: 1.2, ease, delay: 0.6 }}
-				>
+				<div className="hero__gradient" aria-hidden="true">
 					<HeroHearth reduceMotion={Boolean(reduceMotion)} />
-				</m.div>
+				</div>
 				<div className="hero__inner">
 					<div className="hero__copy">
 						<m.h1
 							id="landing-title"
 							tabIndex={-1}
-							initial={reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
+							initial={reduceMotion ? false : ENTER}
 							animate={SETTLE}
-							transition={{ duration: 0.9, ease, delay: 0.12 }}
+							transition={{ duration: 0.5, ease, delay: 0.04 }}
 						>
 							Intelligence should not be{" "}
 							<span className="hero__title-end">
@@ -56,18 +51,18 @@ export function Hero() {
 						</m.h1>
 						<m.p
 							className="hero__lede"
-							initial={reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
+							initial={reduceMotion ? false : ENTER}
 							animate={SETTLE}
-							transition={{ duration: 0.9, ease, delay: 0.18 }}
+							transition={{ duration: 0.5, ease, delay: 0.08 }}
 						>
 							Run AI at home, on hardware you own. Keep your models, prompts, files, and agent
 							workflows private, secure, and entirely under your control.
 						</m.p>
 						<m.div
 							className="hero__actions"
-							initial={reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
+							initial={reduceMotion ? false : ENTER}
 							animate={SETTLE}
-							transition={{ duration: 0.9, ease, delay: 0.24 }}
+							transition={{ duration: 0.5, ease, delay: 0.12 }}
 						>
 							<CtaPair secondary={{ href: "/prompt", label: "Setup prompt" }} />
 						</m.div>
@@ -76,9 +71,9 @@ export function Hero() {
 				<m.div
 					className="hero__stage section-width"
 					id="product"
-					initial={reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }}
+					initial={reduceMotion ? false : ENTER}
 					animate={SETTLE}
-					transition={{ duration: 0.9, ease, delay: 0.75 }}
+					transition={{ duration: 0.55, ease, delay: 0.2 }}
 				>
 					<Suspense fallback={<div className="demo hero__demo-placeholder" aria-hidden="true" />}>
 						<HeroDemo />

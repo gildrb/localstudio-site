@@ -20,16 +20,34 @@
 	color-scheme: dark;
 	font-family:
 		"Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	color: #fff;
-	background: #0a0a0a;
+	color: var(--foreground);
+	background: var(--background);
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	--background: #0a0a0a;
-	--foreground: #fff;
+	--foreground: #ffffff;
 	--dim: #b3b3b3;
 	--subtlest: #8f8f8f;
 	--border: rgba(255, 255, 255, 0.12);
+	--border-soft: rgba(255, 255, 255, 0.1);
+	--border-strong: rgba(255, 255, 255, 0.28);
+	--border-strong-hover: rgba(255, 255, 255, 0.4);
 	--hover: rgba(255, 255, 255, 0.08);
+	--surface-faint: rgba(255, 255, 255, 0.02);
+	--nav-surface: rgba(0, 0, 0, 0.64);
+	--foreground-hover: #eaeaea;
+	--button-ink: #000000;
+	--hero-hearth: #2A5278;
+	--hero-hearth-glow: rgba(42, 82, 120, 0.65);
+	--hero-hearth-glow-soft: rgba(42, 82, 120, 0.22);
+	--hero-hearth-glow-wide: rgba(42, 82, 120, 0.34);
+	--hero-hearth-faint: rgba(42, 82, 120, 0.14);
+	--hero-hearth-mid: rgba(42, 82, 120, 0.24);
+	--media-tone: #e5e5e5;
+	--media-ring-inner: rgba(255, 255, 255, 0.012);
+	--media-ring-outer: rgba(255, 255, 255, 0.035);
+	--depth-shadow: rgba(0, 0, 0, 0.52);
+	--depth-shadow-demo: rgba(0, 0, 0, 0.44);
 	--page-width: 1399px;
 	--page-gutter: 48px;
 	--font-sans:
@@ -167,8 +185,8 @@ html[data-keyboard]
 	left: 12px;
 	padding: 10px 16px;
 	border-radius: var(--radius-control);
-	background: #fff;
-	color: #000;
+	background: var(--foreground);
+	color: var(--button-ink);
 	font-weight: 500;
 	text-decoration: none;
 	translate: 0 calc(-100% - 24px);
@@ -186,8 +204,8 @@ img {
 }
 
 ::selection {
-	color: #fff;
-	background: #b3b3b3;
+	color: var(--foreground);
+	background: var(--dim);
 }
 
 .site-shell {
@@ -605,13 +623,13 @@ img {
 	position: relative;
 	margin: 0;
 	padding: 7px;
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--border-soft);
 	border-radius: var(--radius-media-frame);
-	background: rgba(255, 255, 255, 0.02);
+	background: var(--surface-faint);
 	box-shadow:
-		0 0 0 7px rgba(255, 255, 255, 0.012),
-		0 0 0 8px rgba(255, 255, 255, 0.035),
-		0 30px 100px rgba(0, 0, 0, 0.52);
+		0 0 0 7px var(--media-ring-inner),
+		0 0 0 8px var(--media-ring-outer),
+		0 30px 100px var(--depth-shadow);
 }
 
 .media-frame figcaption {
@@ -626,7 +644,7 @@ img {
 	display: block;
 	width: 100%;
 	height: auto;
-	border: 1px solid rgba(255, 255, 255, 0.12);
+	border: 1px solid var(--border);
 	border-radius: var(--radius-compact);
 }
 .section-width,
@@ -636,7 +654,6 @@ img {
 }
 
 .nav {
-	--nav-surface: rgba(0, 0, 0, 0.64);
 	--nav-surface-filter: blur(24px) brightness(0.7);
 	position: sticky;
 	z-index: 30;
@@ -649,7 +666,7 @@ img {
 	gap: 16px;
 	padding-inline: max(24px, calc(50vw - var(--page-width) / 2));
 	padding-top: env(safe-area-inset-top, 0px);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	border-bottom: 1px solid var(--hover);
 	background: transparent;
 	transition: border-color 180ms ease-out;
 }
@@ -733,7 +750,7 @@ button {
 	justify-content: center;
 	gap: 8px;
 	padding: 0 16px;
-	border: 1px solid #fff;
+	border: 1px solid var(--foreground);
 	border-radius: var(--radius-control);
 	font-weight: 500;
 	text-decoration: none;
@@ -777,9 +794,9 @@ button {
 }
 
 .button {
-	border: 1px solid #fff;
-	color: #000;
-	background: #fff;
+	border: 1px solid var(--foreground);
+	color: var(--button-ink);
+	background: var(--foreground);
 }
 
 @media (hover: hover) {
@@ -793,8 +810,8 @@ button {
 	}
 
 	.button:hover {
-		border-color: #eaeaea;
-		background: #eaeaea;
+		border-color: var(--foreground-hover);
+		background: var(--foreground-hover);
 	}
 }
 
@@ -831,7 +848,7 @@ button {
 	justify-content: center;
 	min-height: 40px;
 	padding: 0 16px;
-	border: 1px solid rgba(255, 255, 255, 0.28);
+	border: 1px solid var(--border-strong);
 	border-radius: var(--radius-control);
 	color: var(--foreground);
 	font-weight: 400;
@@ -843,7 +860,7 @@ button {
 
 @media (hover: hover) {
 	.button-group > .text-link:hover {
-		border-color: rgba(255, 255, 255, 0.4);
+		border-color: var(--border-strong-hover);
 		background: var(--hover);
 	}
 }
@@ -897,7 +914,12 @@ button {
 .hero__hearth-field {
 	font: 400 13px / 18px var(--font-mono);
 	color: transparent;
-	background: rgba(255, 255, 255, 0.22);
+	background: linear-gradient(
+		to bottom,
+		var(--hero-hearth-faint) 72px,
+		var(--hero-hearth-mid) 430px,
+		var(--hero-hearth) 700px
+	);
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -911,11 +933,11 @@ button {
 	left: 50%;
 	top: 100%;
 	font: 500 14px / 1 var(--font-mono);
-	color: var(--subtlest);
+	color: var(--hero-hearth);
 	opacity: 0;
 	user-select: none;
 	transform: translate(-50%, -50%);
-	text-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
+	text-shadow: 0 0 8px var(--hero-hearth-glow-soft);
 }
 
 .hero__star {
@@ -923,19 +945,19 @@ button {
 	left: 50%;
 	top: 100%;
 	font: 500 14px / 1 var(--font-mono);
-	color: #ffffff;
+	color: var(--hero-hearth);
 	opacity: 0;
 	user-select: none;
 	transform: translate(-50%, -50%);
 	text-shadow:
-		0 0 6px rgba(255, 255, 255, 0.65),
-		0 0 20px rgba(255, 255, 255, 0.34);
+		0 0 6px var(--hero-hearth-glow),
+		0 0 20px var(--hero-hearth-glow-wide);
 }
 
 @media (min-width: 901px) {
 	.hero__ember {
 		font-size: 16px;
-		text-shadow: 0 0 14px rgba(255, 255, 255, 0.22);
+		text-shadow: 0 0 14px var(--hero-hearth-glow-soft);
 	}
 
 	.hero__star {
@@ -1119,7 +1141,7 @@ button {
 	flex-direction: column;
 	justify-content: center;
 	min-height: 0;
-	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	border-top: 1px solid var(--border-soft);
 }
 .story__option:first-child {
 	border-top: 0;
@@ -1193,9 +1215,9 @@ button {
 	display: block;
 	width: 100%;
 	height: auto;
-	border: 1px solid rgba(255, 255, 255, 0.12);
+	border: 1px solid var(--border);
 	border-radius: var(--radius-frame);
-	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.44);
+	box-shadow: 0 24px 80px var(--depth-shadow-demo);
 }
 
 .story__visual .demo,
@@ -1261,7 +1283,7 @@ button {
 	overflow: hidden;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-frame);
-	background: rgba(255, 255, 255, 0.02);
+	background: var(--surface-faint);
 }
 
 .kitty__feature-media::before,
@@ -1279,7 +1301,7 @@ button {
 }
 
 .kitty__feature-media::after {
-	background: #e5e5e5;
+	background: var(--media-tone);
 	mix-blend-mode: darken;
 }
 
@@ -1741,6 +1763,12 @@ button {
 		order: 2;
 	}
 }
+.demo[data-active="false"] *,
+.demo[data-active="false"] *::before,
+.demo[data-active="false"] *::after {
+	animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
@@ -1815,7 +1843,7 @@ button {
 
 .prompt-block[data-expanded="false"] .prompt-block__pre {
 	max-height: 420px;
-	mask-image: linear-gradient(#000 62%, transparent 96%);
+	mask-image: linear-gradient(var(--foreground) 62%, transparent 96%);
 }
 
 .prompt-block__toggle {
@@ -1841,7 +1869,7 @@ button {
 
 @media (hover: hover) {
 	.prompt-block__toggle:hover {
-		border-color: rgba(255, 255, 255, 0.28);
+		border-color: var(--border-strong);
 	}
 }
 

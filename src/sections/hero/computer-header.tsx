@@ -16,7 +16,7 @@ import type { ComputerTab } from "@/features/agent/tools/types";
 import type { TerminalOwnersSnapshot } from "@/features/agent/ui/use-persistent-terminal-owners";
 import { terminalOwnerLabel } from "@/features/agent/terminal-owners";
 
-const TAB_LABELS: Record<ComputerTab, string> = {
+const TAB_LABELS = {
 	status: "Status",
 	tools: "Tools",
 	"side-chat": "Side chat",
@@ -24,7 +24,7 @@ const TAB_LABELS: Record<ComputerTab, string> = {
 	files: "Filesystem",
 	diff: "Review",
 	terminal: "Terminal",
-};
+} as const satisfies Record<ComputerTab, string>;
 
 const TAB_OPTIONS: Array<{
 	tab: ComputerTab;

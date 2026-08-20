@@ -33,15 +33,16 @@ export function useDemoFrame(crop: DemoCrop) {
 	useLayoutEffect(() => {
 		const host = hostRef.current;
 		if (!host) return;
-		const update = () => {
-			const mobile = window.matchMedia(mobileStoryQuery()).matches;
-			setFrame(resolveFrame(mobile, host.clientWidth, { fit, shiftX, shiftY, cropH }));
-		};
-		update();
+		let width = 0;
 		const query = window.matchMedia(mobileStoryQuery());
-		query.addEventListener("change", update);
-		const observer = new ResizeObserver(update);
+		const update = () =>
+			setFrame(resolveFrame(query.matches, width, { fit, shiftX, shiftY, cropH }));
+		const observer = new ResizeObserver(([entry]) => {
+			width = entry?.contentRect.width ?? 0;
+			update();
+		});
 		observer.observe(host);
+		query.addEventListener("change", update);
 		return () => {
 			query.removeEventListener("change", update);
 			observer.disconnect();

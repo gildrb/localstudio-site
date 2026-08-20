@@ -46,10 +46,16 @@ new file mode 100644
 +No bookings or messages sent without approval
 `;
 
+type DemoToolArgs =
+	| { path: string; range?: string }
+	| { query: string; path?: never }
+	| { stops: string[]; path?: never }
+	| { schedule: string; name: string; path?: never };
+
 export type DemoToolSpec = {
 	id: string;
 	name: string;
-	args: Record<string, unknown>;
+	args: DemoToolArgs;
 	resultText: string;
 };
 
@@ -192,7 +198,7 @@ export function demoOutput(state: DemoState): string {
 export function demoActivePath(state: DemoState): string | null {
 	for (let index = state.toolsStarted - 1; index >= 0; index -= 1) {
 		const path = DEMO_TOOLS[index]?.args.path;
-		if (typeof path === "string") return path;
+		if (path !== undefined) return path;
 	}
 	return null;
 }
@@ -224,17 +230,17 @@ export function demoStatus(state: DemoState): string {
 export function demoDelay(state: DemoState): number {
 	switch (state.phase) {
 		case "prompt":
-			return 16;
+			return 32;
 		case "select":
-			return 3000;
+			return 1400;
 		case "load":
-			return 75;
+			return 80;
 		case "stream":
-			return 18;
+			return 32;
 		case "tool":
-			return state.toolsDone < state.toolsStarted ? 1400 : 480;
+			return state.toolsDone < state.toolsStarted ? 1000 : 320;
 		case "result":
-			return 700;
+			return 500;
 		case "done":
 			return 0;
 	}
@@ -262,7 +268,10 @@ function advanceDemo(state: DemoState): DemoState {
 			return { ...state, modelSelected: true, phase: "prompt" };
 		case "prompt": {
 			if (state.promptChars < DEMO_PROMPT.length) {
-				return { ...state, promptChars: state.promptChars + 1 };
+				return {
+					...state,
+					promptChars: Math.min(DEMO_PROMPT.length, state.promptChars + 4),
+				};
 			}
 			return { ...state, phase: "load" };
 		}
@@ -279,7 +288,7 @@ function advanceDemo(state: DemoState): DemoState {
 			};
 		}
 		case "stream": {
-			const streamChars = Math.min(DEMO_STREAM.length, state.streamChars + 4);
+			const streamChars = Math.min(DEMO_STREAM.length, state.streamChars + 6);
 			const t = streamChars / DEMO_STREAM.length;
 			return {
 				...state,
