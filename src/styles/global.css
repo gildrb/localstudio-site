@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "./workbench-demo.css";
 
 @font-face {
 	font-family: "Geist Sans";
@@ -891,7 +890,11 @@ button {
 
 .hero__hearth-field {
 	font: 400 13px / 18px var(--font-mono);
-	color: rgba(255, 255, 255, 0.22);
+	color: transparent;
+	background: rgba(255, 255, 255, 0.22);
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
 	white-space: pre;
 	user-select: none;
 }
@@ -915,7 +918,7 @@ button {
 	top: 100%;
 	font: 500 14px / 1 var(--font-mono);
 	color: #ffffff;
-	opacity: 0.42;
+	opacity: 0;
 	user-select: none;
 	transform: translate(-50%, -50%);
 	text-shadow:
@@ -1012,6 +1015,17 @@ button {
 	margin: 72px auto 0;
 }
 
+.hero__demo-placeholder {
+	height: 787px;
+}
+
+@media (max-width: 900px) {
+	.hero__demo-placeholder {
+		height: auto;
+		aspect-ratio: 950 / 787;
+	}
+}
+
  .hero:has(.demo[data-clip-right]) .hero__stage {
 	--hero-stage-pad: calc(
 		(100% - min(var(--page-width), calc(100% - var(--page-gutter)))) / 2
@@ -1069,10 +1083,16 @@ button {
 	justify-content: center;
 	min-height: 0;
 	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	outline: none;
 }
 
 .story__option:first-child {
 	border-top: 0;
+}
+
+.story__option:focus-visible {
+	outline: 2px solid var(--link);
+	outline-offset: -2px;
 }
 
 .story__option-control {
@@ -1087,6 +1107,7 @@ button {
 	transition: color 130ms ease-out;
 }
 
+
 .story__option-title {
 	font: var(--type-section-title);
 }
@@ -1096,7 +1117,7 @@ button {
 }
 
 @media (hover: hover) {
-	.story__option-control:hover {
+	.story__option:hover .story__option-control {
 		color: var(--foreground);
 	}
 }
@@ -1115,8 +1136,17 @@ button {
 	bottom: 0;
 	height: 1px;
 	background: #fff;
-	transform: scaleX(var(--story-progress, 0));
+	transform: scaleX(0);
 	transform-origin: left center;
+	animation-name: story-progress;
+	animation-timing-function: linear;
+	animation-fill-mode: forwards;
+}
+
+@keyframes story-progress {
+	to {
+		transform: scaleX(1);
+	}
 }
 
 .story__visual-home,
@@ -1135,6 +1165,12 @@ button {
 	width: 100%;
 	margin: 0;
 	overflow: clip;
+}
+
+.story__demo-placeholder {
+	width: 100%;
+	max-height: 787px;
+	aspect-ratio: 580 / 787;
 }
 
 .story__visual img {
@@ -1477,6 +1513,10 @@ button {
 	}
 	.story__visual-home:empty {
 		display: none;
+	}
+	.story__demo-placeholder {
+		max-height: none;
+		aspect-ratio: 1;
 	}
 	.story__option {
 		justify-content: flex-start;
@@ -2062,12 +2102,16 @@ button {
 .nav__mega-inner {
 	position: relative;
 	z-index: 1;
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	column-gap: 64px;
 	width: min(var(--page-width), calc(100% - var(--page-gutter)));
 	margin-inline: auto;
 	padding: 28px 0 36px;
+}
+
+.nav__mega-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	column-gap: 64px;
+	width: 60%;
 }
 
 .nav__mega-section {

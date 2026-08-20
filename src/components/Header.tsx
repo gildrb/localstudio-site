@@ -119,12 +119,14 @@ function DesktopMenu({
 			aria-label={`${label} menu`}
 		>
 			<div className="nav__mega-inner">
-				{menuSections[menu].map((section) => (
-					<section className="nav__mega-section" key={section.label}>
-						<p>{section.label}</p>
-						<MenuItems items={section.items} onNavigate={onNavigate} />
-					</section>
-				))}
+				<div className="nav__mega-grid">
+					{menuSections[menu].map((section) => (
+						<section className="nav__mega-section" key={section.label}>
+							<p>{section.label}</p>
+							<MenuItems items={section.items} onNavigate={onNavigate} />
+						</section>
+					))}
+				</div>
 			</div>
 		</div>
 	);

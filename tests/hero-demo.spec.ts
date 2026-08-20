@@ -101,7 +101,7 @@ test("homepage stays inside the viewport at 320", async ({ page }) => {
 test("hero demo is only rounded when the full app is visible", async ({
 	page,
 }) => {
-	const demo = page.locator(".hero .demo");
+ const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/");
 	await expect(demo).toBeVisible();
@@ -118,7 +118,8 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 	page,
 }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto("/");
+ await page.goto("/");
+ await expect(page.locator(".hero .demo__app")).toBeVisible();
 	const title = await page.locator(".hero h1").evaluate((element) => {
 		const style = getComputedStyle(element);
 		return [style.fontSize, style.lineHeight];

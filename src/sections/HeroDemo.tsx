@@ -1,3 +1,4 @@
+import "../styles/workbench-demo.css";
 import {
 	useEffect,
 	useLayoutEffect,
@@ -8,6 +9,7 @@ import {
 	type RefObject,
 } from "react";
 import { useReducedMotion } from "motion/react";
+import { useDemoTabBoundary } from "./demo-tab-boundary";
 import { ArrowUp, ChevronDown, Plus } from "@/ui/icon-registry";
 import { AgentChatPaneHeader } from "@/features/agent/ui/agent-chat-pane-header";
 import { AgentComposerStatusBar } from "@/features/agent/ui/agent-composer-status-bar";
@@ -143,7 +145,8 @@ const composerMessages: ChatMessage[] = [
 function ignore(): void {}
 
 function useHeroDemoModel() {
-	const { hostRef, mobile, scale, clipRight, clipBottom } = useDemoFrame();
+ const { hostRef, mobile, scale, clipRight, clipBottom } = useDemoFrame();
+ useDemoTabBoundary(hostRef);
 	const reduceMotion = useReducedMotion() === true;
 	const [state, dispatch] = useReducer(
 		demoReducer,
@@ -361,6 +364,8 @@ export function HeroDemo() {
 	return <HeroDemoView {...model} />;
 }
 
+export default HeroDemo;
+
 function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 	const {
 		hostRef, mobile, scale, clipRight, clipBottom, state, setPickedTab, panelOpen, setPanelOpen,
@@ -379,7 +384,8 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 			data-mobile={mobile ? "true" : undefined}
 			data-clip-right={clipRight ? "true" : undefined}
 			data-clip-bottom={clipBottom ? "true" : undefined}
-			aria-label="Local Studio workbench"
+   aria-label="Local Studio workbench"
+   inert={mobile}
 		>
 			<p className="sr-only" role="status">
 				{demoStatus(state)}

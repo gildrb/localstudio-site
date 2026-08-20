@@ -1,11 +1,7 @@
 import type { ReactNode } from "react";
+import { useDemoTabBoundary } from "../demo-tab-boundary";
 import { HeroDesktopSidebar } from "../hero/desktop-sidebar";
-import {
-	DEMO_HEIGHT,
-	DEMO_WIDTH,
-	useDemoFrame,
-	type DemoCrop,
-} from "./demo-frame";
+import { DEMO_HEIGHT, DEMO_WIDTH, useDemoFrame, type DemoCrop } from "./demo-frame";
 import type { FeatureScene } from "./scenes";
 
 export function DemoShell({
@@ -22,6 +18,7 @@ export function DemoShell({
 	children: ReactNode;
 }) {
 	const { hostRef, mobile, scale, shiftX, shiftY, cropH } = useDemoFrame(crop);
+	useDemoTabBoundary(hostRef);
 	return (
 		<section
 			ref={hostRef}

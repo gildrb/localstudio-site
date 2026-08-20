@@ -128,7 +128,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 	await expect(page.locator(".signal, .macbook-scroll, .hero__macbook, .hero__screenshot, .hero canvas, .hero video")).toHaveCount(0);
 	const gradient = page.locator(".hero__gradient");
 	const stage = page.locator(".hero__stage");
-	const demo = page.locator(".hero .demo");
+ const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await stage.waitFor({ state: "attached" });
 	await expect.poll(() => gradient.evaluate((element: HTMLElement) => element.style.opacity), { timeout: 5000 }).toBe("1");
 	const entrance = await page.evaluate(() => {
@@ -191,7 +191,8 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 	await page.waitForTimeout(100);
 	expect(await stage.evaluate(element => Math.round(element.getBoundingClientRect().top + scrollY))).toBe(documentTop);
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto("/", { waitUntil: "domcontentloaded" });
+ await page.goto("/", { waitUntil: "domcontentloaded" });
+ await expect(demo).toBeVisible();
 	await expect(stage).toHaveCSS("opacity", "1");
 	const mobile = await page.evaluate(() => {
 		function html(selector: string): HTMLElement {
@@ -211,7 +212,8 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 	});
 	expect(mobile).toEqual({ gap: 56, widths: [390, 366], bottomOffsets: [0, 28], overflow: 0 });
 	await page.emulateMedia({ reducedMotion: "reduce" });
-	await page.goto("/", { waitUntil: "domcontentloaded" });
+ await page.goto("/", { waitUntil: "domcontentloaded" });
+ await expect(demo).toBeVisible();
 	await stage.waitFor({ state: "attached" });
 	const reduced = await page.evaluate(() => {
 		function html(selector: string): HTMLElement {
@@ -445,20 +447,21 @@ test("homepage capability selector responds to hover, focus, and keys", async ({
 	const serve = options.getByRole("radio", { name: "Serve" });
 	const work = options.getByRole("radio", { name: "Work" });
 	await expect(control).toHaveAttribute("aria-checked", "true");
-	await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
-	await expect(page.locator('.story__visual[data-active-feature="Control"] .demo')).toHaveAttribute("data-scene", "control");
-	await serve.hover();
+ await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
+ await page.locator(".story__visual").scrollIntoViewIfNeeded();
+ await expect(page.locator('.story__visual[data-active-feature="Control"] .demo[data-scene]')).toHaveAttribute("data-scene", "control");
+ await serve.hover();
 	await expect(serve).toHaveAttribute("aria-checked", "true");
 	await expect(page).toHaveURL(/\/$/);
 	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
-	await expect(page.locator('.story__visual[data-active-feature="Serve"] .demo')).toHaveAttribute("data-scene", "serve");
+ await expect(page.locator('.story__visual[data-active-feature="Serve"] .demo[data-scene]')).toHaveAttribute("data-scene", "serve");
 	await page.mouse.move(0, 0);
 	await serve.focus();
 	await page.keyboard.press("ArrowDown");
 	await expect(work).toBeFocused();
 	await expect(work).toHaveAttribute("aria-checked", "true");
 	await expect(page).toHaveURL(/\/$/);
-	await expect(page.locator('.story__visual[data-active-feature="Work"] .demo')).toBeVisible();
+ await expect(page.locator('.story__visual[data-active-feature="Work"] .demo[data-scene]')).toBeVisible();
 	await expect(page.locator(".story__visual img")).toHaveCount(0);
 });
 
@@ -467,12 +470,31 @@ test("tabbing reaches every story tab in order", async ({ page }) => {
 	await page.goto("/");
 	const radios = page.locator('.story__options [role="radio"]');
 	await expect(radios).toHaveCount(5);
-	await expect(radios).toHaveText(["Control", "Serve", "Work", "Automate", "Configure"]);
+ for (const [index, name] of ["Control", "Serve", "Work", "Automate", "Configure"].entries()) {
+  await expect(radios.nth(index)).toHaveAccessibleName(name);
+ }
 	await radios.nth(0).focus();
 	await page.keyboard.press("ArrowDown");
 	await expect(radios.nth(1)).toBeFocused();
 });
 
+test("demo internals stay out of the tab order", async ({ page }) => {
+ await page.setViewportSize({ width: 1440, height: 900 });
+ await page.goto("/");
+ await page.locator(".story__visual").scrollIntoViewIfNeeded();
+ await expect(page.locator(".story__visual .demo[data-scene]")).toBeVisible();
+ const tabStops = await page.evaluate(() => {
+  const count = (selector: string) => {
+   const root = document.querySelector(selector);
+   if (!root) return -1;
+   return [...root.querySelectorAll("a[href], button, input, select, textarea, [tabindex]")].filter(
+    (element) => element instanceof HTMLElement && element.tabIndex >= 0,
+   ).length;
+  };
+  return [count(".hero .demo"), count(".story__visual .demo[data-scene]")];
+ });
+ expect(tabStops).toEqual([0, 0]);
+});
 test("mobile story shows one demo under the active copy", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");

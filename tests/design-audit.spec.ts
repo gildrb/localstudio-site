@@ -313,7 +313,7 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	expect(await page.evaluate(() => Math.round(window.scrollY))).toBe(scrolled);
 });
 
-test("desktop menus share the navbar surface and align to the page grid", async ({ page }) => {
+test("desktop menus use one continuous navbar surface and align to the page grid", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
 	const trigger = page.getByRole("button", { name: "Resources" });
@@ -329,26 +329,31 @@ test("desktop menus share the navbar surface and align to the page grid", async 
 		const header = document.querySelector<HTMLElement>("header.nav");
 		const panel = document.querySelector<HTMLElement>(".nav__mega");
 		const inner = document.querySelector<HTMLElement>(".nav__mega-inner");
+		const entryGrid = document.querySelector<HTMLElement>(".nav__mega-grid");
 		const firstSection = document.querySelector<HTMLElement>(".nav__mega-section");
 		const brand = document.querySelector<HTMLElement>(".brand");
-		if (!header || !panel || !inner || !firstSection || !brand) {
+		if (!header || !panel || !inner || !entryGrid || !firstSection || !brand) {
 			throw new Error("Desktop menu did not open");
 		}
 		const pageOverlay = getComputedStyle(document.body, "::after");
 		const headerBox = header.getBoundingClientRect();
 		const panelBox = panel.getBoundingClientRect();
+		const innerBox = inner.getBoundingClientRect();
+		const entryGridBox = entryGrid.getBoundingClientRect();
 		return {
 			panelTop: Math.round(panelBox.top),
 			headerBottom: Math.round(headerBox.bottom),
 			panelWidth: Math.round(panelBox.width),
+			containerWidth: Math.round(innerBox.width),
+			entryGridWidth: Math.round(entryGridBox.width),
 			panelHeight: Math.round(panelBox.height),
-			gridLeft: [brand, inner, firstSection].map((element) =>
+			surfaceBottom: Math.round(
+				headerBox.top + Number.parseFloat(getComputedStyle(header, "::before").height),
+			),
+			gridLeft: [brand, inner, entryGrid, firstSection].map((element) =>
 				Math.round(element.getBoundingClientRect().left),
 			),
-			panelChrome: [
-				getComputedStyle(panel, "::before").backgroundColor,
-				getComputedStyle(panel, "::before").backdropFilter,
-			],
+			panelPseudo: getComputedStyle(panel, "::before").content,
 			panelDirectChrome: [
 				getComputedStyle(panel).backgroundColor,
 				getComputedStyle(panel).backdropFilter,
@@ -380,14 +385,17 @@ test("desktop menus share the navbar surface and align to the page grid", async 
 	expect(Math.abs(geometry.panelTop - geometry.headerBottom)).toBeLessThanOrEqual(1);
 	expect(geometry.headerBottom).toBeGreaterThanOrEqual(72);
 	expect(geometry.panelWidth).toBe(1440);
-	expect(geometry.gridLeft).toEqual(Array(3).fill(geometry.gridLeft[0]));
+	expect(geometry.containerWidth).toBe(geometry.panelWidth - 48);
+	expect(geometry.entryGridWidth).toBe(Math.round(geometry.containerWidth * 0.6));
+	expect(geometry.gridLeft).toEqual(Array(4).fill(geometry.gridLeft[0]));
 	expect(geometry.pageOverlay).toBe("none");
 	expect(restingNav).toEqual([
 		"rgba(0, 0, 0, 0.64)",
 		"blur(24px) brightness(0.7)",
 	]);
 	expect(geometry.navChrome).toEqual(restingNav);
-	expect(geometry.panelChrome).toEqual(restingNav);
+	expect(geometry.surfaceBottom).toBe(geometry.panelTop + geometry.panelHeight);
+	expect(geometry.panelPseudo).toBe("none");
 	expect(geometry.navDirectChrome).toEqual(["rgba(0, 0, 0, 0)", "none"]);
 	expect(geometry.panelDirectChrome).toEqual(geometry.navDirectChrome);
 	await expect(page.locator(".nav__page-overlay, .nav__backdrop")).toHaveCount(0);
@@ -514,8 +522,11 @@ test("typography avoids widows and the first paint is preloaded", async ({ page 
 	});
 	expect(wrapping).toEqual({ body: "pretty", title: "balance" });
 	await page.goto("/");
-	const font = page.locator('link[rel="preload"][as="font"]');
-	await expect(font).toHaveAttribute("href", "/fonts/geist-sans.woff2");
+ const fonts = page.locator('link[rel="preload"][as="font"]');
+ expect(await fonts.evaluateAll((elements) => elements.map((element) => element.getAttribute("href")))).toEqual([
+  "/fonts/geist-sans.woff2",
+  "/fonts/geist-mono.woff2",
+ ]);
 	await expect(page.locator('link[rel="preload"][as="image"]')).toHaveCount(0);
 	await page.goto("/product");
 	const hero = page.locator('link[rel="preload"][as="image"]');
@@ -547,7 +558,8 @@ test("below-the-fold imagery is responsive", async ({ page }) => {
 test("the story autoplays and announces demo changes", async ({
 	page,
 }) => {
-	await page.goto("/");
+ await page.goto("/");
+ await page.locator(".story__visual").scrollIntoViewIfNeeded();
 	const control = page.getByRole("radio", { name: "Control" });
 	const serve = page.getByRole("radio", { name: "Serve" });
 	await expect(control).toHaveAttribute("aria-checked", "true");

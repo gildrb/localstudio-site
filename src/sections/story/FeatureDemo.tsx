@@ -1,3 +1,5 @@
+import "../../styles/workbench-demo.css";
+import { memo } from "react";
 import { AutomateDemo } from "./automate-demo";
 import { ConfigureDemo } from "./configure-demo";
 import { ControlDemo } from "./control-demo";
@@ -15,7 +17,9 @@ const SCENES = {
 	configure: ConfigureDemo,
 } as const;
 
-export function FeatureDemo({ scene }: { scene: FeatureScene }) {
+export const FeatureDemo = memo(function FeatureDemo({ scene }: { scene: FeatureScene }) {
 	const Scene = SCENES[scene];
 	return <Scene />;
-}
+});
+
+export default FeatureDemo;

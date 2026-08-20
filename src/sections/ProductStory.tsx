@@ -1,6 +1,7 @@
 import {
-	type CSSProperties,
 	type KeyboardEvent,
+	lazy,
+	Suspense,
 	useEffect,
 	useLayoutEffect,
 	useRef,
@@ -8,22 +9,25 @@ import {
 } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { productFeatures } from "../content/product-features";
-import { FeatureDemo, type FeatureScene } from "./story/FeatureDemo";
+import type { FeatureScene } from "./story/FeatureDemo";
 import { useStoryMobile } from "./story/demo-frame";
+
+const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
 
 function optionControls(root: HTMLElement): HTMLElement[] {
 	const controls: HTMLElement[] = [];
-	for (const element of root.querySelectorAll(".story__option-control")) {
+	for (const element of root.querySelectorAll('.story__option[role="radio"]')) {
 		if (element instanceof HTMLElement) controls.push(element);
 	}
 	return controls;
 }
 
 const STORY_MS = 8000;
+const DEMO_PLACEHOLDER = <div className="demo story__demo-placeholder" aria-hidden="true" />;
 
 export function ProductStory() {
 	const [activeIndex, setActiveIndex] = useState(0);
-	const [progress, setProgress] = useState(0);
+	const [demoReady, setDemoReady] = useState(false);
 	const [paused, setPaused] = useState(false);
 	const optionsRef = useRef<HTMLDivElement>(null);
 	const visualHomeRef = useRef<HTMLDivElement>(null);
@@ -36,7 +40,6 @@ export function ProductStory() {
 	function selectFeature(index: number) {
 		if (productFeatures[index] === undefined) return;
 		setActiveIndex(index);
-		setProgress(0);
 	}
 
 	function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -44,8 +47,7 @@ export function ProductStory() {
 		if (event.key === "ArrowDown" || event.key === "ArrowRight") {
 			nextIndex = (activeIndex + 1) % productFeatures.length;
 		} else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-			nextIndex =
-				(activeIndex - 1 + productFeatures.length) % productFeatures.length;
+			nextIndex = (activeIndex - 1 + productFeatures.length) % productFeatures.length;
 		} else if (event.key === "Home") {
 			nextIndex = 0;
 		} else if (event.key === "End") {
@@ -54,9 +56,7 @@ export function ProductStory() {
 		if (nextIndex === undefined) return;
 		event.preventDefault();
 		selectFeature(nextIndex);
-		const controls = optionsRef.current
-			? optionControls(optionsRef.current)
-			: [];
+		const controls = optionsRef.current ? optionControls(optionsRef.current) : [];
 		controls[nextIndex]?.focus();
 	}
 
@@ -66,18 +66,19 @@ export function ProductStory() {
 	}, [activeIndex]);
 
 	useEffect(() => {
-		if (reduceMotion || paused) return;
-		const started = Date.now();
-		const id = window.setInterval(() => {
-			const next = (Date.now() - started) / STORY_MS;
-			if (next >= 1) {
-				selectFeature((activeIndex + 1) % productFeatures.length);
-				return;
-			}
-			setProgress(next);
-		}, 50);
-		return () => window.clearInterval(id);
-	}, [activeIndex, paused, reduceMotion]);
+		const visual = visualRef.current;
+		if (!visual) return;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (!entries[0]?.isIntersecting) return;
+				setDemoReady(true);
+				observer.disconnect();
+			},
+			{ rootMargin: "400px 0px" },
+		);
+		observer.observe(visual);
+		return () => observer.disconnect();
+	}, []);
 
 	useLayoutEffect(() => {
 		const visual = visualRef.current;
@@ -89,17 +90,12 @@ export function ProductStory() {
 
 	return (
 		<LazyMotion features={domAnimation} strict>
-			<section
-				id="media"
-				className="story section-width"
-				aria-labelledby="system-title"
-			>
+			<section id="media" className="story section-width" aria-labelledby="system-title">
 				<div className="story__intro">
 					<h2 id="system-title">Local AI is hard. Running it shouldn’t be.</h2>
 					<p>
-						<span translate="no">Local Studio</span> keeps the model, the
-						runtime, and the hardware together. Nothing important disappears
-						behind a provider abstraction.
+						<span translate="no">Local Studio</span> keeps the model, the runtime, and the hardware
+						together. Nothing important disappears behind a provider abstraction.
 					</p>
 				</div>
 				<div className="story__showcase">
@@ -108,7 +104,6 @@ export function ProductStory() {
 						ref={optionsRef}
 						role="radiogroup"
 						aria-label="Local Studio capabilities"
-						onKeyDown={handleKeyDown}
 						onPointerEnter={mobile ? undefined : () => setPaused(true)}
 						onPointerLeave={mobile ? undefined : () => setPaused(false)}
 					>
@@ -118,37 +113,33 @@ export function ProductStory() {
 								<div
 									className={`story__option ${selected ? "is-active" : ""}`}
 									key={feature.storyTitle}
-									style={
-										selected
-											? ({
-													"--story-progress": String(progress),
-												} as CSSProperties)
-											: undefined
-									}
+									role="radio"
+									aria-label={feature.storyTitle}
+									aria-checked={selected}
+									tabIndex={0}
+									onPointerEnter={mobile ? undefined : () => selectFeature(index)}
+									onClick={() => selectFeature(index)}
+									onFocus={() => selectFeature(index)}
+									onKeyDown={handleKeyDown}
 								>
-									<div
-										className="story__option-control"
-										role="radio"
-										aria-checked={selected}
-										tabIndex={0}
-										onPointerEnter={
-											mobile ? undefined : () => selectFeature(index)
-										}
-										onClick={mobile ? () => selectFeature(index) : undefined}
-										onFocus={() => selectFeature(index)}
-										onKeyDown={handleKeyDown}
-									>
-										<span className="story__option-title">
-											{feature.storyTitle}
-										</span>
+									<div className="story__option-control">
+										<span className="story__option-title">{feature.storyTitle}</span>
 									</div>
 									<div hidden={!selected}>
-										<p className="story__description">
-											{feature.storyDescription}
-										</p>
+										<p className="story__description">{feature.storyDescription}</p>
 									</div>
-									{selected ? (
-										<span className="story__timer" aria-hidden="true" />
+									{selected && demoReady && !reduceMotion ? (
+										<span
+											className="story__timer"
+											aria-hidden="true"
+											style={{
+												animationDuration: `${STORY_MS}ms`,
+												animationPlayState: paused ? "paused" : "running",
+											}}
+											onAnimationEnd={() =>
+												selectFeature((activeIndex + 1) % productFeatures.length)
+											}
+										/>
 									) : null}
 									<div
 										className="story__option-demo"
@@ -166,16 +157,20 @@ export function ProductStory() {
 							ref={visualRef}
 							data-active-feature={activeFeature.storyTitle}
 						>
-							<m.div
-								key={activeFeature.slug}
-								initial={
-									reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }
-								}
-								animate={{ opacity: 1, filter: "blur(0px)" }}
-								transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-							>
-								<FeatureDemo scene={activeFeature.slug as FeatureScene} />
-							</m.div>
+							{demoReady ? (
+								<Suspense fallback={DEMO_PLACEHOLDER}>
+									<m.div
+										key={activeFeature.slug}
+										initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
+										animate={{ opacity: 1, filter: "blur(0px)" }}
+										transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+									>
+										<FeatureDemo scene={activeFeature.slug as FeatureScene} />
+									</m.div>
+								</Suspense>
+							) : (
+								DEMO_PLACEHOLDER
+							)}
 							<p className="sr-only" role="status">
 								{activeFeature.storyTitle}. {activeFeature.storyDescription}
 							</p>

@@ -55,6 +55,7 @@
 	overflow: clip;
 }
 
+
 .demo__app {
 	display: flex;
 	width: var(--hero-demo-width);

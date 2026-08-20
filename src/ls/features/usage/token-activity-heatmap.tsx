@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import { formatNumber } from "@/lib/formatters";
 import type { UsageStats } from "@/lib/types";
 
@@ -93,7 +93,7 @@ const weeklyUsage = (daily: DailyUsage[]): Map<string, ActivityUsage> => {
   return weekly;
 };
 
-export function TokenActivityHeatmap({
+export const TokenActivityHeatmap = memo(function TokenActivityHeatmap({
   daily,
   period = "daily",
 }: {
@@ -114,7 +114,17 @@ export function TokenActivityHeatmap({
     return { date, usage, level: activityLevel(usage?.total_tokens ?? 0, limits) };
   });
   const [activeDate, setActiveDate] = useState(() => dateKey(end));
-  const activeCell = cells.find(({ date }) => dateKey(date) === activeDate) ?? cells.at(-1);
+  const foundIndex = cells.findIndex(({ date }) => dateKey(date) === activeDate);
+  const activeIndex = foundIndex >= 0 ? foundIndex : cells.length - 1;
+  const activeCell = cells[activeIndex];
+  const activeLabel = activeCell
+    ? `${period === "daily" ? dateLabel(activeCell.date) : weekLabel(activeCell.date)} · ${formatNumber(activeCell.usage?.total_tokens ?? 0)} tokens · ${formatNumber(activeCell.usage?.requests ?? 0)} requests`
+    : "No activity data";
+
+  function selectCell(index: number) {
+    const cell = cells[Math.max(0, Math.min(index, cells.length - 1))];
+    if (cell) setActiveDate(dateKey(cell.date));
+  }
 
   return (
     <div className="overflow-x-auto pb-1">
@@ -127,29 +137,47 @@ export function TokenActivityHeatmap({
           ))}
         </div>
         <div
-          className={
+          className={`${
             period === "daily"
               ? "grid grid-flow-col grid-cols-[repeat(53,minmax(0,1fr))] grid-rows-7 gap-[3px]"
               : "grid grid-cols-[repeat(53,minmax(0,1fr))] gap-[3px]"
-          }
+          } rounded-[2px] outline-none ring-(--link) focus-visible:ring-2`}
+          role="slider"
+          tabIndex={0}
           aria-label={`${period === "daily" ? "Daily" : "Weekly"} token activity for the past year`}
+          aria-valuemin={0}
+          aria-valuemax={cells.length - 1}
+          aria-valuenow={activeIndex}
+          aria-valuetext={activeLabel}
+          aria-orientation="horizontal"
+          onKeyDown={(event) => {
+            let next = activeIndex;
+            if (event.key === "ArrowRight") next += 1;
+            else if (event.key === "ArrowLeft") next -= 1;
+            else if (event.key === "ArrowUp") next += period === "daily" ? 7 : 1;
+            else if (event.key === "ArrowDown") next -= period === "daily" ? 7 : 1;
+            else if (event.key === "Home") next = 0;
+            else if (event.key === "End") next = cells.length - 1;
+            else return;
+            event.preventDefault();
+            selectCell(next);
+          }}
         >
-          {cells.map(({ date, usage, level }) => (
-            <button
-              key={dateKey(date)}
-              type="button"
-              onFocus={() => setActiveDate(dateKey(date))}
-              onMouseEnter={() => setActiveDate(dateKey(date))}
-              aria-label={`${period === "daily" ? dateLabel(date) : weekLabel(date)}: ${formatNumber(usage?.total_tokens ?? 0)} tokens, ${formatNumber(usage?.requests ?? 0)} requests`}
-              className={`aspect-square min-h-2.5 rounded-[2px] outline-none ring-(--link) transition-[transform,box-shadow] hover:scale-125 hover:ring-1 focus-visible:scale-125 focus-visible:ring-2 ${LEVEL_CLASSES[level]}`}
-            />
-          ))}
+          {cells.map(({ date, level }) => {
+            const key = dateKey(date);
+            return (
+              <span
+                key={key}
+                aria-hidden="true"
+                onMouseEnter={() => setActiveDate(key)}
+                className={`aspect-square min-h-2.5 rounded-[2px] transition-[transform,box-shadow] hover:scale-125 hover:ring-1 ${key === activeDate ? "ring-1 ring-(--link)" : ""} ${LEVEL_CLASSES[level]}`}
+              />
+            );
+          })}
         </div>
         <div className="mt-3 flex min-h-5 items-center justify-between gap-5 text-[length:var(--fs-2xs)] text-(--ui-muted)">
           <span className="tabular-nums text-(--ui-fg)/85">
-            {activeCell
-              ? `${period === "daily" ? dateLabel(activeCell.date) : weekLabel(activeCell.date)} · ${formatNumber(activeCell.usage?.total_tokens ?? 0)} tokens · ${formatNumber(activeCell.usage?.requests ?? 0)} requests`
-              : null}
+            {activeLabel}
           </span>
           <div className="flex shrink-0 items-center gap-1.5">
             <span>Less</span>
@@ -162,4 +190,4 @@ export function TokenActivityHeatmap({
       </div>
     </div>
   );
-}
+});

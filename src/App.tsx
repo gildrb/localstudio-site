@@ -58,7 +58,10 @@ export default function App() {
 		window.history.pushState({}, "", next ? "/machine" : "/");
 		emitNavigation();
 	}, []);
-	const machine = useMemo(() => ({ machineMode, toggleMachine }), [machineMode, toggleMachine]);
+	const machine = useMemo(
+		() => ({ machineMode, toggleMachine }),
+		[machineMode, toggleMachine],
+	);
 
 	useEffect(() => {
 		function updateLocation(source: NavigationSource) {
