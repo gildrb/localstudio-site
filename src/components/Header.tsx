@@ -18,6 +18,7 @@ type MenuListProps = {
 	items: readonly NavLink[];
 	onNavigate: () => void;
 	className?: string;
+	desktop?: boolean;
 }
 
 type MenuSection = {
@@ -79,22 +80,28 @@ function MenuItems({
 	items,
 	onNavigate,
 	className = "nav__menu-items",
+	desktop = false,
 }: MenuListProps) {
 	return (
-		<ul className={className}>
+		<ul className={className} role={desktop ? "none" : undefined}>
 			{items.map((item) => (
-				<li key={item.label}>
+				<li key={item.label} role={desktop ? "none" : undefined}>
 					{item.external ? (
 						<a
 							href={item.href}
 							target="_blank"
 							rel="noreferrer"
 							onClick={onNavigate}
+							role={desktop ? "menuitem" : undefined}
 						>
 							{item.label}
 						</a>
 					) : (
-						<LocalLink href={item.href} onClick={onNavigate}>
+						<LocalLink
+							href={item.href}
+							onClick={onNavigate}
+							role={desktop ? "menuitem" : undefined}
+						>
 							{item.label}
 						</LocalLink>
 					)}
@@ -114,16 +121,34 @@ function DesktopMenu({
 	const label = menu === "products" ? "Products" : "Resources";
 	return (
 		<div
-			className="nav__mega"
+			className="nav__mega nav__menu-panel"
 			id={`nav-menu-${menu}`}
 			aria-label={`${label} menu`}
+			role="menu"
+			onKeyDown={(event) => {
+				if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+				const items = [
+					...event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'),
+				];
+				if (items.length === 0) return;
+				const current = items.indexOf(document.activeElement as HTMLElement);
+				const next =
+					event.key === "Home"
+						? 0
+						: event.key === "End"
+							? items.length - 1
+							: (current + (event.key === "ArrowDown" ? 1 : -1) + items.length) %
+								items.length;
+				event.preventDefault();
+				items[next]?.focus();
+			}}
 		>
 			<div className="nav__mega-inner">
 				<div className="nav__mega-grid">
 					{menuSections[menu].map((section) => (
 						<section className="nav__mega-section" key={section.label}>
 							<p>{section.label}</p>
-							<MenuItems items={section.items} onNavigate={onNavigate} />
+							<MenuItems items={section.items} onNavigate={onNavigate} desktop />
 						</section>
 					))}
 				</div>
@@ -150,7 +175,13 @@ export function Header() {
 			}
 		}
 		function onKeyDown(event: KeyboardEvent) {
-			if (event.key === "Escape") setOpenMenu(null);
+			if (event.key === "Escape") {
+				const trigger = menusRef.current?.querySelector<HTMLButtonElement>(
+					`[aria-controls="nav-menu-${openMenu}"]`,
+				);
+				setOpenMenu(null);
+				trigger?.focus();
+			}
 		}
 		document.addEventListener("pointerdown", onPointerDown);
 		document.addEventListener("keydown", onKeyDown);
@@ -231,13 +262,24 @@ export function Header() {
 				<button
 					type="button"
 					className="nav__menu-trigger"
-					aria-haspopup="true"
+					aria-haspopup="menu"
 					aria-expanded={open}
 					aria-controls={`nav-menu-${id}`}
 					onClick={(event) =>
 						setOpenMenu(event.detail === 0 && open ? null : id)
 					}
 					onPointerEnter={() => setOpenMenu(id)}
+					onKeyDown={(event) => {
+						if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+						event.preventDefault();
+						setOpenMenu(id);
+						window.requestAnimationFrame(() => {
+							const items = menusRef.current?.querySelectorAll<HTMLElement>(
+								`#nav-menu-${id} [role="menuitem"]`,
+							);
+							items?.[event.key === "ArrowDown" ? 0 : items.length - 1]?.focus();
+						});
+					}}
 				>
 					{label}
 					<Chevron open={open} />

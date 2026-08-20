@@ -123,6 +123,7 @@ test("homepage hero, product story, and mobile story have no separators", async 
 });
 
 test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
+	test.setTimeout(60_000);
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/", { waitUntil: "domcontentloaded" });
 	await expect(page.locator(".signal, .macbook-scroll, .hero__macbook, .hero__screenshot, .hero canvas, .hero video")).toHaveCount(0);
@@ -161,7 +162,7 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 	await expect(stage).toHaveCSS("opacity", "1");
 	await expect(gradient).toHaveCSS("opacity", "1");
 	await expect(demo).toBeVisible();
-	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 15000 });
+	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 30000 });
 	await expect(demo.locator(".chat-markdown")).toHaveCount(1);
 	await expect(demo.getByText("New task").first()).toBeVisible();
 	const layout = await page.evaluate(() => {
@@ -230,8 +231,8 @@ test("homepage hero reveals a live DOM demonstration", async ({ page }) => {
 		};
 	});
 	expect(reduced).toMatchObject({ stage: ["1", "none"], gradient: "1", phase: "done" });
-	expect(reduced.output).toContain("What I changed");
-	expect(reduced.output).toContain("Qwen3.8-27B");
+	expect(reduced.output).toContain("Ready for you");
+	expect(reduced.output).toContain("Lake District");
 });
 
 test("mobile sections follow the hairline section system", async ({ page }) => {
@@ -440,42 +441,126 @@ test("shared action links fully brighten within 130ms", async ({ page }) => {
 	}
 });
 
-test("homepage capability selector responds to hover, focus, and keys", async ({ page }) => {
-	await page.goto("/");
-	const options = page.getByRole("radiogroup", { name: "Local Studio capabilities" });
-	const control = options.getByRole("radio", { name: "Control" });
-	const serve = options.getByRole("radio", { name: "Serve" });
-	const work = options.getByRole("radio", { name: "Work" });
-	await expect(control).toHaveAttribute("aria-checked", "true");
- await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
- await page.locator(".story__visual").scrollIntoViewIfNeeded();
- await expect(page.locator('.story__visual[data-active-feature="Control"] .demo[data-scene]')).toHaveAttribute("data-scene", "control");
- await serve.hover();
-	await expect(serve).toHaveAttribute("aria-checked", "true");
-	await expect(page).toHaveURL(/\/$/);
-	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
- await expect(page.locator('.story__visual[data-active-feature="Serve"] .demo[data-scene]')).toHaveAttribute("data-scene", "serve");
-	await page.mouse.move(0, 0);
-	await serve.focus();
-	await page.keyboard.press("ArrowDown");
-	await expect(work).toBeFocused();
-	await expect(work).toHaveAttribute("aria-checked", "true");
-	await expect(page).toHaveURL(/\/$/);
- await expect(page.locator('.story__visual[data-active-feature="Work"] .demo[data-scene]')).toBeVisible();
-	await expect(page.locator(".story__visual img")).toHaveCount(0);
-});
-
-test("tabbing reaches every story tab in order", async ({ page }) => {
+test("homepage capability story keeps active copy centered and progresses quickly", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
-	const radios = page.locator('.story__options [role="radio"]');
-	await expect(radios).toHaveCount(5);
- for (const [index, name] of ["Control", "Serve", "Work", "Automate", "Configure"].entries()) {
-  await expect(radios.nth(index)).toHaveAccessibleName(name);
- }
-	await radios.nth(0).focus();
-	await page.keyboard.press("ArrowDown");
-	await expect(radios.nth(1)).toBeFocused();
+	const showcase = page.locator(".story__showcase");
+	const items = page.locator(".story__option");
+	await showcase.evaluate((element) => {
+		document.documentElement.style.scrollBehavior = "auto";
+		const navHeight =
+			Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+			) || 72;
+		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top - navHeight);
+	});
+	await expect(items.nth(0)).toHaveAttribute("aria-current", "step");
+	await expect(page.locator('.story__visual[data-active-feature="Control"] .demo')).toHaveAttribute(
+		"data-scene",
+		"control",
+	);
+	const pacing = await showcase.evaluate((element) => {
+		const sticky = element.querySelector(".story__sticky");
+		const story = element.closest(".story");
+		const active = element.querySelector(".story__option.is-active");
+		const optionsWindow = element.querySelector(".story__options-window");
+		if (
+			!(sticky instanceof HTMLElement) ||
+			!(story instanceof HTMLElement) ||
+			!(active instanceof HTMLElement) ||
+			!(optionsWindow instanceof HTMLElement)
+		) {
+			throw new Error("story geometry");
+		}
+		const optionsBox = optionsWindow.getBoundingClientRect();
+		const activeBox = active.getBoundingClientRect();
+		return {
+			activeOffset: Math.abs(
+				activeBox.top + activeBox.height / 2 - (optionsBox.top + optionsBox.height / 2),
+			),
+			sceneViewportShare:
+				(element.getBoundingClientRect().height - sticky.offsetHeight) /
+				(element.querySelectorAll(".story__option").length * sticky.offsetHeight),
+			storyPageShare:
+				story.offsetHeight / (document.documentElement.scrollHeight - window.innerHeight),
+		};
+	});
+	expect(pacing.activeOffset).toBeLessThanOrEqual(2);
+	expect(pacing.sceneViewportShare).toBeLessThanOrEqual(0.55);
+	expect(pacing.storyPageShare).toBeGreaterThanOrEqual(0.5);
+	expect(pacing.storyPageShare).toBeLessThanOrEqual(0.61);
+	await showcase.evaluate((element) => {
+		const navHeight =
+			Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+			) || 72;
+		const sticky = element.querySelector(".story__sticky");
+		if (!(sticky instanceof HTMLElement)) throw new Error("story sticky");
+		const sceneSpan = (element.getBoundingClientRect().height - sticky.offsetHeight) / 5;
+		const top = window.scrollY + element.getBoundingClientRect().top;
+		window.scrollTo(0, top - navHeight + sceneSpan * 1.1);
+	});
+	await expect(items.nth(1)).toHaveAttribute("aria-current", "step");
+	await expect
+		.poll(async () =>
+			items.nth(1).evaluate((element) => {
+				const optionsWindow = document.querySelector(".story__options-window");
+				const control = document.querySelectorAll(".story__option")[0];
+				if (!(optionsWindow instanceof HTMLElement) || !(control instanceof HTMLElement)) {
+					throw new Error("story positions");
+				}
+				const optionsBox = optionsWindow.getBoundingClientRect();
+				const serveBox = element.getBoundingClientRect();
+				return {
+					centerOffset: Math.round(
+						Math.abs(
+							serveBox.top +
+								serveBox.height / 2 -
+								(optionsBox.top + optionsBox.height / 2),
+						),
+					),
+					controlAbove: control.getBoundingClientRect().bottom <= serveBox.top + 1,
+				};
+			}),
+		)
+		.toEqual({ centerOffset: 0, controlAbove: true });
+	await showcase.evaluate((element) => {
+		const navHeight =
+			Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+			) || 72;
+		const sticky = element.querySelector(".story__sticky");
+		if (!(sticky instanceof HTMLElement)) throw new Error("story sticky");
+		const sceneSpan = (element.getBoundingClientRect().height - sticky.offsetHeight) / 5;
+		const top = window.scrollY + element.getBoundingClientRect().top;
+		window.scrollTo(0, top - navHeight + sceneSpan * 2.1);
+	});
+	await expect(items.nth(2)).toHaveAttribute("aria-current", "step");
+	await expect(page.locator('.story__visual[data-active-feature="Work"] .demo')).toHaveAttribute(
+		"data-scene",
+		"work",
+	);
+	await expect(page).toHaveURL(/\/$/);
+});
+
+test("story exposes five ordered scroll steps without manual controls", async ({ page }) => {
+	await page.goto("/");
+	const options = page.locator(".story__options");
+	await expect(options.locator(".story__option")).toHaveCount(5);
+	expect(await options.locator(".story__option-title").allTextContents()).toEqual([
+		"Control",
+		"Serve",
+		"Work",
+		"Automate",
+		"Configure",
+	]);
+	expect(
+		await options.evaluate((element) =>
+			[...element.querySelectorAll("a[href], button, input, select, textarea, [tabindex]")].filter(
+				(candidate) => candidate instanceof HTMLElement && candidate.tabIndex >= 0,
+			).length,
+		),
+	).toBe(0);
 });
 
 test("demo internals stay out of the tab order", async ({ page }) => {
@@ -495,84 +580,81 @@ test("demo internals stay out of the tab order", async ({ page }) => {
  });
  expect(tabStops).toEqual([0, 0]);
 });
-test("mobile story shows one demo under the active copy", async ({ page }) => {
+test("mobile story stays pinned while scroll reveals every capability", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/");
-	const options = page.getByRole("radiogroup", { name: "Local Studio capabilities" });
-	const control = options.getByRole("radio", { name: "Control" });
-	const serve = options.getByRole("radio", { name: "Serve" });
-	await expect(control).toHaveAttribute("aria-checked", "true");
-	await expect(page.locator(".story__options .story__description", { hasText: "Local and remote controllers" })).toBeVisible();
-	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeHidden();
-	const stacked = await page.evaluate(() => {
-		const options = [...document.querySelectorAll(".story__option")];
-		const control = options[0];
-		const serve = options[1];
-		const work = options[2];
-		const copy = control?.querySelector(".story__description");
-		const demo = control?.querySelector(".story__visual .demo");
-		if (
-			!(control instanceof HTMLElement) ||
-			!(serve instanceof HTMLElement) ||
-			!(work instanceof HTMLElement) ||
-			!(copy instanceof HTMLElement) ||
-			!(demo instanceof HTMLElement)
-		) {
-			return null;
-		}
-		const copyBox = copy.getBoundingClientRect();
-		const demoBox = demo.getBoundingClientRect();
-		const serveBox = serve.getBoundingClientRect();
-		const workBox = work.getBoundingClientRect();
+	const showcase = page.locator(".story__showcase");
+	const items = page.locator(".story__option");
+	await showcase.evaluate((element) => {
+		document.documentElement.style.scrollBehavior = "auto";
+		const navHeight =
+			Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+			) || 72;
+		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top - navHeight);
+	});
+	await expect(items.nth(0)).toHaveAttribute("aria-current", "step");
+	const pinned = await page.evaluate(() => {
+		const root = document.documentElement;
+		const sticky = document.querySelector(".story__sticky");
+		const visual = document.querySelector(".story__visual");
+		if (!(sticky instanceof HTMLElement) || !(visual instanceof HTMLElement)) return null;
+		const navHeight = Number.parseFloat(getComputedStyle(root).getPropertyValue("--nav-height")) || 72;
+		const stickyBox = sticky.getBoundingClientRect();
+		const visualBox = visual.getBoundingClientRect();
 		return {
-			demoBelowCopy: demoBox.top >= copyBox.bottom - 1,
-			serveBelowDemo: serveBox.top >= demoBox.bottom - 1,
-			workBelowServe: workBox.top >= serveBox.bottom - 1,
-			serveCompact: serveBox.height < 80,
-			inGutter: demoBox.left >= 20 && demoBox.right <= window.innerWidth - 20,
+			position: getComputedStyle(sticky).position,
+			atNav: Math.abs(stickyBox.top - navHeight) < 2,
+			fillsStage: Math.abs(stickyBox.height - (window.innerHeight - navHeight)) < 2,
+			inGutter: visualBox.left >= 20 && visualBox.right <= window.innerWidth - 20,
 		};
 	});
-	expect(stacked).toEqual({
-		demoBelowCopy: true,
-		serveBelowDemo: true,
-		workBelowServe: true,
-		serveCompact: true,
+	expect(pinned).toEqual({
+		position: "sticky",
+		atNav: true,
+		fillsStage: true,
 		inGutter: true,
 	});
-	await serve.click();
-	await expect(serve).toHaveAttribute("aria-checked", "true");
-	await expect(page.locator(".story__options .story__description", { hasText: "OpenAI-compatible surface" })).toBeVisible();
-	await expect(page.locator(".story__option.is-active .story__visual .demo")).toHaveAttribute("data-scene", "serve");
-	const after = await page.evaluate(() => {
-		const serve = document.querySelectorAll(".story__option")[1];
-		const work = document.querySelectorAll(".story__option")[2];
-		const copy = serve?.querySelector(".story__description");
-		const demo = serve?.querySelector(".story__visual .demo");
-		if (
-			!(serve instanceof HTMLElement) ||
-			!(work instanceof HTMLElement) ||
-			!(copy instanceof HTMLElement) ||
-			!(demo instanceof HTMLElement)
-		) {
-			return null;
-		}
-		return {
-			demoUnderServe: demo.getBoundingClientRect().top >= copy.getBoundingClientRect().bottom - 1,
-			workAfterDemo: work.getBoundingClientRect().top >= demo.getBoundingClientRect().bottom - 1,
-		};
+	await showcase.evaluate((element) => {
+		const navHeight =
+			Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+			) || 72;
+		const top = window.scrollY + element.getBoundingClientRect().top;
+		const sticky = element.querySelector(".story__sticky");
+		if (!(sticky instanceof HTMLElement)) throw new Error("story sticky");
+		const sceneSpan = (element.getBoundingClientRect().height - sticky.offsetHeight) / 5;
+		window.scrollTo(0, top - navHeight + sceneSpan * 3.1);
 	});
-	expect(after).toEqual({ demoUnderServe: true, workAfterDemo: true });
-	await options.getByRole("radio", { name: "Automate" }).click();
-	const demo = page.locator(".story__option.is-active .story__visual .demo");
+	await expect(items.nth(3)).toHaveAttribute("aria-current", "step");
+	const demo = page.locator('.story__visual[data-active-feature="Automate"] .demo');
 	await expect(demo).toHaveAttribute("data-scene", "automate");
 	await expect(demo.getByRole("heading", { name: "Automations" })).toBeVisible();
-	await expect(demo.getByText("Proxy health check")).toBeVisible();
+	await expect(demo.getByText("Lake District packing reminder")).toBeVisible();
 	const transform = await demo.locator(".demo__app").evaluate((element) => {
 		if (!(element instanceof HTMLElement)) return "";
 		return element.style.transform;
 	});
 	expect(transform.startsWith("scale(")).toBe(true);
 	expect(transform.includes("translate(-224px, 0px)")).toBe(true);
+	await showcase.evaluate((element) => {
+		const navHeight =
+			Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+			) || 72;
+		const top = window.scrollY + element.getBoundingClientRect().top;
+		const sticky = element.querySelector(".story__sticky");
+		if (!(sticky instanceof HTMLElement)) throw new Error("story sticky");
+		const sceneSpan = (element.getBoundingClientRect().height - sticky.offsetHeight) / 5;
+		window.scrollTo(0, top - navHeight + sceneSpan * 4.1);
+	});
+	await expect(items.nth(4)).toHaveAttribute("aria-current", "step");
+	await expect(page.locator('.story__visual[data-active-feature="Configure"] .demo')).toHaveAttribute(
+		"data-scene",
+		"configure",
+	);
+	await page.locator(".kitty").scrollIntoViewIfNeeded();
+	await expect(page.getByRole("heading", { name: "Leave the desk. Keep the session." })).toBeVisible();
 });
 
 test("KittyLitter focuses on three core benefits", async ({ page }) => {

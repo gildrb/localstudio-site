@@ -25,7 +25,10 @@ export function AgentComposerTextArea({
   return (
     <textarea
       ref={inputRef}
+      id="hero-demo-composer"
+      name="message"
       rows={1}
+      autoComplete="off"
       value={value}
       onPaste={onPaste}
       onChange={onChange}

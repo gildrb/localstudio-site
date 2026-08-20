@@ -29,12 +29,12 @@ test("landmarks are separate and a skip link targets main content", async ({
 	const focused = await skip.evaluate((element: HTMLAnchorElement) => ({
 		href: element.hash,
 		withinViewport: element.getBoundingClientRect().top >= 0,
-		ring: [getComputedStyle(element).outlineWidth, getComputedStyle(element).outlineStyle, getComputedStyle(element).outlineColor],
+		ring: getComputedStyle(element).boxShadow,
 	}));
 	expect(focused).toEqual({
 		href: "#content",
 		withinViewport: true,
-		ring: ["2px", "solid", "rgb(0, 112, 243)"],
+		ring: "rgb(0, 112, 243) 0px 0px 0px 2px",
 	});
 });
 
@@ -47,7 +47,7 @@ test("focus rings appear only after real keyboard use", async ({ page }) => {
 		if (!(active instanceof Element)) throw new Error("active");
 		return {
 			focused: active.tagName,
-			ring: getComputedStyle(active).outlineStyle,
+			ring: getComputedStyle(active).boxShadow,
 		};
 	});
 	expect(loadState).toEqual({ focused: "H2", ring: "none" });
@@ -58,7 +58,7 @@ test("focus rings appear only after real keyboard use", async ({ page }) => {
 		await page.evaluate(() => {
 			const active = document.activeElement;
 			if (!(active instanceof Element)) throw new Error("active");
-			return getComputedStyle(active).outlineStyle;
+			return getComputedStyle(active).boxShadow;
 		}),
 		"click navigation must not draw a ring",
 	).toBe("none");
@@ -66,7 +66,7 @@ test("focus rings appear only after real keyboard use", async ({ page }) => {
 	expect(
 		await page.locator(".nav__links a").first().evaluate((element) => {
 		element.focus();
-		return getComputedStyle(element).outlineStyle;
+			return getComputedStyle(element).boxShadow;
 	}),
 		"fresh load must not draw a ring before keyboard use",
 	).toBe("none");
@@ -75,7 +75,6 @@ test("focus rings appear only after real keyboard use", async ({ page }) => {
 		".nav__links a",
 		".hero__actions .button",
 		".hero__actions .text-link",
-		".story__option-control",
 		".footer__links a",
 	];
 	for (const selector of checks) {
@@ -84,13 +83,13 @@ test("focus rings appear only after real keyboard use", async ({ page }) => {
 			.locator(selector)
 			.first()
 			.evaluate((element) => ({
-				width: getComputedStyle(element).outlineWidth,
-				style: getComputedStyle(element).outlineStyle,
+				outline: getComputedStyle(element).outlineStyle,
+				shadow: getComputedStyle(element).boxShadow,
 			}));
-		expect(style, `${selector} keyboard focus`).toEqual({
-			width: "2px",
-			style: "solid",
-		});
+		expect(style.outline, `${selector} keyboard outline`).toBe("none");
+		expect(style.shadow, `${selector} keyboard focus`).toBe(
+			"rgb(0, 112, 243) 0px 0px 0px 2px",
+		);
 	}
 });
 
@@ -418,7 +417,7 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 	expect(new Set(targets.map((target) => target.font.join("/")))).toEqual(
 		new Set(["28px/36px/400"]),
 	);
-	await page.getByRole("link", { name: "Documentation", exact: true }).hover();
+	await page.getByRole("menuitem", { name: "Documentation", exact: true }).hover();
 	await expect(menu).toBeVisible();
 	await page.mouse.move(720, 700);
 	await expect(menu).toBeHidden();
@@ -555,19 +554,34 @@ test("below-the-fold imagery is responsive", async ({ page }) => {
 	}
 });
 
-test("the story autoplays and announces demo changes", async ({
-	page,
-}) => {
- await page.goto("/");
- await page.locator(".story__visual").scrollIntoViewIfNeeded();
-	const control = page.getByRole("radio", { name: "Control" });
-	const serve = page.getByRole("radio", { name: "Serve" });
-	await expect(control).toHaveAttribute("aria-checked", "true");
-	await expect(serve).toHaveAttribute("aria-checked", "true", { timeout: 10000 });
-	const live = await page
-		.locator(".story__visual .sr-only")
-		.evaluate((element) => element.getAttribute("role"));
-	expect(live).toBe("status");
+test("the story follows scroll and announces demo changes", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/");
+	const showcase = page.locator(".story__showcase");
+	const items = page.locator(".story__option");
+	await showcase.evaluate((element) => {
+		document.documentElement.style.scrollBehavior = "auto";
+		const navHeight =
+			Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+			) || 72;
+		window.scrollTo(0, window.scrollY + element.getBoundingClientRect().top - navHeight);
+	});
+	await expect(items.nth(0)).toHaveAttribute("aria-current", "step");
+	await showcase.evaluate((element) => {
+		if (!(element instanceof HTMLElement)) throw new Error("story showcase");
+		const navHeight =
+			Number.parseFloat(
+				getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+			) || 72;
+		const top = window.scrollY + element.getBoundingClientRect().top;
+		const sticky = element.querySelector(".story__sticky");
+		if (!(sticky instanceof HTMLElement)) throw new Error("story sticky");
+		const sceneSpan = (element.getBoundingClientRect().height - sticky.offsetHeight) / 5;
+		window.scrollTo(0, top - navHeight + sceneSpan * 1.1);
+	});
+	await expect(items.nth(1)).toHaveAttribute("aria-current", "step");
+	await expect(page.locator(".story__visual .sr-only")).toHaveAttribute("role", "status");
 });
 
 test("agents page keeps a hierarchical heading order", async ({ page }) => {

@@ -1,69 +1,65 @@
-import {
-	type KeyboardEvent,
-	lazy,
-	Suspense,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState,
-} from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { productFeatures } from "../content/product-features";
-import type { FeatureScene } from "./story/FeatureDemo";
-import { useStoryMobile } from "./story/demo-frame";
 
 const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
 
-function optionControls(root: HTMLElement): HTMLElement[] {
-	const controls: HTMLElement[] = [];
-	for (const element of root.querySelectorAll('.story__option[role="radio"]')) {
-		if (element instanceof HTMLElement) controls.push(element);
-	}
-	return controls;
-}
-
-const STORY_MS = 8000;
 const DEMO_PLACEHOLDER = <div className="demo story__demo-placeholder" aria-hidden="true" />;
 
-export function ProductStory() {
+function useStoryProgress() {
 	const [activeIndex, setActiveIndex] = useState(0);
-	const [demoReady, setDemoReady] = useState(false);
-	const [paused, setPaused] = useState(false);
-	const optionsRef = useRef<HTMLDivElement>(null);
-	const visualHomeRef = useRef<HTMLDivElement>(null);
-	const visualRef = useRef<HTMLElement>(null);
-	const demoSlots = useRef<Array<HTMLDivElement | null>>([]);
-	const reduceMotion = useReducedMotion();
-	const mobile = useStoryMobile();
-	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
-
-	function selectFeature(index: number) {
-		if (productFeatures[index] === undefined) return;
-		setActiveIndex(index);
-	}
-
-	function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-		let nextIndex: number | undefined;
-		if (event.key === "ArrowDown" || event.key === "ArrowRight") {
-			nextIndex = (activeIndex + 1) % productFeatures.length;
-		} else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-			nextIndex = (activeIndex - 1 + productFeatures.length) % productFeatures.length;
-		} else if (event.key === "Home") {
-			nextIndex = 0;
-		} else if (event.key === "End") {
-			nextIndex = productFeatures.length - 1;
-		}
-		if (nextIndex === undefined) return;
-		event.preventDefault();
-		selectFeature(nextIndex);
-		const controls = optionsRef.current ? optionControls(optionsRef.current) : [];
-		controls[nextIndex]?.focus();
-	}
+	const showcaseRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!optionsRef.current?.contains(document.activeElement)) return;
-		optionControls(optionsRef.current)[activeIndex]?.focus();
-	}, [activeIndex]);
+		const showcase = showcaseRef.current;
+		const sticky = showcase?.querySelector<HTMLElement>(".story__sticky");
+		if (!showcase || !sticky) return;
+		let frame = 0;
+
+		const update = () => {
+			frame = 0;
+			const navHeight =
+				Number.parseFloat(
+					getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
+				) || 72;
+			const stageHeight = Math.max(1, sticky.offsetHeight);
+			const scrollRange = Math.max(1, showcase.offsetHeight - stageHeight);
+			const traveled = Math.min(
+				Math.max(navHeight - showcase.getBoundingClientRect().top, 0),
+				scrollRange,
+			);
+			const scenePosition = (traveled / scrollRange) * productFeatures.length;
+			const nextIndex = Math.min(productFeatures.length - 1, Math.floor(scenePosition));
+			showcase.style.setProperty(
+				"--story-progress",
+				String(Math.min(1, scenePosition - nextIndex)),
+			);
+			setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
+		};
+
+		const scheduleUpdate = () => {
+			if (frame === 0) frame = window.requestAnimationFrame(update);
+		};
+
+		update();
+		window.addEventListener("scroll", scheduleUpdate, { passive: true });
+		window.addEventListener("resize", scheduleUpdate);
+		return () => {
+			window.removeEventListener("scroll", scheduleUpdate);
+			window.removeEventListener("resize", scheduleUpdate);
+			if (frame !== 0) window.cancelAnimationFrame(frame);
+		};
+	}, []);
+
+	return { activeIndex, showcaseRef };
+}
+
+export function ProductStory() {
+	const { activeIndex, showcaseRef } = useStoryProgress();
+	const [demoReady, setDemoReady] = useState(false);
+	const visualRef = useRef<HTMLElement>(null);
+	const reduceMotion = useReducedMotion();
+	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
 
 	useEffect(() => {
 		const visual = visualRef.current;
@@ -80,14 +76,6 @@ export function ProductStory() {
 		return () => observer.disconnect();
 	}, []);
 
-	useLayoutEffect(() => {
-		const visual = visualRef.current;
-		const home = visualHomeRef.current;
-		if (!visual || !home) return;
-		const slot = mobile ? demoSlots.current[activeIndex] : null;
-		(slot ?? home).appendChild(visual);
-	}, [activeIndex, mobile]);
-
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section id="media" className="story section-width" aria-labelledby="system-title">
@@ -98,83 +86,65 @@ export function ProductStory() {
 						together. Nothing important disappears behind a provider abstraction.
 					</p>
 				</div>
-				<div className="story__showcase">
-					<div
-						className="story__options"
-						ref={optionsRef}
-						role="radiogroup"
-						aria-label="Local Studio capabilities"
-						onPointerEnter={mobile ? undefined : () => setPaused(true)}
-						onPointerLeave={mobile ? undefined : () => setPaused(false)}
-					>
-						{productFeatures.map((feature, index) => {
-							const selected = activeIndex === index;
-							return (
-								<div
-									className={`story__option ${selected ? "is-active" : ""}`}
-									key={feature.storyTitle}
-									role="radio"
-									aria-label={feature.storyTitle}
-									aria-checked={selected}
-									tabIndex={0}
-									onPointerEnter={mobile ? undefined : () => selectFeature(index)}
-									onClick={() => selectFeature(index)}
-									onFocus={() => selectFeature(index)}
-									onKeyDown={handleKeyDown}
-								>
-									<div className="story__option-control">
-										<span className="story__option-title">{feature.storyTitle}</span>
-									</div>
-									<div hidden={!selected}>
-										<p className="story__description">{feature.storyDescription}</p>
-									</div>
-									{selected && demoReady && !reduceMotion ? (
-										<span
-											className="story__timer"
-											aria-hidden="true"
-											style={{
-												animationDuration: `${STORY_MS}ms`,
-												animationPlayState: paused ? "paused" : "running",
-											}}
-											onAnimationEnd={() =>
-												selectFeature((activeIndex + 1) % productFeatures.length)
-											}
-										/>
-									) : null}
-									<div
-										className="story__option-demo"
-										ref={(node) => {
-											demoSlots.current[index] = node;
-										}}
-									/>
-								</div>
-							);
-						})}
-					</div>
-					<div className="story__visual-home" ref={visualHomeRef}>
-						<figure
-							className="story__visual"
-							ref={visualRef}
-							data-active-feature={activeFeature.storyTitle}
-						>
-							{demoReady ? (
-								<Suspense fallback={DEMO_PLACEHOLDER}>
-									<m.div
-										key={activeFeature.slug}
-										initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
-										animate={{ opacity: 1, filter: "blur(0px)" }}
-										transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+				<div className="story__showcase" ref={showcaseRef}>
+					<div className="story__sticky">
+						<div className="story__options-window">
+							<ol
+								className="story__options"
+								aria-label="Local Studio capabilities"
+								data-active-index={activeIndex}
+							>
+							{productFeatures.map((feature, index) => {
+								const selected = activeIndex === index;
+								return (
+									<li
+										className={`story__option ${selected ? "is-active" : ""}`}
+										key={feature.storyTitle}
+										aria-current={selected ? "step" : undefined}
 									>
-										<FeatureDemo scene={activeFeature.slug as FeatureScene} />
-									</m.div>
-								</Suspense>
-							) : (
-								DEMO_PLACEHOLDER
-							)}
-							<p className="sr-only" role="status">
-								{activeFeature.storyTitle}. {activeFeature.storyDescription}
-							</p>
-						</figure>
+										<div className="story__option-control">
+											<span className="story__option-title">{feature.storyTitle}</span>
+										</div>
+										<div hidden={!selected}>
+											<p className="story__description">{feature.storyDescription}</p>
+										</div>
+										{selected ? <span className="story__timer" aria-hidden="true" /> : null}
+									</li>
+								);
+							})}
+							</ol>
+						</div>
+						<div className="story__visual-home">
+							<figure
+								className="story__visual"
+								ref={visualRef}
+								data-active-feature={activeFeature.storyTitle}
+							>
+								{demoReady ? (
+									<Suspense fallback={DEMO_PLACEHOLDER}>
+										<m.div
+											key={activeFeature.slug}
+											initial={reduceMotion ? false : { opacity: 0 }}
+											animate={{ opacity: 1 }}
+											transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+										>
+											<FeatureDemo scene={activeFeature.slug} />
+										</m.div>
+									</Suspense>
+								) : (
+									DEMO_PLACEHOLDER
+								)}
+								<p className="sr-only" role="status">
+									{activeFeature.storyTitle}. {activeFeature.storyDescription}
+								</p>
+							</figure>
+						</div>
+					</div>
+					<div className="story__scroll-track" aria-hidden="true">
+						{productFeatures.map((feature) => (
+							<div className="story__scroll-step" key={feature.slug} />
+						))}
+						<div className="story__scroll-step" />
 					</div>
 				</div>
 			</section>

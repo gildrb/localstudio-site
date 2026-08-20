@@ -1,8 +1,8 @@
-import { useLayoutEffect, useRef, useState, type RefObject } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 export const DEMO_WIDTH = 1392;
 export const DEMO_HEIGHT = 787;
-export const DEMO_MOBILE = 900;
+const DEMO_MOBILE = 900;
 
 export type DemoCrop = {
 	fit: number;
@@ -18,36 +18,11 @@ export const STORY_CROP: DemoCrop = {
 	cropH: 580,
 };
 
-export function mobileStoryQuery(): string {
+function mobileStoryQuery(): string {
 	return `(max-width: ${DEMO_MOBILE}px)`;
 }
 
-export function useStoryMobile(): boolean {
-	const [mobile, setMobile] = useState(
-		() =>
-			typeof window !== "undefined" &&
-			window.matchMedia(mobileStoryQuery()).matches,
-	);
-
-	useLayoutEffect(() => {
-		const query = window.matchMedia(mobileStoryQuery());
-		const update = () => setMobile(query.matches);
-		update();
-		query.addEventListener("change", update);
-		return () => query.removeEventListener("change", update);
-	}, []);
-
-	return mobile;
-}
-
-export function useDemoFrame(crop: DemoCrop): {
-	hostRef: RefObject<HTMLElement | null>;
-	mobile: boolean;
-	scale: number;
-	shiftX: number;
-	shiftY: number;
-	cropH: number;
-} {
+export function useDemoFrame(crop: DemoCrop) {
 	const hostRef = useRef<HTMLElement>(null);
 	const [frame, setFrame] = useState(() => resolveFrame(false, 1, crop));
 	const fit = crop.fit;

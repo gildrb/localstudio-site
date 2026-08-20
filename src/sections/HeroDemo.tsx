@@ -48,6 +48,8 @@ const DEMO_WIDTH = 1392;
 const DEMO_HEIGHT = 787;
 const DEMO_FIT = 950;
 const DEMO_MOBILE = 900;
+const FOLLOW_UP_REPLY =
+	"This is an interactive preview. Run Local Studio with your own files, tools, and local models.";
 
 function useDemoFrame(): {
 	hostRef: RefObject<HTMLElement | null>;
@@ -118,9 +120,9 @@ const demoModel: AgentModel = {
 };
 
 const demoProject: Project = {
-	id: "local-studio",
-	name: "local-studio",
-	path: "/Users/sero/local-studio",
+	id: "home",
+	name: "Home",
+	path: "/Users/sero/Home",
 	addedAt: "2026-08-01",
 	exists: true,
 	hasGit: true,
@@ -129,16 +131,16 @@ const demoProject: Project = {
 
 const emptyTerminals = { owners: [], activeOwnerKey: null };
 
-const composerMessages: ChatMessage[] = [
+const inboxMessages: ChatMessage[] = [
 	{
-		id: "composer-user",
+		id: "inbox-user",
 		role: "user",
-		text: "Keep the model picker from clipping the composer on 1280px.",
+		text: "Turn the unread school emails into one checklist for Monday. Don't reply to anyone.",
 	},
 	{
-		id: "composer-assistant",
+		id: "inbox-assistant",
 		role: "assistant",
-		text: "I capped the picker trigger at 180px and pinned send to the right edge. The composer now holds at 1280px without clipping Qwen3.8-27B.",
+		text: "Monday is clear: return the library book, sign the museum form, and pack trainers for PE. I saved the checklist locally and sent nothing.",
 	},
 ];
 
@@ -155,34 +157,35 @@ function useHeroDemoModel() {
 	const [pickedTab, setPickedTab] = useState<ComputerTab | null>(null);
 	const [extraTabs, setExtraTabs] = useState<ComputerTab[]>([]);
 	const [panelOpen, setPanelOpen] = useState(true);
-	const [activeTask, setActiveTask] = useState<HeroTaskId>("proxy");
+	const [activeTask, setActiveTask] = useState<HeroTaskId>("weekend");
 	const [userFile, setUserFile] = useState<string | null>(null);
 	const [titles, setTitles] = useState<Record<HeroTaskId, string>>({
-		proxy: "Proxy health check",
-		composer: "Composer context",
+		weekend: "Maya's birthday weekend",
+		inbox: "Monday family reset",
 	});
 	const [drafts, setDrafts] = useState<Record<HeroTaskId, string>>({
-		proxy: "",
-		composer: "",
+		weekend: "",
+		inbox: "",
 	});
 	const [followUps, setFollowUps] = useState<Record<HeroTaskId, ChatMessage[]>>({
-		proxy: [],
-		composer: [],
+		weekend: [],
+		inbox: [],
 	});
 	const [userEditing, setUserEditing] = useState(false);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollerRef = useRef<HTMLDivElement>(null);
 	const extraId = useRef(0);
-	const proxyTask = activeTask === "proxy";
+	const weekendTask = activeTask === "weekend";
 	const prompt = DEMO_PROMPT.slice(0, state.promptChars);
-	const submitted = !proxyTask || state.phase !== "prompt";
+	const submitted =
+		!weekendTask || (state.phase !== "select" && state.phase !== "prompt");
 	const output = demoOutput(state);
 	const running =
-		proxyTask && submitted && !state.resultVisible && state.phase !== "done";
+		weekendTask && submitted && !state.resultVisible && state.phase !== "done";
 	const tools = toolBlocksFor(state);
 	const title = titles[activeTask];
 	const extras = followUps[activeTask];
-	const messages = proxyTask ? null : [...composerMessages, ...extras];
+	const messages = weekendTask ? null : [...inboxMessages, ...extras];
 	const session = demoSession(
 		state,
 		submitted,
@@ -196,14 +199,14 @@ function useHeroDemoModel() {
 			dispatch({ type: "finish" });
 			return;
 		}
-		if (!proxyTask || !state.playing || state.phase === "done") return;
+		if (!weekendTask || !state.playing || state.phase === "done") return;
 		const id = window.setTimeout(() => {
 			dispatch({ type: "advance" });
 		}, demoDelay(state));
 		return () => {
 			window.clearTimeout(id);
 		};
-	}, [proxyTask, reduceMotion, state]);
+	}, [weekendTask, reduceMotion, state]);
 
 	useLayoutEffect(() => {
 		const scroller = scrollerRef.current;
@@ -212,7 +215,7 @@ function useHeroDemoModel() {
 			state.phase === "stream" || state.phase === "tool";
 		scroller.scrollTo({
 			top: scroller.scrollHeight,
-			behavior: reduceMotion || followLive ? "auto" : "smooth",
+			behavior: reduceMotion || followLive || state.resultVisible ? "auto" : "smooth",
 		});
 	}, [
 		activeTask,
@@ -226,7 +229,7 @@ function useHeroDemoModel() {
 		tools.length,
 		extras.length,
 	]);
-	const autoPrompt = proxyTask && !submitted && !userEditing;
+	const autoPrompt = weekendTask && !submitted && !userEditing;
 	const composerValue = autoPrompt ? prompt : drafts[activeTask];
 
 	useLayoutEffect(() => {
@@ -242,9 +245,9 @@ function useHeroDemoModel() {
 	const openFile = userFile ?? demoActivePath(state);
 	const tab =
 		pickedTab ??
-		(state.reviewReady && proxyTask
+		(state.reviewReady && weekendTask
 			? "diff"
-			: state.toolsStarted > 0 && proxyTask
+			: state.toolsStarted > 0 && weekendTask
 				? "files"
 				: "status");
 	const openTabs = COMPUTER_TAB_ORDER.filter(
@@ -269,11 +272,15 @@ function useHeroDemoModel() {
 		setPickedTab((current) => (current === closing ? "status" : current));
 	}
 
+	function selectModel(): void {
+		if (state.phase === "select") dispatch({ type: "advance" });
+	}
+
 	function selectTask(task: HeroTaskId): void {
 		setActiveTask(task);
-		setPickedTab(task === "composer" ? "status" : null);
+		setPickedTab(task === "inbox" ? "status" : null);
 		setPanelOpen(true);
-		if (task === "composer") {
+		if (task === "inbox") {
 			dispatch({ type: "pause" });
 			return;
 		}
@@ -287,7 +294,7 @@ function useHeroDemoModel() {
 	}
 
 	function takeComposer(next: string): void {
-		if (activeTask === "proxy" && !userEditing) {
+		if (activeTask === "weekend" && !userEditing) {
 			setUserEditing(true);
 			dispatch({ type: "pause" });
 		}
@@ -299,8 +306,7 @@ function useHeroDemoModel() {
 		if (!text || autoPrompt) return;
 		extraId.current += 1;
 		const id = extraId.current;
-		const reply =
-			"Kept on this machine. I'll treat that as a follow-up in this thread.";
+		const reply = FOLLOW_UP_REPLY;
 		setFollowUps((current) => ({
 			...current,
 			[activeTask]: [
@@ -315,8 +321,8 @@ function useHeroDemoModel() {
 	const gitSummary = {
 		isRepo: true,
 		branch: "main",
-		additions: state.reviewReady ? 3 : 0,
-		deletions: state.reviewReady ? 1 : 0,
+		additions: state.reviewReady ? 12 : 0,
+		deletions: 0,
 		statusCount: state.reviewReady ? 1 : 0,
 	};
 
@@ -335,7 +341,7 @@ function useHeroDemoModel() {
 		titles,
 		inputRef,
 		scrollerRef,
-		proxyTask,
+		weekendTask,
 		submitted,
 		output,
 		running,
@@ -351,6 +357,7 @@ function useHeroDemoModel() {
 		openTabs,
 		selectTab,
 		closeTab,
+		selectModel,
 		selectTask,
 		renameTask,
 		takeComposer,
@@ -368,12 +375,13 @@ export default HeroDemo;
 
 function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 	const {
-		hostRef, mobile, scale, clipRight, clipBottom, state, setPickedTab, panelOpen, setPanelOpen,
-		activeTask, setUserFile, titles, inputRef, scrollerRef, proxyTask, submitted,
-		output, running, tools, title, extras, messages, session, autoPrompt, composerValue,
-		openFile, tab, openTabs, selectTab, closeTab, selectTask, renameTask, takeComposer,
-		sendFollowUp, gitSummary,
+		hostRef, mobile, scale, clipRight, clipBottom, state, setPickedTab, panelOpen,
+		setPanelOpen, activeTask, setUserFile, titles, inputRef, scrollerRef, weekendTask,
+		submitted, output, running, tools, title, extras, messages, session, autoPrompt,
+		composerValue, openFile, tab, openTabs, selectTab, closeTab, selectModel, selectTask,
+		renameTask, takeComposer, sendFollowUp, gitSummary,
 	} = model;
+	const sendDisabled = !composerValue.trim() || autoPrompt;
 	return (
 		<section
 			ref={hostRef}
@@ -443,7 +451,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 													<StaticThread messages={messages} />
 												) : (
 													<>
-														<ProxyThread
+												<ScenarioThread
 															output={output}
 															resultVisible={state.resultVisible}
 															running={running}
@@ -481,6 +489,9 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 									className="relative z-[100] shrink-0 bg-transparent px-3 pb-2 pt-0 sm:px-5"
 								>
 									<div className="agent-composer-box relative z-10 mx-auto w-full max-w-[calc(var(--composer-w)*0.9)] overflow-visible rounded-[var(--composer-radius)] border border-(--border) bg-(--composer) shadow-[var(--composer-elevation)] backdrop-blur-lg [corner-shape:superellipse(1.5)] sm:w-[90%]">
+										<label className="sr-only" htmlFor="hero-demo-composer">
+											Message
+										</label>
 										<AgentComposerTextArea
 											inputRef={inputRef}
 											value={composerValue}
@@ -516,15 +527,16 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 											</button>
 											<div className="ml-auto flex min-w-0 shrink items-center gap-0.5">
 												<button
-													type="button"
-													className="group/model inline-flex !h-[30px] !min-h-[30px] !min-w-0 max-w-full items-center justify-between gap-1 rounded-lg bg-transparent pl-2 pr-1.5 text-[length:var(--fs-base)] whitespace-nowrap text-(--fg)/85 transition-colors hover:bg-(--hover) hover:text-(--fg)"
-													aria-label={`Model: ${state.modelSelected || !proxyTask ? DEMO_MODEL : "Select model"}`}
+												type="button"
+												onClick={selectModel}
+												className="group/model inline-flex !h-[30px] !min-h-[30px] !min-w-0 max-w-full items-center justify-between gap-1 rounded-lg bg-transparent pl-2 pr-1.5 text-[length:var(--fs-base)] whitespace-nowrap text-(--fg)/85 transition-colors hover:bg-(--hover) hover:text-(--fg)"
+												aria-label={`Model: ${state.modelSelected || !weekendTask ? DEMO_MODEL : "Select model"}`}
 												>
 													<span
 														className="min-w-0 max-w-[180px] truncate text-left"
 														translate="no"
 													>
-														{state.modelSelected || !proxyTask
+												{state.modelSelected || !weekendTask
 															? DEMO_MODEL
 															: "Select model"}
 													</span>
@@ -532,10 +544,10 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 												</button>
 												<button
 													type="submit"
-													disabled={!composerValue.trim() || autoPrompt}
+													disabled={sendDisabled}
 													className="inline-flex !h-[30px] !min-h-[30px] !w-[30px] !min-w-[30px] shrink-0 items-center justify-center rounded-full bg-(--fg) text-(--bg) transition-opacity hover:opacity-85 disabled:bg-(--hl3) disabled:opacity-100"
 													aria-label="Send"
-													title="Send (Enter)"
+													title={sendDisabled ? undefined : "Send (Enter)"}
 												>
 													<ArrowUp className="h-4 w-4 stroke-[2.25]" />
 												</button>
@@ -547,7 +559,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 										gitBranch="main"
 										gitSummary={gitSummary}
 										currentContextTokens={
-											state.resultVisible || !proxyTask ? 2400 : 0
+										state.resultVisible || !weekendTask ? 2400 : 0
 										}
 										contextWindow={contextWindow}
 										onOpenStatus={() => selectTab("status")}
@@ -578,7 +590,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 										<ComputerStatusPanel
 											activeProject={demoProject}
 											activeModel={
-												state.modelSelected || !proxyTask
+											state.modelSelected || !weekendTask
 													? demoModel
 													: null
 											}
@@ -615,18 +627,17 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 										<div className="size-full overflow-y-auto bg-(--bg) px-5 py-8 text-(--fg)">
 											<div className="mx-auto max-w-3xl">
 												<div className="text-[length:var(--fs-lg)] font-medium text-(--dim)">
-													Local
+													Trip research
 												</div>
 												<div className="mt-1 text-[length:var(--fs-sm)] text-(--dim)">
-													Pick a running localhost app, or type a
-													URL/search above.
+													Saturday stays dry until 16:00. Rydal Water to Grasmere keeps the route under two hours.
 												</div>
 											</div>
 										</div>
 									) : null}
 									{tab === "terminal" ? (
 										<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
-											Project shell
+										Home shell
 										</section>
 									) : null}
 									{tab === "side-chat" ? (
@@ -655,7 +666,7 @@ const COMPUTER_TAB_ORDER: ComputerTab[] = [
 	"side-chat",
 ];
 
-function ProxyThread({
+function ScenarioThread({
 	output,
 	resultVisible,
 	running,
@@ -755,22 +766,22 @@ function demoSession(
 	title: string,
 	extras: ChatMessage[],
 ): Session {
-	const composer = task === "composer";
-	const base = composer
-		? composerMessages
+	const inbox = task === "inbox";
+	const base = inbox
+		? inboxMessages
 		: submitted
 			? [userMessage()]
 			: [];
 	return {
-		id: composer ? "session-composer" : "session-1",
-		piSessionId: composer ? "pi-composer" : "pi-demo",
+		id: inbox ? "session-inbox" : "session-weekend",
+		piSessionId: inbox ? "pi-inbox" : "pi-weekend",
 		projectId: demoProject.id,
 		cwd: demoProject.path,
 		modelId: demoModel.id,
 		title,
 		messages: [...base, ...extras],
 		status:
-			composer || state.phase === "done"
+			inbox || state.phase === "done"
 				? "idle"
 				: state.phase === "load"
 					? "starting"
@@ -780,13 +791,13 @@ function demoSession(
 		error: "",
 		input: "",
 		tokenStats: {
-			read: composer ? 900 : 1800 + state.toolsDone * 400,
-			write: composer ? 280 : 600 + state.toolsDone * 180,
-			current: composer || state.resultVisible ? 2400 : submitted ? 900 : 0,
+			read: inbox ? 900 : 1800 + state.toolsDone * 400,
+			write: inbox ? 280 : 600 + state.toolsDone * 180,
+			current: inbox || state.resultVisible ? 2400 : submitted ? 900 : 0,
 		},
 		contextUsage: {
-			tokens: composer || state.resultVisible ? 2400 : submitted ? 900 : 0,
-			percent: composer || state.resultVisible ? 2 : 1,
+			tokens: inbox || state.resultVisible ? 2400 : submitted ? 900 : 0,
+			percent: inbox || state.resultVisible ? 2 : 1,
 		},
 	};
 }

@@ -34,6 +34,11 @@ export function HeroDesktopSidebar({
 		<aside
 			className="relative flex sticky top-0 h-full border-r border-(--border) bg-(--sidebar-bg) flex-col shrink-0 z-40 overflow-hidden"
 			style={{ width: DEFAULT_SIDEBAR_WIDTH }}
+			onClick={(event) => {
+				if (event.target instanceof Element && event.target.closest("a")) {
+					event.preventDefault();
+				}
+			}}
 		>
 			<div className="flex min-h-0 flex-1 flex-col overflow-hidden opacity-100">
 				<div className="sticky top-0 z-50 flex h-[var(--h-toolbar)] shrink-0 items-center gap-1 bg-(--sidebar-bg) px-2">
@@ -140,6 +145,7 @@ function HeroProfileFooter() {
 				href="/settings"
 				prefetch={false}
 				title="Settings"
+				aria-label="Settings"
 				className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--sidebar-row-radius)] text-(--fg)/60 transition-colors hover:bg-(--hover) hover:text-(--fg)"
 			>
 				<Settings className="h-3.5 w-3.5" strokeWidth={1.75} />

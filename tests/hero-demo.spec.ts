@@ -5,18 +5,25 @@ test("hero demo autoplays the local inference sequence once", async ({
 }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/");
-	const demo = page.locator(".hero .demo");
+	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await expect(demo).toBeVisible();
 	await expect(demo.locator("canvas, video")).toHaveCount(0);
-	await expect(demo).toHaveAttribute("data-phase", "prompt");
-	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 20000 });
+	await expect(demo).toHaveAttribute("data-phase", "select");
+	await expect(
+		demo.getByRole("button", { name: "Model: Select model" }),
+	).toBeVisible();
+	await expect(demo).toHaveAttribute("data-phase", "prompt", { timeout: 5000 });
+	await expect(
+		demo.getByRole("button", { name: "Model: Qwen3.8-27B" }),
+	).toBeVisible();
+	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 30000 });
 	await expect(demo.locator(".chat-markdown").first()).toContainText(
-		"What I changed",
+		"Ready for you",
 	);
 	await expect(demo.locator(".chat-markdown").first()).toContainText(
-		"Qwen3.8-27B",
+		"Lake District",
 	);
-	await expect(demo.getByText("Proxy health check").first()).toBeVisible();
+	await expect(demo.getByText("Maya's birthday weekend").first()).toBeVisible();
 	await expect(demo.getByText("New task").first()).toBeVisible();
 	await expect(
 		demo.getByRole("button", { name: "Status", exact: true }),
@@ -24,25 +31,56 @@ test("hero demo autoplays the local inference sequence once", async ({
 	await expect(
 		demo.getByRole("button", { name: "Review", exact: true }),
 	).toBeVisible();
-	await expect(demo.getByText("src/proxy/health.ts").first()).toBeVisible();
+	await expect(demo.getByText("lake-district-weekend.md").first()).toBeVisible();
 });
 
 test("hero demo computer panel tabs are clickable", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/");
-	const demo = page.locator(".hero .demo");
+	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await demo.getByRole("button", { name: "Show tools" }).click();
 	await demo
 		.getByRole("button", { name: "Files Browse project files" })
 		.click();
-	await expect(demo.getByText("standup.md").first()).toBeVisible();
+	await expect(demo.getByText("saved-places.md").first()).toBeVisible();
 	await demo.getByRole("button", { name: "Show tools" }).click();
 	await demo.getByRole("button", { name: "Browser Open a website" }).click();
 	await expect(
-		demo.getByText("Pick a running localhost app, or type a URL/search above."),
+		demo.getByText("Saturday stays dry until 16:00. Rydal Water to Grasmere keeps the route under two hours."),
 	).toBeVisible();
 	await demo.getByRole("button", { name: "Status", exact: true }).click();
 	await expect(demo.getByText("Session").first()).toBeVisible();
+});
+
+test("hero demo follow-ups stay visually quiet", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.emulateMedia({ reducedMotion: "reduce" });
+	await page.goto("/");
+	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	const composer = demo.getByRole("textbox", { name: "Message" });
+	await composer.pressSequentially("Add a café stop");
+	expect(await composer.evaluate((element) => getComputedStyle(element).boxShadow)).toBe(
+		"none",
+	);
+	await demo.getByRole("button", { name: "Send" }).click();
+	await expect(
+		demo.getByText(
+			"This is an interactive preview. Run Local Studio with your own files, tools, and local models.",
+		),
+	).toBeVisible();
+	await expect(
+		demo.getByRole("link", { name: "Open Local Studio on GitHub" }),
+	).toHaveCount(0);
+});
+
+test("hero demo keeps sidebar routes inside New task", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.emulateMedia({ reducedMotion: "reduce" });
+	await page.goto("/");
+	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	await demo.getByRole("link", { name: "Usage" }).click();
+	await expect(demo.getByText("Maya's birthday weekend").first()).toBeVisible();
+	await expect(page).toHaveURL("/");
 });
 
 test("hero demo result copies with the clipboard API", async ({
@@ -52,13 +90,13 @@ test("hero demo result copies with the clipboard API", async ({
 	await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/");
-	const demo = page.locator(".hero .demo");
+	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await expect(demo).toHaveAttribute("data-phase", "done");
 	await demo.getByRole("button", { name: "Copy response" }).click();
 	await expect(demo.getByRole("button", { name: "Copied" })).toBeVisible();
 	const copied = await page.evaluate(() => navigator.clipboard.readText());
-	expect(copied).toContain("What I changed");
-	expect(copied).toContain("Qwen3.8-27B");
+	expect(copied).toContain("Ready for you");
+	expect(copied).toContain("Lake District");
 });
 
 test("reduced motion shows the finished result immediately", async ({
@@ -66,19 +104,19 @@ test("reduced motion shows the finished result immediately", async ({
 }) => {
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/");
-	const demo = page.locator(".hero .demo");
+	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await expect(demo).toHaveAttribute("data-phase", "done");
 	await expect(demo.locator(".chat-markdown").first()).toHaveText(
-		/I'll read the standup notes[\s\S]*What I changed/,
+		/I'll bring the private details together[\s\S]*Ready for you/,
 	);
 });
 
 test("hero demo chat follows new messages", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/");
-	const demo = page.locator(".hero .demo");
+	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	const scroller = demo.locator("[data-timeline-scroller]");
-	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 20000 });
+	await expect(demo).toHaveAttribute("data-phase", "done", { timeout: 30000 });
 	await expect(scroller).toBeVisible();
 	const pinned = await scroller.evaluate((element) => {
 		if (!(element instanceof HTMLElement)) return false;

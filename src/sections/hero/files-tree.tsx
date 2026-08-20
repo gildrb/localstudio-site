@@ -4,38 +4,44 @@ import { fileTone } from "@/features/agent/ui/filesystem-tree-model";
 
 const entries: FsEntry[] = [
 	{
-		name: "src",
-		path: "/Users/sero/local-studio/src",
-		rel: "src",
+		name: "Family",
+		path: "/Users/sero/Home/Family",
+		rel: "Family",
 		kind: "directory",
 	},
 	{
-		name: "health.ts",
-		path: "/Users/sero/local-studio/src/proxy/health.ts",
-		rel: "src/proxy/health.ts",
+		name: "calendar.ics",
+		path: "/Users/sero/Home/Family/calendar.ics",
+		rel: "Family/calendar.ics",
 		kind: "file",
-		size: 640,
+		size: 1840,
 	},
 	{
-		name: "standup.md",
-		path: "/Users/sero/local-studio/notes/standup.md",
-		rel: "notes/standup.md",
+		name: "dinner-confirmation.eml",
+		path: "/Users/sero/Home/Family/dinner-confirmation.eml",
+		rel: "Family/dinner-confirmation.eml",
 		kind: "file",
-		size: 1280,
+		size: 3210,
 	},
 	{
-		name: "package.json",
-		path: "/Users/sero/local-studio/package.json",
-		rel: "package.json",
+		name: "saved-places.md",
+		path: "/Users/sero/Home/Family/saved-places.md",
+		rel: "Family/saved-places.md",
 		kind: "file",
-		size: 2140,
+		size: 980,
 	},
 	{
-		name: "README.md",
-		path: "/Users/sero/local-studio/README.md",
-		rel: "README.md",
+		name: "Trips",
+		path: "/Users/sero/Home/Trips",
+		rel: "Trips",
+		kind: "directory",
+	},
+	{
+		name: "lake-district-weekend.md",
+		path: "/Users/sero/Home/Trips/lake-district-weekend.md",
+		rel: "Trips/lake-district-weekend.md",
 		kind: "file",
-		size: 4096,
+		size: 2160,
 	},
 ];
 
@@ -50,7 +56,7 @@ export function HeroFilesystemTree({
 		<section className="flex min-h-0 flex-1 flex-col">
 			<div className="flex h-9 shrink-0 items-center gap-0.5 overflow-x-auto px-2 text-[length:var(--fs-sm)] text-(--dim)">
 				<span className="shrink-0 rounded-md px-1.5 text-(--dim)">
-					local-studio
+					Home
 				</span>
 			</div>
 			<div className="min-h-0 flex-1 overflow-y-auto">

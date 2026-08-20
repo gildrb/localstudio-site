@@ -4,12 +4,12 @@ import { DemoShell } from "./demo-shell";
 
 const JOBS = [
 	{
-		name: "Proxy health check",
-		when: "Every 15 min",
-		state: "Next run in 4 min",
+		name: "Lake District packing reminder",
+		when: "Thursday 18:30",
+		state: "Checks the forecast first",
 	},
-	{ name: "Pull Qwen3.8-27B", when: "Daily 02:00", state: "Last run ok" },
-	{ name: "Usage recap", when: "Mondays 09:00", state: "Paused" },
+	{ name: "Friday home brief", when: "Friday 17:00", state: "Next run in 2 days" },
+	{ name: "Family photo backup", when: "Sunday 02:00", state: "Last run complete" },
 ];
 
 export function AutomateDemo() {

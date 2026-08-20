@@ -1,6 +1,7 @@
 import { ArrowRight, Laptop, ShieldCheck, Smartphone } from "lucide-react";
 import { useReducedMotion } from "motion/react";
 import { useEffect, useReducer } from "react";
+import { useElementActivity } from "../hooks/use-element-activity";
 
 const phases = [
 	"Phone turn signed",
@@ -23,20 +24,22 @@ function demoReducer(state: DemoState): DemoState {
 
 export function MobileConnectionDemo() {
 	const reduceMotion = useReducedMotion() === true;
+	const [rootRef, active] = useElementActivity<HTMLElement>();
 	const [state, dispatch] = useReducer(demoReducer, { cycle: 0, phase: 0 });
 	const visiblePhase = reduceMotion ? phases.length - 1 : state.phase;
 	const phase = phases[visiblePhase];
 	const turn = String(15 + state.cycle).padStart(3, "0");
 
 	useEffect(() => {
-		if (reduceMotion) return;
+		if (reduceMotion || !active) return;
 		const delay = state.phase === phases.length - 1 ? 1800 : 1100;
 		const timer = window.setTimeout(dispatch, delay);
 		return () => window.clearTimeout(timer);
-	}, [reduceMotion, state]);
+	}, [active, reduceMotion, state]);
 
 	return (
 		<section
+			ref={rootRef}
 			className="mobile-connection-demo surface-panel-large"
 			data-phase={visiblePhase}
 			aria-label="Authenticated Local Studio mobile connection demonstration"
@@ -97,10 +100,10 @@ export function MobileConnectionDemo() {
 				</div>
 			</div>
 
-			<footer className="mobile-connection-demo__footer">
+			<div className="mobile-connection-demo__footer">
 				<strong>{phase}</strong>
 				<small>28 ms</small>
-			</footer>
+			</div>
 		</section>
 	);
 }

@@ -9,15 +9,14 @@ interface NextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 export default function Link({
 	href,
 	children,
-	className,
+	prefetch: _prefetch,
 	onClick,
-	title,
+	...props
 }: NextLinkProps) {
 	return (
 		<a
+			{...props}
 			href={href}
-			className={className}
-			title={title}
 			onClick={(event) => {
 				event.preventDefault();
 				onClick?.(event);

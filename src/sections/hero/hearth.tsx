@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useElementActivity } from "../../hooks/use-element-activity";
 
 const SPARSE = "    ·.:";
 const EMBERS = "*+#";
@@ -140,7 +141,7 @@ function fieldFor(
 }
 
 export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
-	const rootRef = useRef<HTMLDivElement>(null);
+	const [rootRef, active] = useElementActivity<HTMLDivElement>();
 	const fieldRef = useRef<HTMLDivElement>(null);
 	const cellRef = useRef({ col: 8, row: 18 });
 	const sizeRef = useRef({ width: 0, height: 0 });
@@ -167,7 +168,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 	}, []);
 
 	useEffect(() => {
-		if (reduceMotion) return;
+		if (reduceMotion || !active) return;
 		const root = rootRef.current;
 		if (!root) return;
 		const nodes = [...root.querySelectorAll(".hero__ember")].filter(
@@ -206,7 +207,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 				node.getAnimations().forEach((animation) => animation.cancel());
 			}
 		};
-	}, [reduceMotion]);
+	}, [active, reduceMotion]);
 
 	useEffect(() => {
 		const root = rootRef.current;
@@ -234,7 +235,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 		const observer = new ResizeObserver(placeAll);
 		observer.observe(root);
 
-		if (reduceMotion) {
+		if (reduceMotion || !active) {
 			return () => observer.disconnect();
 		}
 
@@ -271,7 +272,7 @@ export function HeroHearth({ reduceMotion }: { reduceMotion: boolean }) {
 				node.getAnimations().forEach((animation) => animation.cancel());
 			}
 		};
-	}, [reduceMotion]);
+	}, [active, reduceMotion]);
 
 	return (
 		<div className="hero__hearth" ref={rootRef} aria-hidden="true">

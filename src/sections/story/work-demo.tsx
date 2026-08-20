@@ -13,7 +13,7 @@ export function WorkDemo() {
 		>
 			<div className="flex min-h-0 min-w-0 flex-1 flex-col px-8 py-7">
 				<h3 className="text-[length:var(--fs-xl)] font-medium">
-					Proxy health check
+					Maya's birthday weekend
 				</h3>
 				<p className="mt-1 text-[length:var(--fs-sm)] text-(--dim)">
 					Qwen3.8-27B · this machine

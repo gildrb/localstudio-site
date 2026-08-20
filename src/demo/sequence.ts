@@ -3,30 +3,47 @@ export const DEMO_MODEL = "Qwen3.8-27B";
 export const DEMO_RUNTIME = "MLX";
 
 export const DEMO_PROMPT =
-	"The /health probe 500s while Qwen3.8-27B is warm on this Mac. Read notes/standup.md and src/proxy/health.ts, then patch the probe so a loaded local model counts as healthy.";
+	"Plan a relaxed Lake District weekend for Maya's birthday. Check our family calendar, the dinner confirmation, saved places, and Friday's forecast. Keep driving under two hours, make an itinerary, and set a Thursday packing reminder. Do not book or message anyone without asking me.";
 
 export const DEMO_STREAM =
-	"I'll read the standup notes and the health probe, then patch the check so a warm Qwen3.8-27B counts as ready.";
+	"I'll bring the private details together, resolve the timing and travel constraints, then leave every booking and message for your approval.";
 
-export const DEMO_RESULT = `The probe 500ed because it required an empty GPU queue. A warm Qwen3.8-27B still had a short decode in flight, so /health lied.
+export const DEMO_RESULT = `Your Lake District weekend is laid out without booking or messaging anyone.
 
-What I changed
-- src/proxy/health.ts treats a loaded local model as healthy when the last stream finished in under 2s
-- /health stays red only when the runtime process is gone
+Friday
+- Leave after school pickup and check in before dinner at 19:30
 
-Verify
-- GET /health returns 200 while Qwen3.8-27B is loaded
-- The standup proxy check can ship`;
+Saturday
+- Easy morning at Rydal Water
+- Ambleside lunch, then the saved Grasmere walk if the weather holds
+- 1h 42m total driving
 
-export const DEMO_DIFF = `diff --git a/src/proxy/health.ts b/src/proxy/health.ts
---- a/src/proxy/health.ts
-+++ b/src/proxy/health.ts
-@@ -1,8 +1,11 @@
- export function isHealthy(runtime) {
--  return runtime.queueLength === 0;
-+  if (!runtime.processAlive) return false;
-+  return runtime.loaded && runtime.lastStreamMs < 2000;
- }
+Sunday
+- Brunch near Keswick and home by 17:00
+
+Ready for you
+- Trips/lake-district-weekend.md has the full plan and wet-weather fallback
+- Thursday 18:30 packing reminder is on
+- Boat hire and the group message still need your approval`;
+
+export const DEMO_DIFF = `diff --git a/Trips/lake-district-weekend.md b/Trips/lake-district-weekend.md
+new file mode 100644
+--- /dev/null
++++ b/Trips/lake-district-weekend.md
+@@ -0,0 +1,12 @@
++# Maya's birthday weekend
++
++## Friday
++- Check in before the 19:30 dinner reservation
++
++## Saturday
++- Rydal Water, Ambleside, then Grasmere if dry
++- Total driving: 1h 42m
++
++## Sunday
++- Keswick brunch and home by 17:00
++
++No bookings or messages sent without approval
 `;
 
 export type DemoToolSpec = {
@@ -38,36 +55,72 @@ export type DemoToolSpec = {
 
 export const DEMO_TOOLS: readonly DemoToolSpec[] = [
 	{
-		id: "read-notes",
-		name: "read_file",
-		args: { path: "notes/standup.md" },
-		resultText: `Standup
-- Proxy /health 500s even with Qwen3.8-27B warm
-- Do not upload the notes folder
-- Ship the health check today`,
+		id: "calendar",
+		name: "read_calendar",
+		args: { path: "Family/calendar.ics", range: "Fri-Sun" },
+		resultText: `Friday
+15:20 School pickup
+19:30 Birthday dinner at The Old Stamp House
+
+Sunday
+17:00 Be home for Alex's call`,
 	},
 	{
-		id: "read-health",
-		name: "read_file",
-		args: { path: "src/proxy/health.ts" },
-		resultText: `export function isHealthy(runtime) {
-  return runtime.queueLength === 0;
-}`,
+		id: "reservation",
+		name: "read_email",
+		args: { path: "Family/dinner-confirmation.eml" },
+		resultText: `The Old Stamp House
+Friday · 19:30 · 6 guests
+Reservation confirmed · no prepayment due`,
 	},
 	{
-		id: "patch-health",
-		name: "apply_patch",
-		args: { path: "src/proxy/health.ts" },
-		resultText: `*** Update File: src/proxy/health.ts
--  return runtime.queueLength === 0;
-+  if (!runtime.processAlive) return false;
-+  return runtime.loaded && runtime.lastStreamMs < 2000;`,
+		id: "saved-places",
+		name: "read_file",
+		args: { path: "Family/saved-places.md" },
+		resultText: `Rydal Water
+Grasmere gingerbread
+Lingholm Kitchen
+Keswick market`,
+	},
+	{
+		id: "forecast",
+		name: "search_web",
+		args: { query: "Lake District Friday to Sunday forecast" },
+		resultText: `Friday: light rain, clearing 18:00
+Saturday: dry morning, showers after 16:00
+Sunday: clear, 12°C`,
+	},
+	{
+		id: "route",
+		name: "plan_route",
+		args: { stops: ["Rydal Water", "Ambleside", "Grasmere"] },
+		resultText: `Optimized Saturday route
+Total driving: 1h 42m
+Walking options stay under 90 minutes`,
+	},
+	{
+		id: "itinerary",
+		name: "write_file",
+		args: { path: "Trips/lake-district-weekend.md" },
+		resultText: `Created Trips/lake-district-weekend.md
+3-day itinerary
+Wet-weather fallback included
+No booking actions taken`,
+	},
+	{
+		id: "packing",
+		name: "create_automation",
+		args: { schedule: "Thursday 18:30", name: "Lake District packing reminder" },
+		resultText: `Automation created
+Thursday at 18:30
+Rechecks the forecast before building the packing list
+Messaging disabled`,
 	},
 ];
 
 export type DemoPhase =
-	| "prompt"
 	| "select"
+	| "prompt"
 	| "load"
 	| "stream"
 	| "tool"
@@ -99,7 +152,7 @@ export type DemoAction =
 
 export const initialDemoState: DemoState = {
 	playing: true,
-	phase: "prompt",
+	phase: "select",
 	promptChars: 0,
 	modelSelected: false,
 	load: 0,
@@ -137,9 +190,11 @@ export function demoOutput(state: DemoState): string {
 }
 
 export function demoActivePath(state: DemoState): string | null {
-	const tool = DEMO_TOOLS[Math.max(0, state.toolsStarted - 1)];
-	const path = tool?.args.path;
-	return typeof path === "string" ? path : null;
+	for (let index = state.toolsStarted - 1; index >= 0; index -= 1) {
+		const path = DEMO_TOOLS[index]?.args.path;
+		if (typeof path === "string") return path;
+	}
+	return null;
 }
 
 export function demoStatus(state: DemoState): string {
@@ -147,7 +202,7 @@ export function demoStatus(state: DemoState): string {
 		case "prompt":
 			return "Typing the local prompt";
 		case "select":
-			return `Selected ${DEMO_MODEL}`;
+			return `Selecting ${DEMO_MODEL}`;
 		case "load":
 			return `Loading ${DEMO_MODEL} ${state.load}%`;
 		case "stream":
@@ -160,7 +215,7 @@ export function demoStatus(state: DemoState): string {
 				: `Running ${tool.name}`;
 		}
 		case "result":
-			return "Local patch ready for review";
+			return "Weekend plan ready for review";
 		case "done":
 			return "Demonstration complete";
 	}
@@ -169,17 +224,17 @@ export function demoStatus(state: DemoState): string {
 export function demoDelay(state: DemoState): number {
 	switch (state.phase) {
 		case "prompt":
-			return 14;
+			return 16;
 		case "select":
-			return 420;
+			return 3000;
 		case "load":
-			return 56;
+			return 75;
 		case "stream":
-			return 14;
+			return 18;
 		case "tool":
-			return state.toolsDone < state.toolsStarted ? 720 : 280;
+			return state.toolsDone < state.toolsStarted ? 1400 : 480;
 		case "result":
-			return 360;
+			return 700;
 		case "done":
 			return 0;
 	}
@@ -203,14 +258,14 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
 
 function advanceDemo(state: DemoState): DemoState {
 	switch (state.phase) {
+		case "select":
+			return { ...state, modelSelected: true, phase: "prompt" };
 		case "prompt": {
 			if (state.promptChars < DEMO_PROMPT.length) {
 				return { ...state, promptChars: state.promptChars + 1 };
 			}
-			return { ...state, phase: "select" };
+			return { ...state, phase: "load" };
 		}
-		case "select":
-			return { ...state, modelSelected: true, phase: "load" };
 		case "load": {
 			const load = Math.min(100, state.load + 10);
 			const t = load / 100;

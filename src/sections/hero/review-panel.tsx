@@ -16,8 +16,8 @@ export function HeroReviewPanel({ ready }: { ready: boolean }) {
 				<GitBranchIcon className="h-3.5 w-3.5 text-(--dim)" />
 				<span className="min-w-0 flex-1 truncate text-(--fg)">main</span>
 				<span className="shrink-0 font-mono text-[length:var(--fs-xs)]">
-					<span className="text-(--color-diff-added)">+3</span>{" "}
-					<span className="text-(--color-diff-removed)">-1</span>
+					<span className="text-(--color-diff-added)">+12</span>{" "}
+					<span className="text-(--color-diff-removed)">-0</span>
 				</span>
 			</div>
 			{ready ? (
@@ -28,7 +28,7 @@ export function HeroReviewPanel({ ready }: { ready: boolean }) {
 				/>
 			) : (
 				<div className="flex min-h-0 flex-1 items-center justify-center px-4 text-center text-xs text-(--dim)">
-					No local changes yet
+					No itinerary changes yet
 				</div>
 			)}
 		</section>

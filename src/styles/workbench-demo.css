@@ -68,6 +68,10 @@
 	display: none !important;
 }
 
+.demo .agent-composer-box textarea:focus {
+	box-shadow: none;
+}
+
 .demo .agent-thread-shell {
 	width: 90%;
 	max-width: calc(var(--composer-w) * 0.9);
