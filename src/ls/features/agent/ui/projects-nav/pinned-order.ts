@@ -17,11 +17,15 @@ export function orderPinnedEntries<T extends PinnedOrderEntry>(
   order: readonly string[],
 ): T[] {
   const positions = new Map(order.map((id, index) => [id, index] as const));
-  return entries
-    .map((entry, index) => ({ entry, index, position: entryPosition(entry, positions) }))
-    .sort((left, right) => left.position - right.position || left.index - right.index)
-    .map(({ entry }) => entry);
-}
+  const positioned = entries.map((entry, index) => ({
+    entry,
+    index,
+    position: entryPosition(entry, positions),
+  }));
+  positioned.sort((left, right) => left.position - right.position || left.index - right.index);
+  const result: T[] = [];
+  for (const item of positioned) result.push(item.entry);
+  return result;
 
 export function movePinnedEntryBefore<T extends PinnedOrderEntry>(
   entries: readonly T[],
@@ -29,9 +33,10 @@ export function movePinnedEntryBefore<T extends PinnedOrderEntry>(
   draggedId: string,
   targetId: string | null,
 ): string[] {
-  const ids = orderPinnedEntries(entries, order)
-    .map((entry) => entry.id)
-    .filter((id) => id !== draggedId);
+  const ids: string[] = [];
+  for (const entry of orderPinnedEntries(entries, order)) {
+    if (entry.id !== draggedId) ids.push(entry.id);
+  }
   const targetIndex = targetId ? ids.indexOf(targetId) : -1;
   ids.splice(targetIndex < 0 ? ids.length : targetIndex, 0, draggedId);
   return [...new Set(ids)];

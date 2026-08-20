@@ -1,10 +1,60 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useReducer } from "react";
 import { Button, ErrorBox, UiModal, UiModalHeader } from "@/ui";
 import { Folder } from "@/ui/icons";
 import { useProjectDirectoryPickerModalEffects } from "@/features/agent/ui/projects-nav/use-projects-nav-effects";
 import type { DirectoryBrowserEntry, DirectoryBrowserPayload } from "./types";
+
+type DirectoryBrowserState = {
+  currentPath: string;
+  draftPath: string;
+  parentPath: string | null;
+  homePath: string;
+  entries: DirectoryBrowserEntry[];
+  loading: boolean;
+  browseError: string;
+};
+
+type DirectoryBrowserAction =
+  | { type: "loading" }
+  | { type: "loaded"; payload: DirectoryBrowserPayload }
+  | { type: "failed"; message: string }
+  | { type: "draftChanged"; value: string };
+
+const INITIAL_DIRECTORY_STATE: DirectoryBrowserState = {
+  currentPath: "",
+  draftPath: "",
+  parentPath: null,
+  homePath: "",
+  entries: [],
+  loading: false,
+  browseError: "",
+};
+
+function directoryBrowserReducer(
+  state: DirectoryBrowserState,
+  action: DirectoryBrowserAction,
+): DirectoryBrowserState {
+  switch (action.type) {
+    case "loading":
+      return { ...state, loading: true, browseError: "" };
+    case "loaded":
+      return {
+        currentPath: action.payload.path,
+        draftPath: action.payload.path,
+        parentPath: action.payload.parent,
+        homePath: action.payload.home,
+        entries: action.payload.entries ?? [],
+        loading: false,
+        browseError: "",
+      };
+    case "failed":
+      return { ...state, loading: false, browseError: action.message };
+    case "draftChanged":
+      return { ...state, draftPath: action.value };
+  }
+}
 
 export function ProjectDirectoryPickerModal({
   open,
@@ -17,31 +67,22 @@ export function ProjectDirectoryPickerModal({
   onClose: () => void;
   onSelect: (path: string) => void;
 }) {
-  const [currentPath, setCurrentPath] = useState("");
-  const [draftPath, setDraftPath] = useState("");
-  const [parentPath, setParentPath] = useState<string | null>(null);
-  const [homePath, setHomePath] = useState("");
-  const [entries, setEntries] = useState<DirectoryBrowserEntry[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [browseError, setBrowseError] = useState("");
+  const [state, dispatch] = useReducer(directoryBrowserReducer, INITIAL_DIRECTORY_STATE);
+  const { currentPath, draftPath, parentPath, homePath, entries, loading, browseError } = state;
 
   const loadDirectory = useCallback(async (directoryPath?: string) => {
-    setLoading(true);
-    setBrowseError("");
+    dispatch({ type: "loading" });
     try {
       const query = directoryPath ? `?path=${encodeURIComponent(directoryPath)}` : "";
       const response = await fetch(`/api/agent/directories${query}`, { cache: "no-store" });
       const payload = (await response.json()) as DirectoryBrowserPayload;
       if (!response.ok) throw new Error(payload.error || "Failed to list directories");
-      setCurrentPath(payload.path);
-      setDraftPath(payload.path);
-      setParentPath(payload.parent);
-      setHomePath(payload.home);
-      setEntries(payload.entries ?? []);
+      dispatch({ type: "loaded", payload });
     } catch (loadError) {
-      setBrowseError(loadError instanceof Error ? loadError.message : "Failed to list directories");
-    } finally {
-      setLoading(false);
+      dispatch({
+        type: "failed",
+        message: loadError instanceof Error ? loadError.message : "Failed to list directories",
+      });
     }
   }, []);
 
@@ -66,7 +107,7 @@ export function ProjectDirectoryPickerModal({
         <div className="flex gap-2">
           <input
             value={draftPath}
-            onChange={(event) => setDraftPath(event.target.value)}
+            onChange={(event) => dispatch({ type: "draftChanged", value: event.target.value })}
             onKeyDown={(event) => {
               if (event.key === "Enter") goToDraftPath();
             }}

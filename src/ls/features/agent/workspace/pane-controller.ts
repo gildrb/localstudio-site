@@ -61,23 +61,20 @@ function pruneOrphanSessions(state: WorkspaceState): WorkspaceState {
 
 export function claimCanonicalSession(state: WorkspaceState, canonical: Session): WorkspaceState {
   if (!canonical.piSessionId) return state;
-  const duplicateIds = new Set(
-    [...state.sessions]
-      .filter(
-        ([id, session]) => id !== canonical.id && session.piSessionId === canonical.piSessionId,
-      )
-      .map(([id]) => id),
-  );
+  const duplicateIds = new Set<string>();
+  for (const [id, session] of state.sessions) {
+    if (id !== canonical.id && session.piSessionId === canonical.piSessionId) duplicateIds.add(id);
+  }
   const sessions = new Map(state.sessions);
   for (const id of duplicateIds) sessions.delete(id);
   const panesById = new Map(state.panesById);
   for (const [paneId, pane] of panesById) {
     if (duplicateIds.has(pane.sessionId)) panesById.set(paneId, { sessionId: canonical.id });
   }
-  const canonicalPanes = [...panesById]
-    .filter(([, pane]) => pane.sessionId === canonical.id)
-    .map(([paneId]) => paneId);
-  if (duplicateIds.size === 0 && canonicalPanes.length <= 1) return state;
+  const canonicalPanes: PaneId[] = [];
+  for (const [paneId, pane] of panesById) {
+    if (pane.sessionId === canonical.id) canonicalPanes.push(paneId);
+  }
   if (canonicalPanes.length <= 1) return { ...state, sessions, panesById };
   const keptPaneId = canonicalPanes.includes(state.focusedPaneId)
     ? state.focusedPaneId

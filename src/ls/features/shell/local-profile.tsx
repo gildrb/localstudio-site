@@ -3,11 +3,11 @@
 import { useCallback, useState } from "react";
 import { Schema } from "effect";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
+import { DEFAULT_PROFILE, type LocalProfile } from "./local-profile-types";
+import { profileAvatarColor } from "./local-profile-utils";
 
 const PROFILE_KEY = "local-studio.profile";
 const PROFILE_EVENT = "local-studio:profile-change";
-const MAX_PROFILE_IMAGE_BYTES = 2_000_000;
-
 const LocalProfileSchema = Schema.Struct({
   name: Schema.String,
   hue: Schema.Number,
@@ -16,16 +16,7 @@ const LocalProfileSchema = Schema.Struct({
 
 const decodeLocalProfile = Schema.decodeUnknownOption(LocalProfileSchema);
 
-export type LocalProfile = typeof LocalProfileSchema.Type;
-
-export const DEFAULT_PROFILE: LocalProfile = { name: "Studio", hue: 214 };
-export const PROFILE_HUES = [214, 262, 152, 24, 340, 46] as const;
-
-export function profileAvatarColor(hue: number): string {
-  return `oklch(0.55 0.13 ${hue})`;
-}
-
-export function readLocalProfile(): LocalProfile {
+function readLocalProfile(): LocalProfile {
   if (typeof window === "undefined") return DEFAULT_PROFILE;
   try {
     const option = decodeLocalProfile(
@@ -94,18 +85,4 @@ export function ProfileAvatar({ profile, size = 22 }: { profile: LocalProfile; s
       {profile.imageUrl ? null : initials(profile.name)}
     </span>
   );
-}
-
-export async function profileImageFromFile(file: File): Promise<string> {
-  if (!file.type.startsWith("image/")) throw new Error("Choose an image file");
-  if (file.size > MAX_PROFILE_IMAGE_BYTES) throw new Error("Choose an image smaller than 2 MB");
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () =>
-      typeof reader.result === "string"
-        ? resolve(reader.result)
-        : reject(new Error("Image failed to load"));
-    reader.onerror = () => reject(new Error("Image failed to load"));
-    reader.readAsDataURL(file);
-  });
 }

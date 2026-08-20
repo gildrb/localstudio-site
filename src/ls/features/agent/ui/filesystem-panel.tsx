@@ -16,20 +16,19 @@ import { useAppStore } from "@/store";
 import { useToolSelections, useToolsActions } from "@/features/agent/tools/context";
 import type { FileComment, FsEntry } from "@/features/agent/filesystem-types";
 import { FileViewer } from "@/features/agent/ui/filesystem-file-viewer";
+import { ImagePreview, RenderedPreview } from "@/features/agent/ui/filesystem-preview";
 import {
-  ImagePreview,
-  RenderedPreview,
   isBinaryPreviewKind,
   previewKindForOpenFile,
   rawFileUrl,
-} from "@/features/agent/ui/filesystem-preview";
+} from "@/features/agent/ui/filesystem-preview-model";
 import { FileOpenActions } from "@/features/agent/ui/file-open-actions";
-import { Breadcrumb, fileTone, TreeFileList } from "@/features/agent/ui/filesystem-tree";
+import { Breadcrumb, TreeFileList } from "@/features/agent/ui/filesystem-tree";
+import { fileTone } from "@/features/agent/ui/filesystem-tree-model";
 import { useFilesystemPanelEffects } from "@/features/agent/ui/filesystem-panel-effects";
 
 type Props = { cwd: string | null };
-// eslint-disable-next-line complexity
-export function FilesystemPanel({ cwd }: Props) {
+function useFilesystemPanel(cwd: string | null) {
   // A file reference can point outside the session project (a PDF on the
   // Desktop). The panel then adopts that file's own directory as its root
   // instead of refusing to open it; `cwd` remains the project to return to.
@@ -131,20 +130,16 @@ export function FilesystemPanel({ cwd }: Props) {
   );
   const toggleDir = useCallback(
     (rel: string) => {
+      const shouldFetch = !expandedDirs.has(rel) && !dirChildren.has(rel);
       setExpandedDirs((prev) => {
         const next = new Set(prev);
-        if (next.has(rel)) {
-          next.delete(rel);
-        } else {
-          next.add(rel);
-          if (!dirChildren.has(rel)) {
-            void fetchDirChildren(rel);
-          }
-        }
+        if (next.has(rel)) next.delete(rel);
+        else next.add(rel);
         return next;
       });
+      if (shouldFetch) void fetchDirChildren(rel);
     },
-    [dirChildren, fetchDirChildren],
+    [dirChildren, expandedDirs, fetchDirChildren],
   );
   const lines = useMemo(() => fileContent.split("\n"), [fileContent]);
   const dirty = draftContent !== fileContent;
@@ -246,6 +241,65 @@ export function FilesystemPanel({ cwd }: Props) {
       content: `Comments on ${openFile}:\n${body}`,
     });
   }, [comments, openFile, requestContextAttach]);
+  return {
+    rootOverride,
+    setRootOverride,
+    projectRoot,
+    root,
+    relPath,
+    setRelPath,
+    entries,
+    openFile,
+    fileContent,
+    draftContent,
+    setDraftContent,
+    fileTruncated,
+    fileSize,
+    loadingFile,
+    savingFile,
+    saveError,
+    comments,
+    viewMode,
+    setViewMode,
+    searchQuery,
+    setSearchQuery,
+    expandedDirs,
+    dirChildren,
+    dirLoading,
+    fileListOpen,
+    setFileListOpen,
+    searchRef,
+    fontSize,
+    setFontSize,
+    previewKind,
+    binaryPreview,
+    openEntry,
+    toggleDir,
+    lines,
+    dirty,
+    enterEditMode,
+    focusEditor,
+    saveFile,
+    addComment,
+    removeComment,
+    attachCommentsToChat,
+  };
+}
+
+export function FilesystemPanel({ cwd }: Props) {
+  const model = useFilesystemPanel(cwd);
+  return <FilesystemPanelView {...model} />;
+}
+
+function FilesystemPanelView(model: ReturnType<typeof useFilesystemPanel>) {
+  const {
+    rootOverride, setRootOverride, projectRoot, root, relPath, setRelPath, entries, openFile,
+    fileContent, draftContent, setDraftContent, fileTruncated, fileSize, loadingFile, savingFile,
+    saveError, comments, viewMode, setViewMode, searchQuery, setSearchQuery, expandedDirs,
+    dirChildren, dirLoading, fileListOpen, setFileListOpen, searchRef, fontSize, setFontSize,
+    previewKind, binaryPreview, openEntry, toggleDir, lines, dirty, enterEditMode, focusEditor,
+    saveFile, addComment, removeComment, attachCommentsToChat,
+  } = model;
   if (!root) {
     return (
       <div className="flex h-full items-center justify-center text-center text-[length:var(--fs-sm)] text-(--dim)">
@@ -293,6 +347,7 @@ export function FilesystemPanel({ cwd }: Props) {
                 ref={searchRef}
                 type="text"
                 value={searchQuery}
+                aria-label="Search files"
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search files…"
                 className="h-7 w-full rounded-md border border-(--border) bg-(--color-input) px-2 text-[length:var(--fs-sm)] text-(--fg) outline-none placeholder:text-(--dim)/75 focus:border-(--border-hover)"
@@ -478,6 +533,7 @@ export function FilesystemPanel({ cwd }: Props) {
                 <textarea
                   ref={focusEditor}
                   value={draftContent}
+                  aria-label={`Edit ${openFile ?? "file"}`}
                   onChange={(event) => setDraftContent(event.target.value)}
                   spellCheck={false}
                   className="min-h-0 flex-1 resize-none overflow-auto bg-(--bg) p-2 font-mono text-(--fg) outline-none"

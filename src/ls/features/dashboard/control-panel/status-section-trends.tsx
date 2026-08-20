@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getStoredBackendUrl } from "@/lib/api/connection";
 import type { MetricSampleInput } from "./status-section-view";
 
@@ -19,6 +19,10 @@ type MetricPeak = {
   ttft: number;
 };
 
+type MetricSampleSnapshot = {
+  key: string;
+  samples: MetricSample[];
+};
 const samplesByKey = new Map<string, MetricSample[]>();
 
 function scopedSampleKey(key: string): string {
@@ -37,9 +41,11 @@ export function useMetricSamples({
   requestPeak,
   active,
 }: MetricSampleInput) {
-  const samplesRef = useRef<MetricSample[]>([]);
-  const sampleKeyRef = useRef<string | null>(null);
   const scopedKey = scopedSampleKey(key);
+  const [snapshot, setSnapshot] = useState<MetricSampleSnapshot>(() => ({
+    key: scopedKey,
+    samples: samplesByKey.get(scopedKey) ?? [],
+  }));
   const peaks: MetricPeak = {
     generation: finitePositive(generationPeak),
     prefill: finitePositive(prefillPeak),
@@ -47,34 +53,35 @@ export function useMetricSamples({
     ttft: finitePositive(ttftPeak),
   };
 
-  if (sampleKeyRef.current !== scopedKey) {
-    sampleKeyRef.current = scopedKey;
-    samplesRef.current = samplesByKey.get(scopedKey) ?? [];
-  }
-  if (!active) return { samples: zeroSamples(), peaks };
+  useEffect(() => {
+    if (!active) return;
+    const current = samplesByKey.get(scopedKey) ?? [];
+    const previous = current[current.length - 1];
+    const next: MetricSample = {
+      at: Date.now(),
+      generation: finitePositive(generation),
+      prefill: finitePositive(prefill),
+      requests: finitePositive(requests),
+      ttft: finitePositive(ttft),
+    };
+    const changed =
+      !previous ||
+      previous.generation !== next.generation ||
+      previous.prefill !== next.prefill ||
+      previous.ttft !== next.ttft ||
+      previous.requests !== next.requests;
+    const nextSamples = changed ? [...current, next].slice(-56) : current;
+    if (changed) samplesByKey.set(scopedKey, nextSamples);
+    setSnapshot((existing) =>
+      existing.key === scopedKey && existing.samples === nextSamples
+        ? existing
+        : { key: scopedKey, samples: nextSamples },
+    );
+  }, [active, generation, prefill, requests, scopedKey, ttft]);
 
-  const next: MetricSample = {
-    at: Date.now(),
-    generation: finitePositive(generation),
-    prefill: finitePositive(prefill),
-    requests: finitePositive(requests),
-    ttft: finitePositive(ttft),
-  };
-  const current = samplesRef.current;
-  const previous = current[current.length - 1];
-  if (
-    !previous ||
-    previous.generation !== next.generation ||
-    previous.prefill !== next.prefill ||
-    previous.ttft !== next.ttft ||
-    previous.requests !== next.requests
-  ) {
-    const nextSamples = [...current, next].slice(-56);
-    samplesRef.current = nextSamples;
-    samplesByKey.set(scopedKey, nextSamples);
-  }
-
-  return { samples: samplesRef.current.length > 0 ? samplesRef.current : zeroSamples(), peaks };
+  const samples =
+    active && snapshot.key === scopedKey ? snapshot.samples : (samplesByKey.get(scopedKey) ?? []);
+  return { samples: active && samples.length > 0 ? samples : zeroSamples(), peaks };
 }
 
 export function MetricTrends({ samples, peaks }: { samples: MetricSample[]; peaks: MetricPeak }) {

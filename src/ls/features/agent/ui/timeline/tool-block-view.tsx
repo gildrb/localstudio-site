@@ -1,14 +1,5 @@
 import { useState, type ReactNode } from "react";
-import {
-  ChevronRight,
-  FilePenLine,
-  FileText,
-  Globe2,
-  Search,
-  TerminalSquare,
-  Wrench,
-  type LucideIcon,
-} from "@/ui/icon-registry";
+import { ChevronRight } from "@/ui/icon-registry";
 import type { ToolBlock } from "@/features/agent/messages";
 import {
   FILE_WRITE_TOOL_NAMES,
@@ -22,21 +13,13 @@ import {
   toolArg,
   toolKindNodeColor,
   toolVerb,
-  type ToolKind,
 } from "@/features/agent/ui/timeline/tool-metadata";
 import {
   parseDiffPreview,
   type DiffPreviewLine,
 } from "@/features/agent/ui/timeline/diff-preview-model";
-
-export const TOOL_ICONS: Record<ToolKind, LucideIcon> = {
-  edit: FilePenLine,
-  search: Search,
-  read: FileText,
-  exec: TerminalSquare,
-  browser: Globe2,
-  generic: Wrench,
-};
+import { stableContentKeys } from "@/lib/stable-list-keys";
+import { TOOL_ICONS } from "./tool-icons";
 
 type ToolMeta = { verb: string; detail: string | null };
 
@@ -247,6 +230,10 @@ const DIFF_MARKER_STYLES: Record<DiffPreviewLine["kind"], string> = {
 
 function DiffPreviewSource({ body }: { body: string }) {
   const preview = parseDiffPreview(body);
+  const lineKeys = stableContentKeys(
+    preview.lines.map((line) => `${line.kind}:${line.marker}:${line.content}`),
+  );
+  const lines = preview.lines.map((line, index) => ({ key: lineKeys[index], line }));
   return (
     <div className="overflow-hidden rounded-md border border-(--border) bg-(--color-input)">
       <div className="flex h-7 items-center justify-between border-b border-(--separator) px-3 text-[length:var(--fs-xs)]">
@@ -257,9 +244,9 @@ function DiffPreviewSource({ body }: { body: string }) {
         </span>
       </div>
       <div className="max-h-[360px] overflow-y-auto overscroll-contain">
-        {preview.lines.map((line, index) => (
+        {lines.map(({ key, line }) => (
           <div
-            key={`${index}:${line.kind}`}
+            key={key}
             className={`grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] font-mono text-[length:var(--fs-sm)] leading-5 ${DIFF_ROW_STYLES[line.kind]} ${line.content ? "min-h-5" : "h-3"}`}
           >
             <span

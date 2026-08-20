@@ -196,7 +196,7 @@ export function useWorkspace({ ephemeral = false }: UseWorkspaceOptions = {}): U
     };
 
     return { dispatch: workspaceDispatch };
-  }, [queueSessionReplay, ephemeral]);
+  }, [queueSessionReplay, ephemeral, toolsRef]);
 
   const { dispatch } = controller;
 
@@ -349,7 +349,7 @@ export function useWorkspace({ ephemeral = false }: UseWorkspaceOptions = {}): U
         }
       },
     }),
-    [dispatch, ephemeral, getReplayQueue],
+    [dispatch, ephemeral, getReplayQueue, toolsRef],
   );
 
   useWorkspaceHydrationEffects({ dispatch, toolsRef, skipRestore: ephemeral });

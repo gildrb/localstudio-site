@@ -17,8 +17,13 @@ type ChevronProps = {
 type MenuListProps = {
 	items: readonly NavLink[];
 	onNavigate: () => void;
+	className?: string;
 }
 
+type MenuSection = {
+	readonly label: string;
+	readonly items: readonly NavLink[];
+}
 const products = [
 	{ label: "Local AI", href: "https://local.ai", external: true },
 	{ label: "Local Studio", href: "/download/macos" },
@@ -33,6 +38,18 @@ const resources = [
 	{ label: "Mobile", href: "/mobile" },
 ] as const satisfies readonly NavLink[];
 
+const menuSections = {
+	products: [
+		{ label: "Platform", items: [products[0]] },
+		{ label: "Desktop", items: [products[1]] },
+		{ label: "Mobile", items: [products[2]] },
+	],
+	resources: [
+		{ label: "Start", items: [resources[0], resources[2]] },
+		{ label: "Learn", items: [resources[1], resources[3]] },
+		{ label: "Connect", items: [resources[4]] },
+	],
+} as const satisfies Record<MenuId, readonly MenuSection[]>;
 const githubUrl = "https://github.com/sybil-solutions/local-studio";
 const mobileQuery = "(max-width: 900px)";
 
@@ -58,38 +75,13 @@ function GitHubMark() {
 	);
 }
 
-function MenuItems({ items, onNavigate }: MenuListProps) {
+function MenuItems({
+	items,
+	onNavigate,
+	className = "nav__menu-items",
+}: MenuListProps) {
 	return (
-		<div className="nav__menu-items">
-			{items.map((item) =>
-				item.external ? (
-					<a
-						role="menuitem"
-						href={item.href}
-						key={item.label}
-						target="_blank"
-						rel="noreferrer"
-					>
-						{item.label}
-					</a>
-				) : (
-					<LocalLink
-						role="menuitem"
-						href={item.href}
-						key={item.label}
-						onClick={onNavigate}
-					>
-						{item.label}
-					</LocalLink>
-				),
-			)}
-		</div>
-	);
-}
-
-function SheetItems({ items, onNavigate }: MenuListProps) {
-	return (
-		<ul className="nav__sheet-items">
+		<ul className={className}>
 			{items.map((item) => (
 				<li key={item.label}>
 					{item.external ? (
@@ -112,12 +104,38 @@ function SheetItems({ items, onNavigate }: MenuListProps) {
 	);
 }
 
+function DesktopMenu({
+	menu,
+	onNavigate,
+}: {
+	menu: MenuId;
+	onNavigate: () => void;
+}) {
+	const label = menu === "products" ? "Products" : "Resources";
+	return (
+		<div
+			className="nav__mega"
+			id={`nav-menu-${menu}`}
+			aria-label={`${label} menu`}
+		>
+			<div className="nav__mega-inner">
+				{menuSections[menu].map((section) => (
+					<section className="nav__mega-section" key={section.label}>
+						<p>{section.label}</p>
+						<MenuItems items={section.items} onNavigate={onNavigate} />
+					</section>
+				))}
+			</div>
+		</div>
+	);
+}
+
 export function Header() {
 	const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
 	const [mobileOpen, setMobileOpen] = useState(false);
-	const menusRef = useRef<HTMLDivElement>(null);
+	const menusRef = useRef<HTMLElement>(null);
 	const toggleRef = useRef<HTMLButtonElement>(null);
-	const sheetRef = useRef<HTMLDivElement>(null);
+	const sheetRef = useRef<HTMLDialogElement>(null);
 	const sheetId = useId();
 
 	useEffect(() => {
@@ -140,9 +158,11 @@ export function Header() {
 		};
 	}, [openMenu]);
 
+
 	useEffect(() => {
 		const media = window.matchMedia(mobileQuery);
 		function onChange() {
+			if (media.matches) setOpenMenu(null);
 			if (!media.matches) setSheetOpen(false);
 		}
 		media.addEventListener("change", onChange);
@@ -187,6 +207,13 @@ export function Header() {
 		};
 	}, [mobileOpen]);
 
+	useEffect(() => {
+		const sheet = sheetRef.current;
+		if (!sheet) return;
+		if (mobileOpen && !sheet.open) sheet.show();
+		if (!mobileOpen && sheet.open) sheet.close();
+	}, [mobileOpen]);
+
 	function setSheetOpen(open: boolean) {
 		document.documentElement.classList.toggle("nav-open", open);
 		setMobileOpen(open);
@@ -195,45 +222,40 @@ export function Header() {
 	const close = () => setOpenMenu(null);
 	const closeMobile = () => setSheetOpen(false);
 
-	function menu(id: MenuId, label: string, items: readonly NavLink[]) {
+	function menu(id: MenuId, label: string) {
 		const open = openMenu === id;
 		return (
-			<div
-				className="nav__menu"
-				onPointerLeave={() =>
-					setOpenMenu((current) => (current === id ? null : current))
-				}
-			>
+			<div className="nav__menu">
 				<button
 					type="button"
 					className="nav__menu-trigger"
-					aria-haspopup="menu"
+					aria-haspopup="true"
 					aria-expanded={open}
-					onClick={() => {
-						if (open) return;
-						setOpenMenu(id);
-					}}
+					aria-controls={`nav-menu-${id}`}
+					onClick={(event) =>
+						setOpenMenu(event.detail === 0 && open ? null : id)
+					}
 					onPointerEnter={() => setOpenMenu(id)}
 				>
 					{label}
 					<Chevron open={open} />
 				</button>
-				{open ? (
-					<div className="nav__menu-panel" role="menu" aria-label={label}>
-						<MenuItems items={items} onNavigate={close} />
-					</div>
-				) : null}
 			</div>
 		);
 	}
 
 	return (
-		<header className={mobileOpen ? "nav is-open" : "nav"}>
+		<header
+			ref={menusRef}
+			className={`nav${mobileOpen ? " is-open" : ""}${openMenu ? ` has-menu has-menu--${openMenu}` : ""}`}
+			onPointerLeave={() => setOpenMenu(null)}
+		>
 			<LocalLink
 				className="brand"
 				href="/"
 				aria-label="Local Studio"
 				onClick={closeMobile}
+				onPointerEnter={close}
 			>
 				<img
 					className="brand__logo"
@@ -247,21 +269,29 @@ export function Header() {
 			<nav
 				className="nav__links"
 				aria-label="Landing navigation"
-				ref={menusRef}
 			>
-				{menu("products", "Products", products)}
-				{menu("resources", "Resources", resources)}
-				<a href="https://www.sybilsolutions.ai/">Company</a>
+				{menu("products", "Products")}
+				{menu("resources", "Resources")}
+				<a
+					href="https://www.sybilsolutions.ai/"
+					onPointerEnter={close}
+				>
+					Company
+				</a>
 				<LocalLink
 					className="nav__github"
 					href={githubUrl}
 					target="_blank"
 					rel="noreferrer"
 					aria-label="Local Studio on GitHub"
+					onPointerEnter={close}
 				>
 					<GitHubMark />
 				</LocalLink>
 			</nav>
+			{openMenu ? (
+				<DesktopMenu menu={openMenu} onNavigate={close} />
+			) : null}
 			<button
 				ref={toggleRef}
 				type="button"
@@ -277,11 +307,10 @@ export function Header() {
 					<Equal size={22} strokeWidth={1.5} aria-hidden="true" />
 				)}
 			</button>
-			<div
+			<dialog
 				id={sheetId}
 				ref={sheetRef}
 				className="nav__sheet"
-				role="dialog"
 				aria-modal={mobileOpen || undefined}
 				aria-label="Navigation menu"
 				aria-hidden={!mobileOpen}
@@ -298,7 +327,11 @@ export function Header() {
 								aria-hidden="true"
 							/>
 						</summary>
-						<SheetItems items={products} onNavigate={closeMobile} />
+						<MenuItems
+							items={products}
+							onNavigate={closeMobile}
+							className="nav__sheet-items"
+						/>
 					</details>
 					<details name="mobile-nav" className="nav__sheet-group">
 						<summary className="nav__sheet-summary">
@@ -310,7 +343,11 @@ export function Header() {
 								aria-hidden="true"
 							/>
 						</summary>
-						<SheetItems items={resources} onNavigate={closeMobile} />
+						<MenuItems
+							items={resources}
+							onNavigate={closeMobile}
+							className="nav__sheet-items"
+						/>
 					</details>
 					<a
 						className="nav__sheet-link"
@@ -339,7 +376,7 @@ export function Header() {
 						GitHub
 					</a>
 				</div>
-			</div>
+			</dialog>
 		</header>
 	);
 }

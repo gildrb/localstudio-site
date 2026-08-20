@@ -52,12 +52,10 @@ export function useNavSectionOrder(): {
 
   const moveBefore = (dragged: SectionId, target: SectionId) => {
     if (dragged === target) return;
-    setOrder((current) => {
-      const next = current.filter((entry) => entry !== dragged);
-      next.splice(next.indexOf(target), 0, dragged);
-      writeSectionOrder(next);
-      return next;
-    });
+    const next = order.filter((entry) => entry !== dragged);
+    next.splice(next.indexOf(target), 0, dragged);
+    setOrder(next);
+    writeSectionOrder(next);
   };
 
   return {

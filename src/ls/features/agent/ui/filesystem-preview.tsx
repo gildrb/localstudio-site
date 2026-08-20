@@ -5,6 +5,8 @@ import type { Mermaid } from "mermaid";
 import { AssistantMarkdown } from "@/features/agent/ui/assistant-markdown";
 import type { PreviewKind } from "@/features/agent/filesystem-types";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
+import { stableContentKeys } from "@/lib/stable-list-keys";
+import { isBinaryPreviewKind } from "./filesystem-preview-model";
 
 type MarkdownSegment =
   | { kind: "text"; text: string }
@@ -62,44 +64,26 @@ function MermaidBlock({ code, fence }: { code: string; fence: string }) {
 }
 
 function MarkdownWithMermaid({ text }: { text: string }) {
+  const segments = splitMermaidSegments(text);
+  const keys = stableContentKeys(
+    segments.map((segment) =>
+      segment.kind === "mermaid" ? `mermaid:${segment.fence}` : `text:${segment.text}`,
+    ),
+  );
+  const keyedSegments = segments.map((segment, index) => ({ key: keys[index], segment }));
   return (
     <>
-      {splitMermaidSegments(text).map((segment, index) =>
+      {keyedSegments.map(({ key, segment }) =>
         segment.kind === "mermaid" ? (
-          <MermaidBlock
-            key={`${index}-${segment.code}`}
-            code={segment.code}
-            fence={segment.fence}
-          />
+          <MermaidBlock key={key} code={segment.code} fence={segment.fence} />
         ) : (
-          <AssistantMarkdown key={index} text={segment.text} />
+          <AssistantMarkdown key={key} text={segment.text} />
         ),
       )}
     </>
   );
 }
 
-function previewKindForPath(path: string): PreviewKind | null {
-  if (/\.(html?|svg)$/i.test(path)) return "html";
-  if (/\.(jsx|tsx)$/i.test(path)) return "jsx";
-  if (/\.(md|mdx|markdown)$/i.test(path)) return "md";
-  if (/\.(png|jpe?g|gif|webp|avif|bmp|ico|apng)$/i.test(path)) return "image";
-  if (/\.pdf$/i.test(path)) return "pdf";
-  return null;
-}
-
-export function previewKindForOpenFile(openFile: string | null): PreviewKind | null {
-  return openFile ? previewKindForPath(openFile) : null;
-}
-
-/** Kinds served from the file's own bytes instead of a UTF-8 text read. */
-export function isBinaryPreviewKind(kind: PreviewKind | null): kind is "image" | "pdf" {
-  return kind === "image" || kind === "pdf";
-}
-
-export function rawFileUrl(root: string, relPath: string): string {
-  return `/api/agent/fs/raw?cwd=${encodeURIComponent(root)}&path=${encodeURIComponent(relPath)}`;
-}
 
 // Images render straight from /api/agent/fs/raw — same-origin, so the app's
 // `img-src 'self'` CSP allows them. PDFs cannot be embedded (the CSP sets

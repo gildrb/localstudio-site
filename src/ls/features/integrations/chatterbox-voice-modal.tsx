@@ -3,6 +3,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import api from "@/lib/api/client";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
+import { createManagedObjectUrl } from "@/lib/object-url";
 import { Alert, Button, UiModal, UiModalHeader } from "@/ui";
 import { AudioLines, X } from "@/ui/icon-registry";
 import { VoiceCreator } from "./chatterbox-voice-creator";
@@ -128,7 +129,7 @@ export function ChatterboxVoiceModal({ onClose }: { onClose: () => void }) {
         }),
       (audio) => {
         clearPreview();
-        const url = URL.createObjectURL(audio);
+        const url = createManagedObjectUrl(audio);
         previewUrlRef.current = url;
         setPreview({ url, voiceId: generatedVoiceId });
       },

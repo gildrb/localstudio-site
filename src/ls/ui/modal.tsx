@@ -44,16 +44,24 @@ function UiModal({ isOpen, onClose, children, className, maxWidth = "max-w-lg" }
         event.preventDefault();
         callbacks.onClose();
       }}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) callbacks.onClose();
-      }}
-      className={cx(
-        `fixed inset-0 z-50 m-auto max-h-[calc(100dvh-3rem)] w-[calc(100%-2rem)] outline-none backdrop:bg-(--color-background) ${POPOVER_PANEL_CLASS}`,
-        maxWidth,
-        className,
-      )}
+      className="fixed inset-0 z-50 m-0 h-full max-h-none w-full max-w-none items-center justify-center bg-transparent p-0 backdrop:bg-(--color-background) open:flex"
     >
-      <UiModalTitleIdContext.Provider value={titleId}>{children}</UiModalTitleIdContext.Provider>
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label="Close modal"
+        className="absolute inset-0"
+        onClick={() => callbacks.onClose()}
+      />
+      <div
+        className={cx(
+          `relative z-10 max-h-[calc(100dvh-3rem)] w-[calc(100%-2rem)] outline-none ${POPOVER_PANEL_CLASS}`,
+          maxWidth,
+          className,
+        )}
+      >
+        <UiModalTitleIdContext.Provider value={titleId}>{children}</UiModalTitleIdContext.Provider>
+      </div>
     </dialog>
   );
 }

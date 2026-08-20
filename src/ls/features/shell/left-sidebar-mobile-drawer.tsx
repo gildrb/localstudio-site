@@ -4,12 +4,8 @@ import { useRef } from "react";
 import { Settings, SquarePen, X } from "@/ui/icon-registry";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
 import type { ProjectsNavSectionComponent } from "@/features/shell/left-sidebar-lazy";
-import {
-  NavItemMobile,
-  ProjectsNavPlaceholder,
-  isRouteActive,
-  tabs,
-} from "@/features/shell/left-sidebar-nav";
+import { NavItemMobile, ProjectsNavPlaceholder } from "@/features/shell/left-sidebar-nav";
+import { isRouteActive, tabs } from "@/features/shell/left-sidebar-nav-model";
 
 export function MobileNavigationDrawer({
   pathname,
@@ -46,15 +42,20 @@ export function MobileNavigationDrawer({
   return (
     <dialog
       ref={dialogRef}
+      aria-label="Navigation menu"
       className="fixed inset-0 z-50 m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-black/60 md:hidden"
       onCancel={(event) => {
         event.preventDefault();
         onClose();
       }}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
     >
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label="Close navigation menu"
+        className="absolute inset-0"
+        onClick={onClose}
+      />
       <aside
         id="mobile-navigation-drawer"
         className="mobile-pwa-drawer absolute right-0 top-0 flex h-full w-full flex-col bg-(--bg) md:w-[min(22rem,88vw)] md:border-l md:border-(--border)"
@@ -113,6 +114,6 @@ export function MobileNavigationDrawer({
           ) : null}
         </nav>
       </aside>
-    </div>
+    </dialog>
   );
 }

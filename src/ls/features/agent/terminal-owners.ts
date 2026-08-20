@@ -23,7 +23,8 @@ export function uniqueTerminalKeys(keys: string[]): string[] {
 }
 
 export function terminalKeysMatch(a: readonly string[], b: readonly string[]): boolean {
-  return a.some((key) => b.includes(key));
+  const keys = new Set(b);
+  return a.some((key) => keys.has(key));
 }
 
 export function mergeTerminalKeys(a: readonly string[], b: readonly string[]): string[] {

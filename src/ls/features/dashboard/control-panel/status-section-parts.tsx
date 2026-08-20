@@ -173,7 +173,7 @@ function StatusHeaderActions({
   );
 }
 
-export function benchmarkButtonLabel(benchmarking: boolean, result: number | null): string {
+function benchmarkButtonLabel(benchmarking: boolean, result: number | null): string {
   if (benchmarking) return "Benchmarking…";
   return result === null ? "Bench" : `Bench · ${result.toFixed(1)} tok/s`;
 }

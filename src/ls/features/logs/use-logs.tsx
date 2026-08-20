@@ -10,6 +10,25 @@ import { useMountSubscription } from "@/hooks/use-mount-subscription";
 const MAX_RENDERED_LINES = 20_000;
 const FAST_LOG_REQUEST = { timeout: 3_000, retries: 0 } as const;
 
+function formatLogDateTime(dateValue: string): string {
+  return new Date(dateValue).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function logLineClass(line: string): string {
+  if (line.includes("ERROR") || line.includes("error")) return "text-(--err)";
+  if (line.includes("WARNING") || line.includes("warn")) return "text-(--hl3)";
+  if (line.includes("INFO")) return "text-(--hl1)";
+  if (line.includes("loaded") || line.includes("started") || line.includes("success")) {
+    return "text-(--hl2)";
+  }
+  return "text-(--dim)";
+}
+
 export function useLogs() {
   // Stale-while-revalidate: paint the last-loaded session list instantly on
   // navigation while the fresh fetch runs in the background.
@@ -41,16 +60,25 @@ export function useLogs() {
   }, [selectedSession]);
 
   const loadLogContent = useCallback(async (sessionId: string, silent = false) => {
-    if (!silent) setLoadingContent(true);
+    const execute = async () => {
+      try {
+        const data = await api.getLogs(sessionId, 2000, FAST_LOG_REQUEST);
+        const lines = Array.isArray(data.logs) ? data.logs : [];
+        setLogLines(lines);
+      } catch (error) {
+        console.error("Failed to load log content:", error);
+        setLogLines(["Failed to load log content"]);
+      }
+    };
+    if (silent) {
+      await execute();
+      return;
+    }
+    setLoadingContent(true);
     try {
-      const data = await api.getLogs(sessionId, 2000, FAST_LOG_REQUEST);
-      const lines = Array.isArray(data.logs) ? data.logs : [];
-      setLogLines(lines);
-    } catch (e) {
-      console.error("Failed to load log content:", e);
-      setLogLines(["Failed to load log content"]);
+      await execute();
     } finally {
-      if (!silent) setLoadingContent(false);
+      setLoadingContent(false);
     }
   }, []);
 
@@ -184,22 +212,6 @@ export function useLogs() {
     }
   }, [filteredSessions, selectedSession]);
 
-  const formatDateTime = (dateValue: string) =>
-    new Date(dateValue).toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-  const getLogLineClass = (line: string) => {
-    if (line.includes("ERROR") || line.includes("error")) return "text-(--err)";
-    if (line.includes("WARNING") || line.includes("warn")) return "text-(--hl3)";
-    if (line.includes("INFO")) return "text-(--hl1)";
-    if (line.includes("loaded") || line.includes("started") || line.includes("success"))
-      return "text-(--hl2)";
-    return "text-(--dim)";
-  };
 
   const renderLogs = useCallback(() => {
     const query = contentFilter.trim().toLowerCase();
@@ -207,7 +219,7 @@ export function useLogs() {
       ? logLines.filter((line) => line.toLowerCase().includes(query))
       : logLines;
     return visible.map((line, index) => (
-      <div key={index} className={`${getLogLineClass(line)} hover:bg-(--hover) px-2 py-0.5`}>
+      <div key={index} className={`${logLineClass(line)} hover:bg-(--hover) px-2 py-0.5`}>
         {line || "\u00A0"}
       </div>
     ));
@@ -241,7 +253,7 @@ export function useLogs() {
     downloadLog,
     renderLogs,
     handleSelectSession,
-    formatDateTime,
+    formatDateTime: formatLogDateTime,
     setSelectedSession,
   };
 }

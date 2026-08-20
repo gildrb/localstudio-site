@@ -4,13 +4,12 @@ import { useRef, useState } from "react";
 import { Effect } from "effect";
 import { Check, Copy, ExternalLink, Smartphone, Upload } from "@/ui/icon-registry";
 import { Input } from "@/ui";
+import { ProfileAvatar, useLocalProfile } from "@/features/shell/local-profile";
+import { PROFILE_HUES } from "@/features/shell/local-profile-types";
 import {
-  PROFILE_HUES,
   profileAvatarColor,
-  ProfileAvatar,
   profileImageFromFile,
-  useLocalProfile,
-} from "@/features/shell/local-profile";
+} from "@/features/shell/local-profile-utils";
 import { QrCode } from "@/features/shell/qr-code";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
 import { writeClipboardText } from "@/lib/clipboard";

@@ -14,6 +14,12 @@ const LEVEL_CLASSES = [
   "bg-[color:var(--color-blue-500)]/90",
 ];
 
+const WEEK_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  timeZone: "UTC",
+});
 type DailyUsage = UsageStats["daily"][number];
 type ActivityUsage = Pick<DailyUsage, "requests" | "total_tokens">;
 
@@ -39,12 +45,7 @@ const dateLabel = (date: Date): string =>
 
 const weekLabel = (date: Date): string => {
   const end = new Date(date.getTime() + 6 * DAY_MS);
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  const formatter = WEEK_DATE_FORMATTER;
   return `${formatter.format(date)} – ${formatter.format(end)}`;
 };
 
@@ -52,10 +53,9 @@ const quantile = (values: number[], fraction: number): number =>
   values[Math.min(values.length - 1, Math.floor(values.length * fraction))] ?? 0;
 
 const thresholds = (daily: ActivityUsage[]): number[] => {
-  const values = daily
-    .map((day) => day.total_tokens)
-    .filter((value) => value > 0)
-    .sort((a, b) => a - b);
+  const values: number[] = [];
+  for (const day of daily) if (day.total_tokens > 0) values.push(day.total_tokens);
+  values.sort((a, b) => a - b);
   return [quantile(values, 0.25), quantile(values, 0.5), quantile(values, 0.75)];
 };
 
@@ -67,12 +67,15 @@ const activityLevel = (value: number, limits: number[]): number => {
   return 4;
 };
 
-const monthLabels = (start: Date): Array<string | null> =>
+const monthLabels = (start: Date): Array<{ key: string; label: string | null }> =>
   Array.from({ length: WEEKS }, (_, week) => {
     const date = new Date(start.getTime() + week * 7 * DAY_MS);
     const previous = new Date(date.getTime() - 7 * DAY_MS);
-    if (week > 0 && date.getUTCMonth() === previous.getUTCMonth()) return null;
-    return date.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
+    const label =
+      week > 0 && date.getUTCMonth() === previous.getUTCMonth()
+        ? null
+        : date.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
+    return { key: dateKey(date), label };
   });
 
 const weeklyUsage = (daily: DailyUsage[]): Map<string, ActivityUsage> => {
@@ -110,15 +113,15 @@ export function TokenActivityHeatmap({
     const usage = byDate.get(dateKey(date));
     return { date, usage, level: activityLevel(usage?.total_tokens ?? 0, limits) };
   });
-  const [activeDate, setActiveDate] = useState(dateKey(end));
+  const [activeDate, setActiveDate] = useState(() => dateKey(end));
   const activeCell = cells.find(({ date }) => dateKey(date) === activeDate) ?? cells.at(-1);
 
   return (
     <div className="overflow-x-auto pb-1">
       <div className="min-w-[47rem]">
         <div className="mb-2 grid grid-cols-[repeat(53,minmax(0,1fr))] gap-[3px]">
-          {monthLabels(start).map((label, index) => (
-            <span key={index} className="text-[length:var(--fs-2xs)] text-(--ui-muted)">
+          {monthLabels(start).map(({ key, label }) => (
+            <span key={key} className="text-[length:var(--fs-2xs)] text-(--ui-muted)">
               {label}
             </span>
           ))}

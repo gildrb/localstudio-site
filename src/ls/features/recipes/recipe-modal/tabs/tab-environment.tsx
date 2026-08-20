@@ -4,6 +4,7 @@ import { Code, Plus, Trash2, Variable } from "@/ui/icon-registry";
 import { Button, Card, FormSection, Input, Textarea } from "@/ui";
 import type { RecipeEditor } from "@/features/recipes/recipe-editor";
 import type { EngineCapabilities } from "@/features/recipes/engine-capabilities";
+import type { EnvVarEntry } from "../recipe-modal-source";
 
 export function RecipeModalTabEnvironment({
   recipe,
@@ -22,7 +23,7 @@ export function RecipeModalTabEnvironment({
   recipe: RecipeEditor;
   onChange: (next: RecipeEditor) => void;
   capabilities: EngineCapabilities;
-  envVarEntries: Array<{ key: string; value: string }>;
+  envVarEntries: EnvVarEntry[];
   onAddEnvVar: () => void;
   onChangeEnvVar: (index: number, field: "key" | "value", value: string) => void;
   onRemoveEnvVar: (index: number) => void;
@@ -46,7 +47,7 @@ export function RecipeModalTabEnvironment({
       <FormSection icon={<Variable className="h-4 w-4" />} title="Environment Variables">
         <div className="space-y-2">
           {envVarEntries.map((entry, index) => (
-            <div key={`${entry.key}-${index}`} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+            <div key={entry.id} className="grid grid-cols-[1fr_1fr_auto] gap-2">
               <Input
                 type="text"
                 value={entry.key}

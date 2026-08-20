@@ -14,7 +14,7 @@ import { useClickOutside } from "@/features/agent/hooks/use-click-outside";
 import { setReasoningVisible } from "@/features/agent/messages/reasoning-pref";
 import { useReasoningVisible } from "@/features/agent/messages/use-reasoning-visible";
 import { CloseIcon, MoreIcon } from "@/ui/icons";
-import { preloadTerminalPanel } from "@/features/agent/ui/terminal-panel";
+import { TerminalPanel } from "@/features/agent/ui/terminal-panel";
 
 const CHAT_HEADER_MENU_CLASS = `absolute left-0 top-7 isolate z-[999] min-w-[180px] text-xs text-(--fg) opacity-100 ${POPOVER_MENU_CLASS}`;
 
@@ -190,8 +190,8 @@ export function AgentChatPaneHeader({
 						type="button"
 						onPointerDown={(event) => event.stopPropagation()}
 						onMouseDown={(event) => event.stopPropagation()}
-						onMouseEnter={preloadTerminalPanel}
-						onFocus={preloadTerminalPanel}
+						onMouseEnter={TerminalPanel.preload}
+						onFocus={TerminalPanel.preload}
 						onClick={onOpenTerminal}
 						aria-pressed={terminalOpen}
 						className={`relative z-10 -my-1 hidden h-8 w-8 items-center justify-center rounded-lg md:inline-flex ${

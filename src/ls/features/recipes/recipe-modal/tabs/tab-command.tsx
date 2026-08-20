@@ -46,6 +46,7 @@ export function RecipeModalTabCommand({
         </div>
 
         <textarea
+          aria-label="Recipe JSON"
           value={recipeSourceText}
           onChange={(e) => onRecipeSourceChange(e.target.value)}
           spellCheck={false}

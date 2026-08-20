@@ -361,18 +361,18 @@ export function createSessionRuntimeController(): SessionRuntimeController {
   // connection key via the pi-session match) and idles sessions the runtime
   // no longer reports as active.
   const applyRuntimeList = (runtimeSessions: RuntimeSessionSummary[], fetchStartedAt: number) => {
-    const byRuntime = new Map(runtimeSessions.map((entry) => [entry.sessionId, entry.status]));
-    const byPi = new Map(
-      runtimeSessions
-        .filter((entry) => entry.status.piSessionId)
-        .map((entry) => [
-          entry.status.piSessionId!,
-          { serverKey: entry.sessionId, status: entry.status },
-        ]),
-    );
+    const byRuntime = new Map<string, RuntimeStatus>();
+    const byPi = new Map<string, { serverKey: string; status: RuntimeStatus }>();
+    for (const entry of runtimeSessions) {
+      byRuntime.set(entry.sessionId, entry.status);
+      if (entry.status.piSessionId) {
+        byPi.set(entry.status.piSessionId, { serverKey: entry.sessionId, status: entry.status });
+      }
+    }
     const sessions = binding?.getSessions() ?? [];
     const sharedPiIds = collidingPiSessionIds(sessions);
-    for (const session of sessions.filter((entry) => entry.status !== "loading")) {
+    for (const session of sessions) {
+      if (session.status === "loading") continue;
       const connectionKey = connectionKeyFor(session);
       const direct = byRuntime.get(connectionKey);
       const piMatch =

@@ -65,6 +65,7 @@ function UserAttachmentPreview({ attachment }: { attachment: ChatMessageAttachme
         <iframe
           src={attachment.previewUrl}
           title={attachment.name}
+          sandbox=""
           className="h-72 w-full border-0 bg-(--bg)"
         />
         <div className="truncate px-2 py-1 font-mono text-[length:var(--fs-xs)] text-(--dim)">

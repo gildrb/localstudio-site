@@ -22,6 +22,14 @@ const DARK_THEME_ID = "zai-dark";
 
 type ThemeMode = "light" | "dark" | "system";
 
+const UI_FONT_SIZE_MAP: Record<string, number> = { sm: 14, md: 16, lg: 17, xl: 18, "2xl": 20 };
+const EDITOR_TOKENS: Array<{ key: keyof ThemeTokens; label: string; description?: string }> = [
+  { key: "accent", label: "Accent", description: "Buttons, links, highlights" },
+  { key: "bg", label: "Background" },
+  { key: "fg", label: "Foreground", description: "Primary text" },
+  { key: "surface", label: "Surface", description: "Cards & panels" },
+];
+const ADVANCED_TOKENS: Array<keyof ThemeTokens> = ["dim", "border", "hl1", "hl2", "hl3", "err"];
 const MODE_ITEMS: SegmentedItem<ThemeMode>[] = [
   { id: "light", label: "Light", icon: <Sun className="h-3.5 w-3.5" /> },
   { id: "dark", label: "Dark", icon: <Moon className="h-3.5 w-3.5" /> },
@@ -116,8 +124,7 @@ export function AppearanceSettings() {
     () => new Set(["Reference", "Studio"]),
   );
 
-  const sizeMap: Record<string, number> = { sm: 14, md: 16, lg: 17, xl: 18, "2xl": 20 };
-  const [uiFontSize, setUiFontSize] = useState(sizeMap[fontSizeId] ?? 16);
+  const [uiFontSize, setUiFontSize] = useState(UI_FONT_SIZE_MAP[fontSizeId] ?? 16);
 
   const [uiScale, setUiScale] = useState(() => readVar("--ui-scale", 1));
   const [radiusBase, setRadiusBase] = useState(() => readVar("--radius-base", 8));
@@ -201,15 +208,16 @@ export function AppearanceSettings() {
     setIsCustomActive(false);
   }
 
-  const patchToken = useCallback((key: keyof ThemeTokens, value: string) => {
-    setCustomTokens((prev) => {
-      const next = { ...prev, [key]: value };
+  const patchToken = useCallback(
+    (key: keyof ThemeTokens, value: string) => {
+      const next = { ...customTokens, [key]: value };
+      setCustomTokens(next);
       writeCustomTokens(next);
       applyTokensToDocument(next);
       setIsCustomActive(true);
-      return next;
-    });
-  }, []);
+    },
+    [customTokens],
+  );
 
   const resetTokens = () => {
     setCustomTokens(baseTokens);
@@ -232,13 +240,8 @@ export function AppearanceSettings() {
     setIsCustomActive(false);
   };
 
-  const editorTokens: Array<{ key: keyof ThemeTokens; label: string; description?: string }> = [
-    { key: "accent", label: "Accent", description: "Buttons, links, highlights" },
-    { key: "bg", label: "Background" },
-    { key: "fg", label: "Foreground", description: "Primary text" },
-    { key: "surface", label: "Surface", description: "Cards & panels" },
-  ];
-
+  const editorTokens = EDITOR_TOKENS;
+  const advancedTokens = ADVANCED_TOKENS;
   const advancedTokens: Array<keyof ThemeTokens> = ["dim", "border", "hl1", "hl2", "hl3", "err"];
 
   const themeLibrary = (
@@ -251,6 +254,7 @@ export function AppearanceSettings() {
           <Search className="h-3 w-3 shrink-0 text-(--ui-muted)" />
           <input
             value={query}
+            aria-label="Search themes"
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search colors or fonts"
             className="min-w-0 flex-1 bg-transparent text-[length:var(--fs-md)] text-(--ui-fg) outline-none placeholder:text-(--ui-muted)/60"

@@ -17,7 +17,7 @@ import type {
 } from "@/lib/api/studio";
 import type { GPU, ModelDownload } from "@/lib/types";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
-import { downloadProgressText } from "./downloads-tab";
+import { downloadProgressText } from "./download-text";
 import { sumGpuMemoryPoolGb } from "./explore-eligibility";
 import { readExplorePoolOverrideGb } from "./explore-pool-storage";
 import { buildHardwareProfile } from "./hardware-profile";

@@ -47,15 +47,20 @@ export function DrawerOverlay({ children, onClose }: { children: ReactNode; onCl
   return (
     <dialog
       ref={dialogRef}
+      aria-label="Details drawer"
       className="fixed inset-0 z-50 m-0 flex h-full max-h-none w-full max-w-none justify-end bg-transparent p-0 backdrop:bg-black/30"
       onCancel={(event) => {
         event.preventDefault();
         onClose();
       }}
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
     >
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label="Close drawer"
+        className="absolute inset-0"
+        onClick={onClose}
+      />
       {children}
     </dialog>
   );

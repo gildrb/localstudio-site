@@ -8,6 +8,10 @@ import { useMountSubscription } from "@/hooks/use-mount-subscription";
 import { effectTimeout, type EffectTimer } from "@/lib/effect-timers";
 import { patchSessionView, readSessionView } from "@/features/agent/workspace/session-view-state";
 
+const PROMPT_TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  hour: "2-digit",
+  minute: "2-digit",
+});
 // Mirrors `groupAssistantBlocks`: a message renders something only if it has a
 // non-empty text block or any tool/thinking/event block. Assistant messages
 // that produce nothing (e.g. only whitespace text from a stream) would still
@@ -218,14 +222,16 @@ function PromptMarkers({
 }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const prompts = useMemo(
-    () =>
-      messages
-        .filter((message) => message.role === "user" && userPromptLabel(message).length > 0)
-        .map((message) => ({
-          id: message.id,
-          label: userPromptLabel(message),
-          time: formatPromptTime(message.timestamp),
-        })),
+    () => {
+      const result: PromptMarker[] = [];
+      for (const message of messages) {
+        if (message.role !== "user") continue;
+        const label = userPromptLabel(message);
+        if (!label) continue;
+        result.push({ id: message.id, label, time: formatPromptTime(message.timestamp) });
+      }
+      return result;
+    },
     [messages],
   );
   const viewportHeight = useScrollerViewportHeight(scroller);
@@ -371,9 +377,7 @@ function formatPromptTime(timestamp?: string): string {
   if (/^\d{1,2}:\d{2}(?:\s?[AP]M)?$/i.test(value)) return value;
   const parsed = Date.parse(value);
   if (!Number.isFinite(parsed)) return value;
-  return new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }).format(
-    new Date(parsed),
-  );
+  return PROMPT_TIME_FORMATTER.format(new Date(parsed));
 }
 
 type MergedRun = { segments: ChatMessage[]; merged: ChatMessage };
@@ -428,10 +432,11 @@ function mergeRun(run: ChatMessage[], cache: Map<string, MergedRun>): ChatMessag
     // tool boundary within a turn, remounting the whole assistant <article>
     // mid-stream and collapsing expanded reasoning/tool disclosures.
     id: first.id,
-    text: run
-      .map((segment) => segment.text)
-      .filter(Boolean)
-      .join("\n"),
+    text: (() => {
+      const text: string[] = [];
+      for (const segment of run) if (segment.text) text.push(segment.text);
+      return text.join("\n");
+    })(),
     blocks: run.flatMap((segment) => segment.blocks ?? []),
     streamCalls: run.flatMap((segment) => segment.streamCalls ?? []),
     timestamp: run.reduce<string | undefined>(

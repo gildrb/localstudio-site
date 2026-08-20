@@ -112,13 +112,13 @@ function cacheKeys(storage: TranscriptStorage): string[] {
 function evictStaleSessions(storage: TranscriptStorage, keepKey: string): void {
   const keys = cacheKeys(storage);
   if (keys.length <= MAX_SESSIONS) return;
-  const dated = keys
-    .filter((key) => key !== keepKey)
-    .map((key) => {
-      const entry = parseCachedTranscript(storage.getItem(key));
-      return { key, updatedAt: entry?.updatedAt ?? 0 };
-    })
-    .sort((a, b) => a.updatedAt - b.updatedAt);
+  const dated: Array<{ key: string; updatedAt: number }> = [];
+  for (const key of keys) {
+    if (key === keepKey) continue;
+    const entry = parseCachedTranscript(storage.getItem(key));
+    dated.push({ key, updatedAt: entry?.updatedAt ?? 0 });
+  }
+  dated.sort((a, b) => a.updatedAt - b.updatedAt);
   for (const { key } of dated.slice(0, keys.length - MAX_SESSIONS)) {
     storage.removeItem(key);
   }

@@ -13,12 +13,8 @@ import {
   PanelLeftFilled,
 } from "@/ui/icon-registry";
 import type { ProjectsNavSectionComponent } from "@/features/shell/left-sidebar-lazy";
-import {
-  NavItemDesktop,
-  ProjectsNavPlaceholder,
-  isRouteActive,
-  tabs,
-} from "@/features/shell/left-sidebar-nav";
+import { NavItemDesktop, ProjectsNavPlaceholder } from "@/features/shell/left-sidebar-nav";
+import { isRouteActive, tabs } from "@/features/shell/left-sidebar-nav-model";
 
 const HISTORY_STEPPER_CLASS =
   "flex h-6 w-6 items-center justify-center rounded-md text-(--hl2) transition-colors hover:bg-(--hover) hover:text-(--fg)";
@@ -31,6 +27,7 @@ export function DesktopSidebar({
   projectsNavReady,
   ProjectsNavSection,
   onStartResize,
+  onResize,
   onRevealProjectsNav,
   onSetPinnedOpen,
   onOpenSearch,
@@ -43,6 +40,7 @@ export function DesktopSidebar({
   projectsNavReady: boolean;
   ProjectsNavSection: ProjectsNavSectionComponent | null;
   onStartResize: (event: ReactMouseEvent<HTMLDivElement>) => void;
+  onResize: (width: number) => void;
   onRevealProjectsNav: () => void;
   onSetPinnedOpen: (open: boolean) => void;
   onOpenSearch: () => void;
@@ -64,8 +62,15 @@ export function DesktopSidebar({
           role="separator"
           aria-orientation="vertical"
           aria-label="Resize sidebar"
+          aria-valuenow={width}
+          tabIndex={0}
           title="Resize sidebar"
           onMouseDown={onStartResize}
+          onKeyDown={(event) => {
+            if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+            event.preventDefault();
+            onResize(width + (event.key === "ArrowRight" ? 16 : -16));
+          }}
           className={`absolute right-0 top-0 z-[60] h-full w-2 cursor-col-resize transition-colors ${
             resizing ? "bg-(--fg)/10" : "hover:bg-(--fg)/8"
           }`}

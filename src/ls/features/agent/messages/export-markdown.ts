@@ -4,11 +4,11 @@ import type { AssistantBlock, ChatMessage } from "@/features/agent/messages";
  * back to the flat `text` field. Reasoning/tool/event blocks are omitted so the
  * export is the clean conversation, not the scratch work. */
 function assistantAnswerText(message: ChatMessage): string {
-  const fromBlocks = (message.blocks ?? [])
-    .map((block: AssistantBlock) => (block.kind === "text" ? block.text : ""))
-    .filter(Boolean)
-    .join("\n\n")
-    .trim();
+  const textBlocks: string[] = [];
+  for (const block of message.blocks ?? []) {
+    if (block.kind === "text" && block.text) textBlocks.push(block.text);
+  }
+  const fromBlocks = textBlocks.join("\n\n").trim();
   return fromBlocks || message.text.trim();
 }
 

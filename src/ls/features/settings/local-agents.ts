@@ -191,20 +191,20 @@ async function enableOmpModel(
 }
 
 export async function attachModelToAgents(input: AttachModelInput): Promise<AttachResult[]> {
-  const results: AttachResult[] = [];
-  for (const agent of input.targets) {
-    try {
-      results.push(await attachToAgent(agent, input.home, input.model));
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      const plan = await planFor(agent, input.home, input.model).catch(() => null);
-      results.push({
-        agent,
-        ok: false,
-        configPath: plan?.configPath ?? "",
-        error: message,
-      });
-    }
-  }
-  return results;
+  return Promise.all(
+    input.targets.map(async (agent): Promise<AttachResult> => {
+      try {
+        return await attachToAgent(agent, input.home, input.model);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const plan = await planFor(agent, input.home, input.model).catch(() => null);
+        return {
+          agent,
+          ok: false,
+          configPath: plan?.configPath ?? "",
+          error: message,
+        };
+      }
+    }),
+  );
 }

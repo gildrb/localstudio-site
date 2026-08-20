@@ -1,91 +1,18 @@
 "use client";
 
 import { ArrowUpCircle, DownloadCloud } from "@/ui/icon-registry";
-import type { EngineBackend, EngineJob, RuntimeTarget } from "@/lib/types";
+import type { EngineJob, RuntimeTarget } from "@/lib/types";
 import { RowDetailLine, RowFacts, StatusPill, type RowFact, type UiTone, Spinner } from "@/ui";
 import { SettingsButton, SettingsRow, SettingsValue } from "./settings-ui";
-
-export const ENGINE_META: Record<string, { label: string; description: string }> = {
-  vllm: {
-    label: "vLLM",
-    description: "High-throughput LLM serving with CUDA-oriented scheduling.",
-  },
-  sglang: { label: "SGLang", description: "Fast structured generation and multi-turn serving." },
-  llamacpp: {
-    label: "llama.cpp",
-    description: "GGUF inference through CPU, Metal, or CUDA builds.",
-  },
-  mlx: { label: "MLX", description: "Apple Silicon inference through mlx-lm." },
-};
-
-export type ManagedRuntimeInstallBackend = Extract<EngineBackend, "vllm" | "sglang" | "mlx">;
-
-export const MANAGED_RUNTIME_BACKENDS: readonly ManagedRuntimeInstallBackend[] = [
-  "vllm",
-  "sglang",
-  "mlx",
-] as const;
-
-export const isRunningEngineJob = (job: EngineJob | undefined): boolean =>
-  job?.status === "queued" || job?.status === "running";
-
-export const isTerminalEngineJob = (job: EngineJob): boolean =>
-  job.status === "success" || job.status === "error" || job.status === "cancelled";
-
-const ENGINE_JOB_OUTPUT_TAIL_CHARS = 500;
-
-function clipEngineJobOutputTail(outputTail: string | undefined): string | null {
-  const tail = outputTail?.trim();
-  if (!tail) return null;
-  return tail.length > ENGINE_JOB_OUTPUT_TAIL_CHARS
-    ? `…${tail.slice(-ENGINE_JOB_OUTPUT_TAIL_CHARS)}`
-    : tail;
-}
-
-/** Multi-line failure summary for a job that ended in `error`: message, reason, output tail. */
-export function describeFailedEngineJob(job: EngineJob): string {
-  const headline = job.message?.trim() || `${job.backend} ${job.type} failed`;
-  const lines = [headline];
-  const reason = job.error?.trim();
-  if (reason && reason !== headline) {
-    lines.push(reason);
-  }
-  const tail = clipEngineJobOutputTail(job.outputTail);
-  if (tail) {
-    lines.push(tail);
-  }
-  return lines.join("\n");
-}
-
-export const jobForRuntimeTarget = (
-  jobs: EngineJob[],
-  target: RuntimeTarget,
-): EngineJob | undefined =>
-  jobs.find((job) => job.targetId === target.id && isRunningEngineJob(job)) ??
-  jobs.find((job) => job.targetId === target.id);
-
-const managedInstallJob = (
-  jobs: EngineJob[],
-  backend: ManagedRuntimeInstallBackend,
-): EngineJob | undefined =>
-  jobs.find(
-    (job) =>
-      job.backend === backend && job.type === "install" && !job.targetId && isRunningEngineJob(job),
-  ) ?? jobs.find((job) => job.backend === backend && job.type === "install" && !job.targetId);
-
-export const isManagedRuntimeTarget = (target: RuntimeTarget): boolean => {
-  if (!MANAGED_RUNTIME_BACKENDS.includes(target.backend as ManagedRuntimeInstallBackend)) {
-    return false;
-  }
-  const normalizedPythonPath = target.pythonPath?.replace(/\\/g, "/") ?? "";
-  return normalizedPythonPath.endsWith(`/runtime/venvs/${target.backend}-latest/bin/python`);
-};
-
-const managedTargetForBackend = (
-  targets: RuntimeTarget[],
-  backend: ManagedRuntimeInstallBackend,
-): RuntimeTarget | undefined =>
-  targets.find((target) => target.backend === backend && isManagedRuntimeTarget(target));
+import {
+  ENGINE_META,
+  MANAGED_RUNTIME_BACKENDS,
+  isRunningEngineJob,
+  jobForRuntimeTarget,
+  managedInstallJob,
+  managedTargetForBackend,
+  type ManagedRuntimeInstallBackend,
+} from "./runtime-target-model";
 
 export function ManagedRuntimeInstallRows({
   backends = MANAGED_RUNTIME_BACKENDS,
@@ -100,61 +27,67 @@ export function ManagedRuntimeInstallRows({
   onInstall: (backend: ManagedRuntimeInstallBackend) => void | Promise<void>;
   onUpdateTarget?: (target: RuntimeTarget) => void | Promise<void>;
 }) {
-  return backends.map((backend) => {
-    const meta = ENGINE_META[backend];
-    const target = managedTargetForBackend(targets, backend);
-    const installedTarget = target?.installed ? target : undefined;
-    const job = installedTarget
-      ? jobForRuntimeTarget(jobs, installedTarget)
-      : managedInstallJob(jobs, backend);
-    const running = isRunningEngineJob(job);
-    const updateTarget = installedTarget?.capabilities.canUpdate ? installedTarget : undefined;
-    const onAction = updateTarget ? onUpdateTarget : onInstall;
-    const action = installedTarget ? "Update" : "Install";
-    return (
-      <SettingsRow
-        key={backend}
-        variant="resource"
-        label={`${meta.label} latest venv`}
-        description={`Create or update the controller-managed Python environment for ${meta.label}.`}
-        value={
-          <SettingsValue mono truncate>
-            {target?.pythonPath ?? `$DATA_DIR/runtime/venvs/${backend}-latest`}
-          </SettingsValue>
-        }
-        status={
-          target ? (
-            <RuntimeTargetStatus
-              installed={target.installed}
-              active={target.active}
-              health={target.health.status}
-            />
-          ) : (
-            <StatusPill tone={job?.status === "success" ? "good" : "default"}>venv</StatusPill>
-          )
-        }
-        actions={
-          <SettingsButton
-            onClick={() =>
-              void (updateTarget ? onUpdateTarget?.(updateTarget) : onInstall(backend))
+  return (
+    <>
+      {backends.map((backend) => {
+        const meta = ENGINE_META[backend];
+        const target = managedTargetForBackend(targets, backend);
+        const installedTarget = target?.installed ? target : undefined;
+        const job = installedTarget
+          ? jobForRuntimeTarget(jobs, installedTarget)
+          : managedInstallJob(jobs, backend);
+        const running = isRunningEngineJob(job);
+        const updateTarget = installedTarget?.capabilities.canUpdate ? installedTarget : undefined;
+        const onAction = updateTarget ? onUpdateTarget : onInstall;
+        const action = installedTarget ? "Update" : "Install";
+        return (
+          <SettingsRow
+            key={backend}
+            variant="resource"
+            label={`${meta.label} latest venv`}
+            description={`Create or update the controller-managed Python environment for ${meta.label}.`}
+            value={
+              <SettingsValue mono truncate>
+                {target?.pythonPath ?? `$DATA_DIR/runtime/venvs/${backend}-latest`}
+              </SettingsValue>
             }
-            disabled={running || !onAction}
+            status={
+              target ? (
+                <RuntimeTargetStatus
+                  installed={target.installed}
+                  active={target.active}
+                  health={target.health.status}
+                />
+              ) : (
+                <StatusPill tone={job?.status === "success" ? "good" : "default"}>
+                  venv
+                </StatusPill>
+              )
+            }
+            actions={
+              <SettingsButton
+                onClick={() =>
+                  void (updateTarget ? onUpdateTarget?.(updateTarget) : onInstall(backend))
+                }
+                disabled={running || !onAction}
+              >
+                {running ? (
+                  <Spinner size="xs" />
+                ) : installedTarget ? (
+                  <ArrowUpCircle className="h-3 w-3" />
+                ) : (
+                  <DownloadCloud className="h-3 w-3" />
+                )}
+                {running ? job?.status : installedTarget ? action : "Create venv"}
+              </SettingsButton>
+            }
           >
-            {running ? (
-              <Spinner size="xs" />
-            ) : installedTarget ? (
-              <ArrowUpCircle className="h-3 w-3" />
-            ) : (
-              <DownloadCloud className="h-3 w-3" />
-            )}
-            {running ? job?.status : installedTarget ? action : "Create venv"}
-          </SettingsButton>
-        }
-      >
-        {job ? <RuntimeJobMessage job={job} /> : null}
-      </SettingsRow>
-    );
-  });
+            {job ? <RuntimeJobMessage job={job} /> : null}
+          </SettingsRow>
+        );
+      })}
+    </>
+  );
 }
 
 export function RuntimeTargetRows({
@@ -166,14 +99,18 @@ export function RuntimeTargetRows({
   jobs?: EngineJob[];
   onAction?: (target: RuntimeTarget) => void | Promise<void>;
 }) {
-  return targets.map((target) => (
-    <RuntimeTargetRow
-      key={target.id}
-      target={target}
-      job={jobForRuntimeTarget(jobs, target)}
-      onAction={onAction}
-    />
-  ));
+  return (
+    <>
+      {targets.map((target) => (
+        <RuntimeTargetRow
+          key={target.id}
+          target={target}
+          job={jobForRuntimeTarget(jobs, target)}
+          onAction={onAction}
+        />
+      ))}
+    </>
+  );
 }
 
 function RuntimeTargetRow({

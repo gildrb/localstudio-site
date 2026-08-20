@@ -1,10 +1,7 @@
-export { Button, ModelButton, buttonClasses } from "./button";
-export type {
-	ButtonProps,
-	ButtonVariant,
-	ButtonSize,
-	ModelButtonProps,
-} from "./button";
+export { Button, ModelButton } from "./button";
+export { buttonClasses } from "./button-styles";
+export type { ButtonProps, ModelButtonProps } from "./button";
+export type { ButtonVariant, ButtonSize } from "./button-styles";
 
 export { Input, ModelInput } from "./input";
 export type { InputProps, ModelInputProps } from "./input";

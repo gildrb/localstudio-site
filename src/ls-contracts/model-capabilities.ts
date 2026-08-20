@@ -65,10 +65,12 @@ const firstBoolean = (values: readonly unknown[]): boolean | undefined => {
 
 const imageModality = (value: unknown): boolean | undefined => {
   const values = Array.isArray(value) ? value : typeof value === "string" ? value.split(",") : [];
-  const modalities = values
-    .filter((entry): entry is string => typeof entry === "string")
-    .map((entry) => entry.trim().toLowerCase())
-    .filter(Boolean);
+  const modalities: string[] = [];
+  for (const entry of values) {
+    if (typeof entry !== "string") continue;
+    const normalized = entry.trim().toLowerCase();
+    if (normalized) modalities.push(normalized);
+  }
   if (modalities.length === 0) return undefined;
   return modalities.some((entry) => entry === "image" || entry === "vision");
 };

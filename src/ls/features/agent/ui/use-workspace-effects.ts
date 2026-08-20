@@ -52,10 +52,13 @@ type UseWorkspaceRuntimeSyncDeps = {
 };
 
 function runtimeSubscriptionKey(sessions: Session[]): string {
-  return sessions
-    .filter((session) => shouldSubscribeRuntimeEvents(session.status))
-    .map((session) => `${session.id}:${session.piSessionId ?? ""}`)
-    .join("\n");
+  const keys: string[] = [];
+  for (const session of sessions) {
+    if (shouldSubscribeRuntimeEvents(session.status)) {
+      keys.push(`${session.id}:${session.piSessionId ?? ""}`);
+    }
+  }
+  return keys.join("\n");
 }
 
 function runtimeRegistryKey(sessions: Session[]): string {

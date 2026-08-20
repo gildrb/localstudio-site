@@ -142,7 +142,7 @@ const composerMessages: ChatMessage[] = [
 
 function ignore(): void {}
 
-export function HeroDemo() {
+function useHeroDemoModel() {
 	const { hostRef, mobile, scale, clipRight, clipBottom } = useDemoFrame();
 	const reduceMotion = useReducedMotion() === true;
 	const [state, dispatch] = useReducer(
@@ -317,6 +317,58 @@ export function HeroDemo() {
 		statusCount: state.reviewReady ? 1 : 0,
 	};
 
+	return {
+		hostRef,
+		mobile,
+		scale,
+		clipRight,
+		clipBottom,
+		state,
+		setPickedTab,
+		panelOpen,
+		setPanelOpen,
+		activeTask,
+		setUserFile,
+		titles,
+		inputRef,
+		scrollerRef,
+		proxyTask,
+		submitted,
+		output,
+		running,
+		tools,
+		title,
+		extras,
+		messages,
+		session,
+		autoPrompt,
+		composerValue,
+		openFile,
+		tab,
+		openTabs,
+		selectTab,
+		closeTab,
+		selectTask,
+		renameTask,
+		takeComposer,
+		sendFollowUp,
+		gitSummary,
+	};
+}
+
+export function HeroDemo() {
+	const model = useHeroDemoModel();
+	return <HeroDemoView {...model} />;
+}
+
+function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
+	const {
+		hostRef, mobile, scale, clipRight, clipBottom, state, setPickedTab, panelOpen, setPanelOpen,
+		activeTask, setUserFile, titles, inputRef, scrollerRef, proxyTask, submitted,
+		output, running, tools, title, extras, messages, session, autoPrompt, composerValue,
+		openFile, tab, openTabs, selectTab, closeTab, selectTask, renameTask, takeComposer,
+		sendFollowUp, gitSummary,
+	} = model;
 	return (
 		<section
 			ref={hostRef}

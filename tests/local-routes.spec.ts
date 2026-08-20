@@ -269,6 +269,59 @@ test("mobile sections follow the hairline section system", async ({ page }) => {
 	expect(mobileGaps).toEqual([65, 65]);
 });
 
+test("mobile section typography and copy spacing match Agents", async ({ page }) => {
+	for (const viewport of [
+		{ width: 1440, height: 900 },
+		{ width: 390, height: 844 },
+	]) {
+		await page.setViewportSize(viewport);
+		await page.goto("/agents");
+		const reference = await page.locator(".page-section").first().evaluate((section) => {
+			const copy = section.firstElementChild;
+			const heading = copy?.querySelector("h2");
+			const description = copy?.querySelector("p");
+			if (!(copy instanceof HTMLElement) || !(heading instanceof HTMLElement) || !(description instanceof HTMLElement)) {
+				throw new Error("Agents section copy");
+			}
+			const copyBounds = copy.getBoundingClientRect();
+			const headingBounds = heading.getBoundingClientRect();
+			const descriptionBounds = description.getBoundingClientRect();
+			const headingStyle = getComputedStyle(heading);
+			const descriptionStyle = getComputedStyle(description);
+			return {
+				width: Math.round(copyBounds.width),
+				gap: Math.round(descriptionBounds.top - headingBounds.bottom),
+				heading: [headingStyle.fontSize, headingStyle.lineHeight, headingStyle.fontWeight],
+				description: [descriptionStyle.fontSize, descriptionStyle.lineHeight, descriptionStyle.fontWeight],
+			};
+		});
+
+		await page.goto("/mobile");
+		const mobileSections = await page.locator(".page-section").evaluateAll((sections) =>
+			sections.map((section) => {
+				const copy = section.firstElementChild;
+				const heading = copy?.querySelector("h2");
+				const description = copy?.querySelector("p");
+				if (!(copy instanceof HTMLElement) || !(heading instanceof HTMLElement) || !(description instanceof HTMLElement)) {
+					throw new Error("Mobile section copy");
+				}
+				const copyBounds = copy.getBoundingClientRect();
+				const headingBounds = heading.getBoundingClientRect();
+				const descriptionBounds = description.getBoundingClientRect();
+				const headingStyle = getComputedStyle(heading);
+				const descriptionStyle = getComputedStyle(description);
+				return {
+					width: Math.round(copyBounds.width),
+					gap: Math.round(descriptionBounds.top - headingBounds.bottom),
+					heading: [headingStyle.fontSize, headingStyle.lineHeight, headingStyle.fontWeight],
+					description: [descriptionStyle.fontSize, descriptionStyle.lineHeight, descriptionStyle.fontWeight],
+				};
+			}),
+		);
+		expect(mobileSections).toEqual(Array(3).fill(reference));
+	}
+});
+
 test("mobile page keeps stable gutters, type, and actions at narrow widths", async ({ page }) => {
 	for (const width of [390, 320]) {
 		await page.setViewportSize({ width, height: 844 });
@@ -337,13 +390,29 @@ test("every route uses the useful canonical footer", async ({ page }) => {
 	}
 });
 
-test("shared navbar remains pinned while pages scroll", async ({ page }) => {
+test("shared navbar always uses a contained dark blur", async ({ page }) => {
 	for (const route of ["/", "/docs", "/prompt", "/agents"]) {
 		await page.goto(route);
 		const header = page.locator("header.nav");
 		expect(await header.evaluate(element => getComputedStyle(element).position)).toBe("sticky");
-		await page.evaluate(() => window.scrollTo(0, 1000));
+		const surface = await header.evaluate(element => ({
+			headerBackground: getComputedStyle(element).backgroundColor,
+			headerFilter: getComputedStyle(element).backdropFilter,
+			overlayBackground: getComputedStyle(element, "::before").backgroundColor,
+			overlayFilter: getComputedStyle(element, "::before").backdropFilter,
+		}));
+		expect(surface).toEqual({
+			headerBackground: "rgba(0, 0, 0, 0)",
+			headerFilter: "none",
+			overlayBackground: "rgba(0, 0, 0, 0.64)",
+			overlayFilter: "blur(24px) brightness(0.7)",
+		});
+		await page.locator("footer").scrollIntoViewIfNeeded();
 		await expect.poll(() => header.evaluate(element => Math.round(element.getBoundingClientRect().top))).toBe(0);
+		expect(await header.evaluate(element => [
+			getComputedStyle(element, "::before").backgroundColor,
+			getComputedStyle(element, "::before").backdropFilter,
+		])).toEqual([surface.overlayBackground, surface.overlayFilter]);
 	}
 });
 
@@ -482,6 +551,21 @@ test("mobile story shows one demo under the active copy", async ({ page }) => {
 	});
 	expect(transform.startsWith("scale(")).toBe(true);
 	expect(transform.includes("translate(-224px, 0px)")).toBe(true);
+});
+
+test("KittyLitter focuses on three core benefits", async ({ page }) => {
+	await page.goto("/");
+	const features = page.locator(".kitty__feature");
+	await expect(features).toHaveCount(3);
+	await expect(features.getByRole("heading").allTextContents()).resolves.toEqual([
+		"Sessions everywhere",
+		"Multi-agent",
+		"Alleycat",
+	]);
+	const columns = await page.locator(".kitty__grid").evaluate((element) =>
+		getComputedStyle(element).gridTemplateColumns.split(" "),
+	);
+	expect(columns).toHaveLength(3);
 });
 
 test("KittyLitter intro follows the stacked homepage hierarchy", async ({ page }) => {
@@ -745,17 +829,30 @@ test("setup prompt copies from the floating copy icon", async ({ page, context }
 	expect(overflow.size).toBeLessThanOrEqual(0);
 });
 
-test("setup prompt expands through Show more instead of an inner scrollbar", async ({ page }) => {
-	await page.goto("/prompt");
-	const pre = page.locator(".prompt-block pre");
-	const toggle = page.getByRole("button", { name: "Show more" });
-	await expect(toggle).toHaveAttribute("aria-expanded", "false");
-	expect(await pre.evaluate((el) => getComputedStyle(el).overflowY)).toBe("hidden");
-	const collapsed = await pre.evaluate((el) => el.clientHeight);
-	await toggle.click();
-	await expect(page.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true");
-	const grown = await pre.evaluate((el) => el.clientHeight);
-	expect(grown).toBeGreaterThan(collapsed);
+test("setup and agent prompts share the Show more interaction", async ({ page }) => {
+	for (const prompt of [
+		{ route: "/prompt", label: "Portable setup prompt" },
+		{ route: "/agents", label: "Agent setup instructions" },
+	]) {
+		await page.goto(prompt.route);
+		const block = page.getByRole("region", { name: prompt.label });
+		const pre = block.locator("pre");
+		const toggle = block.getByRole("button", { name: "Show more" });
+		await expect(toggle).toHaveAttribute("aria-expanded", "false");
+		expect(await pre.evaluate((element) => getComputedStyle(element).overflowY)).toBe("hidden");
+		const collapsed = await pre.evaluate((element) => element.clientHeight);
+		await toggle.click();
+		await expect(block.getByRole("button", { name: "Show less" })).toHaveAttribute(
+			"aria-expanded",
+			"true",
+		);
+		const grown = await pre.evaluate((element) => element.clientHeight);
+		expect(grown).toBeGreaterThan(collapsed);
+	}
+
+	await page.goto("/agents");
+	const agentPrompt = page.getByRole("region", { name: "Agent setup instructions" });
+	await expect(agentPrompt.locator(":scope > div")).toHaveCount(0);
 });
 
 test("unknown routes render a local not-found page", async ({ page }) => {

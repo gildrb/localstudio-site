@@ -15,19 +15,28 @@ export function GpuSection({ gpus, platformKind }: GpuSectionProps) {
   const sortedGpus = [...gpus].sort((a, b) => gpuMemoryTotal(b) - gpuMemoryTotal(a));
   const hasGpus = sortedGpus.length > 0;
   const [expanded, setExpanded] = useState(true);
-  const names = new Set(sortedGpus.map((gpu) => gpu.name).filter(Boolean));
+  const names = new Set<string>();
+  let totalUsed = 0;
+  let totalCap = 0;
+  let totalPower = 0;
+  let totalPowerLimit = 0;
+  let utilizationTotal = 0;
+  let utilizationCount = 0;
+  let maxTemp = 0;
+  for (const gpu of sortedGpus) {
+    if (gpu.name) names.add(gpu.name);
+    totalUsed += gpuMemoryUsed(gpu);
+    totalCap += gpuMemoryTotal(gpu);
+    totalPower += gpu.power_draw || 0;
+    totalPowerLimit += gpu.power_limit || 0;
+    if (gpu.utilization_available !== false) {
+      utilizationTotal += gpu.utilization_pct;
+      utilizationCount += 1;
+    }
+    if (gpu.temp_c > maxTemp) maxTemp = gpu.temp_c;
+  }
   const gpuModelLabel = names.size === 1 ? [...names][0].replace(/^NVIDIA\s+/, "") : null;
-
-  const totalUsed = sortedGpus.reduce((s, g) => s + gpuMemoryUsed(g), 0);
-  const totalCap = sortedGpus.reduce((s, g) => s + gpuMemoryTotal(g), 0);
-  const totalPower = sortedGpus.reduce((s, g) => s + (g.power_draw || 0), 0);
-  const totalPowerLimit = sortedGpus.reduce((s, g) => s + (g.power_limit || 0), 0);
-  const utils = sortedGpus
-    .filter((gpu) => gpu.utilization_available !== false)
-    .map((g) => g.utilization_pct);
-  const avgUtil = utils.length > 0 ? utils.reduce((s, v) => s + v, 0) / utils.length : 0;
-  const temps = sortedGpus.map((g) => g.temp_c).filter((t) => t > 0);
-  const maxTemp = temps.length > 0 ? Math.max(...temps) : 0;
+  const avgUtil = utilizationCount > 0 ? utilizationTotal / utilizationCount : 0;
   const memPct = totalCap > 0 ? clamp((totalUsed / totalCap) * 100, 0, 100) : 0;
 
   if (!hasGpus) {

@@ -39,49 +39,40 @@ export function LogsSessionsSidebar({
   const renderSessionRow = (session: LogSession) => (
     <div
       key={session.id}
-      role="button"
-      tabIndex={0}
-      aria-pressed={selectedSession === session.id}
-      onClick={() => onSelectSession(session.id)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onSelectSession(session.id);
-        }
-      }}
-      className={`w-full text-left p-3 border-b border-(--separator) transition-colors group cursor-pointer ${
+      className={`group flex w-full items-start border-b border-(--separator) transition-colors ${
         selectedSession === session.id ? "bg-(--surface)" : "hover:bg-(--hover)"
       }`}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium text-(--fg) truncate">
-            {session.model || session.id}
-          </div>
-          <div className="text-[length:var(--fs-sm)] text-(--dim) mt-1">
-            {formatDateTime(session.created_at)}
-          </div>
-          {session.backend && (
-            <StatusPill tone="info" variant="badge" className="mt-1.5">
-              {session.backend}
-            </StatusPill>
-          )}
-        </div>
-        <Button
-          variant="icon"
-          size="sm"
-          disabled={session.id === "controller"}
-          onClick={(event) => {
-            event.stopPropagation();
-            onDeleteSession(session.id);
-          }}
-          className={`p-1 text-(--dim) opacity-0 group-hover:opacity-100 transition-all ${
-            session.id === "controller" ? "cursor-not-allowed opacity-20" : "hover:text-(--err)"
-          }`}
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
-      </div>
+      <button
+        type="button"
+        aria-pressed={selectedSession === session.id}
+        onClick={() => onSelectSession(session.id)}
+        className="min-w-0 flex-1 p-3 text-left"
+      >
+        <span className="block truncate text-sm font-medium text-(--fg)">
+          {session.model || session.id}
+        </span>
+        <span className="mt-1 block text-[length:var(--fs-sm)] text-(--dim)">
+          {formatDateTime(session.created_at)}
+        </span>
+        {session.backend ? (
+          <StatusPill tone="info" variant="badge" className="mt-1.5">
+            {session.backend}
+          </StatusPill>
+        ) : null}
+      </button>
+      <Button
+        variant="icon"
+        size="sm"
+        disabled={session.id === "controller"}
+        onClick={() => onDeleteSession(session.id)}
+        aria-label={`Delete ${session.model || session.id} log session`}
+        className={`mr-2 mt-3 p-1 text-(--dim) opacity-0 transition-all group-hover:opacity-100 ${
+          session.id === "controller" ? "cursor-not-allowed opacity-20" : "hover:text-(--err)"
+        }`}
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </Button>
     </div>
   );
 
@@ -95,8 +86,10 @@ export function LogsSessionsSidebar({
   return (
     <>
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-20 md:hidden"
+        <button
+          type="button"
+          aria-label="Close log sessions"
+          className="fixed inset-0 z-20 bg-black/50 md:hidden"
           onClick={() => onSidebarToggle(false)}
         />
       )}

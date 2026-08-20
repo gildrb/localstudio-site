@@ -246,8 +246,18 @@ export function AgentBrowserPanel({
       <div
         role="separator"
         aria-orientation="vertical"
+        aria-label="Resize computer"
+        aria-valuemin={MIN_COMPUTER_WIDTH}
+        aria-valuemax={MAX_COMPUTER_WIDTH}
+        aria-valuenow={tools.computer.width}
+        tabIndex={0}
         title="Resize computer"
         onMouseDown={startComputerResize}
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+          event.preventDefault();
+          tools.setComputerWidth(tools.computer.width + (event.key === "ArrowRight" ? 16 : -16));
+        }}
         className="absolute -left-1 top-0 z-10 h-full w-2 cursor-col-resize hover:bg-(--fg)/8"
       />
       <MobileSheetGrip label="Close panel" onDismiss={() => tools.setComputerOpen(false)} />
@@ -336,6 +346,14 @@ const TAB_OPTIONS: Array<{
   { tab: "terminal", label: "Terminal", description: "Project shell", icon: TerminalSquare },
 ];
 
+function computerTabMeta(candidate: ComputerTab) {
+  return candidate === "status"
+    ? { label: "Status", icon: Activity }
+    : {
+        label: TAB_LABELS[candidate],
+        icon: TAB_OPTIONS.find((item) => item.tab === candidate)?.icon ?? PanelRight,
+      };
+}
 // Compact Codex-style pill: active gets a subtle fill; inactive is text-only
 // and lifts to full contrast on hover. The close × fades in on hover (and stays
 // on for the active pill). Shared by the tab list and the terminal-owner rows.
@@ -450,18 +468,11 @@ function ComputerHeader({
     (openTab) =>
       openTab !== "tools" && (openTab !== "terminal" || terminalState.owners.length === 0),
   );
-  const tabMeta = (candidate: ComputerTab) =>
-    candidate === "status"
-      ? { label: "Status", icon: Activity }
-      : {
-          label: TAB_LABELS[candidate],
-          icon: TAB_OPTIONS.find((item) => item.tab === candidate)?.icon ?? PanelRight,
-        };
   return (
     <div className="relative flex h-[var(--h-toolbar-pane)] shrink-0 items-center gap-1 border-b border-(--border) bg-(--color-header) px-1.5 text-[length:var(--fs-sm)]">
       <div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto overflow-y-hidden px-0.5 [scrollbar-width:thin]">
         {visibleTabs.map((openTab) => {
-          const meta = tabMeta(openTab);
+          const meta = computerTabMeta(openTab);
           return (
             <TabPill
               key={openTab}

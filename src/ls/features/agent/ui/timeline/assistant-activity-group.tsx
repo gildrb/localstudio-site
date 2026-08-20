@@ -3,7 +3,8 @@ import { ChevronRight } from "@/ui/icon-registry";
 import type { ThinkingBlock, ToolBlock } from "@/features/agent/messages";
 import type { ToolKind } from "@/features/agent/ui/timeline/tool-metadata";
 import { useReasoningVisible } from "@/features/agent/messages/use-reasoning-visible";
-import { TOOL_ICONS, ToolBlockView } from "@/features/agent/ui/timeline/tool-block-view";
+import { ToolBlockView } from "@/features/agent/ui/timeline/tool-block-view";
+import { TOOL_ICONS } from "@/features/agent/ui/timeline/tool-icons";
 import {
   buildActivityItems,
   exploreCounts,

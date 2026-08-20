@@ -59,22 +59,24 @@ function resolvePaneModelId(
   const candidates = [sessionModelId, selectedModelId].filter((value): value is string =>
     Boolean(value?.trim()),
   );
+  const byId = new Map<string, AgentModel>();
+  const byAlias = new Map<string, AgentModel>();
+  let activeModelId = "";
+  for (const model of models) {
+    if (!byId.has(model.id)) byId.set(model.id, model);
+    const aliases = [model.rawId, model.name, model.id.split("/").pop()];
+    for (const alias of aliases) {
+      if (alias && !byAlias.has(alias)) byAlias.set(alias, model);
+    }
+    if (!activeModelId && model.active) activeModelId = model.id;
+  }
   for (const candidate of candidates) {
-    const exact = models.find((model) => model.id === candidate);
+    const exact = byId.get(candidate);
     if (exact) return exact.id;
-    const alias = models.find(
-      (model) =>
-        model.rawId === candidate || model.name === candidate || model.id.endsWith(`/${candidate}`),
-    );
+    const alias = byAlias.get(candidate);
     if (alias) return alias.id;
   }
-  return (
-    selectedModelId ||
-    sessionModelId ||
-    models.find((model) => model.active)?.id ||
-    models[0]?.id ||
-    ""
-  );
+  return selectedModelId || sessionModelId || activeModelId || models[0]?.id || "";
 }
 
 function selectWorkspacePaneView(

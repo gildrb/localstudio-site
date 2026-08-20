@@ -64,6 +64,14 @@ const TAB_OPTIONS: Array<{
 	},
 ];
 
+function computerTabMeta(candidate: ComputerTab) {
+	return candidate === "status"
+		? { label: "Status", icon: Activity }
+		: {
+				label: TAB_LABELS[candidate],
+				icon: TAB_OPTIONS.find((item) => item.tab === candidate)?.icon ?? PanelRight,
+			};
+}
 function TabPill({
 	icon: Icon,
 	label,
@@ -184,20 +192,11 @@ export function ComputerHeader({
 			openTab !== "tools" &&
 			(openTab !== "terminal" || terminalState.owners.length === 0),
 	);
-	const tabMeta = (candidate: ComputerTab) =>
-		candidate === "status"
-			? { label: "Status", icon: Activity }
-			: {
-					label: TAB_LABELS[candidate],
-					icon:
-						TAB_OPTIONS.find((item) => item.tab === candidate)?.icon ??
-						PanelRight,
-				};
 	return (
 		<div className="relative flex h-[var(--h-toolbar-pane)] shrink-0 items-center gap-1 border-b border-(--border) bg-(--color-header) px-1.5 text-[length:var(--fs-sm)]">
 			<div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto overflow-y-hidden px-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 				{visibleTabs.map((openTab) => {
-					const meta = tabMeta(openTab);
+					const meta = computerTabMeta(openTab);
 					return (
 						<TabPill
 							key={openTab}

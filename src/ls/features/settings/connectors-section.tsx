@@ -108,7 +108,7 @@ function ConnectorDrawer({
 }) {
   const [name, setName] = useState(connector.name);
   const [command, setCommand] = useState(connector.command ?? "");
-  const [args, setArgs] = useState((connector.args ?? []).join("\n"));
+  const [args, setArgs] = useState(() => (connector.args ?? []).join("\n"));
   const [url, setUrl] = useState(connector.url ?? "");
   const [enabled, setEnabled] = useState(connector.enabled);
   const [saving, setSaving] = useState(false);

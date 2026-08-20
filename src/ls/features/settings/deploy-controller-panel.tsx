@@ -82,6 +82,7 @@ export function DeployControllerPanel({
       <div className="flex flex-wrap items-center gap-2 px-4 py-3.5">
         <input
           value={host}
+          aria-label="SSH host"
           onChange={(event) => setHost(event.target.value)}
           placeholder="user@hostname (ssh)"
           spellCheck={false}

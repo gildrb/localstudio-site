@@ -27,7 +27,7 @@ export function useUsage() {
     } catch (cause) {
       if (requestId === requestSequence.current) setError((cause as Error).message);
     } finally {
-      if (requestId === requestSequence.current) setLoading(false);
+      setLoading(requestId !== requestSequence.current);
     }
   }, []);
 

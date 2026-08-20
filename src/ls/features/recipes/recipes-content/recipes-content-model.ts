@@ -20,6 +20,9 @@ export type RecipesContentTab = "picks" | "get" | "serves" | "downloads";
 const requestedTab = (value: string | null): RecipesContentTab =>
   value === "get" || value === "serves" || value === "downloads" ? value : "picks";
 
+const PINNED_RECIPES_KEY = "local-studio-pinned-recipes:v1";
+const LEGACY_PINNED_RECIPES_KEY = "local-studio-pinned-recipes";
+
 export function useRecipesContentModel() {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<RecipesContentTab>(() => requestedTab(searchParams.get("tab")));
@@ -49,23 +52,29 @@ export function useRecipesContentModel() {
 
   useMountSubscription(() => {
     try {
-      const saved = localStorage.getItem("local-studio-pinned-recipes");
-      if (saved) setPinnedRecipes(new Set(JSON.parse(saved)));
+      const saved =
+        localStorage.getItem(PINNED_RECIPES_KEY) ??
+        localStorage.getItem(LEGACY_PINNED_RECIPES_KEY);
+      if (saved) {
+        setPinnedRecipes(new Set(JSON.parse(saved)));
+        if (!localStorage.getItem(PINNED_RECIPES_KEY)) {
+          localStorage.setItem(PINNED_RECIPES_KEY, saved);
+          localStorage.removeItem(LEGACY_PINNED_RECIPES_KEY);
+        }
+      }
     } catch {}
   }, []);
 
-  const togglePin = useCallback((recipeId: string) => {
-    setPinnedRecipes((prev) => {
-      const next = new Set(prev);
-      if (next.has(recipeId)) {
-        next.delete(recipeId);
-      } else {
-        next.add(recipeId);
-      }
-      localStorage.setItem("local-studio-pinned-recipes", JSON.stringify([...next]));
-      return next;
-    });
-  }, []);
+  const togglePin = useCallback(
+    (recipeId: string) => {
+      const next = new Set(pinnedRecipes);
+      if (next.has(recipeId)) next.delete(recipeId);
+      else next.add(recipeId);
+      setPinnedRecipes(next);
+      localStorage.setItem(PINNED_RECIPES_KEY, JSON.stringify([...next]));
+    },
+    [pinnedRecipes],
+  );
 
   const loadRecipes = useCallback(async (): Promise<RecipeWithStatus[]> => {
     try {

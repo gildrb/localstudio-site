@@ -14,6 +14,7 @@ import {
 import { getExtraArgValueForKey, setExtraArgValueForKey } from "@/features/recipes/extra-args";
 import type { RecipeModalTabId } from "./tabs/tab-id";
 import {
+  createEnvVarEntry,
   envVarEntriesFromRecipe,
   formatEditableExtraArgs,
   formatRecipeSource,
@@ -56,13 +57,7 @@ export function useRecipeModalModel({
     JSON.stringify(filterExtraArgsForEditor(recipe.extra_args ?? {}), null, 2),
   );
   const [extraArgsError, setExtraArgsError] = useState<string | null>(null);
-  const [envVarEntries, setEnvVarEntries] = useState(() => {
-    const entries = Object.entries(recipe.env_vars ?? {}).map(([key, value]) => ({
-      key,
-      value: String(value),
-    }));
-    return entries.length ? entries : [{ key: "", value: "" }];
-  });
+  const [envVarEntries, setEnvVarEntries] = useState(() => envVarEntriesFromRecipe(recipe));
   const [llamaConfigHelp, setLlamaConfigHelp] = useState<{
     config: string | null;
     error?: string | null;
@@ -223,12 +218,12 @@ export function useRecipeModalModel({
   };
 
   const handleAddEnvVar = () => {
-    updateEnvVarEntries([...envVarEntries, { key: "", value: "" }]);
+    updateEnvVarEntries([...envVarEntries, createEnvVarEntry()]);
   };
 
   const handleRemoveEnvVar = (index: number) => {
     const next = envVarEntries.filter((_, idx) => idx !== index);
-    updateEnvVarEntries(next.length ? next : [{ key: "", value: "" }]);
+    updateEnvVarEntries(next.length ? next : [createEnvVarEntry()]);
   };
 
   return {

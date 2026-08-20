@@ -11,7 +11,7 @@ import type {
   StudioSettings,
 } from "@/lib/types";
 import { isManagedServeRuntimeTarget } from "@/lib/serve-runtime";
-import { describeFailedEngineJob } from "@/features/settings/runtime-targets";
+import { describeFailedEngineJob } from "@/features/settings/runtime-target-model";
 import { buildStarterRecipe } from "./setup-helpers";
 import { clearSetupProgress } from "./setup-progress";
 import { finishRuntimeJobEffect, requestEffect } from "./use-setup-effects";

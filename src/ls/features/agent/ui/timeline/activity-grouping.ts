@@ -230,8 +230,9 @@ export function exploreCounts(blocks: ToolBlock[]): string {
 }
 
 export function assistantContentCopyText(blocks: AssistantBlock[]): string {
-  return blocks
-    .map((block) => (block.kind === "text" ? block.text : ""))
-    .filter(Boolean)
-    .join("\n\n");
+  const text: string[] = [];
+  for (const block of blocks) {
+    if (block.kind === "text" && block.text) text.push(block.text);
+  }
+  return text.join("\n\n");
 }

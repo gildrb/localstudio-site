@@ -9,7 +9,7 @@ import { estimateRoughWeightsGb } from "./explore-model-stats";
 import type { ModelFit } from "./hardware-profile";
 import type { HardwareProfile, ModelGroup } from "./use-explore";
 
-export const EXPLORE_LIBRARIES = [
+const EXPLORE_LIBRARIES = [
   { value: "", label: "All libraries" },
   { value: "transformers", label: "Transformers" },
   { value: "pytorch", label: "PyTorch" },
@@ -20,7 +20,7 @@ export const EXPLORE_LIBRARIES = [
   { value: "gptq", label: "GPTQ" },
 ] as const;
 
-export const EXPLORE_SORTS = [
+const EXPLORE_SORTS = [
   { value: "", label: "Relevance" },
   { value: "trendingScore", label: "Trending" },
   { value: "downloads", label: "Most downloaded" },

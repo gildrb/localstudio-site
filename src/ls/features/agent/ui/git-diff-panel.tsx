@@ -10,15 +10,13 @@ import {
   type DiffFile,
   type DiffViewMode,
 } from "@/features/agent/ui/git-diff-panel-model";
+import { GitPanelHeader, GitWorkflowBar, PrSection } from "@/features/agent/ui/git-diff-panel-workflow";
 import {
-  GitPanelHeader,
-  GitWorkflowBar,
-  PrSection,
   loadPr,
   mergePr,
   type MergeMethod,
   type PrPayload,
-} from "@/features/agent/ui/git-diff-panel-workflow";
+} from "@/features/agent/ui/git-diff-panel-api";
 import { DiffFileList } from "@/features/agent/ui/git-diff-panel-diff-view";
 
 export function GitDiffPanel({ cwd }: { cwd: string | null }) {
@@ -38,14 +36,17 @@ export function GitDiffPanel({ cwd }: { cwd: string | null }) {
     }
     setLoading(true);
     setMergeError(null);
-    const [git, pr] = await Promise.allSettled([loadGitState(cwd), loadPr(cwd)]);
-    setPayload(
-      git.status === "fulfilled"
-        ? git.value
-        : { error: git.reason instanceof Error ? git.reason.message : "Failed to load git state" },
-    );
-    setPrPayload(pr.status === "fulfilled" ? pr.value : null);
-    setLoading(false);
+    try {
+      const [git, pr] = await Promise.allSettled([loadGitState(cwd), loadPr(cwd)]);
+      setPayload(
+        git.status === "fulfilled"
+          ? git.value
+          : { error: git.reason instanceof Error ? git.reason.message : "Failed to load git state" },
+      );
+      setPrPayload(pr.status === "fulfilled" ? pr.value : null);
+    } finally {
+      setLoading(false);
+    }
   }, [cwd]);
 
   const run = useCallback(

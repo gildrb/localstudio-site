@@ -50,13 +50,17 @@ export function useDemoFrame(crop: DemoCrop): {
 } {
 	const hostRef = useRef<HTMLElement>(null);
 	const [frame, setFrame] = useState(() => resolveFrame(false, 1, crop));
+	const fit = crop.fit;
+	const shiftX = crop.shiftX;
+	const shiftY = crop.shiftY;
+	const cropH = crop.cropH;
 
 	useLayoutEffect(() => {
 		const host = hostRef.current;
 		if (!host) return;
 		const update = () => {
 			const mobile = window.matchMedia(mobileStoryQuery()).matches;
-			setFrame(resolveFrame(mobile, host.clientWidth, crop));
+			setFrame(resolveFrame(mobile, host.clientWidth, { fit, shiftX, shiftY, cropH }));
 		};
 		update();
 		const query = window.matchMedia(mobileStoryQuery());
@@ -67,7 +71,7 @@ export function useDemoFrame(crop: DemoCrop): {
 			query.removeEventListener("change", update);
 			observer.disconnect();
 		};
-	}, [crop.fit, crop.shiftX, crop.shiftY, crop.cropH]);
+	}, [fit, shiftX, shiftY, cropH]);
 
 	return { hostRef, ...frame };
 }

@@ -10,6 +10,7 @@ import { RecipeModalTabGeneral } from "./tab-general";
 import { RecipeModalTabModel } from "./tab-model";
 import { RecipeModalTabPerformance } from "./tab-performance";
 import { RecipeModalTabResources } from "./tab-resources";
+import type { EnvVarEntry } from "../recipe-modal-source";
 
 export type RecipeModalGeneralProps = {
   availableModels: ModelInfo[];
@@ -21,7 +22,7 @@ export type RecipeModalGeneralProps = {
 };
 
 export type RecipeModalEnvironmentProps = {
-  envVarEntries: Array<{ key: string; value: string }>;
+  envVarEntries: EnvVarEntry[];
   onAddEnvVar: () => void;
   onChangeEnvVar: (index: number, field: "key" | "value", value: string) => void;
   onRemoveEnvVar: (index: number) => void;

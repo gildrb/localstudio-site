@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { ExternalLink, FolderTree } from "@/ui/icon-registry";
-import { rawFileUrl } from "@/features/agent/ui/filesystem-preview";
+import { rawFileUrl } from "@/features/agent/ui/filesystem-preview-model";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
 
 // Escape hatches for files the panel cannot edit as text — PDFs, images,

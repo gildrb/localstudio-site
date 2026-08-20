@@ -146,15 +146,17 @@ export function useChatPaneMentionEffects({
             })
           : null;
         if (cancelled) return;
-        const rows = (payload?.entries ?? [])
-          .filter((entry) => entry.kind === "file")
-          .map((entry) => ({
+        const rows: MentionRow[] = [];
+        for (const entry of payload?.entries ?? []) {
+          if (entry.kind !== "file") continue;
+          rows.push({
             id: `file:${entry.rel}`,
             name: entry.name,
             rel: entry.rel,
             path: entry.path,
             source: "project",
-          }));
+          });
+        }
         setFileMentionRows(rows);
       }).pipe(
         Effect.catch(() =>

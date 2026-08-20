@@ -23,6 +23,18 @@ import {
 } from "react";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
 
+function browserButtonName(button: number) {
+  return button === 1 ? "middle" : button === 2 ? "right" : "left";
+}
+
+function browserKeyHandler(type: "down" | "up") {
+  return (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.metaKey) return;
+    event.preventDefault();
+    postBrowser("input", { kind: "key", type, key: event.key, code: event.code });
+  };
+}
+
 export type BrowserPaneState = {
   url: string;
   title: string;
@@ -188,9 +200,6 @@ export function ScreencastSurface({ url, onState, onUnavailable, visible = true 
     };
   };
 
-  const buttonName = (button: number) =>
-    button === 1 ? "middle" : button === 2 ? "right" : "left";
-
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     container?.focus();
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -200,7 +209,7 @@ export function ScreencastSurface({ url, onState, onUnavailable, visible = true 
       type: "down",
       x,
       y,
-      button: buttonName(event.button),
+      button: browserButtonName(event.button),
       clickCount: Math.max(1, event.detail),
     });
   };
@@ -212,7 +221,7 @@ export function ScreencastSurface({ url, onState, onUnavailable, visible = true 
       type: "up",
       x,
       y,
-      button: buttonName(event.button),
+      button: browserButtonName(event.button),
       clickCount: Math.max(1, event.detail),
     });
   };
@@ -230,11 +239,6 @@ export function ScreencastSurface({ url, onState, onUnavailable, visible = true 
     postBrowser("input", { kind: "wheel", x, y, deltaX: event.deltaX, deltaY: event.deltaY });
   };
 
-  const handleKey = (type: "down" | "up") => (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (event.metaKey) return;
-    event.preventDefault();
-    postBrowser("input", { kind: "key", type, key: event.key, code: event.code });
-  };
 
   return (
     <div
@@ -245,10 +249,11 @@ export function ScreencastSurface({ url, onState, onUnavailable, visible = true 
       className="relative size-full min-h-0 overflow-hidden bg-white outline-none"
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       onPointerMove={handlePointerMove}
       onWheel={handleWheel}
-      onKeyDown={handleKey("down")}
-      onKeyUp={handleKey("up")}
+      onKeyDown={browserKeyHandler("down")}
+      onKeyUp={browserKeyHandler("up")}
       onContextMenu={(event) => event.preventDefault()}
     >
       {frameSrc ? (

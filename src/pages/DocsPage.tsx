@@ -14,7 +14,7 @@ const toc = [
 ] as const;
 
 const codeClass =
-	"docs-code my-8 block max-w-full overflow-x-auto rounded-lg border border-white/10 px-5 py-4 font-mono text-sm/5 text-white/80";
+	"docs-code surface-compact my-8 block max-w-full overflow-x-auto border border-white/10 px-5 py-4 font-mono text-sm/5 text-white/80";
 const sectionClass = "docs-section scroll-mt-28";
 
 export function DocsPage() {
@@ -104,7 +104,7 @@ export function DocsPage() {
 						<pre className={codeClass}>
 							cd frontend &amp;&amp; npm ci &amp;&amp; npm run dev
 						</pre>
-						<p className="rounded-lg border border-white/10 p-4">
+						<p className="surface-compact border border-white/10 p-4">
 							<code>npm ci</code> runs a postinstall patch against{" "}
 							<code>@earendil-works/pi-ai</code>. If that step prints a warning,
 							agent streaming may misrender. Re-run <code>npm ci</code> to fix

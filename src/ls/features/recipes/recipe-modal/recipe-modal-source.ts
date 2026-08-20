@@ -6,6 +6,19 @@ import { prepareRecipeForSave } from "@/features/recipes/prepare-recipe";
 
 const BACKENDS = new Set<Backend>(["vllm", "sglang", "llamacpp", "mlx"]);
 
+export type EnvVarEntry = {
+  id: string;
+  key: string;
+  value: string;
+};
+
+let envVarEntrySequence = 0;
+
+export function createEnvVarEntry(): EnvVarEntry {
+  envVarEntrySequence += 1;
+  return { id: `env-var-added-${envVarEntrySequence}`, key: "", value: "" };
+}
+
 export function getCommandOverride(recipe: RecipeEditor): string | null {
   const launchCommand = recipe.extra_args?.["launch_command"];
   if (typeof launchCommand === "string" && launchCommand.trim()) return launchCommand;
@@ -22,14 +35,13 @@ export function formatEditableExtraArgs(recipe: RecipeEditor): string {
   return JSON.stringify(filterExtraArgsForEditor(recipe.extra_args ?? {}), null, 2);
 }
 
-export function envVarEntriesFromRecipe(
-  recipe: RecipeEditor,
-): Array<{ key: string; value: string }> {
-  const entries = Object.entries(recipe.env_vars ?? {}).map(([key, value]) => ({
+export function envVarEntriesFromRecipe(recipe: RecipeEditor): EnvVarEntry[] {
+  const entries = Object.entries(recipe.env_vars ?? {}).map(([key, value], index) => ({
+    id: `env-var-${index}-${key}`,
     key,
     value: String(value),
   }));
-  return entries.length ? entries : [{ key: "", value: "" }];
+  return entries.length ? entries : [{ id: "env-var-empty", key: "", value: "" }];
 }
 
 export function parseRecipeSource(

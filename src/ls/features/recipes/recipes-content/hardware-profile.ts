@@ -34,7 +34,14 @@ export function buildHardwareProfile({
   detectedPoolGb: number;
   poolOverrideGb: number | null;
 }): HardwareProfile {
-  const names = [...new Set(gpus.map((gpu) => gpu.name).filter(Boolean))];
+  const names: string[] = [];
+  const seenNames = new Set<string>();
+  for (const gpu of gpus) {
+    if (gpu.name && !seenNames.has(gpu.name)) {
+      seenNames.add(gpu.name);
+      names.push(gpu.name);
+    }
+  }
   const appleSilicon = names.some((name) => /apple|m[1-4]\s|metal|unified/i.test(name));
   const tier = hardwareTier(gpus.length, poolGb);
   const label = appleSilicon ? "Apple Silicon" : hardwareLabel(tier);

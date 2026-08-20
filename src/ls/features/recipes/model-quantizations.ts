@@ -17,8 +17,10 @@ const QUANTIZATION_TAGS = [
 export function extractQuantizations(tags: string[]): string[] {
   const labels = quantizationLabels({ modelId: "", tags });
   if (labels.length) return labels;
-  const normalized = tags.map((tag) => tag.toLowerCase());
-  return QUANTIZATION_TAGS.filter((quantization) =>
-    normalized.includes(quantization.toLowerCase()),
-  ).map((quantization) => quantization.toUpperCase());
+  const normalized = new Set(tags.map((tag) => tag.toLowerCase()));
+  const quantizations: string[] = [];
+  for (const quantization of QUANTIZATION_TAGS) {
+    if (normalized.has(quantization.toLowerCase())) quantizations.push(quantization.toUpperCase());
+  }
+  return quantizations;
 }

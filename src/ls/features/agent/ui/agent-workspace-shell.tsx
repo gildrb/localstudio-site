@@ -63,7 +63,7 @@ function workspaceSessionIdentity(session: ReturnType<typeof focusedSession>) {
   return { viewKey: session.piSessionId, viewAlias: session.id };
 }
 
-export function shouldShowProjectEmptyState(
+function shouldShowProjectEmptyState(
   projects: ProjectsContextValue,
   projectParam: string | null,
 ): boolean {

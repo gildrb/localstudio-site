@@ -5,12 +5,11 @@ import { HeroDemo } from "./HeroDemo";
 import { HeroHearth } from "./hero/hearth";
 
 const ease = [0.16, 1, 0.3, 1] as const;
+const SETTLE = { opacity: 1, y: 0, filter: "blur(0px)" };
 
 export function Hero() {
 	const reduceMotion = useReducedMotion();
 	const { toggleMachine } = useMachine();
-	const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
-
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section className="hero" id="top" aria-labelledby="landing-title">
@@ -33,7 +32,7 @@ export function Hero() {
 									? false
 									: { opacity: 0, y: 12, filter: "blur(6px)" }
 							}
-							animate={settle}
+							animate={SETTLE}
 							transition={{ duration: 0.9, ease, delay: 0.12 }}
 						>
 							Intelligence should not be{" "}
@@ -64,7 +63,7 @@ export function Hero() {
 									? false
 									: { opacity: 0, y: 12, filter: "blur(6px)" }
 							}
-							animate={settle}
+							animate={SETTLE}
 							transition={{ duration: 0.9, ease, delay: 0.18 }}
 						>
 							Run AI at home, on hardware you own. Keep your models,
@@ -78,7 +77,7 @@ export function Hero() {
 									? false
 									: { opacity: 0, y: 12, filter: "blur(6px)" }
 							}
-							animate={settle}
+							animate={SETTLE}
 							transition={{ duration: 0.9, ease, delay: 0.24 }}
 						>
 						<CtaPair secondary={{ href: "/prompt", label: "Setup prompt" }} />
@@ -91,7 +90,7 @@ export function Hero() {
 					initial={
 						reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" }
 					}
-					animate={settle}
+					animate={SETTLE}
 					transition={{ duration: 0.9, ease, delay: 0.75 }}
 				>
 					<HeroDemo />

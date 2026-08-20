@@ -145,10 +145,20 @@ export function ModelRow({
         variant === "catalog" ? "py-2.5" : "",
         className,
       )}
-      onClick={onClick}
+      onClick={
+        interactive
+          ? (event) => {
+              const target = event.target;
+              if (target instanceof Element && target.closest("[data-model-row-control]")) return;
+              onClick?.();
+            }
+          : undefined
+      }
       onKeyDown={
         interactive
           ? (event) => {
+              const target = event.target;
+              if (target instanceof Element && target.closest("[data-model-row-control]")) return;
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
                 onClick?.();
@@ -188,23 +198,23 @@ export function ModelRow({
         </div>
         <div className="flex min-w-0 items-center justify-between gap-3">
           <div
+            data-model-row-control
             className="min-w-0 flex-1"
-            onClick={control && interactive ? (event) => event.stopPropagation() : undefined}
           >
             {control ?? value ?? <ModelValue dim>Not reported yet</ModelValue>}
           </div>
           {status ? (
             <div
+              data-model-row-control
               className="shrink-0"
-              onClick={interactive ? (event) => event.stopPropagation() : undefined}
             >
               {status}
             </div>
           ) : null}
           {actions ? (
             <div
+              data-model-row-control
               className="flex shrink-0 items-center gap-1"
-              onClick={interactive ? (event) => event.stopPropagation() : undefined}
             >
               {actions}
             </div>

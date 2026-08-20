@@ -54,6 +54,7 @@ export function ModelsDropdown({
               autoFocus
               type="text"
               value={filter}
+              aria-label="Search models"
               onChange={(e) => setFilter(e.target.value)}
               placeholder="Search models…"
               className="min-w-0 bg-transparent px-2.5 py-1.5 text-[length:var(--fs-sm)] text-(--fg) placeholder:text-(--hl2) focus:outline-none"

@@ -19,6 +19,16 @@ function providerKeyFor(taken: (key: string) => boolean): string {
 const slugify = (value: string): string =>
   value.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
+function nextCustomModelIndex(customModels: unknown[]): number {
+  let maxIndex = -1;
+  for (const entry of customModels) {
+    if (!isRecord(entry)) continue;
+    const index = entry["index"];
+    if (typeof index === "number" && index > maxIndex) maxIndex = index;
+  }
+  return maxIndex + 1;
+}
+
 export function mergePiConfig(config: JsonRecord, model: LocalAgentModel): AttachAction {
   if (!isRecord(config["providers"])) config["providers"] = {};
   const providers = config["providers"] as JsonRecord;
@@ -122,11 +132,7 @@ export function mergeDroidConfig(config: JsonRecord, model: LocalAgentModel): At
     return "updated";
   }
 
-  const indexes = customModels
-    .filter(isRecord)
-    .map((entry) => entry["index"])
-    .filter((value): value is number => typeof value === "number");
-  const index = indexes.length > 0 ? Math.max(...indexes) + 1 : 0;
+  const index = nextCustomModelIndex(customModels);
   customModels.push({
     model: model.modelId,
     id: `custom:${slugify(model.displayName)}-${index}`,
@@ -167,11 +173,7 @@ export function mergeHermesConfig(config: JsonRecord, model: LocalAgentModel): A
     return "updated";
   }
 
-  const indexes = customModels
-    .filter(isRecord)
-    .map((entry) => entry["index"])
-    .filter((value): value is number => typeof value === "number");
-  const index = indexes.length > 0 ? Math.max(...indexes) + 1 : 0;
+  const index = nextCustomModelIndex(customModels);
   const entry: JsonRecord = {
     name: model.displayName,
     model: model.modelId,

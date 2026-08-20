@@ -330,18 +330,19 @@ export function ToolsProvider({ children }: { children: ReactNode }) {
     [updateComputer],
   );
 
-  const setActiveComputerSession = useCallback((identity: SessionViewIdentity | null) => {
-    const previous = activeComputerSessionRef.current;
-    if (previous?.key === identity?.key) return;
-    setComputer((current) => {
+  const setActiveComputerSession = useCallback(
+    (identity: SessionViewIdentity | null) => {
+      const previous = activeComputerSessionRef.current;
+      if (previous?.key === identity?.key) return;
       if (previous) {
-        patchSessionView(window.localStorage, previous, { computer: computerSessionView(current) });
+        patchSessionView(window.localStorage, previous, { computer: computerSessionView(computer) });
       }
       activeComputerSessionRef.current = identity;
       const restored = identity ? readSessionView(window.localStorage, identity)?.computer : null;
-      return restored ? { ...current, ...restored } : { ...current, open: false };
-    });
-  }, []);
+      setComputer(restored ? { ...computer, ...restored } : { ...computer, open: false });
+    },
+    [computer],
+  );
 
   const requestFileOpen = useCallback(
     (path: string) => {

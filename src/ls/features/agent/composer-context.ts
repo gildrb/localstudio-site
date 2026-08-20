@@ -93,31 +93,35 @@ export function byQuery<
 >(rows: T[], query: string, limit = 8): T[] {
 	const q = query.trim().toLowerCase();
 	const nq = normalized(q);
-	const scored = rows
-		.map((row) => {
-			const fields = searchableText(row).map((value) => value.toLowerCase());
-			const normalizedFields = fields.map(normalized);
-			const primary = row.name.toLowerCase();
-			const display = row.displayName?.toLowerCase();
-			const score = !q
-				? 2
-				: primary === q ||
-						display === q ||
-						normalized(primary) === nq ||
-						normalized(display ?? "") === nq
-					? 0
-					: primary.startsWith(q) ||
-							Boolean(display?.startsWith(q)) ||
-							normalized(primary).startsWith(nq) ||
-							normalized(display ?? "").startsWith(nq)
-						? 1
-						: fields.some((field) => field.includes(q)) ||
-								normalizedFields.some((field) => field.includes(nq))
-							? 2
-							: 9;
-			return { row, score };
-		})
-		.filter((item) => item.score < 9)
-		.sort((a, b) => a.score - b.score || a.row.name.localeCompare(b.row.name));
-	return scored.slice(0, limit).map((item) => item.row);
+	const scored: Array<{ row: T; score: number }> = [];
+	for (const row of rows) {
+		const fields = searchableText(row).map((value) => value.toLowerCase());
+		const normalizedFields = fields.map(normalized);
+		const primary = row.name.toLowerCase();
+		const display = row.displayName?.toLowerCase();
+		const score = !q
+			? 2
+			: primary === q ||
+					display === q ||
+					normalized(primary) === nq ||
+					normalized(display ?? "") === nq
+				? 0
+				: primary.startsWith(q) ||
+						Boolean(display?.startsWith(q)) ||
+						normalized(primary).startsWith(nq) ||
+						normalized(display ?? "").startsWith(nq)
+					? 1
+					: fields.some((field) => field.includes(q)) ||
+							normalizedFields.some((field) => field.includes(nq))
+						? 2
+						: 9;
+		if (score < 9) scored.push({ row, score });
+	}
+	scored.sort((a, b) => a.score - b.score || a.row.name.localeCompare(b.row.name));
+	const result: T[] = [];
+	for (let index = 0; index < scored.length && index < limit; index += 1) {
+		const item = scored[index];
+		if (item) result.push(item.row);
+	}
+	return result;
 }

@@ -1,13 +1,10 @@
-import { useState } from "react";
 import setupPrompt from "../content/setup-prompt.txt?raw";
-import { CopyIcon } from "../components/CopyIcon";
+import { PromptBlock } from "../components/PromptBlock";
 import { CtaPair } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
 export function PromptPage() {
-	const [expanded, setExpanded] = useState(false);
-
 	return (
 		<PageShell>
 			<PageIntro
@@ -20,28 +17,7 @@ export function PromptPage() {
 				}
 			/>
 			<section className="section-width pb-30" aria-label="Setup handoff">
-				<section
-					className="prompt-block relative rounded-2xl border border-white/15"
-					aria-label="Portable setup prompt"
-					data-expanded={expanded ? "true" : "false"}
-				>
-					<CopyIcon text={setupPrompt} />
-					<pre
-						id="setup-prompt"
-						className="prompt-block__pre w-full min-w-0 overflow-hidden whitespace-pre-wrap break-words p-8 pr-20 font-mono text-sm/5 text-white/80 max-[620px]:p-5 max-[620px]:pr-12"
-					>
-						<code>{setupPrompt}</code>
-					</pre>
-					<button
-						className="prompt-block__toggle"
-						type="button"
-						aria-expanded={expanded}
-						aria-controls="setup-prompt"
-						onClick={() => setExpanded((value) => !value)}
-					>
-						{expanded ? "Show less" : "Show more"}
-					</button>
-				</section>
+				<PromptBlock label="Portable setup prompt" text={setupPrompt} />
 			</section>
 		</PageShell>
 	);

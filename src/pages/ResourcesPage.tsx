@@ -129,7 +129,7 @@ export function ResourcesPage() {
 						<p className="text-base/6 text-white/70">{group.description}</p>
 					</div>
 					<div
-						className={`mt-16 grid border border-white/10 max-[900px]:grid-cols-1 ${
+						className={`surface-panel mt-16 grid border border-white/10 max-[900px]:grid-cols-1 ${
 							group.items.length === 3 ? "grid-cols-3" : "grid-cols-2"
 						}`}
 					>

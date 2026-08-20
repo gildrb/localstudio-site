@@ -97,20 +97,21 @@ export function usePinnedNav({
   const [dragId, setDragId] = useState<string | null>(null);
 
   const pinnedKeys = useMemo(
-    () =>
-      Object.entries(prefs)
-        .filter(([key, pref]) => pref.pinned && !pref.hidden && !isLocalSessionPrefKey(key))
-        .map(([key]) => key)
-        .sort(),
+    () => {
+      const keys: string[] = [];
+      for (const [key, pref] of Object.entries(prefs)) {
+        if (pref.pinned && !pref.hidden && !isLocalSessionPrefKey(key)) keys.push(key);
+      }
+      return keys.sort();
+    },
     [prefs],
   );
   const hiddenKeysKey = useMemo(
-    () =>
-      Object.entries(prefs)
-        .filter(([, pref]) => pref.hidden)
-        .map(([key]) => key)
-        .sort()
-        .join(KEY_SEPARATOR),
+    () => {
+      const keys: string[] = [];
+      for (const [key, pref] of Object.entries(prefs)) if (pref.hidden) keys.push(key);
+      return keys.sort().join(KEY_SEPARATOR);
+    },
     [prefs],
   );
   const pinnedSessionIdsKey = useMemo(
@@ -118,11 +119,13 @@ export function usePinnedNav({
     [pinnedKeys],
   );
   const pinnedProjectIdsKey = useMemo(
-    () =>
-      pinnedKeys
-        .filter(isProjectPinKey)
-        .map((key) => key.slice(PROJECT_PIN_PREFIX.length))
-        .join(KEY_SEPARATOR),
+    () => {
+      const ids: string[] = [];
+      for (const key of pinnedKeys) {
+        if (isProjectPinKey(key)) ids.push(key.slice(PROJECT_PIN_PREFIX.length));
+      }
+      return ids.join(KEY_SEPARATOR);
+    },
     [pinnedKeys],
   );
   const pinnedProjectIds = useMemo(
@@ -143,16 +146,16 @@ export function usePinnedNav({
     [projects],
   );
   const pinnedActive = useMemo(
-    () =>
-      uniqueOpenSessions(activeSessions)
-        .filter((session) => {
-          const pref = mergeActiveSessionPref(session, prefs);
-          return pref.pinned && !pref.hidden;
-        })
-        .flatMap((session) => {
-          const project = projectsById.get(session.projectId);
-          return project ? [{ session, project }] : [];
-        }),
+    () => {
+      const pinned: Array<{ session: OpenAgentSession; project: ProjectEntry }> = [];
+      for (const session of uniqueOpenSessions(activeSessions)) {
+        const pref = mergeActiveSessionPref(session, prefs);
+        if (!pref.pinned || pref.hidden) continue;
+        const project = projectsById.get(session.projectId);
+        if (project) pinned.push({ session, project });
+      }
+      return pinned;
+    },
     [activeSessions, prefs, projectsById],
   );
   const activeSessionIds = useMemo(
@@ -166,16 +169,16 @@ export function usePinnedNav({
   }, [activeSessionIds, historySessions]);
 
   const entries = useMemo(() => {
-    const projectEntries = projects
-      .filter((project) => pinnedProjectIds.has(project.id) && !isChatsProject(project))
-      .map(
-        (project): PinnedNavEntry => ({
-          id: projectPinKey(project.id),
-          identities: [project.id],
-          kind: "project",
-          project,
-        }),
-      );
+    const projectEntries: PinnedNavEntry[] = [];
+    for (const project of projects) {
+      if (!pinnedProjectIds.has(project.id) || isChatsProject(project)) continue;
+      projectEntries.push({
+        id: projectPinKey(project.id),
+        identities: [project.id],
+        kind: "project",
+        project,
+      });
+    }
     const activeEntries = pinnedActive.map(
       ({ session, project }): PinnedNavEntry => ({
         id: session.threadId ?? session.id,
@@ -185,17 +188,17 @@ export function usePinnedNav({
         session,
       }),
     );
-    const historyEntries = historySessions
-      .filter((session) => !activeSessionIds.has(session.id))
-      .map(
-        (session): PinnedNavEntry => ({
-          id: session.id,
-          identities: [session.id],
-          kind: "history",
-          project: session.project,
-          session,
-        }),
-      );
+    const historyEntries: PinnedNavEntry[] = [];
+    for (const session of historySessions) {
+      if (activeSessionIds.has(session.id)) continue;
+      historyEntries.push({
+        id: session.id,
+        identities: [session.id],
+        kind: "history",
+        project: session.project,
+        session,
+      });
+    }
     // Order active and history session entries together by their (immutable)
     // start time. Opening a pinned session flips it from a "history" entry to an
     // "active" one - sorting on start time keeps its slot fixed across that flip,

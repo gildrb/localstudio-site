@@ -3,6 +3,7 @@
 import { newId, randomIdSegment } from "@/features/agent/messages/helpers";
 import type { AgentImageInput } from "@/features/agent/contracts";
 import { formatBytes } from "@/lib/formatters";
+import { createManagedObjectUrl } from "@/lib/object-url";
 import { AGENT_IMAGE_LIMITS, agentImageSizesLimitError } from "@shared/agent/agent-image-input";
 
 export type ChatAttachment = {
@@ -54,16 +55,20 @@ export function imageInputFromAttachment(
 }
 
 export function imageInputsFromAttachments(attachments: readonly ChatAttachment[]) {
-  return attachments.flatMap((file) => {
+  const images: AgentImageInput[] = [];
+  for (const file of attachments) {
     const image = imageInputFromAttachment(file);
-    return image ? [image] : [];
-  });
+    if (image) images.push(image);
+  }
+  return images;
 }
 
 function imageAttachmentLimitError(attachments: readonly ChatAttachment[]) {
-  return agentImageSizesLimitError(
-    attachments.filter(isImageAttachment).map((image) => image.size),
-  );
+  const sizes: number[] = [];
+  for (const attachment of attachments) {
+    if (isImageAttachment(attachment)) sizes.push(attachment.size);
+  }
+  return agentImageSizesLimitError(sizes);
 }
 
 export function preflightAttachmentFiles(
@@ -73,7 +78,10 @@ export function preflightAttachmentFiles(
   const accepted: File[] = [];
   const discarded: File[] = [];
   const seen = new Set(current.map(attachmentDedupKey));
-  let imageSizes = current.filter(isImageAttachment).map((image) => image.size);
+  const imageSizes: number[] = [];
+  for (const attachment of current) {
+    if (isImageAttachment(attachment)) imageSizes.push(attachment.size);
+  }
   let error: string | null = null;
   for (const file of incoming) {
     const key = attachmentDedupKey(file);
@@ -135,7 +143,7 @@ function previewKindFor(type: string): ChatAttachment["previewKind"] {
 function objectUrlFor(file: File): string | undefined {
   if (typeof URL === "undefined" || typeof URL.createObjectURL !== "function") return undefined;
   try {
-    return URL.createObjectURL(file);
+    return createManagedObjectUrl(file);
   } catch {
     return undefined;
   }

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { Effect } from "effect";
 import {
   finalizeRunningToolBlocks,
@@ -102,14 +102,18 @@ export function useSessionEngine(deps: UseSessionEngineDeps): SessionEngine {
   } = deps;
 
   const tabsRef = useRef(tabs);
-  tabsRef.current = tabs;
   const selectionForRef = useRef(selectionFor);
-  selectionForRef.current = selectionFor;
+  useEffect(() => {
+    tabsRef.current = tabs;
+  }, [tabs]);
+  useEffect(() => {
+    selectionForRef.current = selectionFor;
+  }, [selectionFor]);
   // Sessions with an in-flight "load earlier" page, so a double click / repeated
   // scroll doesn't fetch and prepend the same chunk twice.
   const loadingEarlierRef = useRef<Set<SessionId>>(new Set());
 
-  const loadRuntimeStatusCb = useCallback(api.loadRuntimeStatus, []);
+  const loadRuntimeStatusCb = api.loadRuntimeStatus;
 
   const sendControl = useCallback(
     (request: AgentControlRequest): Promise<{ ok: boolean; error?: string }> => {
@@ -450,7 +454,16 @@ export function useSessionEngine(deps: UseSessionEngineDeps): SessionEngine {
           ),
         ),
       ),
-    [browserToolEnabled, browserBackend, cwd, loadAndReplay, modelId, thinkingLevel, updateSession],
+    [
+      browserToolEnabled,
+      browserBackend,
+      cwd,
+      loadAndReplay,
+      modelId,
+      thinkingLevel,
+      toolAccess,
+      updateSession,
+    ],
   );
 
   const acceptsControl = useCallback(

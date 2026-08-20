@@ -10,10 +10,13 @@ const execFileAsync = promisify(execFile);
 
 export function configuredGitRoots(): string[] {
   const raw = process.env.LOCAL_STUDIO_GIT_DIFF_ROOTS;
-  return (raw ? raw.split(path.delimiter) : [os.homedir()])
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-    .map((entry) => path.resolve(entry));
+  const entries = raw ? raw.split(path.delimiter) : [os.homedir()];
+  const roots: string[] = [];
+  for (const entry of entries) {
+    const trimmed = entry.trim();
+    if (trimmed) roots.push(path.resolve(trimmed));
+  }
+  return roots;
 }
 
 export function resolveGitCwd(input: string, roots = configuredGitRoots()): string | null {
@@ -231,25 +234,28 @@ async function untrackedFileDiffs(
   let bytes = 0;
   let omitted = 0;
   const blocks: string[] = [];
-  for (const file of files) {
+  const processFile = async (index: number): Promise<void> => {
+    const file = files[index];
+    if (!file) return;
     const absolutePath = path.resolve(cwd, file);
     const relative = path.relative(cwd, absolutePath);
-    if (relative.startsWith("..") || path.isAbsolute(relative)) continue;
+    if (relative.startsWith("..") || path.isAbsolute(relative)) return processFile(index + 1);
     if (bytes >= MAX_UNTRACKED_DIFF_BYTES) {
       omitted += 1;
-      continue;
+      return processFile(index + 1);
     }
-    let contents: string;
     try {
-      contents = await readFile(absolutePath, "utf8");
+      const contents = await readFile(absolutePath, "utf8");
+      const { block, additions: fileAdditions } = buildUntrackedFileDiffBlock(file, contents);
+      additions += fileAdditions;
+      bytes += block.length;
+      blocks.push(block);
     } catch {
-      continue;
+      // Skip unreadable files and continue building the bounded diff.
     }
-    const { block, additions: fileAdditions } = buildUntrackedFileDiffBlock(file, contents);
-    additions += fileAdditions;
-    bytes += block.length;
-    blocks.push(block);
-  }
+    return processFile(index + 1);
+  };
+  await processFile(0);
   if (omitted > 0) {
     blocks.push(
       `diff --git a/(${omitted} more untracked files) b/(${omitted} more untracked files)\n` +

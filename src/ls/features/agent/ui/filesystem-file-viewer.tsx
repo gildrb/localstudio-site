@@ -5,6 +5,7 @@ import { Virtuoso } from "react-virtuoso";
 import { MessageSquarePlus, Minus } from "@/ui/icon-registry";
 import { highlightLines } from "@/features/agent/highlight-cache";
 import type { FileComment } from "@/features/agent/filesystem-types";
+import { stableContentKeys } from "@/lib/stable-list-keys";
 
 const EXTENSION_LANGUAGES: Record<string, string> = {
   js: "javascript",
@@ -53,7 +54,7 @@ const EXTENSION_LANGUAGES: Record<string, string> = {
   svelte: "xml",
 };
 
-export function languageForPath(path: string): string | null {
+function languageForPath(path: string): string | null {
   const name = path.split("/").pop()?.toLowerCase() ?? "";
   if (name === "dockerfile" || name.startsWith("dockerfile.")) return "dockerfile";
   if (name === "makefile" || name.startsWith("makefile.")) return "makefile";
@@ -85,6 +86,10 @@ export function FileViewer({
     const language = languageForPath(filePath);
     return language ? highlightLines(language, lines) : null;
   }, [filePath, lines]);
+  const keyedLines = useMemo(() => {
+    const keys = stableContentKeys(lines);
+    return keys.map((key, index) => ({ key, index }));
+  }, [lines]);
   const commentsByLine = useMemo(() => {
     const map = new Map<number, FileComment[]>();
     for (const comment of comments) {
@@ -192,6 +197,7 @@ export function FileViewer({
               <textarea
                 autoFocus
                 value={draft}
+                aria-label={`Comment for line ${lineNumber}`}
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
@@ -247,12 +253,15 @@ export function FileViewer({
     return (
       <div
         className="min-h-0 flex-1 overflow-y-auto overflow-x-auto py-0.5 outline-none"
+        role="textbox"
+        aria-label="File contents"
+        aria-readonly="true"
         tabIndex={0}
         onDoubleClick={handleDoubleClick}
         onKeyDown={handleKeyDown}
       >
-        {lines.map((_, index) => (
-          <div key={index}>{renderLine(index)}</div>
+        {keyedLines.map(({ key, index }) => (
+          <div key={key}>{renderLine(index)}</div>
         ))}
       </div>
     );

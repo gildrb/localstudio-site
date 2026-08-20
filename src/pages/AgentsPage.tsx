@@ -1,6 +1,6 @@
 import instructions from "../content/agent-instructions.txt?raw";
 import probes from "../content/agent-probes.txt?raw";
-import { CopyIcon } from "../components/CopyIcon";
+import { PromptBlock } from "../components/PromptBlock";
 import { CtaPair } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -30,13 +30,7 @@ export function AgentsPage() {
 				id="agents-title"
 				layout="left"
 				title="Set up the stack."
-				description={
-					<>
-						A compact <span translate="no">DLTL</span>, a copy-paste instruction
-						sheet for coding agents covering controllers, providers, runtimes,
-						and <span translate="no">Pi</span>.
-					</>
-				}
+				description="A copy-paste instruction sheet for coding agents covering controllers, providers, runtimes, and Pi."
 				actions={
 					<CtaPair secondary={{ href: "/docs", label: "Read the docs" }} />
 				}
@@ -54,7 +48,7 @@ export function AgentsPage() {
 						providers, and loads local tools. Configure each once.
 					</p>
 				</div>
-				<div className="mt-16 grid grid-cols-3 border border-white/10 max-[900px]:grid-cols-1">
+				<div className="surface-panel mt-16 grid grid-cols-3 border border-white/10 max-[900px]:grid-cols-1">
 					{capabilities.map(([title, text]) => (
 						<article
 							className="min-h-64 border-r border-white/10 p-8 last:border-r-0 max-[900px]:min-h-0 max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:last:border-b-0"
@@ -85,25 +79,15 @@ export function AgentsPage() {
 						never touches secrets.
 					</p>
 				</div>
-				<div className="mt-16 grid grid-cols-[minmax(0,1.28fr)_minmax(240px,.72fr)] items-start gap-6 max-[900px]:grid-cols-1">
-					<div className="prompt-block rounded-2xl border border-white/15">
-						<CopyIcon text={instructions} />
-						<div className="flex items-center justify-between border-b border-white/10 px-5 py-4 pr-14">
-							<p className="text-sm/5 text-white/70">Agent instructions</p>
-							<span className="rounded-full border border-white/10 px-2 py-1 font-mono text-sm/5 text-white/50">
-								<span translate="no">DLTL</span>
-							</span>
-						</div>
-						<pre className="max-h-[1320px] overflow-auto p-6 font-mono text-sm/5 text-white/80">
-							{instructions}
-						</pre>
-					</div>
-					<aside className="grid min-w-0 gap-6">
-						<section className="min-w-0" aria-labelledby="agents-scope-title">
+				<div className="mt-16">
+					<PromptBlock label="Agent setup instructions" text={instructions} />
+				</div>
+				<aside className="mt-16 grid min-w-0 grid-cols-2 gap-6 max-[900px]:grid-cols-1">
+					<section className="min-w-0" aria-labelledby="agents-scope-title">
 							<h3 id="agents-scope-title" className="text-base/6 font-medium">
 								Scope
 							</h3>
-							<ul className="mt-4 grid border border-white/10 p-0 text-base/6 text-white/70">
+							<ul className="surface-card mt-4 grid border border-white/10 p-0 text-base/6 text-white/70">
 								{scope.map((item, index) => (
 									<li
 										className="flex gap-4 border-b border-white/10 p-4 last:border-b-0"
@@ -116,17 +100,16 @@ export function AgentsPage() {
 									</li>
 								))}
 							</ul>
-						</section>
-						<section className="min-w-0" aria-labelledby="agents-probes-title">
+					</section>
+					<section className="min-w-0" aria-labelledby="agents-probes-title">
 							<h3 id="agents-probes-title" className="text-base/6 font-medium">
 								Useful probes
 							</h3>
-							<pre className="docs-code mt-4 block max-w-full overflow-x-auto rounded-lg border border-white/10 px-5 py-4 font-mono text-sm/5 text-white/80">
+							<pre className="docs-code surface-compact mt-4 block max-w-full overflow-x-auto border border-white/10 px-5 py-4 font-mono text-sm/5 text-white/80">
 								{probes}
 							</pre>
-						</section>
-					</aside>
-				</div>
+					</section>
+				</aside>
 			</section>
 			<section
 				className={`${container} page-cta`}

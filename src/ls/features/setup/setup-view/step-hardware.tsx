@@ -2,13 +2,12 @@
 
 import { Button, Checkbox } from "@/ui";
 import { SettingsGroup, SettingsNotice } from "@/features/settings/settings-ui";
+import { ManagedRuntimeInstallRows, RuntimeTargetRows } from "@/features/settings/runtime-targets";
 import {
   MANAGED_RUNTIME_BACKENDS,
-  ManagedRuntimeInstallRows,
-  RuntimeTargetRows,
   isManagedRuntimeTarget,
   type ManagedRuntimeInstallBackend,
-} from "@/features/settings/runtime-targets";
+} from "@/features/settings/runtime-target-model";
 import type { EngineJob, RuntimeTarget, StudioDiagnostics } from "@/lib/types";
 import { buildHardwareSummary } from "./step-hardware-model";
 

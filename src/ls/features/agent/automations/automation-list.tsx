@@ -73,22 +73,21 @@ export function AutomationList({
               : "No automations match these filters."}
           </ListMessage>
         ) : (
-          <div role="list" className="divide-y divide-(--ui-separator)/70">
+          <ul className="divide-y divide-(--ui-separator)/70">
             {visible.map((automation) => {
               const selected = automation.id === selectedId;
               const paused = automation.status === "paused";
               return (
-                <button
-                  key={automation.id}
-                  type="button"
-                  role="listitem"
-                  onClick={() => onSelect(automation)}
-                  className={`group w-full rounded-[var(--ui-radius)] px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--ui-accent)/35 ${
-                    selected
-                      ? "bg-(--ui-active) text-(--ui-fg)"
-                      : "text-(--ui-fg) hover:bg-(--ui-hover)/60"
-                  }`}
-                >
+                <li key={automation.id}>
+                  <button
+                    type="button"
+                    onClick={() => onSelect(automation)}
+                    className={`group w-full rounded-[var(--ui-radius)] px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--ui-accent)/35 ${
+                      selected
+                        ? "bg-(--ui-active) text-(--ui-fg)"
+                        : "text-(--ui-fg) hover:bg-(--ui-hover)/60"
+                    }`}
+                  >
                   <div className="flex items-start gap-3">
                     <span
                       className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
@@ -120,10 +119,11 @@ export function AutomationList({
                       </span>
                     </span>
                   </div>
-                </button>
+                  </button>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
       </div>
     </section>

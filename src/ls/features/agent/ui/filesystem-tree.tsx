@@ -3,44 +3,8 @@
 import { useMemo } from "react";
 import { ChevronDown, ChevronRight, File, Folder } from "@/ui/icon-registry";
 import type { FsEntry } from "@/features/agent/filesystem-types";
+import { fileTone } from "./filesystem-tree-model";
 
-const TONE_GROUPS: [string, string[]][] = [
-  [
-    "text-(--link)",
-    [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "mjs",
-      "cjs",
-      "py",
-      "rs",
-      "go",
-      "rb",
-      "java",
-      "c",
-      "cpp",
-      "h",
-      "swift",
-      "kt",
-    ],
-  ],
-  ["text-(--warn)", ["css", "scss", "sass", "less", "sh", "bash", "zsh", "fish"]],
-  ["text-(--ok)", ["json", "yaml", "yml", "toml", "ini", "env", "lock"]],
-  ["text-(--fg) opacity-60", ["md", "mdx", "txt", "rst"]],
-  ["text-(--err) opacity-70", ["png", "jpg", "jpeg", "gif", "webp", "svg", "mp4", "mov"]],
-];
-
-const FILE_TONE_BY_EXT: Record<string, string> = Object.fromEntries(
-  TONE_GROUPS.flatMap(([tone, exts]) => exts.map((ext) => [ext, tone] as const)),
-);
-
-export function fileTone(name: string): string {
-  const dot = name.lastIndexOf(".");
-  const ext = dot >= 0 ? name.slice(dot + 1).toLowerCase() : "";
-  return FILE_TONE_BY_EXT[ext] ?? "text-(--dim)";
-}
 
 function formatEntrySize(size: number): string {
   if (size < 1024) return `${size}B`;
@@ -50,6 +14,11 @@ function formatEntrySize(size: number): string {
 
 export function Breadcrumb({ relPath, onRoot }: { relPath: string; onRoot: () => void }) {
   const parts = relPath ? relPath.split("/").filter(Boolean) : [];
+  let path = "";
+  const crumbs = parts.map((part, index) => {
+    path = path ? `${path}/${part}` : part;
+    return { part, path, last: index === parts.length - 1 };
+  });
   return (
     <div className="flex h-9 shrink-0 items-center gap-0.5 overflow-x-auto px-2 text-[length:var(--fs-sm)] text-(--dim)">
       <button
@@ -61,10 +30,10 @@ export function Breadcrumb({ relPath, onRoot }: { relPath: string; onRoot: () =>
         /
       </button>
       {parts.length > 0 && <ChevronRight className="h-3 w-3 shrink-0 text-(--dim)" />}
-      {parts.map((part, i) => (
-        <span key={i} className="flex shrink-0 items-center gap-0.5">
+      {crumbs.map(({ part, path: crumbPath, last }) => (
+        <span key={crumbPath} className="flex shrink-0 items-center gap-0.5">
           <span className="truncate font-mono text-[length:var(--fs-xs)] text-(--fg)">{part}</span>
-          {i < parts.length - 1 && <ChevronRight className="h-3 w-3 shrink-0 text-(--dim)" />}
+          {!last && <ChevronRight className="h-3 w-3 shrink-0 text-(--dim)" />}
         </span>
       ))}
     </div>

@@ -82,6 +82,13 @@ export function SessionsCommand({ open, onClose, activeSessions }: Props) {
   const [highlight, setHighlight] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useMountSubscription(() => {
+    if (!open) return;
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, [open]);
 
   useMountSubscription(() => {
     if (!open) return;
@@ -181,37 +188,43 @@ export function SessionsCommand({ open, onClose, activeSessions }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+    <dialog
+      ref={dialogRef}
+      aria-label="Session search"
+      className="fixed inset-0 z-[60] m-0 h-full max-h-none w-full max-w-none items-center justify-center bg-transparent p-4 backdrop:bg-(--color-background) open:flex"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          setHighlight((h) => Math.min(totalRows - 1, h + 1));
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          setHighlight((h) => Math.max(0, h - 1));
+        } else if (event.key === "Enter") {
+          event.preventDefault();
+          commit(selectedIndex);
+        }
+      }}
+    >
       <button
-        className="absolute inset-0 bg-(--color-background)"
-        onClick={onClose}
+        type="button"
+        tabIndex={-1}
         aria-label="Close session search"
+        className="absolute inset-0"
+        onClick={onClose}
       />
       <div
-        role="dialog"
-        aria-modal="true"
         className={`relative z-10 flex max-h-[68vh] w-[min(720px,92vw)] flex-col ${POPOVER_PANEL_CLASS}`}
-        onKeyDown={(event) => {
-          if (event.key === "ArrowDown") {
-            event.preventDefault();
-            setHighlight((h) => Math.min(totalRows - 1, h + 1));
-          } else if (event.key === "ArrowUp") {
-            event.preventDefault();
-            setHighlight((h) => Math.max(0, h - 1));
-          } else if (event.key === "Enter") {
-            event.preventDefault();
-            commit(selectedIndex);
-          } else if (event.key === "Escape") {
-            event.preventDefault();
-            onClose();
-          }
-        }}
       >
         <div className="flex items-center gap-2 border-b border-(--separator) px-4 py-3">
           <Search className="h-4 w-4 text-(--dim)" />
           <input
             ref={inputRef}
             value={query}
+            aria-label="Search sessions"
             onChange={(event) => {
               setQuery(event.target.value);
               setHighlight(0);
@@ -342,7 +355,7 @@ export function SessionsCommand({ open, onClose, activeSessions }: Props) {
           </span>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
 

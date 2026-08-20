@@ -1,31 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import {
-  RIG_HARDWARE_TYPE_LABELS,
-  RIG_HARDWARE_TYPES,
-  RIG_NODE_ROLES,
-} from "@local-studio/contracts/rigs";
+import { RIG_HARDWARE_TYPE_LABELS, RIG_HARDWARE_TYPES } from "@local-studio/contracts/rigs";
 import { Button, Checkbox, FormField, Input, Select, Textarea } from "@/ui";
 import { cx } from "@/ui/utils";
 import { ResourceDrawer } from "@/ui/resource-drawer";
-import type { RigHardwareType, RigNode, RigNodeRole } from "@/lib/types";
+import type { RigHardwareType, RigNodeRole } from "@/lib/types";
 import type { RigNodePayload } from "@/lib/api/rigs";
 import { HardwareArt } from "./hardware-art";
+import { formToPayload, isRigNodeRole, type NodeFormState } from "./node-form-model";
 
-export interface NodeFormState {
-  name: string;
-  hardware_type: RigHardwareType;
-  role: RigNodeRole;
-  hostname: string;
-  address: string;
-  memory_gb: string;
-  accelerator_name: string;
-  accelerator_count: string;
-  accelerator_memory_gb: string;
-  unified_memory: boolean;
-  notes: string;
-}
 
 const EMPTY_FORM: NodeFormState = {
   name: "",
@@ -47,51 +31,8 @@ const ROLE_OPTIONS: Array<{ value: RigNodeRole; label: string }> = [
   { value: "worker", label: "Worker — lends GPUs to a head" },
 ];
 
-function isRigNodeRole(value: string): value is RigNodeRole {
-  return RIG_NODE_ROLES.some((role) => role === value);
-}
 
-export function nodeToForm(node: RigNode): NodeFormState {
-  const accelerator = node.accelerators[0];
-  return {
-    name: node.name,
-    hardware_type: node.hardware_type,
-    role: node.role,
-    hostname: node.hostname ?? "",
-    address: node.address ?? "",
-    memory_gb: node.memory_gb === null ? "" : String(node.memory_gb),
-    accelerator_name: accelerator?.name ?? "",
-    accelerator_count: String(accelerator?.count ?? 1),
-    accelerator_memory_gb: accelerator?.memory_gb == null ? "" : String(accelerator.memory_gb),
-    unified_memory: accelerator?.unified_memory ?? false,
-    notes: node.notes ?? "",
-  };
-}
 
-const formToPayload = (form: NodeFormState): RigNodePayload & { name: string } => {
-  const acceleratorName = form.accelerator_name.trim();
-  return {
-    name: form.name.trim(),
-    hardware_type: form.hardware_type,
-    role: form.role,
-    hostname: form.hostname.trim() || null,
-    address: form.address.trim() || null,
-    memory_gb: form.memory_gb.trim() ? Number(form.memory_gb) : null,
-    accelerators: acceleratorName
-      ? [
-          {
-            name: acceleratorName,
-            count: Math.max(1, Number(form.accelerator_count) || 1),
-            memory_gb: form.accelerator_memory_gb.trim()
-              ? Number(form.accelerator_memory_gb)
-              : null,
-            unified_memory: form.unified_memory,
-          },
-        ]
-      : [],
-    notes: form.notes.trim() || null,
-  };
-};
 
 export function NodeFormModal({
   title,

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createApiClient } from "@/lib/api/create-api-client";
 import { BACKEND_URL_CHANGED_EVENT, getApiKey, getStoredBackendUrl } from "@/lib/api/connection";
 import type { ProcessInfo, RecipeWithStatus } from "@/lib/types";
@@ -149,10 +149,12 @@ export function useDashboardRecipes(currentProcess: ProcessInfo | null) {
   const recipeRef = useRef(currentRecipe);
   const recipesRef = useRef(recipes);
   const logsRef = useRef(logs);
-  processRef.current = currentProcess;
-  recipeRef.current = currentRecipe;
-  recipesRef.current = recipes;
-  logsRef.current = logs;
+  useEffect(() => {
+    processRef.current = currentProcess;
+    recipeRef.current = currentRecipe;
+    recipesRef.current = recipes;
+    logsRef.current = logs;
+  }, [currentProcess, currentRecipe, recipes, logs]);
   const activeProcessKey = processKey(currentProcess);
 
   const applyCachedState = useCallback((key: string) => {

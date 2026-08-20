@@ -23,11 +23,7 @@ import {
   type SessionsCommandComponent,
 } from "@/features/shell/left-sidebar-lazy";
 import { MobileNavigationDrawer } from "@/features/shell/left-sidebar-mobile-drawer";
-import {
-  isRouteActive,
-  mobilePageTitle,
-  routeHidesAppSidebar,
-} from "@/features/shell/left-sidebar-nav";
+import { isRouteActive, mobilePageTitle, routeHidesAppSidebar } from "@/features/shell/left-sidebar-nav-model";
 
 const SIDEBAR_MIN_WIDTH = 180;
 const SIDEBAR_MAX_WIDTH = 520;
@@ -184,6 +180,7 @@ export function LeftSidebar({ children }: { children: ReactNode }) {
         projectsNavReady={projectsNavReady}
         ProjectsNavSection={ProjectsNavSection}
         onStartResize={startSidebarResize}
+        onResize={(nextWidth) => setSidebarWidth(clampSidebarWidth(nextWidth))}
         onRevealProjectsNav={() => {
           if (!hidesAppSidebar && !projectsNavReady) setProjectsNavReady(true);
         }}

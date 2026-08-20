@@ -313,6 +313,113 @@ test("mobile hit targets reach 44px", async ({ page }) => {
 	expect(await page.evaluate(() => Math.round(window.scrollY))).toBe(scrolled);
 });
 
+test("desktop menus share the navbar surface and align to the page grid", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/");
+	const trigger = page.getByRole("button", { name: "Resources" });
+	const restingNav = await page.locator("header.nav").evaluate((element) => {
+		const style = getComputedStyle(element, "::before");
+		return [style.backgroundColor, style.backdropFilter];
+	});
+	await trigger.hover();
+	const menu = page.locator(".nav__mega");
+	await expect(menu).toBeVisible();
+	await expect(menu.locator(".nav__mega-section")).toHaveCount(3);
+	const geometry = await page.evaluate(() => {
+		const header = document.querySelector<HTMLElement>("header.nav");
+		const panel = document.querySelector<HTMLElement>(".nav__mega");
+		const inner = document.querySelector<HTMLElement>(".nav__mega-inner");
+		const firstSection = document.querySelector<HTMLElement>(".nav__mega-section");
+		const brand = document.querySelector<HTMLElement>(".brand");
+		if (!header || !panel || !inner || !firstSection || !brand) {
+			throw new Error("Desktop menu did not open");
+		}
+		const pageOverlay = getComputedStyle(document.body, "::after");
+		const headerBox = header.getBoundingClientRect();
+		const panelBox = panel.getBoundingClientRect();
+		return {
+			panelTop: Math.round(panelBox.top),
+			headerBottom: Math.round(headerBox.bottom),
+			panelWidth: Math.round(panelBox.width),
+			panelHeight: Math.round(panelBox.height),
+			gridLeft: [brand, inner, firstSection].map((element) =>
+				Math.round(element.getBoundingClientRect().left),
+			),
+			panelChrome: [
+				getComputedStyle(panel, "::before").backgroundColor,
+				getComputedStyle(panel, "::before").backdropFilter,
+			],
+			panelDirectChrome: [
+				getComputedStyle(panel).backgroundColor,
+				getComputedStyle(panel).backdropFilter,
+			],
+			pageOverlay: pageOverlay.content,
+			navChrome: [
+				getComputedStyle(header, "::before").backgroundColor,
+				getComputedStyle(header, "::before").backdropFilter,
+			],
+			navDirectChrome: [
+				getComputedStyle(header).backgroundColor,
+				getComputedStyle(header).backdropFilter,
+			],
+			navZIndex: Number.parseInt(getComputedStyle(header).zIndex, 10),
+			sectionBorders: [...panel.querySelectorAll<HTMLElement>(".nav__mega-section")].map(
+				(section) => [
+					getComputedStyle(section).borderLeftWidth,
+					getComputedStyle(section).borderRightWidth,
+				],
+			),
+			labelFonts: [...panel.querySelectorAll<HTMLElement>(".nav__mega-section > p")].map(
+				(label) => {
+					const style = getComputedStyle(label);
+					return [style.fontSize, style.lineHeight, style.fontWeight];
+				},
+			),
+		};
+	});
+	expect(Math.abs(geometry.panelTop - geometry.headerBottom)).toBeLessThanOrEqual(1);
+	expect(geometry.headerBottom).toBeGreaterThanOrEqual(72);
+	expect(geometry.panelWidth).toBe(1440);
+	expect(geometry.gridLeft).toEqual(Array(3).fill(geometry.gridLeft[0]));
+	expect(geometry.pageOverlay).toBe("none");
+	expect(restingNav).toEqual([
+		"rgba(0, 0, 0, 0.64)",
+		"blur(24px) brightness(0.7)",
+	]);
+	expect(geometry.navChrome).toEqual(restingNav);
+	expect(geometry.panelChrome).toEqual(restingNav);
+	expect(geometry.navDirectChrome).toEqual(["rgba(0, 0, 0, 0)", "none"]);
+	expect(geometry.panelDirectChrome).toEqual(geometry.navDirectChrome);
+	await expect(page.locator(".nav__page-overlay, .nav__backdrop")).toHaveCount(0);
+	expect(geometry.sectionBorders).toEqual(Array(3).fill(["0px", "0px"]));
+	expect(geometry.labelFonts).toEqual(Array(3).fill(["16px", "24px", "400"]));
+	const targets = await menu.locator("a").evaluateAll((links) =>
+		links.map((link) => ({
+			height: Math.round(link.getBoundingClientRect().height),
+			color: getComputedStyle(link).color,
+			font: [
+				getComputedStyle(link).fontSize,
+				getComputedStyle(link).lineHeight,
+				getComputedStyle(link).fontWeight,
+			],
+		})),
+	);
+	expect(targets.length).toBe(5);
+	expect(Math.min(...targets.map((target) => target.height))).toBeGreaterThanOrEqual(48);
+	expect(new Set(targets.map((target) => target.color))).toEqual(new Set(["rgb(255, 255, 255)"]));
+	expect(new Set(targets.map((target) => target.font.join("/")))).toEqual(
+		new Set(["28px/36px/400"]),
+	);
+	await page.getByRole("link", { name: "Documentation", exact: true }).hover();
+	await expect(menu).toBeVisible();
+	await page.mouse.move(720, 700);
+	await expect(menu).toBeHidden();
+	await trigger.click();
+	await expect(menu).toBeVisible();
+	await page.keyboard.press("Escape");
+	await expect(menu).toBeHidden();
+});
+
 test("navbar and footer hitboxes touch and share one height", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
@@ -464,6 +571,63 @@ test("agents page keeps a hierarchical heading order", async ({ page }) => {
 	}
 });
 
+test("bounded route surfaces use the shared radius roles", async ({ page }) => {
+	await page.goto("/prompt");
+	const tokens = await page.evaluate(() => {
+		const style = getComputedStyle(document.documentElement);
+		return [
+			"--radius-control",
+			"--radius-compact",
+			"--radius-frame",
+			"--radius-card",
+			"--radius-media-frame",
+			"--radius-panel",
+			"--radius-panel-large",
+		].map((token) => style.getPropertyValue(token).trim());
+	});
+	expect(tokens).toEqual(["6px", "8px", "10px", "12px", "14px", "16px", "24px"]);
+
+	const checks = [
+		{ route: "/prompt", selector: ".prompt-block.surface-panel", count: 1, radius: "16px", clipped: false },
+		{ route: "/prompt", selector: ".prompt-block__toggle", count: 1, radius: "6px", clipped: false },
+		{ route: "/resources", selector: ".surface-panel", count: 3, radius: "16px", clipped: true },
+		{ route: "/agents", selector: ".surface-panel:not(.prompt-block)", count: 1, radius: "16px", clipped: true },
+		{ route: "/agents", selector: ".prompt-block.surface-panel", count: 1, radius: "16px", clipped: false },
+		{ route: "/agents", selector: ".surface-card", count: 1, radius: "12px", clipped: true },
+		{ route: "/agents", selector: ".surface-compact", count: 1, radius: "8px", clipped: false },
+		{ route: "/mobile", selector: ".surface-panel-large", count: 1, radius: "24px", clipped: true },
+		{ route: "/mobile", selector: ".surface-panel", count: 2, radius: "16px", clipped: true },
+		{ route: "/mobile", selector: ".surface-card", count: 3, radius: "12px", clipped: true },
+	] as const;
+
+	for (const check of checks) {
+		await page.goto(check.route);
+		const surfaces = page.locator(check.selector);
+		await expect(surfaces).toHaveCount(check.count);
+		const styles = await surfaces.evaluateAll((elements) =>
+			elements.map((element) => ({
+				radius: getComputedStyle(element).borderRadius,
+				overflow: getComputedStyle(element).overflow,
+			})),
+		);
+		expect(styles.map(({ radius }) => radius)).toEqual(
+			Array.from({ length: check.count }, () => check.radius),
+		);
+		if (check.clipped) {
+			expect(styles.every(({ overflow }) => overflow === "hidden")).toBe(true);
+		}
+	}
+
+	await page.goto("/prompt");
+	const toggle = page.locator(".prompt-block__toggle");
+	await toggle.scrollIntoViewIfNeeded();
+	const toggleBox = await toggle.boundingBox();
+	expect(toggleBox?.height).toBe(40);
+	await toggle.click({
+		position: { x: (toggleBox?.width ?? 0) / 2, y: (toggleBox?.height ?? 0) - 2 },
+	});
+	await expect(toggle).toHaveAttribute("aria-expanded", "true");
+});
 test("story media uses the hero border treatment", async ({ page }) => {
 	await page.goto("/");
 	const style = await page.locator(".story__visual .demo").first().evaluate((element) => ({

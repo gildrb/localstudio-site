@@ -3,12 +3,13 @@
 import type { DashboardLayoutProps } from "../layout/dashboard-types";
 import { StatusSection } from "./status-section";
 import { GpuSection } from "./gpu-section";
-import { useApiUrlCensored } from "@/ui/api-url-censor";
+import { useApiUrlCensored } from "@/ui/api-url-censor-state";
 import {
   activateController,
   useControllerMatrixStore,
   type ControllerSnapshot,
 } from "./controller-matrix-store";
+import { stableContentKeys } from "@/lib/stable-list-keys";
 
 const DOT_BY_STATE: Record<string, string> = {
   auth: "bg-(--hl3)",
@@ -121,7 +122,8 @@ function ControllerTab({
 
 function ActivityStrip({ logs }: DashboardLayoutProps) {
   const tail = logs.length > 0 ? logs.slice(-120) : [];
-
+  const keys = stableContentKeys(tail);
+  const lines = tail.map((line, index) => ({ key: keys[index], line }));
   return (
     <section className="border-t border-(--separator) px-2 pt-4 pb-5">
       <div className="mb-2 flex items-center justify-between gap-3">
@@ -130,8 +132,8 @@ function ActivityStrip({ logs }: DashboardLayoutProps) {
       </div>
       <div className="max-h-[20rem] min-h-[10rem] overflow-y-auto border border-(--border)/45 bg-(--surface)/40 p-3 font-mono text-[length:var(--fs-xs)] leading-5 text-(--dim)/80 sm:max-h-[34rem] sm:min-h-[18rem]">
         {tail.length > 0 ? (
-          tail.map((line, index) => (
-            <div key={`${index}-${line}`} className="truncate">
+          lines.map(({ key, line }) => (
+            <div key={key} className="truncate">
               {trimLogLine(line)}
             </div>
           ))

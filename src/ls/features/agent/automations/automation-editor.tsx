@@ -310,14 +310,14 @@ function RunHistory({ automation }: { automation: Automation }) {
         </span>
       </div>
       <div className="divide-y divide-(--ui-separator) border-y border-(--ui-separator)">
-        {automation.runs.map((run, index) => {
+        {automation.runs.map((run) => {
           const transcriptHref =
             run.piSessionId && run.projectId
               ? `/agent?project=${encodeURIComponent(run.projectId)}&session=${encodeURIComponent(run.piSessionId)}&replace=1`
               : null;
           return (
             <div
-              key={`${run.at}-${run.piSessionId ?? index}`}
+              key={`${run.at}:${run.piSessionId ?? ""}:${run.projectId ?? ""}:${run.outcome}:${run.summary ?? ""}:${run.error ?? ""}`}
               className="px-1 py-3 transition-colors hover:bg-(--ui-hover)/25"
             >
               <div className="flex items-start justify-between gap-3">

@@ -27,7 +27,8 @@ import { scheduleDurableUiPreferencesSave } from "@/lib/desktop-ui-preferences";
 import { DeployControllerPanel } from "./deploy-controller-panel";
 import { AppVersionSection } from "./app-version-section";
 import { StatusPill, Spinner } from "@/ui";
-import { ApiUrlCensorToggle, useApiUrlCensored } from "@/ui/api-url-censor";
+import { ApiUrlCensorToggle } from "@/ui/api-url-censor";
+import { useApiUrlCensored } from "@/ui/api-url-censor-state";
 import {
   SettingsButton,
   SettingsGroup,
@@ -55,6 +56,12 @@ function subscribeToStorage(callback: () => void): () => void {
 let cachedEntriesKey = "";
 let cachedEntries: ControllerEntry[] = [];
 const serverEntries: ControllerEntry[] = [];
+
+function persistControllerEntries(next: ControllerEntry[]): void {
+  saveSavedControllers(next);
+  scheduleDurableUiPreferencesSave();
+  if (typeof window !== "undefined") window.dispatchEvent(new Event("storage"));
+}
 
 function controllerEntriesKey(entries: ControllerEntry[]): string {
   return JSON.stringify(
@@ -106,17 +113,12 @@ export function ApiConnectionSection({
 }) {
   const activeUrl = apiSettings.backendUrl;
   const entries = useSyncExternalStore(subscribeToStorage, readEntries, () => serverEntries);
-  const setEntries = (next: ControllerEntry[]) => {
-    saveSavedControllers(next);
-    scheduleDurableUiPreferencesSave();
-    if (typeof window !== "undefined") window.dispatchEvent(new Event("storage"));
-  };
   const [draft, setDraft] = useState<SavedController>({ url: "" });
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
   const censorUrls = useApiUrlCensored();
 
   const activeId = useMemo(() => normalizeControllerUrl(activeUrl), [activeUrl]);
-  const persist = setEntries;
+  const persist = persistControllerEntries;
   const toggleReveal = (id: string) =>
     setRevealed((current) => ({ ...current, [id]: !current[id] }));
 
@@ -171,7 +173,7 @@ export function ApiConnectionSection({
         ) : (
           entries.map((entry, index) => (
             <ControllerListRow
-              key={entry.id}
+              key={`${entry.id}:${entry.name ?? ""}:${entry.url}:${entry.apiKey ?? ""}`}
               entry={entry}
               index={index}
               active={entry.id === activeId}
@@ -307,7 +309,7 @@ function ControllerListRow({
   onCommit: (entry: ControllerEntry) => void;
   onRemove: () => void;
 }) {
-  const [draft, setDraft] = useState<ControllerEntry>(entry);
+  const [draft, setDraft] = useState<ControllerEntry>(() => entry);
   const commit = (next: ControllerEntry) => {
     if (next.name === entry.name && next.url === entry.url && next.apiKey === entry.apiKey) {
       return;

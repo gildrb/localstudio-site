@@ -263,11 +263,10 @@ export function mergeExistingToolState(
   existingBlocks: AssistantBlock[],
   incomingBlocks: AssistantBlock[],
 ): AssistantBlock[] {
-  const existingTools = new Map(
-    existingBlocks
-      .filter((block) => block.kind === "tool")
-      .map((block) => [block.id, block] as const),
-  );
+  const existingTools = new Map<string, Extract<AssistantBlock, { kind: "tool" }>>();
+  for (const block of existingBlocks) {
+    if (block.kind === "tool") existingTools.set(block.id, block);
+  }
   return incomingBlocks.map((block) => {
     if (block.kind !== "tool") return block;
     const existing = existingTools.get(block.id);

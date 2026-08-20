@@ -225,16 +225,13 @@ function buildComponentsWithAppLinks(tools: ToolHandlers): Components {
       }
       if (!safeExternalHref(href)) return <span>{children}</span>;
       return (
-        <a
-          {...props}
-          href={href}
-          target="_blank"
-          rel="noreferrer noopener"
-          onClick={(event) => {
+        <button
+          type="button"
+          className={`inline cursor-pointer border-0 bg-transparent p-0 text-left text-(--link) underline underline-offset-2 ${props.className ?? ""}`}
+          onClick={() => {
             if (!href) return;
             const next = normalizeBrowserInput(href, "");
             if (!next) return;
-            event.preventDefault();
             tools.setComputerOpen(true);
             tools.setComputerTab("browser");
             tools.setBrowserUrl(next, next);
@@ -242,7 +239,7 @@ function buildComponentsWithAppLinks(tools: ToolHandlers): Components {
           title={href}
         >
           {children}
-        </a>
+        </button>
       );
     },
   };

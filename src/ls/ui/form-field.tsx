@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, type ReactNode } from "react";
+import { useId, useMemo, type ReactNode } from "react";
 import { FormFieldContext } from "./form-field-context";
 
 interface FormFieldProps {
@@ -26,6 +26,10 @@ function FormField({
   const descriptionId = description ? `${controlId}-description` : undefined;
   const errorId = error ? `${controlId}-error` : undefined;
   const describedBy = [descriptionId, errorId].filter(Boolean).join(" ") || undefined;
+  const contextValue = useMemo(
+    () => ({ controlId, describedBy, required, invalid: Boolean(error) }),
+    [controlId, describedBy, required, error],
+  );
   const fieldLabel = (
     <>
       {label}
@@ -65,7 +69,7 @@ function FormField({
 
   return (
     <FormFieldContext.Provider
-      value={{ controlId, describedBy, required, invalid: Boolean(error) }}
+      value={contextValue}
     >
       <div className={className}>
         <label

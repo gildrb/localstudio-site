@@ -5,6 +5,7 @@ import { Effect, Fiber } from "effect";
 import { Button, FormField, Input, SegmentedControl } from "@/ui";
 import { Mic, Square, Upload } from "@/ui/icon-registry";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
+import { createManagedObjectUrl } from "@/lib/object-url";
 
 type ReferenceMode = "upload" | "record";
 
@@ -60,7 +61,7 @@ export function useVoiceReference() {
 
   const replaceReference = useCallback((file: File, durationMs: number | null) => {
     if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
-    const url = URL.createObjectURL(file);
+    const url = createManagedObjectUrl(file);
     previewUrl.current = url;
     setReference({ file, url, durationMs });
     setError("");

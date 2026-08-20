@@ -16,16 +16,14 @@ import {
   SettingsRow,
   SettingsValue,
 } from "./settings-ui";
+import { ManagedRuntimeInstallRows, RuntimeTargetRows, RuntimeTargetStatus } from "./runtime-targets";
 import {
   ENGINE_META,
   MANAGED_RUNTIME_BACKENDS,
-  ManagedRuntimeInstallRows,
-  RuntimeTargetRows,
-  RuntimeTargetStatus,
   isManagedRuntimeTarget,
   isRunningEngineJob,
   type ManagedRuntimeInstallBackend,
-} from "./runtime-targets";
+} from "./runtime-target-model";
 import {
   hasHydratedEngineRows,
   resolveEngineRowsView,

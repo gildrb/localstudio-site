@@ -1,6 +1,6 @@
 import { Effect } from "effect";
 import type { EngineJob } from "@/lib/types";
-import { isTerminalEngineJob } from "@/features/settings/runtime-targets";
+import { isTerminalEngineJob } from "@/features/settings/runtime-target-model";
 import api from "@/lib/api/client";
 
 // Server-side installs can legitimately run for ~30 minutes; poll fast at

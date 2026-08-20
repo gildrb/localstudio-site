@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useMountSubscription } from "@/hooks/use-mount-subscription";
 import type { ExtensionUiRequest } from "@/features/agent/runtime/types";
 
@@ -12,8 +12,11 @@ export function ExtensionUiDialog({
   onRespond: (response: { value?: string; confirmed?: boolean; cancelled?: boolean }) => void;
 }) {
   const [value, setValue] = useState(request.prefill ?? "");
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const cancel = useCallback(() => onRespond({ cancelled: true }), [onRespond]);
   useMountSubscription(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.show();
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       event.preventDefault();
@@ -25,11 +28,11 @@ export function ExtensionUiDialog({
 
   return (
     <div className="absolute inset-0 z-[220] flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm">
-      <div
-        role="dialog"
+      <dialog
+        ref={dialogRef}
         aria-modal="true"
         aria-labelledby="extension-dialog-title"
-        className="w-full max-w-md rounded-2xl border border-(--border) bg-(--composer) p-4 shadow-2xl"
+        className="static m-0 w-full max-w-md rounded-2xl border border-(--border) bg-(--composer) p-4 text-(--fg) shadow-2xl"
       >
         <h2 id="extension-dialog-title" className="text-base font-semibold text-(--fg)">
           {request.title}
@@ -80,6 +83,7 @@ export function ExtensionUiDialog({
               <textarea
                 autoFocus
                 value={value}
+                aria-label={request.title}
                 onChange={(event) => setValue(event.currentTarget.value)}
                 className="min-h-44 w-full resize-y rounded-xl border border-(--border) bg-(--color-input) p-3 text-sm text-(--fg) outline-none focus:border-(--link)"
               />
@@ -87,6 +91,7 @@ export function ExtensionUiDialog({
               <input
                 autoFocus
                 value={value}
+                aria-label={request.title}
                 placeholder={request.placeholder}
                 onChange={(event) => setValue(event.currentTarget.value)}
                 className="h-10 w-full rounded-xl border border-(--border) bg-(--color-input) px-3 text-sm text-(--fg) outline-none focus:border-(--link)"
@@ -120,7 +125,7 @@ export function ExtensionUiDialog({
             </button>
           </div>
         ) : null}
-      </div>
+      </dialog>
     </div>
   );
 }

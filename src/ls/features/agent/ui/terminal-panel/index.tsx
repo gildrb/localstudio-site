@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type RefObject } from "react";
+import { useRef, useState, type RefObject } from "react";
 import type { Terminal as XTerm } from "@xterm/xterm";
 import type { FitAddon } from "@xterm/addon-fit";
 import type { TerminalRunResult } from "@/features/agent/contracts";
@@ -17,16 +17,9 @@ import {
   type TerminalAction,
 } from "@/lib/terminal-keybinds";
 
-export function preloadTerminalPanel(): void {
-  void import("@xterm/xterm");
-  void import("@xterm/addon-fit");
-  void import("@xterm/addon-web-links").catch(() => null);
-}
-
 export function TerminalPanel({ cwd, ownerKey }: { cwd: string | null; ownerKey: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const stateRef = useRef<TerminalRefs>(createTerminalRefs());
-
+  const [stateRef] = useState(() => ({ current: createTerminalRefs() }));
   useTerminalPanelEffects({
     containerRef,
     cwd,
@@ -38,17 +31,28 @@ export function TerminalPanel({ cwd, ownerKey }: { cwd: string | null; ownerKey:
     <section className="flex min-h-0 flex-1 flex-col bg-(--color-terminal-bg)">
       <div
         ref={containerRef}
+        role="application"
+        aria-label="Terminal"
         tabIndex={0}
         onClick={(event) => {
           if (window.getSelection()?.toString()) return;
           if ((event.target as HTMLElement)?.tagName === "A") return;
-          stateRef.current.term?.focus();
+          stateRef.current?.term?.focus();
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") stateRef.current?.term?.focus();
         }}
         className="min-h-0 flex-1 overflow-hidden px-3 py-2.5 [--xterm-color-background:var(--color-terminal-bg)]"
       />
     </section>
   );
 }
+
+TerminalPanel.preload = function preloadTerminalPanel(): void {
+  void import("@xterm/xterm");
+  void import("@xterm/addon-fit");
+  void import("@xterm/addon-web-links").catch(() => null);
+};
 
 type PtyBridge = {
   open(opts: {
@@ -290,7 +294,7 @@ function useTerminalPanelEffects({
   containerRef: RefObject<HTMLDivElement | null>;
   cwd: string | null;
   ownerKey: string;
-  stateRef: RefObject<TerminalRefs>;
+  stateRef: RefObject<TerminalRefs | null>;
 }): void {
   useMountSubscription(() => {
     const container = containerRef.current;
@@ -325,10 +329,11 @@ function useTerminalPanelEffects({
   useMountSubscription(
     () =>
       subscribeTerminalStore(() => {
-        const term = stateRef.current.term;
-        if (!term) return;
+        const refs = stateRef.current;
+        const term = refs?.term;
+        if (!term || !refs) return;
         term.options.fontSize = getTerminalFontSize();
-        stateRef.current.applyResize?.();
+        refs.applyResize?.();
       }),
     [stateRef],
   );

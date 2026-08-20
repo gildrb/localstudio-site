@@ -8,11 +8,8 @@ import { UsageSkeleton } from "@/features/usage/usage-skeleton";
 import { formatNumber } from "@/lib/formatters";
 import type { UsageStats } from "@/lib/types";
 import { Upload } from "@/ui/icon-registry";
-import {
-  ProfileAvatar,
-  profileImageFromFile,
-  useLocalProfile,
-} from "@/features/shell/local-profile";
+import { ProfileAvatar, useLocalProfile } from "@/features/shell/local-profile";
+import { profileImageFromFile } from "@/features/shell/local-profile-utils";
 
 const ACTIVITY_PERIODS = [
   { id: "daily", label: "Daily" },
@@ -23,9 +20,8 @@ const activeDays = (stats: UsageStats): number =>
   stats.daily.filter((day) => day.total_tokens > 0).length;
 
 const currentStreak = (stats: UsageStats): number => {
-  const activeDays = new Set(
-    stats.daily.filter((day) => day.total_tokens > 0).map((day) => day.date),
-  );
+  const activeDays = new Set<string>();
+  for (const day of stats.daily) if (day.total_tokens > 0) activeDays.add(day.date);
   const cursor = new Date();
   cursor.setUTCHours(0, 0, 0, 0);
   if (!activeDays.has(cursor.toISOString().slice(0, 10)))

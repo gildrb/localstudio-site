@@ -210,12 +210,10 @@ export async function fetchHuggingFaceModels(params: URLSearchParams): Promise<H
   const proxyResponse = await fetch(proxyUrl);
   if (proxyResponse.ok) return (await proxyResponse.json()) as HuggingFaceModel[];
 
-  const directError = await readErrorPayload(directResponse, {
-    error: "Direct Hugging Face fallback failed",
-  });
-  const proxyError = await readErrorPayload(proxyResponse, {
-    detail: "Controller proxy failed",
-  });
+  const [directError, proxyError] = await Promise.all([
+    readErrorPayload(directResponse, { error: "Direct Hugging Face fallback failed" }),
+    readErrorPayload(proxyResponse, { detail: "Controller proxy failed" }),
+  ]);
   throw new Error(
     directError.error || directError.detail || proxyError.detail || "Failed to fetch models",
   );

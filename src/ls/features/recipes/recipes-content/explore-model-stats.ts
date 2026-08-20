@@ -26,10 +26,10 @@ function joinedQuantTags(tags: string[]): string {
 
 export function quantFromTags(tags: string[]): QuantFormat {
   const joined = joinedQuantTags(tags);
-  return (
-    QUANT_TAG_MATCHERS.find((matcher) => matcher.tags.some((tag) => joined.includes(tag)))?.quant ??
-    "bf16"
-  );
+  for (const matcher of QUANT_TAG_MATCHERS) {
+    if (matcher.tags.some((tag) => joined.search(tag) >= 0)) return matcher.quant;
+  }
+  return "bf16";
 }
 
 /**

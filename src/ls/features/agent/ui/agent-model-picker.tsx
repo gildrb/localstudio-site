@@ -100,8 +100,8 @@ export function AgentModelPicker({
         if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) return;
         close();
       }}
-      onPointerDown={stopToolbarEvent}
-      onMouseDown={stopToolbarEvent}
+      onPointerDownCapture={stopToolbarEvent}
+      onMouseDownCapture={stopToolbarEvent}
     >
       <ModelPickerTrigger
         label={triggerLabel}
@@ -351,11 +351,13 @@ function ReasoningList({
   onBack: () => void;
   onSelect: (level: AgentThinkingLevel) => void;
 }) {
+  const availableLevels = new Set(levels);
+  const visibleLevels = AGENT_THINKING_LEVELS.filter((level) => availableLevels.has(level));
   return (
     <div>
       <PickerHeader title="Reasoning" onBack={onBack} />
       <div className="grid gap-0.5 pt-1">
-        {AGENT_THINKING_LEVELS.filter((level) => levels.includes(level)).map((level) => (
+        {visibleLevels.map((level) => (
           <button
             key={level}
             type="button"

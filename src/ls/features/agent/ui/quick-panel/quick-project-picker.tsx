@@ -26,8 +26,8 @@ export function QuickProjectPicker({ projects }: Props) {
         if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) return;
         setOpen(false);
       }}
-      onPointerDown={stopToolbarEvent}
-      onMouseDown={stopToolbarEvent}
+      onPointerDownCapture={stopToolbarEvent}
+      onMouseDownCapture={stopToolbarEvent}
     >
       <button
         type="button"

@@ -12,12 +12,14 @@ function norm(value: string | null | undefined): string | null {
 }
 
 function identitySet(values: Array<string | null | undefined>): Set<string> {
-  const ids = values
-    .flatMap((value) => [value, basename(value)])
-    .map(norm)
-    .filter((value): value is string => Boolean(value));
-  return new Set(ids);
-}
+  const ids = new Set<string>();
+  for (const value of values) {
+    for (const candidate of [value, basename(value)]) {
+      const id = norm(candidate);
+      if (id) ids.add(id);
+    }
+  }
+  return ids;
 
 export function processMetricIds(process: ProcessInfo | null): Set<string> {
   if (!process) return new Set();

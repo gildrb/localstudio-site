@@ -108,9 +108,17 @@ export const ENGINE_ARG_SPECS = [
   },
 ] as const satisfies readonly EngineArgSpec[];
 
-const VLLM_ONLY_FLAG_KEYS: readonly string[] = ENGINE_ARG_SPECS.filter(
+function engineArgKeysWhere(predicate: (spec: EngineArgSpec) => boolean): string[] {
+  const keys: string[] = [];
+  for (const spec of ENGINE_ARG_SPECS) {
+    if (predicate(spec)) keys.push(engineArgKey(spec.field));
+  }
+  return keys;
+}
+
+const VLLM_ONLY_FLAG_KEYS: readonly string[] = engineArgKeysWhere(
   (spec) => spec.scope === "vllm",
-).map((spec) => engineArgKey(spec.field));
+);
 
 const SGLANG_COMPATIBLE_VLLM_KEYS: ReadonlySet<string> = new Set([
   "disable-custom-all-reduce",
@@ -175,9 +183,7 @@ export const stripForeignFlagKeys = (
 };
 
 export const KNOWN_VLLM_EXTRA_ARG_KEYS: ReadonlySet<string> = new Set([
-  ...ENGINE_ARG_SPECS.filter((spec) => spec.scope !== "device").map((spec) =>
-    engineArgKey(spec.field),
-  ),
+  ...engineArgKeysWhere((spec) => spec.scope !== "device"),
   ...SGLANG_COMPATIBLE_VLLM_KEYS,
   "tensor-parallel-size",
   "pipeline-parallel-size",
@@ -224,9 +230,7 @@ const VLLM_EXPERIMENTAL_PREFIXES: readonly string[] = [
 ];
 
 export const INTERNAL_RECIPE_KEYS: ReadonlySet<string> = new Set([
-  ...ENGINE_ARG_SPECS.filter((spec) => spec.scope === "device").map((spec) =>
-    engineArgKey(spec.field),
-  ),
+  ...engineArgKeysWhere((spec) => spec.scope === "device"),
   "venv-path",
   "env-vars",
   "description",

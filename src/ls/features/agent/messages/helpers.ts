@@ -14,6 +14,10 @@ import type {
 	TokenStats,
 } from "@/features/agent/messages/types";
 
+const TIME_FORMATTER = new Intl.DateTimeFormat(undefined, {
+  hour: "2-digit",
+  minute: "2-digit",
+});
 export function randomIdSegment(length: number): string {
 	const cryptoApi = globalThis.crypto;
 	if (cryptoApi?.randomUUID) {
@@ -37,10 +41,7 @@ export function newPaneId(): string {
 }
 
 export function nowLabel(): string {
-	return new Intl.DateTimeFormat(undefined, {
-		hour: "2-digit",
-		minute: "2-digit",
-	}).format(new Date());
+  return TIME_FORMATTER.format(new Date());
 }
 
 export function asRecord(value: unknown): Record<string, unknown> | null {
@@ -70,14 +71,13 @@ export function extractToolText(value: unknown): string {
 	if (!value || typeof value !== "object") return "";
 	const result = value as { content?: Array<{ type?: string; text?: string }> };
 	if (!Array.isArray(result.content)) return "";
-	return result.content
-		.map((item) =>
-			item && item.type === "text" && typeof item.text === "string"
-				? item.text
-				: "",
-		)
-		.filter(Boolean)
-		.join("\n");
+	const text: string[] = [];
+	for (const item of result.content) {
+		if (item?.type === "text" && typeof item.text === "string" && item.text) {
+			text.push(item.text);
+		}
+	}
+	return text.join("\n");
 }
 
 export function piSessionIdFromEvent(
@@ -180,14 +180,13 @@ export function messageText(
 ): string {
 	if (typeof content === "string") return content;
 	if (!Array.isArray(content)) return "";
-	return content
-		.map((part) => {
-			if (part?.type === "text" && typeof part.text === "string")
-				return part.text;
-			return "";
-		})
-		.filter(Boolean)
-		.join(separator);
+	const text: string[] = [];
+	for (const part of content) {
+		if (part?.type === "text" && typeof part.text === "string" && part.text) {
+			text.push(part.text);
+		}
+	}
+	return text.join(separator);
 }
 
 export function runtimeStatusLooksActive(status: {

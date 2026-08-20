@@ -8,7 +8,8 @@ import type { RigNodePayload } from "@/lib/api/rigs";
 import { ModelSection, ModelStatus } from "@/features/recipes/recipes-content/model-page";
 import type { ConfigureState } from "./use-configure";
 import { RigNodeCard } from "./rig-node-card";
-import { NodeFormModal, nodeToForm } from "./node-form-modal";
+import { NodeFormModal } from "./node-form-modal";
+import { nodeToForm } from "./node-form-model";
 
 type NodeTarget = { rigId: string; node: RigNode | null };
 type DeleteTarget = { kind: "rig"; rig: Rig } | { kind: "node"; rigId: string; node: RigNode };

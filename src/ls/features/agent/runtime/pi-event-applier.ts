@@ -531,10 +531,12 @@ function preserveMissingToolBlocks(
   blocks: AssistantBlock[],
   existingBlocks: AssistantBlock[],
 ): AssistantBlock[] {
-  const ids = new Set(blocks.filter((block) => block.kind === "tool").map((block) => block.id));
-  const missingTools = existingBlocks.filter(
-    (block) => block.kind === "tool" && !ids.has(block.id),
-  );
+  const ids = new Set<string>();
+  for (const block of blocks) if (block.kind === "tool") ids.add(block.id);
+  const missingTools: AssistantBlock[] = [];
+  for (const block of existingBlocks) {
+    if (block.kind === "tool" && !ids.has(block.id)) missingTools.push(block);
+  }
   return missingTools.length ? [...blocks, ...missingTools] : blocks;
 }
 
@@ -800,10 +802,12 @@ function appendUnseenTextBlocks(
   existingBlocks: AssistantBlock[],
   incomingBlocks: AssistantBlock[],
 ): AssistantBlock[] {
-  const shown = existingBlocks
-    .filter((block) => block.kind === "text" || block.kind === "thinking")
-    .map((block) => block.text.trim())
-    .filter(Boolean);
+  const shown: string[] = [];
+  for (const block of existingBlocks) {
+    if (block.kind !== "text" && block.kind !== "thinking") continue;
+    const text = block.text.trim();
+    if (text) shown.push(text);
+  }
   const alreadyShown = (value: string) =>
     shown.some((existing) => existing === value || existing.includes(value));
   const additions = incomingBlocks.filter(
@@ -841,11 +845,11 @@ function blockTextCoversExisting(
 }
 
 function joinedBlockText(blocks: AssistantBlock[], kind: "text" | "thinking"): string {
-  return blocks
-    .filter((block) => block.kind === kind)
-    .map((block) => block.text)
-    .filter(isMeaningfulAssistantText)
-    .join("");
+  let text = "";
+  for (const block of blocks) {
+    if (block.kind === kind && isMeaningfulAssistantText(block.text)) text += block.text;
+  }
+  return text;
 }
 
 function isMeaningfulAssistantText(text: string): boolean {

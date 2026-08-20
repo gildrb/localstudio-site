@@ -117,7 +117,7 @@ export function useChatPaneSendFlow({
         promptTemplates: selection.promptTemplates,
       };
     },
-    [attachments, browserToolEnabled, modelId, modelSupportsVision, tools],
+    [attachments, browserToolEnabled, modelSupportsVision, tools],
   );
 
   const submitPrompt = useCallback(
@@ -288,6 +288,7 @@ export function useChatPaneSendFlow({
       queueAndSendControl,
       readingAttachments,
       runGuardedSubmit,
+      running,
       submitPrompt,
       updateTab,
     ],
@@ -334,6 +335,7 @@ export function useChatPaneSendFlow({
     modelId,
     queueAndSendControl,
     runGuardedSubmit,
+    running,
     submitPrompt,
     updateTab,
   ]);
@@ -436,9 +438,12 @@ export function useChatPaneSendFlow({
       const [next, ...remaining] = pending;
       if (!next) return;
       await submitPrompt(next, tab.id);
-      for (const text of remaining) {
+      const sendRemaining = async ([text, ...rest]: string[]): Promise<void> => {
+        if (!text) return;
         await queueAndSendControl("follow_up", text, tab, tab.id, cwd);
-      }
+        return sendRemaining(rest);
+      };
+      await sendRemaining(remaining);
     });
   }, [activeTab, cwd, engine, queueAndSendControl, runGuardedSubmit, submitPrompt, updateTab]);
 
