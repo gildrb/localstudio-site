@@ -170,14 +170,14 @@ a.nav-link:hover,
 
 /* Selection */
 ::selection {
-  background: color-mix(in srgb, var(--hl1) 42%, transparent);
-  color: var(--fg);
+  background: var(--selection);
+  color: var(--selection-ink);
 }
 
 :root[data-theme="omlx-dark"] ::selection,
 .dark ::selection {
-  background: color-mix(in srgb, var(--hl1) 52%, var(--button-ink) 28%);
-  color: var(--foreground);
+  background: var(--selection);
+  color: var(--selection-ink);
 }
 
 /* Scroll shadows */

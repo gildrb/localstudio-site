@@ -57,6 +57,13 @@
 	--type-meta: 400 14px / 20px var(--font-sans);
 	--tracking-header-title: -0.02em;
 	--focus-ring: #0070f3;
+	--selection-sky-bright: #a8dcff;
+	--selection-sky-day: #76bfff;
+	--selection-sky-blue: #438fe0;
+	--selection-sky-dusk: #285ca8;
+	--selection-sky-night: #132b52;
+	--selection: var(--selection-sky-bright);
+	--selection-ink: var(--button-ink);
 	--radius-control: 6px;
 	--radius-compact: 8px;
 	--radius-frame: 10px;
@@ -199,8 +206,13 @@ img {
 }
 
 ::selection {
-	color: var(--foreground);
-	background: var(--dim);
+	color: var(--selection-ink);
+	background: var(--selection);
+}
+
+#root .sky-selection-owner::selection {
+	color: var(--selection-ink);
+	background: var(--selection);
 }
 
 .site-shell {

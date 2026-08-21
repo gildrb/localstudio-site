@@ -875,14 +875,14 @@
 
 /* Selection */
 .demo ::selection {
-  background: color-mix(in srgb, var(--hl1) 42%, transparent);
-  color: var(--fg);
+  background: var(--selection);
+  color: var(--selection-ink);
 }
 
 .demo[data-theme="omlx-dark"] ::selection,
 .demo .dark ::selection {
-  background: color-mix(in srgb, var(--hl1) 52%, var(--color-black) 28%);
-  color: var(--color-white);
+  background: var(--selection);
+  color: var(--selection-ink);
 }
 
 /* Scroll shadows */

@@ -63,6 +63,7 @@ function useDemoFrame() {
 		clipRight: false,
 		clipBottom: false,
 	});
+	const [renderContents, setRenderContents] = useState(true);
 
 	useLayoutEffect(() => {
 		const host = hostRef.current;
@@ -99,6 +100,17 @@ function useDemoFrame() {
 	useEffect(() => {
 		const host = hostRef.current;
 		if (!host) return;
+		const observer = new IntersectionObserver(
+			([entry]) => setRenderContents(entry?.isIntersecting ?? false),
+			{ rootMargin: "300px 0px" },
+		);
+		observer.observe(host);
+		return () => observer.disconnect();
+	}, []);
+
+	useEffect(() => {
+		const host = hostRef.current;
+		if (!host) return;
 		const block = (event: Event) => event.preventDefault();
 		host.addEventListener("wheel", block, { passive: false });
 		host.addEventListener("touchmove", block, { passive: false });
@@ -107,7 +119,7 @@ function useDemoFrame() {
 			host.removeEventListener("touchmove", block);
 		};
 	}, []);
-	return { hostRef, active, ...frame };
+	return { hostRef, active, renderContents, ...frame };
 }
 
 const demoModel: AgentModel = {
@@ -149,7 +161,7 @@ const inboxMessages: ChatMessage[] = [
 function ignore(): void {}
 
 function useHeroDemoModel() {
-	const { hostRef, active, mobile, scale, clipRight, clipBottom } =
+	const { hostRef, active, renderContents, mobile, scale, clipRight, clipBottom } =
 		useDemoFrame();
 	useDemoTabBoundary(hostRef);
 	const reduceMotion = useReducedMotion() === true;
@@ -331,6 +343,7 @@ function useHeroDemoModel() {
 	return {
 		hostRef,
 		active,
+		renderContents,
 		mobile,
 		scale,
 		clipRight,
@@ -380,6 +393,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 	const {
 		hostRef,
 		active,
+		renderContents,
 		mobile,
 		scale,
 		clipRight,
@@ -441,9 +455,10 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 			</p>
 			<div
 				className="demo__viewport"
-				style={mobile ? { height: DEMO_HEIGHT * scale } : undefined}
+				style={{ height: mobile ? DEMO_HEIGHT * scale : DEMO_HEIGHT }}
 			>
-				<div className="demo__app" style={appStyle}>
+				{renderContents ? (
+					<div className="demo__app" style={appStyle}>
 					<HeroDesktopSidebar
 						activeTask={activeTask}
 						onSelectTask={selectTask}
@@ -517,7 +532,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 										}}
 										className="relative z-[100] shrink-0 bg-transparent px-3 pb-2 pt-0 sm:px-5"
 									>
-										<div className="agent-composer-box relative z-10 mx-auto w-full max-w-[calc(var(--composer-w)*0.9)] overflow-visible rounded-[var(--composer-radius)] border border-(--border) bg-(--composer) shadow-[var(--composer-elevation)] backdrop-blur-lg [corner-shape:superellipse(1.5)] sm:w-[90%]">
+										<div className="agent-composer-box relative z-10 mx-auto w-full max-w-[calc(var(--composer-w)*0.9)] overflow-visible rounded-[var(--composer-radius)] border border-(--border) bg-(--composer) shadow-[var(--composer-elevation)] [corner-shape:superellipse(1.5)] sm:w-[90%]">
 											<label className="sr-only" htmlFor="hero-demo-composer">
 												Message
 											</label>
@@ -669,7 +684,8 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 							</div>
 						</div>
 					</main>
-				</div>
+					</div>
+				) : null}
 			</div>
 		</section>
 	);

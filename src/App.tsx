@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSkySelection } from "./hooks/use-sky-selection";
 import { HomePage } from "./pages/HomePage";
 import { MachineContext } from "./machine";
 import {
@@ -66,6 +67,7 @@ function routeFor(pathname: string) {
 }
 
 export default function App() {
+	useSkySelection();
 	const [location, setLocation] = useState(
 		() => `${window.location.pathname}${window.location.hash}`,
 	);

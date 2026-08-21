@@ -18,6 +18,7 @@ function useStoryProgress() {
 		let showcaseTop = 0;
 		let navHeight = 72;
 		let scrollRange = 1;
+		let renderedProgress = Number.NaN;
 		let disposed = false;
 
 		const update = () => {
@@ -28,10 +29,11 @@ function useStoryProgress() {
 			);
 			const scenePosition = (traveled / scrollRange) * productFeatures.length;
 			const nextIndex = Math.min(productFeatures.length - 1, Math.floor(scenePosition));
-			showcase.style.setProperty(
-				"--story-progress",
-				String(Math.min(1, scenePosition - nextIndex)),
-			);
+			const nextProgress = Math.min(1, scenePosition - nextIndex);
+			if (nextProgress !== renderedProgress) {
+				renderedProgress = nextProgress;
+				showcase.style.setProperty("--story-progress", String(nextProgress));
+			}
 			setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
 		};
 
@@ -88,7 +90,7 @@ export function ProductStory() {
 		if (!visual) return;
 		const observer = new IntersectionObserver(
 			(entries) => setDemoInRange(entries.at(-1)?.isIntersecting ?? false),
-			{ rootMargin: "800px 0px" },
+			{ rootMargin: "500px 0px" },
 		);
 		observer.observe(visual);
 		return () => observer.disconnect();

@@ -155,3 +155,29 @@ Port 5176 is in use, trying another one...
 10:11:51 AM [vite] (client) hmr update /src/components/PageShell.tsx, /src/styles/global.css
 10:12:49 AM [vite] (client) hmr update /src/styles/global.css
 10:12:59 AM [vite] (client) hmr update /src/styles/global.css
+10:14:37 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/ProductStory.tsx
+10:15:01 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/HeroDemo.tsx
+10:15:06 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/HeroDemo.tsx
+10:15:34 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/HeroDemo.tsx
+10:15:37 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/HeroDemo.tsx
+10:15:55 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/HeroDemo.tsx
+10:16:10 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/HeroDemo.tsx
+10:16:30 AM [vite] (client) hmr update /src/styles/global.css
+10:16:30 AM [vite] (client) hmr update /src/styles/global.css
+10:16:45 AM [vite] (client) hmr update /src/styles/global.css
+10:17:02 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/HeroDemo.tsx
+10:17:17 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/HeroDemo.tsx
+10:17:34 AM [vite] (client) hmr update /src/styles/global.css
+10:17:48 AM [vite] (client) hmr update /src/styles/global.css
+10:18:43 AM [vite] (client) hmr update /src/styles/global.css, /src/App.tsx
+10:18:51 AM [vite] (client) hmr update /src/styles/global.css
+10:18:51 AM [vite] (client) hmr update /src/styles/global.css
+10:18:56 AM [vite] (client) hmr update /src/styles/global.css
+10:19:01 AM [vite] (client) hmr update /src/styles/global.css
+10:19:06 AM [vite] (client) hmr update /src/styles/global.css, /src/styles/workbench-demo.css
+10:19:49 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/ProductStory.tsx
+10:20:10 AM [vite] (client) hmr update /src/App.tsx, /src/styles/global.css
+10:20:14 AM [vite] (client) hmr update /src/styles/global.css
+10:20:25 AM [vite] (client) hmr update /src/styles/global.css
+10:20:28 AM [vite] (client) hmr update /src/styles/global.css, /src/styles/workbench-demo.css
+10:20:59 AM [vite] (client) hmr update /src/App.tsx, /src/styles/global.css

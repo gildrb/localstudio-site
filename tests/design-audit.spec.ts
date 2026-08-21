@@ -697,6 +697,7 @@ test("bounded route surfaces use the shared radius roles", async ({ page }) => {
 });
 test("story media uses the hero border treatment", async ({ page }) => {
 	await page.goto("/");
+	await page.locator(".story__visual").scrollIntoViewIfNeeded();
 	const style = await page.locator(".story__visual .demo").first().evaluate((element) => ({
 		border: getComputedStyle(element).borderTopWidth,
 		radius: getComputedStyle(element).borderRadius,
