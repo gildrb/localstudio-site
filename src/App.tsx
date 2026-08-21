@@ -42,11 +42,11 @@ const titles = {
 	"/": "Intelligence should not be rented - Local Studio",
 	"/product": "Product - Local Studio",
 	"/mobile": "Mobile - Local Studio",
-	"/docs": "Docs - Local Studio",
-	"/prompt": "Setup Prompt - Local Studio",
+	"/docs": "Documentation - Local Studio",
+	"/setup": "Setup - Local Studio",
 	"/agents": "Agents - Local Studio",
-	"/download/macos": "Download - Local Studio",
-	"/resources": "Resources - Local Studio",
+	"/download": "Download for macOS - Local Studio",
+	"/overview": "Overview - Local Studio",
 	"/machine": "Machines - Local Studio",
 } as const satisfies Record<RoutePath, string>;
 
@@ -58,10 +58,10 @@ function routeFor(pathname: string) {
 	if (pathname === "/product") return <ProductPage />;
 	if (pathname === "/mobile") return <MobilePage />;
 	if (pathname === "/docs") return <DocsPage />;
-	if (pathname === "/prompt") return <PromptPage />;
+	if (pathname === "/setup") return <PromptPage />;
 	if (pathname === "/agents") return <AgentsPage />;
-	if (pathname === "/download/macos") return <DownloadPage />;
-	if (pathname === "/resources") return <ResourcesPage />;
+	if (pathname === "/download") return <DownloadPage />;
+	if (pathname === "/overview") return <ResourcesPage />;
 	return <HomePage />;
 }
 

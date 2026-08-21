@@ -5,10 +5,10 @@ const pages = [
 	"/product",
 	"/mobile",
 	"/docs",
-	"/prompt",
+	"/setup",
 	"/agents",
-	"/resources",
-	"/download/macos",
+	"/overview",
+	"/download",
 	"/machine",
 ] as const;
 

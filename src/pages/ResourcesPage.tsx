@@ -31,13 +31,13 @@ const groups: readonly ResourceGroup[] = [
 			{
 				name: "Setup prompt",
 				text: "A portable prompt that installs Local Studio with any coding model.",
-				href: "/prompt",
+				href: "/setup",
 				external: false,
 			},
 			{
 				name: "Download for macOS",
 				text: "The desktop app for Apple Silicon, hosted on GitHub Releases.",
-				href: "/download/macos",
+				href: "/download",
 				external: false,
 			},
 		],
@@ -71,12 +71,6 @@ const groups: readonly ResourceGroup[] = [
 				text: "Source code, releases, and issue tracking.",
 				href: "https://github.com/sybil-solutions/local-studio",
 				external: true,
-			},
-			{
-				name: "Brand assets",
-				text: "Logo files for print and screen.",
-				href: "/images/localstudio-logo.svg",
-				external: false,
 			},
 		],
 	},

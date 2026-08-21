@@ -12,3 +12,146 @@ Port 5176 is in use, trying another one...
   ➜  Local:   http://127.0.0.1:5177/
 10:03:39 AM [vite] (client) hmr update /src/styles/global.css
 10:03:51 AM [vite] (client) hmr update /src/styles/global.css
+10:07:14 AM [vite] (client) hmr update /src/styles/global.css
+10:07:29 AM [vite] (client) hmr update /src/styles/global.css
+10:08:34 AM [vite] (client) hmr update /src/App.tsx, /src/styles/global.css
+10:08:34 AM [vite] (client) hmr update /src/styles/global.css
+10:08:34 AM [vite] src/agent/catalog.ts changed, restarting server...
+10:08:34 AM [vite] server restarted.
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] src/agent/catalog.ts changed, restarting server...
+10:10:28 AM [vite] (client) hmr update /src/App.tsx, /src/styles/global.css
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css, /src/components/Footer.tsx
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css, /src/components/Header.tsx
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css, /src/components/Links.tsx
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css, /src/App.tsx, /src/components/LocalLink.tsx
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/FinalCallout.tsx
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css, /src/sections/Hero.tsx
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] (client) hmr update /src/styles/global.css
+10:10:28 AM [vite] server restarted.
+10:11:38 AM [vite] (client) hmr update /src/styles/global.css
+10:11:38 AM [vite] (client) hmr update /src/styles/global.css
+10:11:38 AM [vite] (client) hmr update /src/styles/global.css, /src/components/Footer.tsx
+10:11:38 AM [vite] src/agent/catalog.ts changed, restarting server...
+10:11:38 AM [vite] server restarted.
+10:11:38 AM [vite] Internal server error: Transform failed with 2 errors:
+
+[31m[PARSE_ERROR] [0mExpected corresponding JSX closing tag for 'nav'.
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.tsx:25:5 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m16 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m<[0mnav[38;5;249m [0m[38;5;249mc[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249mN[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mo[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mk[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m [0m[38;5;249ma[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m-[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ml[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mF[0m[38;5;249mo[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m [0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249m"[0m[38;5;249m>[0m
+ [38;5;240m   │[0m           ─┬─  
+ [38;5;240m   │[0m            ╰─── Opened here
+ [38;5;240m   │[0m 
+ [38;5;246m25 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m<[0m[38;5;249m/[0mfooter[38;5;249m>[0m
+ [38;5;240m   │[0m          ───┬──  
+ [38;5;240m   │[0m             ╰──── Expected `</nav>`
+[38;5;246m────╯[0m
+
+[31m[PARSE_ERROR] [0mUnexpected token. Did you mean `{'}'}` or `&rbrace;`?
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.tsx:27:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m27 │[0m [38;5;249m}[0m
+ [38;5;240m   │[0m │ 
+ [38;5;240m   │[0m ╰─ 
+[38;5;246m────╯[0m
+
+  Plugin: vite:oxc
+  File: /Users/gilrodrigues/Documents/Repos/ls-web/src/components/Footer.tsx
+      at transformWithOxc (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:4097:19)
+      at TransformPluginContext.transform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:4168:26)
+      at EnvironmentPluginContainer.transform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:30851:51)
+      at async loadAndTransform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:20619:26)
+10:11:38 AM [vite] (client) Pre-transform error: Transform failed with 2 errors:
+
+[31m[PARSE_ERROR] [0mExpected corresponding JSX closing tag for 'nav'.
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.tsx:25:5 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m16 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m<[0mnav[38;5;249m [0m[38;5;249mc[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249mN[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mo[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mk[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m [0m[38;5;249ma[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m-[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ml[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mF[0m[38;5;249mo[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m [0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249m"[0m[38;5;249m>[0m
+ [38;5;240m   │[0m           ─┬─  
+ [38;5;240m   │[0m            ╰─── Opened here
+ [38;5;240m   │[0m 
+ [38;5;246m25 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m<[0m[38;5;249m/[0mfooter[38;5;249m>[0m
+ [38;5;240m   │[0m          ───┬──  
+ [38;5;240m   │[0m             ╰──── Expected `</nav>`
+[38;5;246m────╯[0m
+
+[31m[PARSE_ERROR] [0mUnexpected token. Did you mean `{'}'}` or `&rbrace;`?
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.tsx:27:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m27 │[0m [38;5;249m}[0m
+ [38;5;240m   │[0m │ 
+ [38;5;240m   │[0m ╰─ 
+[38;5;246m────╯[0m
+
+  Plugin: vite:oxc
+  File: /Users/gilrodrigues/Documents/Repos/ls-web/src/components/Footer.tsx
+10:11:38 AM [vite] Internal server error: Transform failed with 2 errors:
+
+[31m[PARSE_ERROR] [0mExpected corresponding JSX closing tag for 'nav'.
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.tsx:25:5 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m16 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m<[0mnav[38;5;249m [0m[38;5;249mc[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249mN[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mo[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mk[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m [0m[38;5;249ma[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m-[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ml[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mF[0m[38;5;249mo[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m [0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249m"[0m[38;5;249m>[0m
+ [38;5;240m   │[0m           ─┬─  
+ [38;5;240m   │[0m            ╰─── Opened here
+ [38;5;240m   │[0m 
+ [38;5;246m25 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m<[0m[38;5;249m/[0mfooter[38;5;249m>[0m
+ [38;5;240m   │[0m          ───┬──  
+ [38;5;240m   │[0m             ╰──── Expected `</nav>`
+[38;5;246m────╯[0m
+
+[31m[PARSE_ERROR] [0mUnexpected token. Did you mean `{'}'}` or `&rbrace;`?
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.tsx:27:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m27 │[0m [38;5;249m}[0m
+ [38;5;240m   │[0m │ 
+ [38;5;240m   │[0m ╰─ 
+[38;5;246m────╯[0m
+
+  Plugin: vite:oxc
+  File: /Users/gilrodrigues/Documents/Repos/ls-web/src/components/Footer.tsx
+      at transformWithOxc (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:4097:19)
+      at TransformPluginContext.transform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:4168:26)
+      at EnvironmentPluginContainer.transform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:30851:51)
+      at async loadAndTransform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:20619:26)
+      at async viteTransformMiddleware (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:25142:20)
+10:11:45 AM [vite] (client) hmr update /src/styles/global.css
+10:11:46 AM [vite] Internal server error: Transform failed with 2 errors:
+
+[31m[PARSE_ERROR] [0mExpected corresponding JSX closing tag for 'nav'.
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.tsx:25:5 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m16 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m<[0mnav[38;5;249m [0m[38;5;249mc[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249mN[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249me[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mf[0m[38;5;249mo[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m_[0m[38;5;249m_[0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249mn[0m[38;5;249mk[0m[38;5;249ms[0m[38;5;249m"[0m[38;5;249m [0m[38;5;249ma[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249ma[0m[38;5;249m-[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ml[0m[38;5;249m=[0m[38;5;249m"[0m[38;5;249mF[0m[38;5;249mo[0m[38;5;249mo[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m [0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mv[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249m"[0m[38;5;249m>[0m
+ [38;5;240m   │[0m           ─┬─  
+ [38;5;240m   │[0m            ╰─── Opened here
+ [38;5;240m   │[0m 
+ [38;5;246m25 │[0m [38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m [0m[38;5;249m<[0m[38;5;249m/[0mfooter[38;5;249m>[0m
+ [38;5;240m   │[0m          ───┬──  
+ [38;5;240m   │[0m             ╰──── Expected `</nav>`
+[38;5;246m────╯[0m
+
+[31m[PARSE_ERROR] [0mUnexpected token. Did you mean `{'}'}` or `&rbrace;`?
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.tsx:27:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m27 │[0m [38;5;249m}[0m
+ [38;5;240m   │[0m │ 
+ [38;5;240m   │[0m ╰─ 
+[38;5;246m────╯[0m
+
+  Plugin: vite:oxc
+  File: /Users/gilrodrigues/Documents/Repos/ls-web/src/components/Footer.tsx
+      at transformWithOxc (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:4097:19)
+      at TransformPluginContext.transform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:4168:26)
+      at EnvironmentPluginContainer.transform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:30851:51)
+      at async loadAndTransform (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:20619:26)
+      at async viteTransformMiddleware (file:///Users/gilrodrigues/Documents/Repos/ls-web/node_modules/.pnpm/vite@8.2.1_@types+node@26.2.0_jiti@2.7.0/node_modules/vite/dist/node/chunks/node.js:25142:20)
+10:11:51 AM [vite] (client) hmr update /src/components/PageShell.tsx, /src/styles/global.css
+10:12:49 AM [vite] (client) hmr update /src/styles/global.css
+10:12:59 AM [vite] (client) hmr update /src/styles/global.css

@@ -28,14 +28,14 @@ type MenuSection = {
 }
 const products = [
 	{ label: "Local AI", href: "https://local.ai", external: true },
-	{ label: "Local Studio", href: "/download/macos" },
+	{ label: "Local Studio", href: "/download" },
 	{ label: "KittyLitter", href: "https://kittylitter.app", external: true },
 ] as const satisfies readonly NavLink[];
 
 const resources = [
-	{ label: "Overview", href: "/resources" },
+	{ label: "Overview", href: "/overview" },
 	{ label: "Documentation", href: "/docs" },
-	{ label: "Setup", href: "/prompt" },
+	{ label: "Setup", href: "/setup" },
 	{ label: "Agents", href: "/agents" },
 	{ label: "Mobile", href: "/mobile" },
 ] as const satisfies readonly NavLink[];
@@ -427,7 +427,7 @@ export function Header() {
 				<div className="nav__sheet-actions">
 					<LocalLink
 						className="button"
-						href="/download/macos"
+						href="/download"
 						onClick={closeMobile}
 					>
 						Download for macOS

@@ -3,10 +3,10 @@ export const routePaths = [
 	"/product",
 	"/mobile",
 	"/docs",
-	"/prompt",
+	"/setup",
 	"/agents",
-	"/download/macos",
-	"/resources",
+	"/download",
+	"/overview",
 	"/machine",
 ] as const;
 

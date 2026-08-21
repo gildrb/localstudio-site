@@ -5,9 +5,9 @@ const routes = [
 	"/product",
 	"/mobile",
 	"/docs",
-	"/prompt",
+	"/setup",
 	"/agents",
-	"/download/macos",
+	"/download",
 ];
 
 test("typography and interaction motion use the global interface policy", async ({
@@ -135,7 +135,7 @@ test("reduced motion is immediate and touch controls remain visible", async ({
 		viewport: { width: 390, height: 844 },
 	});
 	const page = await context.newPage();
-	await page.goto("/prompt");
+	await page.goto("/setup");
 	await expect(page.locator(".copy-icon")).toHaveCSS("opacity", "1");
 	const motion = await page.evaluate(() => {
 		const target = document.querySelector<HTMLElement>(".prompt-block__toggle");

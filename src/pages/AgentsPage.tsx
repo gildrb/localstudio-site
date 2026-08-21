@@ -118,7 +118,7 @@ export function AgentsPage() {
 				<div>
 					<h2 id="agents-cta-title">Give your agents a local home</h2>
 					<div className="hero__actions">
-						<CtaPair secondary={{ href: "/prompt", label: "Setup prompt" }} />
+						<CtaPair secondary={{ href: "/setup", label: "Setup prompt" }} />
 					</div>
 				</div>
 			</section>

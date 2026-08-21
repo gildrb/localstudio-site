@@ -10,7 +10,7 @@ export function FinalCallout() {
 				<h2 id="download-title">Run it on your terms</h2>
 				<div className="hero__actions">
 					<CtaPair
-						secondary={{ href: "/prompt", label: "Setup prompt" }}
+						secondary={{ href: "/setup", label: "Setup prompt" }}
 					/>
 				</div>
 			</div>

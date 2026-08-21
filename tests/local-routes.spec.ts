@@ -4,10 +4,11 @@ const routes = [
 	["/", "Intelligence should not be rented - Local Studio", "Intelligence should not be rented"],
 	["/product", "Product - Local Studio", "One place to run local AI"],
 	["/mobile", "Mobile - Local Studio", "Your local agents"],
-	["/docs", "Docs - Local Studio", "Get Local Studio running"],
-	["/prompt", "Setup Prompt - Local Studio", "Give this to any coding model"],
+	["/docs", "Documentation - Local Studio", "Get Local Studio running"],
+	["/setup", "Setup - Local Studio", "Give this to any coding model"],
 	["/agents", "Agents - Local Studio", "Set up the stack"],
-	["/download/macos", "Download - Local Studio", "Download for macOS"],
+	["/download", "Download for macOS - Local Studio", "Download for macOS"],
+	["/overview", "Overview - Local Studio", "Everything around Local Studio"],
 ] as const;
 
 for (const [route, title, heading] of routes) {
@@ -48,7 +49,7 @@ test("non-home routes use the homepage intro system", async ({ page }) => {
 			const heading = getComputedStyle(headingNode);
 			return { minHeight: style.minHeight, textAlign: style.textAlign, heading: [heading.fontSize, heading.lineHeight] };
 		});
-		if (["/mobile", "/docs", "/prompt", "/agents"].includes(route)) {
+		if (["/mobile", "/docs", "/setup", "/agents"].includes(route)) {
 			expect(geometry).toEqual({ minHeight: route === "/mobile" ? "650px" : "0px", textAlign: "left", heading: ["56px", "60px"] });
 			const headingTop = Math.round(await intro.locator("h1").evaluate(element => element.getBoundingClientRect().top));
 			if (route === "/mobile") {
@@ -72,8 +73,8 @@ test("homepage repeats the hero actions in the final callout", async ({ page }) 
 	const heroActions = page.locator(".hero__copy .hero__actions");
 	const finalActions = page.locator(".final-callout .hero__actions");
 	for (const actions of [heroActions, finalActions]) {
-		await expect(actions.getByRole("link", { name: "Download for macOS" })).toHaveAttribute("href", "/download/macos");
-		await expect(actions.getByRole("link", { name: "Setup prompt" })).toHaveAttribute("href", "/prompt");
+		await expect(actions.getByRole("link", { name: "Download for macOS" })).toHaveAttribute("href", "/download");
+		await expect(actions.getByRole("link", { name: "Setup prompt" })).toHaveAttribute("href", "/setup");
 		await expect(actions.getByRole("link")).toHaveCount(2);
 	}
 	await expect(page.getByRole("link", { name: "View on GitHub" })).toHaveCount(0);
@@ -394,7 +395,7 @@ test("every route uses the useful canonical footer", async ({ page }) => {
 });
 
 test("shared navbar always uses a contained dark blur", async ({ page }) => {
-	for (const route of ["/", "/docs", "/prompt", "/agents"]) {
+	for (const route of ["/", "/docs", "/setup", "/agents"]) {
 		await page.goto(route);
 		const header = page.locator("header.nav");
 		expect(await header.evaluate(element => getComputedStyle(element).position)).toBe("sticky");
@@ -434,7 +435,7 @@ test("shared action links fully brighten within 130ms", async ({ page }) => {
 		color: getComputedStyle(element).color,
 	}));
 	expect(hover).toEqual({ color: "rgb(255, 255, 255)" });
-	for (const route of ["/mobile", "/docs", "/prompt"]) {
+	for (const route of ["/mobile", "/docs", "/setup"]) {
 		await page.goto(route);
 		const action = page.locator(".page-intro .text-link");
 		expect(await action.evaluate(element => getComputedStyle(element).transitionDuration.split(", ").every(d => d === "0.13s"))).toBe(true);
@@ -773,7 +774,7 @@ test("design system typography is stable", async ({ page }) => {
 		return { docs: Math.round(docs.width), article: Math.round(article.width), left: Math.round(docs.left) };
 	});
 	expect(fullWidthLayouts).toEqual({ docs: 1392, article: 1104, left: 24 });
-	await page.goto("/prompt");
+	await page.goto("/setup");
 	const setupWidth = await page.locator('section[aria-label="Setup handoff"]').evaluate(element => Math.round(element.getBoundingClientRect().width));
 	expect(setupWidth).toBe(1392);
 	await page.goto("/mobile");
@@ -865,15 +866,24 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 	const panel = page.locator(".nav__menu-panel");
 	await expect.poll(async () => panel.getByRole("menuitem").allTextContents()).toEqual([
 		"Overview",
-		"Documentation",
 		"Setup",
+		"Documentation",
 		"Agents",
 		"Mobile",
 	]);
+	await expect(
+		panel.getByRole("menuitem", { name: "Overview", exact: true }),
+	).toHaveAttribute("href", "/overview");
+	await expect(
+		panel.getByRole("menuitem", { name: "Documentation", exact: true }),
+	).toHaveAttribute("href", "/docs");
+	await expect(
+		panel.getByRole("menuitem", { name: "Setup", exact: true }),
+	).toHaveAttribute("href", "/setup");
 	await expect(panel.getByRole("menuitem", { name: "GitHub", exact: true })).toHaveCount(0);
 	await expect(panel.getByRole("menuitem", { name: "Download", exact: true })).toHaveCount(0);
 	await panel.getByRole("menuitem", { name: "Overview", exact: true }).click();
-	await expect(page).toHaveURL("/resources");
+	await expect(page).toHaveURL("/overview");
 	await page.goBack();
 	await expect(page).toHaveURL("/");
 });
@@ -899,7 +909,7 @@ test("all Local Studio links resolve locally", async ({ page }) => {
 
 test("setup prompt copies from the floating copy icon", async ({ page, context }) => {
 	await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-	await page.goto("/prompt");
+	await page.goto("/setup");
 	const icon = page.getByRole("button", { name: "Copy to clipboard" });
 	await expect
 		.poll(() => icon.evaluate((el) => getComputedStyle(el).opacity))
@@ -925,7 +935,7 @@ test("setup prompt copies from the floating copy icon", async ({ page, context }
 	const clipboard = await page.evaluate(() => navigator.clipboard.readText());
 	expect(clipboard).toContain("Set up Local Studio completely");
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto("/prompt");
+	await page.goto("/setup");
 	const overflow = await page.locator(".prompt-block pre").evaluate((element) => ({
 		size: element.scrollWidth - element.clientWidth,
 		wrap: getComputedStyle(element).overflowWrap,
@@ -935,7 +945,7 @@ test("setup prompt copies from the floating copy icon", async ({ page, context }
 
 test("setup and agent prompts share the Show more interaction", async ({ page }) => {
 	for (const prompt of [
-		{ route: "/prompt", label: "Portable setup prompt" },
+		{ route: "/setup", label: "Portable setup prompt" },
 		{ route: "/agents", label: "Agent setup instructions" },
 	]) {
 		await page.goto(prompt.route);

@@ -5,9 +5,9 @@ const links = [
 	["Machines", "/machine"],
 	["Mobile", "/mobile"],
 	["Docs", "/docs"],
-	["Setup", "/prompt"],
+	["Setup", "/setup"],
 	["Agents", "/agents"],
-	["Download", "/download/macos"],
+	["Download", "/download"],
 ] as const satisfies readonly (readonly [string, RoutePath])[];
 
 export function Footer() {
@@ -19,9 +19,6 @@ export function Footer() {
 						{label}
 					</LocalLink>
 				))}
-				<a href="/images/localstudio-logo.svg" download>
-					Brand assets
-				</a>
 			</nav>
 			<span className="footer__copyright">
 				© 2026 <span translate="no">Local Studio</span>

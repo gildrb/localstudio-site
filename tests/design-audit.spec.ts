@@ -5,9 +5,9 @@ const routes = [
 	"/product",
 	"/mobile",
 	"/docs",
-	"/prompt",
+	"/setup",
 	"/agents",
-	"/download/macos",
+	"/download",
 ] as const;
 
 test("landmarks are separate and a skip link targets main content", async ({
@@ -440,7 +440,7 @@ test("download page replaces the navbar with an aligned Back action", async ({ p
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
 	await page.locator(".nav__actions").getByRole("link", { name: "Download for macOS" }).click();
-	await expect(page).toHaveURL("/download/macos");
+	await expect(page).toHaveURL("/download");
 	await expect(page.locator("header.nav")).toHaveCount(0);
 	await expect(page.getByRole("heading", { name: "Download for macOS." })).toBeVisible();
 	const alignment = await page.evaluate(() => {
@@ -639,7 +639,7 @@ test("agents page keeps a hierarchical heading order", async ({ page }) => {
 });
 
 test("bounded route surfaces use the shared radius roles", async ({ page }) => {
-	await page.goto("/prompt");
+	await page.goto("/setup");
 	const tokens = await page.evaluate(() => {
 		const style = getComputedStyle(document.documentElement);
 		return [
@@ -655,9 +655,9 @@ test("bounded route surfaces use the shared radius roles", async ({ page }) => {
 	expect(tokens).toEqual(["6px", "8px", "10px", "12px", "14px", "16px", "24px"]);
 
 	const checks = [
-		{ route: "/prompt", selector: ".prompt-block.surface-panel", count: 1, radius: "16px", clipped: false },
-		{ route: "/prompt", selector: ".prompt-block__toggle", count: 1, radius: "6px", clipped: false },
-		{ route: "/resources", selector: ".surface-panel", count: 3, radius: "16px", clipped: true },
+		{ route: "/setup", selector: ".prompt-block.surface-panel", count: 1, radius: "16px", clipped: false },
+		{ route: "/setup", selector: ".prompt-block__toggle", count: 1, radius: "6px", clipped: false },
+		{ route: "/overview", selector: ".surface-panel", count: 3, radius: "16px", clipped: true },
 		{ route: "/agents", selector: ".surface-panel:not(.prompt-block)", count: 1, radius: "16px", clipped: true },
 		{ route: "/agents", selector: ".prompt-block.surface-panel", count: 1, radius: "16px", clipped: false },
 		{ route: "/agents", selector: ".surface-card", count: 1, radius: "12px", clipped: true },
@@ -685,7 +685,7 @@ test("bounded route surfaces use the shared radius roles", async ({ page }) => {
 		}
 	}
 
-	await page.goto("/prompt");
+	await page.goto("/setup");
 	const toggle = page.locator(".prompt-block__toggle");
 	await toggle.scrollIntoViewIfNeeded();
 	const toggleBox = await toggle.boundingBox();
@@ -808,18 +808,16 @@ test("copy uses numerals, non-breaking units, and real apostrophes", async ({
 		.locator("body")
 		.evaluate((element) => element.textContent);
 	expect(apostrophe).toContain("’");
-	await page.goto("/download/macos");
+	await page.goto("/download");
 	const unit = await page
 		.locator("body")
 		.evaluate((element) => element.textContent);
 	expect(unit).toContain("255\u00A0MB");
 });
 
-test("brand assets are reachable from the footer", async ({ page }) => {
-	await page.goto("/");
-	const assets = page.getByRole("link", { name: "Brand assets" });
-	await expect(assets).toHaveAttribute("href", "/images/localstudio-logo.svg");
-	await expect(assets).toHaveAttribute("download");
-	const response = await page.request.get("/images/localstudio-logo.svg");
-	expect(response.ok()).toBeTruthy();
+test("brand assets are not exposed as user-facing links", async ({ page }) => {
+	for (const route of ["/", "/overview"]) {
+		await page.goto(route);
+		await expect(page.getByRole("link", { name: "Brand assets" })).toHaveCount(0);
+	}
 });

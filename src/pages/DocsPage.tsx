@@ -27,7 +27,7 @@ export function DocsPage() {
 				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
 				actions={
 					<CtaPair
-						secondary={{ href: "/prompt", label: "Setup prompt" }}
+						secondary={{ href: "/setup", label: "Setup prompt" }}
 					/>
 				}
 			/>

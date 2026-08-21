@@ -1368,14 +1368,14 @@ button {
 
 .page-section h2 {
 	font: var(--type-subheadline);
-	letter-spacing: 0;
+	letter-spacing: var(--tracking-header-title);
 }
 
 .page-cta h2 {
 	max-width: 100%;
 	margin: 0 auto;
 	font: var(--type-subheadline);
-	letter-spacing: 0;
+	letter-spacing: var(--tracking-header-title);
 	overflow-wrap: anywhere;
 }
 

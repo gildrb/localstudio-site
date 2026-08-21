@@ -7,9 +7,9 @@ const suggestions = [
 	["Product", "/product"],
 	["Mobile", "/mobile"],
 	["Docs", "/docs"],
-	["Setup prompt", "/prompt"],
+	["Setup prompt", "/setup"],
 	["Agents", "/agents"],
-	["Download", "/download/macos"],
+	["Download", "/download"],
 ] as const;
 
 export function NotFoundPage() {

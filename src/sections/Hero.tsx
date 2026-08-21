@@ -42,7 +42,7 @@ export function Hero() {
 							workflows private, secure, and entirely under your control.
 						</p>
 						<div className="hero__actions hero__enter hero__enter--actions">
-							<CtaPair secondary={{ href: "/prompt", label: "Setup prompt" }} />
+							<CtaPair secondary={{ href: "/setup", label: "Setup prompt" }} />
 						</div>
 					</div>
 				</div>

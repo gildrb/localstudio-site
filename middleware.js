@@ -3,10 +3,10 @@ const markdownPages = new Map([
 	["/product", "/product.md"],
 	["/mobile", "/mobile.md"],
 	["/docs", "/docs.md"],
-	["/prompt", "/prompt.md"],
+	["/setup", "/setup.md"],
 	["/agents", "/agents.md"],
-	["/resources", "/resources.md"],
-	["/download/macos", "/download/macos.md"],
+	["/overview", "/overview.md"],
+	["/download", "/download.md"],
 	["/machine", "/machine.md"],
 ]);
 
@@ -28,10 +28,10 @@ export const config = {
 		"/product",
 		"/mobile",
 		"/docs",
-		"/prompt",
+		"/setup",
 		"/agents",
-		"/resources",
-		"/download/macos",
+		"/overview",
+		"/download",
 		"/machine",
 	],
 };

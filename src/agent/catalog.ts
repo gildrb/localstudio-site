@@ -13,10 +13,10 @@ export type AgentDocumentPath =
 	| "/product.md"
 	| "/mobile.md"
 	| "/docs.md"
-	| "/prompt.md"
+	| "/setup.md"
 	| "/agents.md"
-	| "/resources.md"
-	| "/download/macos.md"
+	| "/overview.md"
+	| "/download.md"
 	| "/machine.md"
 	| "/services.md"
 	| "/people.md"
@@ -60,13 +60,13 @@ export const HTML_ROUTES: readonly HtmlRoute[] = [
 	},
 	{
 		path: "/docs",
-		title: "Docs - Local Studio",
+		title: "Documentation - Local Studio",
 		summary: "Install, runtimes, agent runtime, remote/LAN, validation.",
 		priority: "0.8",
 	},
 	{
-		path: "/prompt",
-		title: "Setup Prompt - Local Studio",
+		path: "/setup",
+		title: "Setup - Local Studio",
 		summary: "Portable setup prompt for a coding model on the target machine.",
 		priority: "0.7",
 	},
@@ -77,14 +77,14 @@ export const HTML_ROUTES: readonly HtmlRoute[] = [
 		priority: "0.8",
 	},
 	{
-		path: "/resources",
-		title: "Resources - Local Studio",
+		path: "/overview",
+		title: "Overview - Local Studio",
 		summary: "Docs, setup, download, agents, KittyLitter, GitHub, brand.",
 		priority: "0.6",
 	},
 	{
-		path: "/download/macos",
-		title: "Download - Local Studio",
+		path: "/download",
+		title: "Download for macOS - Local Studio",
 		summary: "Signed Apple Silicon DMG from GitHub Releases.",
 		priority: "0.8",
 	},
@@ -112,7 +112,7 @@ export const DOWNLOAD = {
 	releases: "https://github.com/sybil-solutions/local-studio/releases",
 	latestAlias:
 		"https://github.com/sybil-solutions/local-studio/releases/latest/download/Local-Studio-arm64.dmg",
-	sitePath: "/download/macos",
+	sitePath: "/download",
 } as const;
 
 export const HOMEPAGE_LINK_HEADER = [
@@ -515,7 +515,7 @@ export function machineSections(): MachineSection[] {
 				"- No secrets in diffs, logs, screenshots, or commits.",
 				"",
 				"Full DLTL ............. /agents  and  /agents.md",
-				"Portable setup prompt . /prompt  and  /prompt.md",
+				"Portable setup prompt . /setup  and  /setup.md",
 			],
 		],
 		[
@@ -525,10 +525,10 @@ export function machineSections(): MachineSection[] {
 				"/product ...... product tour (Control / Serve / Work)",
 				"/mobile ....... KittyLitter pairing and security",
 				"/docs ......... installation and operations guide",
-				"/prompt ....... portable setup prompt for coding models",
+				"/setup ....... portable setup prompt for coding models",
 				"/agents ....... agent setup runbook (DLTL)",
-				"/resources .... everything around Local Studio",
-				"/download/macos signed Apple Silicon DMG",
+				"/overview .... everything around Local Studio",
+				"/download signed Apple Silicon DMG",
 				"/machine ...... this index",
 			],
 		],
@@ -743,8 +743,8 @@ function indexMarkdown(): string {
 
 Local intelligence. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
 
-- [Download for macOS](${SITE_ORIGIN}/download/macos) - v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
-- [Setup prompt](${SITE_ORIGIN}/prompt)
+- [Download for macOS](${SITE_ORIGIN}/download) - v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
+- [Setup prompt](${SITE_ORIGIN}/setup)
 - [Product](${SITE_ORIGIN}/product)
 - [KittyLitter](${SITE_ORIGIN}/mobile)
 
@@ -870,7 +870,7 @@ Non-loopback bind requires \`LOCAL_STUDIO_API_KEY\` (or \`LOCAL_STUDIO_ALLOW_UNA
 function promptMarkdown(): string {
 	return markdownPage(
 		"Setup prompt",
-		`Give the portable prompt on ${SITE_ORIGIN}/prompt to a coding model that can operate a terminal on the target machine.
+		`Give the portable prompt on ${SITE_ORIGIN}/setup to a coding model that can operate a terminal on the target machine.
 
 Repository: https://github.com/sybil-solutions/local-studio
 
@@ -926,12 +926,11 @@ function resourcesMarkdown(): string {
 	return markdownPage(
 		"Resources",
 		`- [Documentation](${SITE_ORIGIN}/docs)
-- [Setup prompt](${SITE_ORIGIN}/prompt)
-- [Download for macOS](${SITE_ORIGIN}/download/macos)
+- [Setup prompt](${SITE_ORIGIN}/setup)
+- [Download for macOS](${SITE_ORIGIN}/download)
 - [Agent setup](${SITE_ORIGIN}/agents)
 - [KittyLitter](https://kittylitter.app)
 - [GitHub](https://github.com/sybil-solutions/local-studio)
-- [Brand assets](${SITE_ORIGIN}/images/localstudio-logo.svg)
 - [Company](https://www.sybilsolutions.ai/)
 `,
 	);
@@ -1178,11 +1177,11 @@ export function agentDocuments(): readonly AgentDocument[] {
 		{ path: "/product.md", body: productMarkdown(), contentType: markdown },
 		{ path: "/mobile.md", body: mobileMarkdown(), contentType: markdown },
 		{ path: "/docs.md", body: docsMarkdown(), contentType: markdown },
-		{ path: "/prompt.md", body: promptMarkdown(), contentType: markdown },
+		{ path: "/setup.md", body: promptMarkdown(), contentType: markdown },
 		{ path: "/agents.md", body: agentsMarkdown(), contentType: markdown },
-		{ path: "/resources.md", body: resourcesMarkdown(), contentType: markdown },
+		{ path: "/overview.md", body: resourcesMarkdown(), contentType: markdown },
 		{
-			path: "/download/macos.md",
+			path: "/download.md",
 			body: downloadMarkdown(),
 			contentType: markdown,
 		},

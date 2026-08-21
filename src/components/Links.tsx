@@ -24,7 +24,7 @@ interface Cta {
 }
 
 const downloadCta = {
-	href: "/download/macos",
+	href: "/download",
 	label: "Download for macOS",
 } satisfies Cta;
 
