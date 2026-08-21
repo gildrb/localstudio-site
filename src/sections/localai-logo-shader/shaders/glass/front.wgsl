@@ -43,6 +43,7 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   }
 
   let materialKind = u32(clamp(round(params.materialKind), 0.0, 4.0));
+  var glass = vec4f(0.0);
   switch (materialKind) {
     case 4u: {
       let backSize = vec2i(textureDimensions(backDepth));
@@ -57,10 +58,19 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
       return vec4f(encode_normal(reflected), 1.0);
     }
     case 3u: {
-      return vec4f(env_reflection_from_dir(studioCube, studioSampler, reflected, params.envYaw, params.envPitch), 1.0);
+      let environment = env_reflection_from_dir(
+        studioCube,
+        studioSampler,
+        reflected,
+        params.envYaw,
+        params.envPitch,
+      );
+      let edgeFresnel = pow(clamp(1.0 - dot(n, v), 0.0, 1.0), 5.0);
+      let metallicReflectance = mix(0.58, 1.0, edgeFresnel);
+      glass = vec4f(max(environment * metallicReflectance, vec3f(0.012)), 0.92);
     }
     default: {
-      var glass = shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, false, params.glassAbsorption);
+      glass = shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, false, params.glassAbsorption);
       let backSize = vec2i(textureDimensions(backMaterial));
       let pixel = vec2i(input.clipPosition.xy);
       if (all(pixel >= vec2i(0)) && all(pixel < backSize)) {
@@ -80,33 +90,32 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
         // alpha before returning to preserve the previous two-draw visual result.
         glass = vec4f(glass.rgb + backContribution / max(glass.a, 0.001), glass.a);
       }
-      // Order: read paint -> build glyph coverage -> apply theme/fade/luminance -> composite.
-      // Paint never reveals the noisy base ASCII chain; ascii_imprint_coverage gates that by
-      // imprintProgress and adds a separate clean hover-station coverage for paint.
-      let paintValue = clamp(sample_paint(paintTex, input.modelPos.xy, params.ascii0.y, params.ascii1.zw), 0.0, 1.0);
-      let imprintProgress = clamp(params.ascii0.x, 0.0, 1.0);
-      let glassVisibility = 1.0 - imprintProgress;
-      let frontMask = smoothstep(FRONT_GATE_START, FRONT_GATE_FULL, ngeo.z);
-      let themeT = clamp(params.glassAbsorption, 0.0, 1.0);
-      let asciiOpacity = ascii_vertical_opacity(input.modelPos.y, themeT);
-      let glyphCoverage = ascii_imprint_coverage(
-        input.modelPos.xy,
-        params.ascii0.y,
-        params.ascii0.z,
-        params.ascii0.w,
-        params.ascii1.xy,
-        imprintProgress,
-        paintValue,
-        sample_ascii_voronoi(asciiVoronoiValueTex, asciiVoronoiEdgeTex, input.modelPos.xy, params.ascii0.y, params.ascii0.w, params.ascii1.zw),
-      ) * frontMask;
-      // Paint bypasses most of the vertical fade, boosts light-theme density by lowering
-      // coverage gamma, and boosts dark-theme HDR emissive below. `coverage` is still
-      // premultiplied-safe alpha coverage; the glass color itself is not paint-faded.
-      let coverage = ascii_coverage_with_opacity(glyphCoverage, asciiOpacity, paintValue, themeT);
-      if (params.ascii0.x <= 0.0 && paintValue <= 0.0) {
-        return glass;
-      }
-      return ascii_final_composite(glass, glassVisibility, coverage, themeT, paintValue);
     }
   }
+  // Order: read paint -> build glyph coverage -> apply theme/fade/luminance -> composite.
+  // Paint never reveals the noisy base ASCII chain; ascii_imprint_coverage gates that by
+  // imprintProgress and adds a separate clean hover-station coverage for paint.
+  let paintValue = clamp(sample_paint(paintTex, input.modelPos.xy, params.ascii0.y, params.ascii1.zw), 0.0, 1.0);
+  let imprintProgress = clamp(params.ascii0.x, 0.0, 1.0);
+  let glassVisibility = 1.0 - imprintProgress;
+  let frontMask = smoothstep(FRONT_GATE_START, FRONT_GATE_FULL, ngeo.z);
+  let themeT = clamp(params.glassAbsorption, 0.0, 1.0);
+  let asciiOpacity = ascii_vertical_opacity(input.modelPos.y, themeT);
+  let glyphCoverage = ascii_imprint_coverage(
+    input.modelPos.xy,
+    params.ascii0.y,
+    params.ascii0.z,
+    params.ascii0.w,
+    params.ascii1.xy,
+    imprintProgress,
+    paintValue,
+    sample_ascii_voronoi(asciiVoronoiValueTex, asciiVoronoiEdgeTex, input.modelPos.xy, params.ascii0.y, params.ascii0.w, params.ascii1.zw),
+  ) * frontMask;
+  // Paint bypasses most of the vertical fade and boosts dark-theme HDR emissive below.
+  // `coverage` is still premultiplied-safe alpha coverage.
+  let coverage = ascii_coverage_with_opacity(glyphCoverage, asciiOpacity, paintValue, themeT);
+  if (params.ascii0.x <= 0.0 && paintValue <= 0.0) {
+    return glass;
+  }
+  return ascii_final_composite(glass, glassVisibility, coverage, themeT, paintValue);
 }

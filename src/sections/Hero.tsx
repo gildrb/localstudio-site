@@ -18,9 +18,9 @@ export function Hero() {
 							tabIndex={-1}
 							className="hero__enter hero__enter--title"
 						>
-							Intelligence should not be{" "}
+							Intelligence should be{" "}
 							<span className="hero__title-end">
-								rented
+								owned
 								<button
 									className="hero__mark-button"
 									type="button"

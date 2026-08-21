@@ -10,7 +10,11 @@ import {
   createUniformParamsBinding,
 } from "./bindings";
 import { BLOOM_RADIUS, PAINT_PARAMS_BYTE_SIZE, VORONOI_NOISE_PARAMS_BYTE_SIZE } from "./constants";
-import { createStudioCubemap, renderStudioCubemap } from "./cubemap";
+import {
+  createStudioCubemap,
+  renderStudioCubemap,
+  uploadStudioCubemapAtlas,
+} from "./cubemap";
 import { EVE_DARK_ENV_LIGHTS, EVE_LIGHT_ENV_LIGHTS } from "./env-lights";
 import { meshOrbitTarget, meshThicknessScale } from "./camera";
 import { createGpuMesh } from "./mesh-gpu";
@@ -26,12 +30,17 @@ export function createResources(
     theme?: "light" | "dark";
     paddingRadius?: number;
     bloom?: boolean;
+    environmentAtlas?: ImageBitmap;
   } = {},
 ) {
   const studioCubemap = createStudioCubemap(device, "eve-5-studio-hdr-cubemap");
   const isLight = options.theme === "light";
   const envLights = isLight ? EVE_LIGHT_ENV_LIGHTS : EVE_DARK_ENV_LIGHTS;
-  renderStudioCubemap(device, studioCubemap, envLights);
+  if (options.environmentAtlas) {
+    uploadStudioCubemapAtlas(device, studioCubemap, options.environmentAtlas);
+  } else {
+    renderStudioCubemap(device, studioCubemap, envLights);
+  }
   const orbitTarget = meshOrbitTarget(mesh);
   const thicknessScale = options.thicknessScale ?? meshThicknessScale(mesh.bounds);
   const paddingRadius = options.paddingRadius ?? BLOOM_RADIUS;

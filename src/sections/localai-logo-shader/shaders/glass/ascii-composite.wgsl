@@ -4,7 +4,8 @@ import { HOVER_OVERLAY_SCALE } from "../shared/ascii-imprint.wgsl";
 // INVARIANT: fwidth/coverage construction stays in ascii-imprint/front entry flow, not here.
 // This module declares no bindings and performs no texture reads.
 
-const IMPRINT_EMISSIVE = vec3f(2.5);
+const STYLE_GUIDE_BLUE_LINEAR = vec3f(0.033105, 0.332452, 1.0);
+const IMPRINT_EMISSIVE = STYLE_GUIDE_BLUE_LINEAR * 2.5;
 const PAINT_EMISSIVE_BOOST = 0.5;
 const PAINT_DARKEN_GAMMA = 1.2;
 const PAINT_FADE_BYPASS = 0.85;
@@ -56,7 +57,7 @@ export fn ascii_final_composite(glass: vec4f, glassVisibility: f32, coverage: f3
   // the glass alpha and never exceeds 0.8. glassVisibility is 1 when the imprint is fully off.
   let glassHoverStrength = max(fadedGlassAlpha * GLASS_HOVER_ALPHA_GAIN, GLASS_HOVER_ALPHA_FLOOR);
   let glassHoverAlpha = clamp(glassHoverStrength * coverage, 0.0, 0.8);
-  let glassHoverColor = vec3f(1.0) * glassHoverAlpha;
+  let glassHoverColor = STYLE_GUIDE_BLUE_LINEAR * glassHoverAlpha;
   let glassMode = step(0.999, glassVisibility);
   let asciiAlpha = mix(coverage, glassHoverAlpha, glassMode);
   let asciiColor = mix(imprintColor, glassHoverColor, glassMode);

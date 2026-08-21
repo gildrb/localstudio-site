@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-	["/", "Intelligence should not be rented - Local Studio", "Intelligence should not be rented"],
+	["/", "Intelligence should be owned - Local Studio", "Intelligence should be owned"],
 	["/product", "Product - Local Studio", "One place to run local AI"],
 	["/mobile", "Mobile - Local Studio", "Your local agents"],
 	["/docs", "Documentation - Local Studio", "Get Local Studio running"],

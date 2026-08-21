@@ -25,6 +25,7 @@ export function createEve5Renderer(
     paddingRadius?: number;
     bloom?: boolean;
     backRefraction?: boolean;
+    environmentAtlas?: ImageBitmap;
   } = {},
 ) {
   const resources = createResources(device, format, mesh, options);

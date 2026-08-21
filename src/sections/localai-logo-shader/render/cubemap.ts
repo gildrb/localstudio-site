@@ -27,7 +27,10 @@ export function createStudioCubemap(
     size: { width: CUBE_SIZE, height: CUBE_SIZE, depthOrArrayLayers: CUBE_FACE_COUNT },
     dimension: "2d",
     format: CUBE_FORMAT,
-    usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
+    usage:
+      GPUTextureUsage.COPY_DST |
+      GPUTextureUsage.RENDER_ATTACHMENT |
+      GPUTextureUsage.TEXTURE_BINDING,
   });
   // Dawn's node adapter runs in compatibility mode and validates cube views as 2D arrays.
   // Keep the asset semantically as a cubemap, but bind/sample it as six array layers.
@@ -47,6 +50,28 @@ export function createStudioCubemap(
     usage: ["uniform", "copy_dst"],
   });
   return { texture, view, sampler, faceParams };
+}
+
+export function uploadStudioCubemapAtlas(
+  device: Device,
+  cubemap: StudioCubemap,
+  atlas: ImageBitmap,
+) {
+  if (atlas.width < CUBE_SIZE || atlas.height < CUBE_SIZE * CUBE_FACE_COUNT) {
+    throw new Error("Cloud cubemap atlas dimensions do not match the renderer");
+  }
+
+  for (let face = 0; face < CUBE_FACE_COUNT; face += 1) {
+    device.gpu.queue.copyExternalImageToTexture(
+      { source: atlas, origin: { x: 0, y: face * CUBE_SIZE } },
+      {
+        texture: cubemap.texture,
+        origin: { x: 0, y: 0, z: face },
+        colorSpace: "srgb",
+      },
+      { width: CUBE_SIZE, height: CUBE_SIZE },
+    );
+  }
 }
 
 export function renderStudioCubemap(

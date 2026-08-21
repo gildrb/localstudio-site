@@ -35,6 +35,8 @@ import {
 } from "./runtime/pointer-input";
 import type { HeroRuntimeState } from "./runtime/state";
 
+const ENVIRONMENT_ATLAS_URL = "/images/localai-cloud-cubemap.webp";
+
 class BrowserAdapter implements VGPUAdapter {
 	async requestDevice(): Promise<Device> {
 		const adapter = await navigator.gpu?.requestAdapter();
@@ -50,9 +52,9 @@ const DEFAULT_CONTROLS: RenderControls = {
 	fov: DEFAULT_CAMERA_FOV,
 	envYaw: 0,
 	envPitch: 0,
-	insideRendering: true,
+	insideRendering: false,
 	outsideRendering: true,
-	material: "glass",
+	material: "metallic",
 	wireframe: false,
 	showEnv: false,
 };
@@ -67,6 +69,7 @@ type RuntimeOwner = {
 
 export function LocalAiLogoShader() {
 	preload(MODEL_URL, { as: "fetch", crossOrigin: "anonymous" });
+	preload(ENVIRONMENT_ATLAS_URL, { as: "image", fetchPriority: "high" });
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const coarsePointer = useMediaQuery("(pointer: coarse)");
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -219,11 +222,25 @@ export function LocalAiLogoShader() {
 				format,
 				alphaMode: "premultiplied",
 			});
+			const environmentAtlas = await fetch(ENVIRONMENT_ATLAS_URL)
+				.then((response) => {
+					if (!response.ok) throw new Error("Cloud reflection image unavailable");
+					return response.blob();
+				})
+				.then((blob) => createImageBitmap(blob))
+				.catch(() => undefined);
+			if (state.cancelled) {
+				environmentAtlas?.close();
+				app.device.destroy();
+				return;
+			}
 			const renderer = createEve5Renderer(app.device, format, mesh, {
 				theme: "dark",
 				bloom: false,
 				backRefraction: false,
+				environmentAtlas,
 			});
+			environmentAtlas?.close();
 			let disposed = false;
 			const runtime: RuntimeOwner = {};
 			const modeTransitionProgressRef = { current: 0 };

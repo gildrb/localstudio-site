@@ -1,3 +1,6 @@
 Portions of this renderer are adapted from eve, Copyright 2026 Vercel, Inc. and contributors.
 Licensed under the Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0
 Source: https://github.com/vercel/eve/tree/f3f4f4a/apps/docs/app/%5Blang%5D/(home)/components/eve-logo-shader
+
+Cloud reflection source: “taylor-van-riper-yQorCngxzwI-unsplash.jpg” by Taylor Van Riper on Unsplash.
+The renderer uses a cropped, transformed environment-map derivative supplied by the project owner.
