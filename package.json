@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . && oxlint .",
+    "design:sync": "node scripts/sync-ls-demo-styles.mjs",
+    "design:check": "node scripts/sync-ls-demo-styles.mjs --check",
     "preview": "vite preview",
     "test": "playwright test",
     "doctor": "npx react-doctor@latest"

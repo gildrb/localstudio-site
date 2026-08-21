@@ -7,7 +7,7 @@ const downloadUrl =
 
 export function DownloadPage() {
 	return (
-		<PageShell>
+		<PageShell backHref="/">
 			<PageIntro
 				id="download-page-title"
 				title="Download for macOS."

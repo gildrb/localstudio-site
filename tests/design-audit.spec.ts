@@ -427,40 +427,41 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 	await expect(menu).toBeHidden();
 });
 
-test("navbar and footer hitboxes touch and share one height", async ({ page }) => {
+test("navbar groups primary links beside the logo and actions on the right", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/");
-	const nav = await page.locator(".nav__links > *").evaluateAll((links) =>
-		links.map((link) => {
-			const box = link.getBoundingClientRect();
-			return {
-				left: Math.round(box.left),
-				right: Math.round(box.right),
-				top: Math.round(box.top),
-				bottom: Math.round(box.bottom),
-			};
-		}),
-	);
-	expect(nav.length).toBeGreaterThanOrEqual(4);
-	for (let index = 1; index < nav.length; index += 1) {
-		expect(nav[index].left, "nav hitboxes must touch").toBe(nav[index - 1].right);
-	}
-	expect(new Set(nav.map((link) => link.bottom - link.top)).size).toBe(1);
-	const between = await page.evaluate(() => {
-		function html(selector: string): HTMLElement {
-			const element = document.querySelector(selector);
-			if (!(element instanceof HTMLElement)) throw new Error(selector);
-			return element;
+	const geometry = await page.evaluate(() => {
+		const brand = document.querySelector<HTMLElement>(".brand");
+		const links = [...document.querySelectorAll<HTMLElement>(".nav__links > *")];
+		const actions = [...document.querySelectorAll<HTMLElement>(".nav__actions > *")];
+		if (!brand || links.length !== 3 || actions.length !== 2) {
+			throw new Error("Desktop navbar groups are incomplete");
 		}
-		const company = html('.nav__links a[href="https://www.sybilsolutions.ai/"]');
-		const github = html(".nav__github");
-		const companyBox = company.getBoundingClientRect();
-		const githubBox = github.getBoundingClientRect();
-		const x = (companyBox.right + githubBox.left) / 2;
-		const hit = document.elementFromPoint(x, (companyBox.top + companyBox.bottom) / 2);
-		return hit?.closest("a")?.getAttribute("href") ?? "";
+		const box = (element: HTMLElement) => {
+			const rect = element.getBoundingClientRect();
+			return {
+				left: Math.round(rect.left),
+				right: Math.round(rect.right),
+				top: Math.round(rect.top),
+				bottom: Math.round(rect.bottom),
+			};
+		};
+		return {
+			brand: box(brand),
+			links: links.map(box),
+			actions: actions.map(box),
+			actionLabels: actions.map((action) => action.textContent?.trim() ?? ""),
+		};
 	});
-	expect(["https://www.sybilsolutions.ai/", "https://github.com/sybil-solutions/local-studio"]).toContain(between);
+	for (let index = 1; index < geometry.links.length; index += 1) {
+		expect(geometry.links[index].left, "nav hitboxes must touch").toBe(
+			geometry.links[index - 1].right,
+		);
+	}
+	expect(new Set(geometry.links.map((link) => link.bottom - link.top)).size).toBe(1);
+	expect(geometry.links[0].left - geometry.brand.right).toBe(16);
+	expect(geometry.actions[0].right).toBeLessThanOrEqual(geometry.actions[1].left);
+	expect(geometry.actionLabels).toEqual(["", "Download for macOS"]);
 	const link = page.locator(".nav__links a").first();
 	const pill = await link.evaluate((element) => {
 		const box = element.getBoundingClientRect();

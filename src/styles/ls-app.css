@@ -339,7 +339,7 @@
    elevated grays for cards/popovers, translucent white hairlines and
    overlays, one blue accent. This is the live default.
    ────────────────────────────────────────────────────────────────────────── */
-.dark,
+.demo .dark,
 .demo[data-theme="zai-dark"],
 .demo[data-theme="omlx-dark"] {
   color-scheme: dark;
@@ -517,7 +517,7 @@
    --surface, --rail, --border and friends all resolve to the same values.
    ────────────────────────────────────────────────────────────────────────── */
 .demo,
-.dark,
+.demo .dark,
 .demo[data-theme="zai-dark"],
 .demo[data-theme="omlx-dark"] {
   --bg: var(--color-background);
@@ -724,9 +724,8 @@
   }
 }
 
-
-.dark hr,
-hr {
+.demo .dark hr,
+.demo hr {
   border-color: var(--separator);
 }
 
@@ -743,7 +742,7 @@ hr {
   }
 }
 
-.zai-gradient-text {
+.demo .zai-gradient-text {
   background-image: linear-gradient(
     110deg,
     var(--animated-gradient-text-strong) 0%,
@@ -760,36 +759,21 @@ hr {
 }
 
 /* Local Studio base.css (copied) */
-
-
-
-*,
-*::before,
-*::after {
+.demo *,
+.demo *::before,
+.demo *::after {
   border-color: var(--border);
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--hl1) 18%, transparent) transparent;
 }
 
-svg.lucide {
+.demo svg.lucide {
   scale: var(--icon-scale);
   transform-origin: center;
 }
 
-
-
 /* ZCode uses a flat --color-background canvas — no grid texture. */
-body {
-  background-color: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-sans);
-  font-weight: var(--app-font-weight);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-.agent-workspace {
+.demo .agent-workspace {
   background-color: var(--agent-bg);
   background-image: none;
 }
@@ -797,92 +781,92 @@ body {
 /* Links default to inherited color so UI chrome (sidebar, settings, nav,
    tabs, etc.) is not painted with --hl1 blue. Markdown/content links opt in
    via their own Tailwind color classes (e.g. text-(--accent)). */
-a {
+.demo a {
   color: inherit;
   text-decoration: none;
   transition: color 0.15s ease;
 }
 
-nav a,
-a.nav-link,
-[role="navigation"] a {
+.demo nav a,
+.demo a.nav-link,
+.demo [role="navigation"] a {
   color: inherit;
   text-decoration: none;
 }
 
-nav a:hover,
-a.nav-link:hover,
-[role="navigation"] a:hover {
+.demo nav a:hover,
+.demo a.nav-link:hover,
+.demo [role="navigation"] a:hover {
   color: inherit;
   text-decoration: none;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar {
+.demo ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
+.demo ::-webkit-scrollbar-track {
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
+.demo ::-webkit-scrollbar-thumb {
   background: color-mix(in srgb, var(--hl1) 18%, transparent);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.demo ::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--hl1) 34%, transparent);
   background-clip: padding-box;
 }
 
-.scrollbar-thin {
+.demo .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
 
-.scrollbar-thin:hover {
+.demo .scrollbar-thin:hover {
   scrollbar-color: color-mix(in srgb, var(--hl1) 18%, transparent) transparent;
 }
 
-.scrollbar-thin::-webkit-scrollbar {
+.demo .scrollbar-thin::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
+.demo .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
+.demo .scrollbar-thin::-webkit-scrollbar-thumb {
   background: transparent;
 }
 
-.scrollbar-thin:hover::-webkit-scrollbar-thumb {
+.demo .scrollbar-thin:hover::-webkit-scrollbar-thumb {
   background: color-mix(in srgb, var(--hl1) 18%, transparent);
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+.demo .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--hl1) 34%, transparent);
 }
 
-.scrollbar-hidden {
+.demo .scrollbar-hidden {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.scrollbar-hidden::-webkit-scrollbar {
+.demo .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
 
-.scroll-smooth {
+.demo .scroll-smooth {
   scroll-behavior: smooth;
 }
 
 /* Focus */
-:focus-visible {
+.demo :focus-visible {
   outline: none;
   ring: 2px solid var(--accent);
   ring-offset: 2px;
@@ -890,33 +874,33 @@ a.nav-link:hover,
 }
 
 /* Selection */
-::selection {
+.demo ::selection {
   background: color-mix(in srgb, var(--hl1) 42%, transparent);
   color: var(--fg);
 }
 
 .demo[data-theme="omlx-dark"] ::selection,
-.dark ::selection {
+.demo .dark ::selection {
   background: color-mix(in srgb, var(--hl1) 52%, var(--color-black) 28%);
   color: var(--color-white);
 }
 
 /* Scroll shadows */
-.scroll-shadow-top {
+.demo .scroll-shadow-top {
   box-shadow: inset 0 10px 10px -10px rgba(0, 0, 0, 0.3);
 }
 
-.scroll-shadow-bottom {
+.demo .scroll-shadow-bottom {
   box-shadow: inset 0 -10px 10px -10px rgba(0, 0, 0, 0.3);
 }
 
-.scroll-shadow-both {
+.demo .scroll-shadow-both {
   box-shadow:
     inset 0 10px 10px -10px rgba(0, 0, 0, 0.3),
     inset 0 -10px 10px -10px rgba(0, 0, 0, 0.3);
 }
 
-.text-fade-right::after {
+.demo .text-fade-right::after {
   content: "";
   position: absolute;
   right: 0;
@@ -930,68 +914,68 @@ a.nav-link:hover,
 /* Left sidebar scroller: no scrollbar at rest, a slim overlay thumb only while
    the pointer is over the sidebar. The 6px gutter is stable so rows do not
    shift when the thumb appears. */
-.sidebar-scroller {
+.demo .sidebar-scroller {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
-.sidebar-scroller::-webkit-scrollbar {
+.demo .sidebar-scroller::-webkit-scrollbar {
   width: 6px;
 }
-.sidebar-scroller::-webkit-scrollbar-track {
+.demo .sidebar-scroller::-webkit-scrollbar-track {
   background: transparent;
 }
-.sidebar-scroller::-webkit-scrollbar-thumb {
+.demo .sidebar-scroller::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: transparent;
 }
-.sidebar-scroller:hover {
+.demo .sidebar-scroller:hover {
   scrollbar-color: color-mix(in srgb, var(--fg) 22%, transparent) transparent;
 }
-.sidebar-scroller:hover::-webkit-scrollbar-thumb {
+.demo .sidebar-scroller:hover::-webkit-scrollbar-thumb {
   min-height: 40px;
   background: color-mix(in srgb, var(--fg) 22%, transparent);
 }
 
 /* Local Studio chat.css (copied) */
 /* Message content */
-.message-content {
+.demo .message-content {
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
   color: var(--fg) !important;
 }
 
-.message-content p,
-.message-content li,
-.message-content ul,
-.message-content ol,
-.message-content h1,
-.message-content h2,
-.message-content h3,
-.message-content h4,
-.message-content h5,
-.message-content h6,
-.message-content span:not([class*="hljs"]),
-.message-content strong,
-.message-content em,
-.message-content blockquote,
-.message-content td,
-.message-content th,
-.message-content div:not([class]) {
+.demo .message-content p,
+.demo .message-content li,
+.demo .message-content ul,
+.demo .message-content ol,
+.demo .message-content h1,
+.demo .message-content h2,
+.demo .message-content h3,
+.demo .message-content h4,
+.demo .message-content h5,
+.demo .message-content h6,
+.demo .message-content span:not([class*="hljs"]),
+.demo .message-content strong,
+.demo .message-content em,
+.demo .message-content blockquote,
+.demo .message-content td,
+.demo .message-content th,
+.demo .message-content div:not([class]) {
   color: var(--fg) !important;
 }
 
-.message-content pre {
+.demo .message-content pre {
   max-width: 100%;
   overflow-x: auto;
 }
 
-.message-content code {
+.demo .message-content code {
   word-break: break-word;
 }
 
-.message-content pre code {
+.demo .message-content pre code {
   word-break: normal;
 }
 
@@ -1006,7 +990,7 @@ a.nav-link:hover,
   --codex-chat-font-weight: 400;
 }
 
-.chat-markdown {
+.demo .chat-markdown {
   font-family: var(--codex-chat-font-family);
   font-size: var(--codex-chat-font-size);
   line-height: var(--codex-chat-line-height);
@@ -1015,11 +999,11 @@ a.nav-link:hover,
   letter-spacing: 0;
 }
 
-.chat-scroll-pad {
+.demo .chat-scroll-pad {
   padding-bottom: 0;
 }
 
-.agent-thread-shell {
+.demo .agent-thread-shell {
   width: 90%;
   max-width: calc(var(--composer-w) * 0.9);
 }
@@ -1027,56 +1011,56 @@ a.nav-link:hover,
 /* Phone widths: give the thread the full column — the 90% inset plus the
    scroller padding otherwise double-margins an already narrow screen. */
 @media (max-width: 640px) {
-  .agent-thread-shell {
+  .demo .agent-thread-shell {
     width: 100%;
   }
 }
 
 @media (max-width: 768px) {
-  .chat-scroll-pad {
+  .demo .chat-scroll-pad {
     padding-bottom: calc(var(--chat-composer-height, 128px) + env(safe-area-inset-bottom, 0px));
   }
 }
 
 /* Codex markdown rhythm: 12px between blocks (my-3), tight lists (pl-4). */
-.chat-markdown p {
+.demo .chat-markdown p {
   margin-bottom: 12px;
 }
 
-.chat-markdown p:last-child {
+.demo .chat-markdown p:last-child {
   margin-bottom: 0;
 }
 
-.chat-markdown ul,
-.chat-markdown ol {
+.demo .chat-markdown ul,
+.demo .chat-markdown ol {
   margin: 8px 0 12px;
 }
 
-.chat-markdown ul {
+.demo .chat-markdown ul {
   list-style: disc;
   padding-left: 1.5em;
 }
 
-.chat-markdown ol {
+.demo .chat-markdown ol {
   list-style: decimal;
   padding-left: 2em;
 }
 
-.chat-markdown blockquote {
+.demo .chat-markdown blockquote {
   margin: 12px 0;
   border-left: 2px solid var(--separator);
   padding-left: 16px;
   color: color-mix(in srgb, var(--fg) 65%, transparent);
 }
 
-.chat-markdown li {
+.demo .chat-markdown li {
   margin-bottom: 3px;
 }
 
-.chat-markdown h1,
-.chat-markdown h2,
-.chat-markdown h3,
-.chat-markdown h4 {
+.demo .chat-markdown h1,
+.demo .chat-markdown h2,
+.demo .chat-markdown h3,
+.demo .chat-markdown h4 {
   font-weight: 600;
   color: color-mix(in srgb, var(--fg) 90%, transparent);
   line-height: 1.3;
@@ -1085,54 +1069,54 @@ a.nav-link:hover,
 
 /* Codex sets headings barely above body size and leans on weight, not scale —
    a 24px h1 next to 16px prose reads like a web article, not a chat reply. */
-.chat-markdown h1 {
+.demo .chat-markdown h1 {
   font-size: 20px;
   margin: 1.1rem 0 0.5rem;
   padding-bottom: 0;
   border-bottom: 0;
 }
 
-.chat-markdown h2 {
+.demo .chat-markdown h2 {
   font-size: 18px;
   margin: 1rem 0 0.45rem;
   padding-bottom: 0;
   border-bottom: 0;
 }
 
-.chat-markdown h3 {
+.demo .chat-markdown h3 {
   font-size: 16px;
   margin: 0.9rem 0 0.4rem;
 }
 
-.chat-markdown h4 {
+.demo .chat-markdown h4 {
   font-size: 16px;
   margin: 0.8rem 0 0.35rem;
   color: var(--fg);
 }
 
-.chat-markdown h1:first-child,
-.chat-markdown h2:first-child,
-.chat-markdown h3:first-child,
-.chat-markdown h4:first-child {
+.demo .chat-markdown h1:first-child,
+.demo .chat-markdown h2:first-child,
+.demo .chat-markdown h3:first-child,
+.demo .chat-markdown h4:first-child {
   margin-top: 0;
 }
 
-.chat-markdown hr {
+.demo .chat-markdown hr {
   margin: 1rem 0;
   border-color: var(--border);
 }
 
-.chat-markdown strong {
+.demo .chat-markdown strong {
   font-weight: 600;
   color: color-mix(in srgb, var(--fg) 96%, transparent);
 }
 
-.chat-markdown ::selection {
+.demo .chat-markdown ::selection {
   background: color-mix(in srgb, var(--accent) 42%, transparent);
   color: var(--fg);
 }
 
-.chat-markdown a {
+.demo .chat-markdown a {
   color: var(--link);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -1141,14 +1125,14 @@ a.nav-link:hover,
 
 /* File references render as plain blue links, not chips: monospace so paths
    stay legible, no icon/background/copy button. Clicking reveals the file. */
-.chat-markdown .chat-file-link {
+.demo .chat-markdown .chat-file-link {
   font-family: var(--codex-chat-mono-font-family);
   font-size: var(--codex-chat-code-font-size);
   overflow-wrap: anywhere;
   cursor: pointer;
 }
 
-.chat-markdown table {
+.demo .chat-markdown table {
   width: 100%;
   border-collapse: collapse;
   border: 0;
@@ -1160,12 +1144,12 @@ a.nav-link:hover,
   background: transparent;
 }
 
-.chat-markdown thead th {
+.demo .chat-markdown thead th {
   background: transparent;
   border-bottom: 1px solid var(--separator);
 }
 
-.chat-markdown th {
+.demo .chat-markdown th {
   text-align: left;
   font-size: inherit;
   text-transform: none;
@@ -1176,7 +1160,7 @@ a.nav-link:hover,
   white-space: normal;
 }
 
-.chat-markdown td {
+.demo .chat-markdown td {
   padding: 0.45rem 1rem 0.45rem 0;
   color: color-mix(in srgb, var(--fg) 84%, transparent);
   vertical-align: top;
@@ -1184,16 +1168,16 @@ a.nav-link:hover,
   border-bottom: 1px solid var(--separator);
 }
 
-.chat-markdown th:last-child,
-.chat-markdown td:last-child {
+.demo .chat-markdown th:last-child,
+.demo .chat-markdown td:last-child {
   padding-right: 0;
 }
 
-.chat-markdown tbody tr:last-child td {
+.demo .chat-markdown tbody tr:last-child td {
   border-bottom: 0;
 }
 
-.chat-markdown img {
+.demo .chat-markdown img {
   max-width: 100%;
   height: auto;
   border-radius: 0.375rem;
@@ -1201,7 +1185,7 @@ a.nav-link:hover,
 }
 
 /* Inline code: quiet — a whisper of background, tight padding, no chunky pill. */
-.chat-markdown :not(pre) > code {
+.demo .chat-markdown :not(pre) > code {
   padding: 0.5px 4px;
   border-radius: var(--rad-xs);
   background: color-mix(in srgb, var(--fg) 7%, transparent);
@@ -1216,25 +1200,25 @@ a.nav-link:hover,
   word-break: break-word;
 }
 
-.chat-markdown .assistant-code-block pre {
+.demo .chat-markdown .assistant-code-block pre {
   scrollbar-color: color-mix(in srgb, var(--fg) 18%, transparent) transparent;
 }
 
-.agent-chat-scroller {
+.demo .agent-chat-scroller {
   scrollbar-width: auto;
   scrollbar-color: color-mix(in srgb, var(--fg) 34%, transparent)
     color-mix(in srgb, var(--bg) 82%, var(--border));
 }
 
-.agent-chat-scroller::-webkit-scrollbar {
+.demo .agent-chat-scroller::-webkit-scrollbar {
   width: 16px;
 }
 
-.agent-chat-scroller::-webkit-scrollbar-track {
+.demo .agent-chat-scroller::-webkit-scrollbar-track {
   background: color-mix(in srgb, var(--bg) 82%, var(--border));
 }
 
-.agent-chat-scroller::-webkit-scrollbar-thumb {
+.demo .agent-chat-scroller::-webkit-scrollbar-thumb {
   min-height: 56px;
   border: 3px solid color-mix(in srgb, var(--bg) 82%, var(--border));
   border-radius: 999px;
@@ -1242,17 +1226,17 @@ a.nav-link:hover,
   background-clip: padding-box;
 }
 
-.agent-chat-scroller::-webkit-scrollbar-thumb:hover,
-.agent-chat-scroller::-webkit-scrollbar-thumb:active {
+.demo .agent-chat-scroller::-webkit-scrollbar-thumb:hover,
+.demo .agent-chat-scroller::-webkit-scrollbar-thumb:active {
   background: color-mix(in srgb, var(--accent) 60%, var(--fg));
   background-clip: padding-box;
 }
 
-.agent-timeline-frame {
+.demo .agent-timeline-frame {
   container-type: inline-size;
 }
 
-.prompt-minimap {
+.demo .prompt-minimap {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -1270,12 +1254,12 @@ a.nav-link:hover,
 }
 
 @container (max-width: 54rem) {
-  .prompt-minimap {
+  .demo .prompt-minimap {
     display: none;
   }
 }
 
-.prompt-minimap-marker {
+.demo .prompt-minimap-marker {
   position: relative;
   left: 0;
   display: flex;
@@ -1290,7 +1274,7 @@ a.nav-link:hover,
   pointer-events: auto;
 }
 
-.prompt-minimap-line {
+.demo .prompt-minimap-line {
   display: block;
   width: 0.6rem;
   height: 2px;
@@ -1302,19 +1286,19 @@ a.nav-link:hover,
     box-shadow 0.14s ease;
 }
 
-.prompt-minimap-marker[data-current="true"] .prompt-minimap-line {
+.demo .prompt-minimap-marker[data-current="true"] .prompt-minimap-line {
   width: 0.72rem;
   background: color-mix(in srgb, var(--fg) 82%, transparent);
 }
 
-.prompt-minimap-marker:hover .prompt-minimap-line,
-.prompt-minimap-marker:focus-visible .prompt-minimap-line {
+.demo .prompt-minimap-marker:hover .prompt-minimap-line,
+.demo .prompt-minimap-marker:focus-visible .prompt-minimap-line {
   width: 1.6rem;
   background: color-mix(in srgb, var(--fg) 88%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--agent-bg) 72%, transparent);
 }
 
-.prompt-minimap-card {
+.demo .prompt-minimap-card {
   position: absolute;
   left: 2.55rem;
   top: 50%;
@@ -1333,7 +1317,7 @@ a.nav-link:hover,
   transform: translateY(-50%);
 }
 
-.prompt-minimap-card-text {
+.demo .prompt-minimap-card-text {
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -1343,17 +1327,17 @@ a.nav-link:hover,
   color: color-mix(in srgb, var(--fg) 90%, transparent);
 }
 
-.prompt-minimap-card-time {
+.demo .prompt-minimap-card-time {
   font-size: 11px;
   line-height: 1.2;
   color: color-mix(in srgb, var(--fg) 48%, transparent);
 }
 
-.agent-activity-preview {
+.demo .agent-activity-preview {
   position: relative;
 }
 
-.agent-activity-preview-running::after {
+.demo .agent-activity-preview-running::after {
   content: attr(data-preview);
   position: absolute;
   inset: 0;
@@ -1386,12 +1370,12 @@ a.nav-link:hover,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .agent-activity-preview-running::after {
+  .demo .agent-activity-preview-running::after {
     animation: none;
   }
 }
 
-.chat-markdown .assistant-code-block code {
+.demo .chat-markdown .assistant-code-block code {
   background: transparent;
   border: 0;
   padding: 0;
@@ -1400,74 +1384,74 @@ a.nav-link:hover,
   word-break: normal;
 }
 
-.syntax-highlight {
+.demo .syntax-highlight {
   background: transparent;
   color: var(--fg);
 }
 
-.syntax-highlight .hljs-keyword,
-.syntax-highlight .hljs-selector-tag,
-.syntax-highlight .hljs-literal,
-.syntax-highlight .hljs-section,
-.syntax-highlight .hljs-link {
+.demo .syntax-highlight .hljs-keyword,
+.demo .syntax-highlight .hljs-selector-tag,
+.demo .syntax-highlight .hljs-literal,
+.demo .syntax-highlight .hljs-section,
+.demo .syntax-highlight .hljs-link {
   color: var(--color-syntax-keyword);
 }
 
-.syntax-highlight .hljs-string,
-.syntax-highlight .hljs-name,
-.syntax-highlight .hljs-type,
-.syntax-highlight .hljs-symbol,
-.syntax-highlight .hljs-bullet,
-.syntax-highlight .hljs-addition {
+.demo .syntax-highlight .hljs-string,
+.demo .syntax-highlight .hljs-name,
+.demo .syntax-highlight .hljs-type,
+.demo .syntax-highlight .hljs-symbol,
+.demo .syntax-highlight .hljs-bullet,
+.demo .syntax-highlight .hljs-addition {
   color: var(--color-syntax-string);
 }
 
-.syntax-highlight .hljs-title {
+.demo .syntax-highlight .hljs-title {
   color: var(--color-syntax-title);
 }
 
-.syntax-highlight .hljs-attr,
-.syntax-highlight .hljs-attribute,
-.syntax-highlight .hljs-variable,
-.syntax-highlight .hljs-template-variable,
-.syntax-highlight .hljs-selector-class,
-.syntax-highlight .hljs-selector-attr,
-.syntax-highlight .hljs-selector-pseudo,
-.syntax-highlight .hljs-number,
-.syntax-highlight .hljs-built_in,
-.syntax-highlight .hljs-builtin-name {
+.demo .syntax-highlight .hljs-attr,
+.demo .syntax-highlight .hljs-attribute,
+.demo .syntax-highlight .hljs-variable,
+.demo .syntax-highlight .hljs-template-variable,
+.demo .syntax-highlight .hljs-selector-class,
+.demo .syntax-highlight .hljs-selector-attr,
+.demo .syntax-highlight .hljs-selector-pseudo,
+.demo .syntax-highlight .hljs-number,
+.demo .syntax-highlight .hljs-built_in,
+.demo .syntax-highlight .hljs-builtin-name {
   color: var(--color-syntax-value);
 }
 
-.syntax-highlight .hljs-comment,
-.syntax-highlight .hljs-quote,
-.syntax-highlight .hljs-meta {
+.demo .syntax-highlight .hljs-comment,
+.demo .syntax-highlight .hljs-quote,
+.demo .syntax-highlight .hljs-meta {
   color: var(--color-syntax-comment);
 }
 
-.syntax-highlight .hljs-deletion {
+.demo .syntax-highlight .hljs-deletion {
   color: var(--color-syntax-deletion);
 }
 
-.syntax-highlight .hljs-emphasis {
+.demo .syntax-highlight .hljs-emphasis {
   font-style: italic;
 }
 
-.syntax-highlight .hljs-strong {
+.demo .syntax-highlight .hljs-strong {
   font-weight: 600;
 }
 
-.agent-composer-box {
+.demo .agent-composer-box {
   container-type: inline-size;
 }
 
 @container (max-width: 27rem) {
-  .composer-action-optional {
+  .demo .composer-action-optional {
     display: none;
   }
 }
 
-.chat-markdown blockquote {
+.demo .chat-markdown blockquote {
   border-left: 2px solid var(--separator);
   padding-left: 1rem;
   margin: 12px 0;
@@ -1476,7 +1460,7 @@ a.nav-link:hover,
 
 /* Codex "Thinking" shimmer — a stepped (not smooth) gradient sweep clipped to
    the label text; the cadenced steps() timing is what makes it read as Codex. */
-.codex-shimmer-text {
+.demo .codex-shimmer-text {
   color: transparent;
   background-image: linear-gradient(
     90deg,
@@ -1503,7 +1487,7 @@ a.nav-link:hover,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .codex-shimmer-text {
+  .demo .codex-shimmer-text {
     animation: none;
     background: none;
     color: var(--dim);
@@ -1511,14 +1495,14 @@ a.nav-link:hover,
 }
 
 /* Typing dots */
-.typing-dots {
+.demo .typing-dots {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   height: 20px;
 }
 
-.typing-dots span {
+.demo .typing-dots span {
   width: 4px;
   height: 4px;
   background: var(--dim);
@@ -1526,13 +1510,13 @@ a.nav-link:hover,
   animation: typing-bounce 1.4s infinite ease-in-out both;
 }
 
-.typing-dots span:nth-child(1) {
+.demo .typing-dots span:nth-child(1) {
   animation-delay: -0.32s;
 }
-.typing-dots span:nth-child(2) {
+.demo .typing-dots span:nth-child(2) {
   animation-delay: -0.16s;
 }
-.typing-dots span:nth-child(3) {
+.demo .typing-dots span:nth-child(3) {
   animation-delay: 0s;
 }
 
@@ -1549,7 +1533,7 @@ a.nav-link:hover,
   }
 }
 
-.agent-computer-panel {
+.demo .agent-computer-panel {
   height: 100%;
   min-height: 0;
 }

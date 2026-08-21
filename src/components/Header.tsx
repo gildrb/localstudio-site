@@ -1,5 +1,6 @@
 import { ChevronDown, Equal, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import { DownloadButton } from "./Links";
 import { LocalLink } from "./LocalLink";
 
 type NavLink = {
@@ -294,34 +295,35 @@ export function Header() {
 			className={`nav${mobileOpen ? " is-open" : ""}${openMenu ? ` has-menu has-menu--${openMenu}` : ""}`}
 			onPointerLeave={() => setOpenMenu(null)}
 		>
-			<LocalLink
-				className="brand"
-				href="/"
-				aria-label="Local Studio"
-				onClick={closeMobile}
-				onPointerEnter={close}
-			>
-				<img
-					className="brand__logo"
-					src="/images/localstudio-logo.svg"
-					alt=""
-					width="4667"
-					height="525"
-					draggable={false}
-				/>
-			</LocalLink>
-			<nav
-				className="nav__links"
-				aria-label="Landing navigation"
-			>
-				{menu("products", "Products")}
-				{menu("resources", "Resources")}
-				<a
-					href="https://www.sybilsolutions.ai/"
+			<div className="nav__primary">
+				<LocalLink
+					className="brand"
+					href="/"
+					aria-label="Local Studio"
+					onClick={closeMobile}
 					onPointerEnter={close}
 				>
-					Company
-				</a>
+					<img
+						className="brand__logo"
+						src="/images/localstudio-logo.svg"
+						alt=""
+						width="4667"
+						height="525"
+						draggable={false}
+					/>
+				</LocalLink>
+				<nav className="nav__links" aria-label="Landing navigation">
+					{menu("products", "Products")}
+					{menu("resources", "Resources")}
+					<a
+						href="https://www.sybilsolutions.ai/"
+						onPointerEnter={close}
+					>
+						Company
+					</a>
+				</nav>
+			</div>
+			<div className="nav__actions">
 				<LocalLink
 					className="nav__github"
 					href={githubUrl}
@@ -332,7 +334,8 @@ export function Header() {
 				>
 					<GitHubMark />
 				</LocalLink>
-			</nav>
+				<DownloadButton />
+			</div>
 			{openMenu ? (
 				<DesktopMenu menu={openMenu} onNavigate={close} />
 			) : null}

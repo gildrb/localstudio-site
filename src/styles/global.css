@@ -655,6 +655,29 @@ img {
 	margin-inline: auto;
 }
 
+.back-nav {
+	display: flex;
+	min-height: 72px;
+	align-items: center;
+	padding-inline: max(24px, calc(50vw - var(--page-width) / 2));
+}
+
+.back-nav__link {
+	display: inline-flex;
+	min-height: 38px;
+	align-items: center;
+	gap: 6px;
+	color: var(--dim);
+	font: var(--type-meta);
+	text-decoration: none;
+	transition: color 130ms ease-out;
+}
+
+@media (hover: hover) {
+	.back-nav__link:hover {
+		color: var(--foreground);
+	}
+}
 .nav {
 	--nav-surface-filter: blur(24px) brightness(0.7);
 	position: sticky;
@@ -700,6 +723,15 @@ img {
 
 .nav.has-menu::before {
 	height: calc(100% + var(--nav-mega-height));
+}
+
+.nav__primary {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	gap: 16px;
 }
 
 .brand {
@@ -785,9 +817,32 @@ button {
 	transition: background 130ms ease-out;
 }
 
-.nav__links .nav__github {
-	width: 38px;
-	padding: 0;
+.nav__actions {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.nav__actions .nav__github {
+	display: inline-flex;
+	width: 40px;
+	height: 40px;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius-control);
+	color: var(--dim);
+	text-decoration: none;
+	transition:
+		color 130ms ease-out,
+		background 130ms ease-out;
+}
+
+.nav__actions .button {
+	border-color: var(--border-strong);
+	color: var(--foreground);
+	background: transparent;
 }
 
 .nav__github svg {
@@ -804,6 +859,15 @@ button {
 @media (hover: hover) {
 	.nav__links a:hover {
 		color: var(--foreground);
+	}
+	.nav__actions .nav__github:hover {
+		color: var(--foreground);
+		background: var(--hover);
+	}
+
+	.nav__actions .button:hover {
+		border-color: var(--border-strong-hover);
+		background: var(--hover);
 	}
 
 	.nav__links a:hover::before,
@@ -1111,7 +1175,7 @@ button {
 	align-self: center;
 	width: 100%;
 	height: min(787px, calc(100svh - var(--story-sticky-top) - 48px));
-	overflow: clip;
+	overflow: visible;
 }
 .story__options {
 	display: grid;
@@ -1423,6 +1487,7 @@ button {
 		padding-bottom: 80px;
 	}
 	.nav__links,
+	.nav__actions,
 	.nav__mega {
 		display: none;
 	}
