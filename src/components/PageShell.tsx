@@ -11,7 +11,7 @@ interface PageShellProps {
 
 export function PageShell({ backHref, children }: PageShellProps) {
 	return (
-		<div className="site-shell">
+		<div className={`site-shell${backHref ? " site-shell--back" : ""}`}>
 			<LocalLink className="skip-link" href="#content">
 				Skip to content
 			</LocalLink>

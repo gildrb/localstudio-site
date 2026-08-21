@@ -217,6 +217,28 @@ img {
 	background: var(--background);
 }
 
+.site-shell--back {
+	position: relative;
+}
+.site-shell--back > .back-nav {
+	position: absolute;
+	z-index: 1;
+	top: 0;
+	right: 0;
+	left: 0;
+}
+.site-shell--back > .site-main {
+	min-height: 100svh;
+}
+@media (min-width: 901px) {
+	.site-shell--back > .footer {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	}
+}
+
 .site-main {
 	display: flex;
 	flex: 1;
@@ -243,6 +265,21 @@ img {
 	min-height: 650px;
 	place-items: center;
 	text-align: center;
+}
+
+.download-page {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+}
+
+.download-page .page-intro {
+	min-height: 0;
+	flex: 1;
+}
+
+.download-page .page-intro__content {
+	translate: 0 -20px;
 }
 
 .page-intro__content {

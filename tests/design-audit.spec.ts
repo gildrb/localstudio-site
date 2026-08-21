@@ -420,11 +420,47 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 	await page.getByRole("menuitem", { name: "Documentation", exact: true }).hover();
 	await expect(menu).toBeVisible();
 	await page.mouse.move(720, 700);
+	await page.waitForTimeout(20);
+	await page.mouse.move(720, geometry.panelTop + 20);
+	await page.waitForTimeout(110);
+	await expect(menu).toBeVisible();
+	await page.mouse.move(720, 700);
 	await expect(menu).toBeHidden();
 	await trigger.click();
 	await expect(menu).toBeVisible();
 	await page.keyboard.press("Escape");
 	await expect(menu).toBeHidden();
+});
+
+test("download page replaces the navbar with an aligned Back action", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/");
+	await page.locator(".nav__actions").getByRole("link", { name: "Download for macOS" }).click();
+	await expect(page).toHaveURL("/download/macos");
+	await expect(page.locator("header.nav")).toHaveCount(0);
+	await expect(page.getByRole("heading", { name: "Download for macOS." })).toBeVisible();
+	const alignment = await page.evaluate(() => {
+		const back = document.querySelector<HTMLElement>(".back-nav__link");
+		const content = document.querySelector<HTMLElement>(".page-intro");
+		const panel = document.querySelector<HTMLElement>(".page-intro__content");
+		if (!back || !content || !panel) {
+			throw new Error("Download page layout is incomplete");
+		}
+		const panelBox = panel.getBoundingClientRect();
+		return {
+			backLeft: Math.round(back.getBoundingClientRect().left),
+			contentLeft: Math.round(content.getBoundingClientRect().left),
+			panelCenter: [
+				Math.round(panelBox.left + panelBox.width / 2),
+				Math.round(panelBox.top + panelBox.height / 2),
+			],
+			opticalCenter: [Math.round(innerWidth / 2), Math.round(innerHeight / 2) - 20],
+		};
+	});
+	expect(alignment.backLeft).toBe(alignment.contentLeft);
+	expect(alignment.panelCenter).toEqual(alignment.opticalCenter);
+	await page.getByRole("link", { name: "Back", exact: true }).click();
+	await expect(page).toHaveURL("/");
 });
 
 test("navbar groups primary links beside the logo and actions on the right", async ({ page }) => {

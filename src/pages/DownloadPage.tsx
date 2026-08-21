@@ -8,25 +8,27 @@ const downloadUrl =
 export function DownloadPage() {
 	return (
 		<PageShell backHref="/">
-			<PageIntro
-				id="download-page-title"
-				title="Download for macOS."
-				description={
-					<>
-						The desktop app for running local controllers, models, providers,
-						and coding agents on Apple Silicon.
-						<small className="mt-4 block text-sm/5 text-white/50">
-							{"255\u00A0MB · arm64 · macOS · hosted on GitHub Releases"}
-						</small>
-					</>
-				}
-				actions={
-					<CtaPair
-						primary={{ href: downloadUrl, label: "Download DMG" }}
-						secondary={{ href: "/docs#prerequisites", label: "Read prerequisites" }}
-					/>
-				}
-			/>
+			<div className="download-page">
+				<PageIntro
+					id="download-page-title"
+					title="Download for macOS."
+					description={
+						<>
+							The desktop app for running local controllers, models, providers,
+							and coding agents on Apple Silicon.
+							<small className="mt-4 block text-sm/5 text-white/50">
+								{"255\u00A0MB · arm64 · macOS · hosted on GitHub Releases"}
+							</small>
+						</>
+					}
+					actions={
+						<CtaPair
+							primary={{ href: downloadUrl, label: "Download DMG" }}
+							secondary={{ href: "/docs#prerequisites", label: "Read prerequisites" }}
+						/>
+					}
+				/>
+			</div>
 		</PageShell>
 	);
 }

@@ -164,7 +164,27 @@ export function Header() {
 	const menusRef = useRef<HTMLElement>(null);
 	const toggleRef = useRef<HTMLButtonElement>(null);
 	const sheetRef = useRef<HTMLDialogElement>(null);
+	const closeTimerRef = useRef<number | null>(null);
 	const sheetId = useId();
+
+	function cancelMenuClose() {
+		if (closeTimerRef.current === null) return;
+		window.clearTimeout(closeTimerRef.current);
+		closeTimerRef.current = null;
+	}
+
+	function close() {
+		cancelMenuClose();
+		setOpenMenu(null);
+	}
+
+	function scheduleMenuClose() {
+		cancelMenuClose();
+		closeTimerRef.current = window.setTimeout(() => {
+			setOpenMenu(null);
+			closeTimerRef.current = null;
+		}, 100);
+	}
 
 	useEffect(() => {
 		if (!openMenu) return;
@@ -253,7 +273,6 @@ export function Header() {
 		setMobileOpen(open);
 	}
 
-	const close = () => setOpenMenu(null);
 	const closeMobile = () => setSheetOpen(false);
 
 	function menu(id: MenuId, label: string) {
@@ -293,7 +312,8 @@ export function Header() {
 		<header
 			ref={menusRef}
 			className={`nav${mobileOpen ? " is-open" : ""}${openMenu ? ` has-menu has-menu--${openMenu}` : ""}`}
-			onPointerLeave={() => setOpenMenu(null)}
+			onPointerOver={cancelMenuClose}
+			onPointerLeave={scheduleMenuClose}
 		>
 			<div className="nav__primary">
 				<LocalLink
