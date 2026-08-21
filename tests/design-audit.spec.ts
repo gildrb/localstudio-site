@@ -454,7 +454,7 @@ test("download page replaces the navbar with an aligned Back action", async ({ p
 				Math.round(panelBox.left + panelBox.width / 2),
 				Math.round(panelBox.top + panelBox.height / 2),
 			],
-			opticalCenter: [Math.round(innerWidth / 2), Math.round(innerHeight / 2) - 20],
+			opticalCenter: [Math.round(innerWidth / 2), Math.round(innerHeight / 2) - 44],
 		};
 	});
 	expect(alignment.backLeft).toBe(alignment.contentLeft);
