@@ -20,4 +20,11 @@ export default defineConfig([
 			globals: globals.browser,
 		},
 	},
+	{
+		files: [
+			"src/sections/localai-logo-shader/render/shaders.ts",
+			"src/sections/localai-logo-shader/render/cubemap.ts",
+		],
+		rules: { "@typescript-eslint/triple-slash-reference": "off" },
+	},
 ]);

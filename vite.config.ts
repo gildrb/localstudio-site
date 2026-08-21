@@ -1,5 +1,6 @@
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
+import { wgslVitePlugin } from "@vgpu/wgsl/loader-vite";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { agentReady } from "./agent-ready.plugin.ts";
@@ -8,7 +9,7 @@ const root = import.meta.dirname;
 
 export default defineConfig({
 	appType: "spa",
-	plugins: [react(), tailwindcss(), agentReady()],
+	plugins: [react(), wgslVitePlugin({ minify: true }), tailwindcss(), agentReady()],
 	resolve: {
 		alias: [
 			{

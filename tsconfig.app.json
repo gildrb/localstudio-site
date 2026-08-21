@@ -25,7 +25,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "types": [
-      "vite/client"
+      "vite/client",
+      "@webgpu/types",
+      "@vgpu/wgsl/wgsl-types"
     ],
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",

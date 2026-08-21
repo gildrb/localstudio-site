@@ -1001,8 +1001,43 @@ button {
 .hero {
 	position: relative;
 	background: var(--background);
-	overflow: clip;
+	overflow-x: clip;
+	overflow-y: visible;
+	isolation: isolate;
 	padding-bottom: 40px;
+}
+
+.hero-logo-renderer {
+	position: absolute;
+	z-index: 1;
+	top: 40px;
+	left: 50%;
+	width: clamp(560px, 38vw, 620px);
+	aspect-ratio: 1;
+	transform: translateX(-50%);
+	pointer-events: none;
+	contain: layout paint;
+}
+.hero-logo-renderer__canvas,
+.hero-logo-renderer__fallback {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.hero-logo-renderer__canvas {
+	opacity: 0;
+	transition: opacity 700ms linear;
+}
+.hero-logo-renderer__fallback {
+	padding: 9.5%;
+	opacity: 0.08;
+	filter: invert(1) drop-shadow(0 0 32px var(--border-strong));
+	transition: opacity 700ms linear;
+}
+.hero-logo-renderer__fallback--hidden {
+	opacity: 0;
 }
 
 
@@ -1024,6 +1059,26 @@ button {
 	position: relative;
 	z-index: 2;
 	max-width: 790px;
+}
+.hero__copy::before {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	top: 48%;
+	left: 50%;
+	width: clamp(760px, 82vw, 1120px);
+	height: clamp(520px, 56vw, 760px);
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+	background: radial-gradient(
+		ellipse at center,
+		color-mix(in srgb, var(--background) 98%, transparent) 0%,
+		color-mix(in srgb, var(--background) 94%, transparent) 30%,
+		color-mix(in srgb, var(--background) 72%, transparent) 54%,
+		color-mix(in srgb, var(--background) 28%, transparent) 74%,
+		transparent 90%
+	);
+	filter: blur(18px);
 }
 
 .hero__title-end {
@@ -1562,6 +1617,12 @@ button {
 
 	.hero {
 		padding-bottom: 28px;
+	}
+
+	.hero-logo-renderer {
+		top: -20px;
+		left: 50%;
+		width: 520px;
 	}
 
 	.hero__stage {

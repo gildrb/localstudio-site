@@ -38,4 +38,13 @@ export default defineConfig({
 		"anti-slop/no-widen-then-assert": "error",
 		"anti-slop/require-safety-comment-for-type-assertion": "error",
 	},
+	overrides: [
+		{
+			files: [
+				"src/sections/localai-logo-shader/render/shaders.ts",
+				"src/sections/localai-logo-shader/render/cubemap.ts",
+			],
+			rules: { "typescript/triple-slash-reference": "off" },
+		},
+	],
 });

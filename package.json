@@ -14,7 +14,11 @@
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
+    "@vgpu/core": "0.0.7",
+    "@vgpu/render": "0.0.7",
+    "@vgpu/wgsl": "0.0.7",
     "lucide-react": "^1.31.0",
+    "phase": "0.0.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
@@ -26,6 +30,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
+    "@webgpu/types": "0.1.69",
     "eslint": "^10.8.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.4",
