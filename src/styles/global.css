@@ -1108,7 +1108,7 @@ button {
 .final-callout h2 {
 	margin-top: 0;
 	font: var(--type-subheadline);
-	letter-spacing: 0;
+	letter-spacing: var(--tracking-header-title);
 }
 
 .story__intro > p:last-child {
