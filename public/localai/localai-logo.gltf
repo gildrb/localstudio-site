@@ -1,104 +1,91 @@
 {
-	"asset":{
-		"generator":"Khronos glTF Blender I/O v5.2.39",
-		"version":"2.0"
+	"asset": {
+		"generator": "ls-web scripts/generate-logo-mesh.mjs",
+		"version": "2.0"
 	},
-	"scene":0,
-	"scenes":[
+	"scene": 0,
+	"scenes": [
 		{
-			"name":"Scene",
-			"nodes":[
+			"name": "Scene",
+			"nodes": [
 				0
 			]
 		}
 	],
-	"nodes":[
+	"nodes": [
 		{
-			"mesh":0,
-			"name":"LocalAI"
+			"mesh": 0,
+			"name": "LocalAI"
 		}
 	],
-	"meshes":[
+	"meshes": [
 		{
-			"name":"Curve",
-			"primitives":[
+			"name": "LocalAI",
+			"primitives": [
 				{
-					"attributes":{
-						"POSITION":0,
-						"NORMAL":1,
-						"TEXCOORD_0":2
+					"attributes": {
+						"POSITION": 0,
+						"NORMAL": 1
 					},
-					"indices":3
+					"indices": 2
 				}
 			]
 		}
 	],
-	"accessors":[
+	"accessors": [
 		{
-			"bufferView":0,
-			"componentType":5126,
-			"count":5422,
-			"max":[
-				0.07394599169492722,
-				0.07393037527799606,
-				0.011500000022351742
-			],
-			"min":[
-				-0.07394599169492722,
-				-0.07393037527799606,
+			"bufferView": 0,
+			"componentType": 5126,
+			"count": 12408,
+			"type": "VEC3",
+			"min": [
+				-0.11204708367586136,
+				-0.07393050193786621,
 				-0.011500000022351742
 			],
-			"type":"VEC3"
+			"max": [
+				0.11204708367586136,
+				0.07393050193786621,
+				0.011500000022351742
+			]
 		},
 		{
-			"bufferView":1,
-			"componentType":5126,
-			"count":5422,
-			"type":"VEC3"
+			"bufferView": 1,
+			"componentType": 5126,
+			"count": 12408,
+			"type": "VEC3"
 		},
 		{
-			"bufferView":2,
-			"componentType":5126,
-			"count":5422,
-			"type":"VEC2"
-		},
-		{
-			"bufferView":3,
-			"componentType":5123,
-			"count":16236,
-			"type":"SCALAR"
+			"bufferView": 2,
+			"componentType": 5125,
+			"count": 74430,
+			"type": "SCALAR"
 		}
 	],
-	"bufferViews":[
+	"bufferViews": [
 		{
-			"buffer":0,
-			"byteLength":65064,
-			"byteOffset":0,
-			"target":34962
+			"buffer": 0,
+			"byteLength": 148896,
+			"byteOffset": 0,
+			"target": 34962
 		},
 		{
-			"buffer":0,
-			"byteLength":65064,
-			"byteOffset":65064,
-			"target":34962
+			"buffer": 0,
+			"byteLength": 148896,
+			"byteOffset": 148896,
+			"target": 34962
 		},
 		{
-			"buffer":0,
-			"byteLength":43376,
-			"byteOffset":130128,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":32472,
-			"byteOffset":173504,
-			"target":34963
+			"buffer": 0,
+			"byteLength": 297720,
+			"byteOffset": 297792,
+			"target": 34963
 		}
 	],
-	"buffers":[
+	"buffers": [
 		{
-			"byteLength":205976,
-			"uri":"localai-logo.bin"
+			"byteLength": 595512,
+			"uri": "localai-logo.bin"
 		}
 	]
 }

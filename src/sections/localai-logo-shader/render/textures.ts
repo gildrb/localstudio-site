@@ -29,6 +29,22 @@ export function createBloomTexture(device: Device, label: string, width: number,
   });
 }
 
+export function createSceneMsaaTexture(
+  device: Device,
+  label: string,
+  width: number,
+  height: number,
+  sampleCount: number,
+) {
+  return device.gpu.createTexture({
+    label,
+    size: [width, height],
+    format: SCENE_FORMAT,
+    sampleCount,
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+  });
+}
+
 export function createBackDepthTexture(
   device: Device,
   label: string,

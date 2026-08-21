@@ -4,7 +4,7 @@
 
 import type { Bounds, MeshData, Vec3 } from "./types";
 import { CAMERA_CLIP_PADDING, EVE_THICKNESS_SCALE_MULTIPLIER } from "./constants";
-import { dot, sub } from "./math";
+import { degreesToRadians, dot, sub } from "./math";
 
 export function meshOrbitTarget(mesh: MeshData): Vec3 {
   return meshOrbitTargetFromBounds(mesh.bounds);
@@ -14,6 +14,23 @@ export function meshOrbitTargetFromBounds(bounds: Bounds): Vec3 {
   const height = bounds.max[1] - bounds.min[1] || 1;
   const depth = bounds.max[2] - bounds.min[2];
   return [0, 0, -depth / (height * 2)];
+}
+
+// Orbit radius that keeps the whole normalized mark inside a viewport of the
+// given aspect. Meshes are normalized by height (half height = 0.5), so wide
+// marks need the radius driven by their half-width instead; otherwise a
+// height-only fit clips the silhouette at the left/right canvas edges.
+// marginFactor 1.2 reproduces the original square-mark baseline breathing room.
+export function cameraRadiusForBounds(
+  fovDegrees: number,
+  bounds: Bounds,
+  viewportAspect = 1,
+  marginFactor = 1.2,
+) {
+  const height = bounds.max[1] - bounds.min[1] || 1;
+  const halfWidth = (bounds.max[0] - bounds.min[0]) / height / 2;
+  const fitExtent = Math.max(0.5, halfWidth / Math.max(viewportAspect, 0.0001));
+  return (fitExtent / Math.tan(degreesToRadians(fovDegrees) * 0.5)) * marginFactor;
 }
 
 export function meshThicknessScale(bounds: Bounds) {

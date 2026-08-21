@@ -21,6 +21,7 @@ import {
 	DEFAULT_PAINT_DECAY_PER_FRAME_120,
 	DEFAULT_PAINT_DIFFUSION_JITTER,
 	DEFAULT_PAINT_DIFFUSION_RATE,
+	cameraRadiusForBounds,
 	cameraRadiusForFov,
 	createEve5Renderer,
 	type RenderControls,
@@ -35,8 +36,6 @@ import {
 } from "./runtime/pointer-input";
 import type { HeroRuntimeState } from "./runtime/state";
 
-const ENVIRONMENT_ATLAS_URL = "/images/localai-cloud-cubemap.webp";
-
 class BrowserAdapter implements VGPUAdapter {
 	async requestDevice(): Promise<Device> {
 		const adapter = await navigator.gpu?.requestAdapter();
@@ -44,6 +43,10 @@ class BrowserAdapter implements VGPUAdapter {
 		return new Device(await adapter.requestDevice(), null);
 	}
 }
+
+// Canvas aspect from .hero-logo-renderer in global.css; framing needs it to
+// keep wide marks fully inside the viewport.
+const LOGO_VIEWPORT_ASPECT = 1.52;
 
 const DEFAULT_CONTROLS: RenderControls = {
 	yaw: 0,
@@ -62,6 +65,9 @@ const DEFAULT_CONTROLS: RenderControls = {
 const INITIAL_CANVAS_LAYOUT: CanvasLayout = { width: 1, height: 1 };
 const LOGO_MODE_TRANSITION_DURATION_SECONDS = 0.45;
 const IMPRINT_GLYPH_SCALE = 1.27;
+// The flat SVG only appears when the render takes noticeably long; a quick
+// first frame goes straight to the 3D mark with no placeholder flash.
+const FALLBACK_PLACEHOLDER_DELAY_MS = 700;
 
 type RuntimeOwner = {
 	drawLoopDispose?: () => void;
@@ -69,7 +75,6 @@ type RuntimeOwner = {
 
 export function LocalAiLogoShader() {
 	preload(MODEL_URL, { as: "fetch", crossOrigin: "anonymous" });
-	preload(ENVIRONMENT_ATLAS_URL, { as: "image", fetchPriority: "high" });
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const coarsePointer = useMediaQuery("(pointer: coarse)");
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -84,18 +89,21 @@ export function LocalAiLogoShader() {
 	const loopPhaseRef = useRef("idle");
 	const invalidatePointerCanvasRectRef = useRef(() => {});
 	const fallbackRef = useRef<HTMLImageElement>(null);
+	const fallbackPlaceholderTimerRef = useRef(0);
 	const targetLogoModeProgressRef = useRef(0);
 	const targetAgentsEnvYawMixRef = useRef(0);
 	const handleCanvasRevealed = useStableCallback(() => {
+		window.clearTimeout(fallbackPlaceholderTimerRef.current);
 		if (!stateRef.current?.cancelled) {
-			fallbackRef.current?.classList.add(
-				"hero-logo-renderer__fallback--hidden",
+			fallbackRef.current?.classList.remove(
+				"hero-logo-renderer__fallback--visible",
 			);
 		}
 	});
 	const handleFallback = useStableCallback(() => {
-		fallbackRef.current?.classList.remove(
-			"hero-logo-renderer__fallback--hidden",
+		window.clearTimeout(fallbackPlaceholderTimerRef.current);
+		fallbackRef.current?.classList.add(
+			"hero-logo-renderer__fallback--visible",
 		);
 	});
 	const fatalErrorRef = useRef<(() => void) | null>(null);
@@ -160,7 +168,15 @@ export function LocalAiLogoShader() {
 
 		const canvas = canvasRef.current;
 		if (canvas) canvas.style.opacity = "";
-		handleFallback();
+		if (prefersReducedMotion || prefersReducedMotionSync()) {
+			// Static path: the flat SVG is the final render, show it now.
+			handleFallback();
+		} else {
+			fallbackPlaceholderTimerRef.current = window.setTimeout(
+				() => handleFallback(),
+				FALLBACK_PLACEHOLDER_DELAY_MS,
+			);
+		}
 		const dprWatcher = createDevicePixelRatio({
 			onChange: (dpr) => {
 				devicePixelRatioRef.current = dpr;
@@ -182,6 +198,7 @@ export function LocalAiLogoShader() {
 
 		const cleanupSetup = () => {
 			state.cancelled = true;
+			window.clearTimeout(fallbackPlaceholderTimerRef.current);
 			pointerController.detach();
 			dprWatcher.stop();
 			invalidatePointerCanvasRectRef.current = () => {};
@@ -205,6 +222,13 @@ export function LocalAiLogoShader() {
 			const mesh = await loadMesh();
 			if (state.cancelled) return;
 			state.activeMesh = mesh;
+			// Frame the real mark: it is wider than tall, so a height-only fit
+			// would clip the silhouette at both canvas edges.
+			controlsRef.current.radius = cameraRadiusForBounds(
+				DEFAULT_CAMERA_FOV,
+				mesh.bounds,
+				LOGO_VIEWPORT_ASPECT,
+			);
 			await new Promise<void>((resolve) =>
 				requestAnimationFrame(() => resolve()),
 			);
@@ -222,25 +246,15 @@ export function LocalAiLogoShader() {
 				format,
 				alphaMode: "premultiplied",
 			});
-			const environmentAtlas = await fetch(ENVIRONMENT_ATLAS_URL)
-				.then((response) => {
-					if (!response.ok) throw new Error("Cloud reflection image unavailable");
-					return response.blob();
-				})
-				.then((blob) => createImageBitmap(blob))
-				.catch(() => undefined);
 			if (state.cancelled) {
-				environmentAtlas?.close();
 				app.device.destroy();
 				return;
 			}
 			const renderer = createEve5Renderer(app.device, format, mesh, {
 				theme: "dark",
-				bloom: false,
-				backRefraction: false,
-				environmentAtlas,
+				bloom: true,
+				backRefraction: true,
 			});
-			environmentAtlas?.close();
 			let disposed = false;
 			const runtime: RuntimeOwner = {};
 			const modeTransitionProgressRef = { current: 0 };

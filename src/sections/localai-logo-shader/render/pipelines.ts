@@ -4,8 +4,16 @@
 
 import { Device } from "@vgpu/core";
 import { createRenderPipeline } from "@vgpu/render";
-import { BACK_DEPTH_FORMAT, PAINT_FORMAT, SCENE_FORMAT, VORONOI_NOISE_FORMAT } from "./constants";
+import {
+  BACK_DEPTH_FORMAT,
+  PAINT_FORMAT,
+  SCENE_FORMAT,
+  SCENE_SAMPLE_COUNT,
+  VORONOI_NOISE_FORMAT,
+} from "./constants";
 import { createShaders } from "./shaders";
+
+const SCENE_MULTISAMPLE = { count: SCENE_SAMPLE_COUNT } as const;
 
 export function createPipelines(device: Device, format: GPUTextureFormat) {
   const shaders = createShaders(device);
@@ -67,6 +75,7 @@ export function createPipelines(device: Device, format: GPUTextureFormat) {
       ],
     },
     primitive: { topology: "triangle-list" },
+    multisample: SCENE_MULTISAMPLE,
   });
 
   const frontDisplayPipeline = createRenderPipeline(device, {
@@ -94,6 +103,7 @@ export function createPipelines(device: Device, format: GPUTextureFormat) {
       ],
     },
     primitive: { topology: "triangle-list" },
+    multisample: SCENE_MULTISAMPLE,
   });
 
   const wirePipeline = createRenderPipeline(device, {
@@ -113,6 +123,7 @@ export function createPipelines(device: Device, format: GPUTextureFormat) {
       ],
     },
     primitive: { topology: "line-list" },
+    multisample: SCENE_MULTISAMPLE,
   });
 
   const blurPipeline = createRenderPipeline(device, {
@@ -145,6 +156,7 @@ export function createPipelines(device: Device, format: GPUTextureFormat) {
     vertex: { entry: "vs_main" },
     fragment: { entry: "fs_main", targets: [{ format: SCENE_FORMAT }] },
     primitive: { topology: "triangle-list" },
+    multisample: SCENE_MULTISAMPLE,
   });
 
   const previewPipeline = createRenderPipeline(device, {

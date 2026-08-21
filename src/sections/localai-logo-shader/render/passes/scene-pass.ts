@@ -3,7 +3,6 @@
 // Imported only by render/renderer.ts.
 
 import { Device } from "@vgpu/core";
-import { RenderPass } from "@vgpu/render";
 import { createParamsBindGroup } from "../bindings";
 import { PASS_OUTSIDE, PASS_WIREFRAME } from "../constants";
 import { writeParams } from "../params";
@@ -14,7 +13,8 @@ export function renderScene(
   device: Device,
   resources: RendererResources,
   mesh: MeshData,
-  view: GPUTextureView,
+  resolveView: GPUTextureView,
+  msaaView: GPUTextureView,
   backMaterial: GPUTexture,
   backDepth: GPUTexture,
   paintTexture: GPUTexture,
@@ -63,10 +63,19 @@ export function renderScene(
     "eve-5-outside-params-bind-group",
   );
 
-  const pass = new RenderPass(device, {
+  // Encoded against the raw WebGPU API: the @vgpu/render pass wrapper does not
+  // forward `resolveTarget`, which the 4x MSAA scene attachment relies on.
+  const encoder = device.gpu.createCommandEncoder({ label: "eve-5-scene-hdr-pass" });
+  const pass = encoder.beginRenderPass({
     label: "eve-5-scene-hdr-pass",
     colorAttachments: [
-      { view, loadOp: "clear", storeOp: "store", clearValue: [0, 0, 0, 0] },
+      {
+        view: msaaView,
+        resolveTarget: resolveView,
+        loadOp: "clear",
+        storeOp: "discard",
+        clearValue: [0, 0, 0, 0],
+      },
     ],
   });
 
@@ -78,10 +87,10 @@ export function renderScene(
     pass.draw(3);
   }
 
-  pass.setVertexBuffer(0, resources.gpuMesh.vertexBuffer);
+  pass.setVertexBuffer(0, resources.gpuMesh.vertexBuffer.gpu);
 
   const needsBackTargets = controls.material === "glass" || controls.material === "thickness";
-  pass.gpu.setIndexBuffer(resources.gpuMesh.indexBuffer.gpu, "uint32");
+  pass.setIndexBuffer(resources.gpuMesh.indexBuffer.gpu, "uint32");
   if (needsBackTargets) {
     // The back/inside material and camera-axis depth have already been rendered into offscreen
     // targets. The main scene draws only the front/outside material; glass and thickness debug
@@ -89,22 +98,23 @@ export function renderScene(
     if (controls.outsideRendering) {
       pass.setPipeline(resources.pipelines.frontMaterialPipeline);
       pass.setBindGroup(0, outsideBindGroup);
-      pass.gpu.drawIndexed(resources.gpuMesh.indexCount, 1, 0, 0, 0);
+      pass.drawIndexed(resources.gpuMesh.indexCount, 1, 0, 0, 0);
     }
   } else if (controls.outsideRendering) {
     // Opaque/debug materials are single-surface views. Drawing the inside pass too would
     // double-expose through the depthless transparent ordering used by glass.
     pass.setPipeline(resources.pipelines.opaquePipeline);
     pass.setBindGroup(0, resources.params.opaqueOutsideParams.bindGroup);
-    pass.gpu.drawIndexed(resources.gpuMesh.indexCount, 1, 0, 0, 0);
+    pass.drawIndexed(resources.gpuMesh.indexCount, 1, 0, 0, 0);
   }
 
   if (controls.wireframe) {
     pass.setPipeline(resources.pipelines.wirePipeline);
-    pass.gpu.setIndexBuffer(resources.gpuMesh.lineIndexBuffer.gpu, "uint32");
+    pass.setIndexBuffer(resources.gpuMesh.lineIndexBuffer.gpu, "uint32");
     pass.setBindGroup(0, resources.params.wireParams.bindGroup);
-    pass.gpu.drawIndexed(resources.gpuMesh.lineIndexCount, 1, 0, 0, 0);
+    pass.drawIndexed(resources.gpuMesh.lineIndexCount, 1, 0, 0, 0);
   }
 
   pass.end();
+  device.gpu.queue.submit([encoder.finish()]);
 }

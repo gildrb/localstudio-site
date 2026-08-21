@@ -37,9 +37,12 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   let sceneSize = vec2f(textureDimensions(sceneTexture));
   let aspectCorrectUv = (input.uv - vec2f(0.5)) * vec2f(sceneSize.x / max(sceneSize.y, 1.0), 1.0);
   let bloomRadial = smoothstep(0.0, BLOOM_RADIAL_FULL_RADIUS, length(aspectCorrectUv));
-  let linearColor = scene.rgb + bloom * params.strength * bloomRadial;
+  // eve.dev composites onto an opaque canvas, so its bloom is allowed to add
+  // light outside the logo silhouette. This hero composites over the page, so
+  // gate the glow by scene alpha to keep it hugging the mark instead of
+  // floating as a faint disc behind it.
+  let bloomMask = smoothstep(0.0, 0.4, scene.a);
+  let linearColor = scene.rgb + bloom * params.strength * bloomRadial * bloomMask;
   let displayColor = linear_to_display(aces_tonemap(linearColor));
-  let bloomAlpha = clamp(max(linearColor.r, max(linearColor.g, linearColor.b)), 0.0, 1.0);
-  let alpha = max(scene.a, bloomAlpha);
-  return vec4f(displayColor * alpha, alpha);
+  return vec4f(displayColor * scene.a, scene.a);
 }

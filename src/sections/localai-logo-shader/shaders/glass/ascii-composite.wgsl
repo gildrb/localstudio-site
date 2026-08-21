@@ -4,6 +4,7 @@ import { HOVER_OVERLAY_SCALE } from "../shared/ascii-imprint.wgsl";
 // INVARIANT: fwidth/coverage construction stays in ascii-imprint/front entry flow, not here.
 // This module declares no bindings and performs no texture reads.
 
+// Linear-sRGB conversion of the documented dark-theme accent: --blue-300 (#339cff).
 const STYLE_GUIDE_BLUE_LINEAR = vec3f(0.033105, 0.332452, 1.0);
 const IMPRINT_EMISSIVE = STYLE_GUIDE_BLUE_LINEAR * 2.5;
 const PAINT_EMISSIVE_BOOST = 0.5;
@@ -53,11 +54,11 @@ export fn ascii_final_composite(glass: vec4f, glassVisibility: f32, coverage: f3
   let fadedGlassContribution = glass.rgb * fadedGlassAlpha;
   let scaledPaint = paintValue * HOVER_OVERLAY_SCALE;
   let imprintColor = IMPRINT_EMISSIVE * themeT * (1.0 + PAINT_EMISSIVE_BOOST * scaledPaint);
-  // Glass-only hover mode (imprintProgress=0) wants translucent white emission that follows
-  // the glass alpha and never exceeds 0.8. glassVisibility is 1 when the imprint is fully off.
+  // Glass-only hover mode uses the sanctioned blue as an HDR emission and lets the coverage
+  // control opacity. glassVisibility is 1 when the imprint is fully off.
   let glassHoverStrength = max(fadedGlassAlpha * GLASS_HOVER_ALPHA_GAIN, GLASS_HOVER_ALPHA_FLOOR);
   let glassHoverAlpha = clamp(glassHoverStrength * coverage, 0.0, 0.8);
-  let glassHoverColor = STYLE_GUIDE_BLUE_LINEAR * glassHoverAlpha;
+  let glassHoverColor = STYLE_GUIDE_BLUE_LINEAR * 2.0;
   let glassMode = step(0.999, glassVisibility);
   let asciiAlpha = mix(coverage, glassHoverAlpha, glassMode);
   let asciiColor = mix(imprintColor, glassHoverColor, glassMode);

@@ -121,6 +121,7 @@ export function createEve5Renderer(
       resources,
       mesh,
       targets.scene.createView(),
+      targets.sceneMsaa.createView(),
       backRefractionEnabled
         ? targets.backMaterial
         : resources.params.outsideParams.fallbackBackMaterial,

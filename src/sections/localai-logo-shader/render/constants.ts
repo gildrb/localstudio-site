@@ -11,9 +11,14 @@ export const CUBE_PARAMS_FLOAT_COUNT = 4 + CUBE_MAX_LIGHTS * CUBE_LIGHT_FLOAT_CO
 export const CUBE_PARAMS_BYTE_SIZE = CUBE_PARAMS_FLOAT_COUNT * Float32Array.BYTES_PER_ELEMENT;
 export const CUBE_SIZE = 256;
 export const CUBE_FACE_COUNT = 6;
-export const CUBE_FORMAT: GPUTextureFormat = "rgba8unorm-srgb";
+// eve.dev ships the studio cube as rgba16float; 8-bit sRGB (added here only for
+// the removed photo-atlas upload path) clips HDR softbox luminance above 1.0.
+export const CUBE_FORMAT: GPUTextureFormat = "rgba16float";
 export const BLOOM_RADIUS = 16;
 export const SCENE_FORMAT: GPUTextureFormat = "rgba16float";
+// 4x MSAA on the main scene pass keeps logo silhouette/bevel edges clean
+// without paying supersampled fragment cost for the material shaders.
+export const SCENE_SAMPLE_COUNT = 4;
 export const BLOOM_STRENGTH = 0.85;
 export const BLOOM_STRENGTH_OFF = BLOOM_STRENGTH;
 export const BLOOM_STRENGTH_ON = BLOOM_STRENGTH_OFF * 0.25;

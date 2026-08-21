@@ -3,7 +3,13 @@
 // Imported only by render/renderer.ts.
 
 import { Device } from "@vgpu/core";
-import { createBackDepthTexture, createBloomTexture, getPaddedRenderSize } from "./textures";
+import { SCENE_SAMPLE_COUNT } from "./constants";
+import {
+  createBackDepthTexture,
+  createBloomTexture,
+  createSceneMsaaTexture,
+  getPaddedRenderSize,
+} from "./textures";
 import type { BloomTargets } from "./types";
 
 export function createBloomTargetCache(device: Device) {
@@ -11,6 +17,7 @@ export function createBloomTargetCache(device: Device) {
 
   const dispose = () => {
     targets?.scene.destroy();
+    targets?.sceneMsaa.destroy();
     targets?.backMaterial.destroy();
     targets?.backDepth.destroy();
     targets?.backSurfaceDepth.destroy();
@@ -35,6 +42,13 @@ export function createBloomTargetCache(device: Device) {
         height: padded.height,
         paddingRadius,
         scene: createBloomTexture(device, "eve-5-scene-linear-hdr", padded.width, padded.height),
+        sceneMsaa: createSceneMsaaTexture(
+          device,
+          "eve-5-scene-linear-hdr-msaa",
+          padded.width,
+          padded.height,
+          SCENE_SAMPLE_COUNT,
+        ),
         backMaterial: createBloomTexture(
           device,
           "eve-5-back-material-linear-hdr",

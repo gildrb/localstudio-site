@@ -6,7 +6,7 @@ export { createEve5Renderer } from "./render/renderer";
 export { mapClientPointToPaintCell } from "./render/pointer-mapping";
 export { getPaddedRenderSize } from "./render/textures";
 export { cameraRadiusForFov } from "./render/math";
-export { meshThicknessScale } from "./render/camera";
+export { cameraRadiusForBounds, meshThicknessScale } from "./render/camera";
 export { createStudioCubemap, renderStudioCubemap } from "./render/cubemap";
 export { EVE_DARK_ENV_LIGHTS, EVE_LIGHT_ENV_LIGHTS } from "./render/env-lights";
 export {

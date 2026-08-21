@@ -30,6 +30,7 @@ export function createResources(
     theme?: "light" | "dark";
     paddingRadius?: number;
     bloom?: boolean;
+    backRefraction?: boolean;
     environmentAtlas?: ImageBitmap;
   } = {},
 ) {
