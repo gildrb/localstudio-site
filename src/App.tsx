@@ -39,7 +39,7 @@ const ResourcesPage = lazy(() =>
 );
 
 const titles = {
-	"/": "Local intelligence. - Local Studio",
+	"/": "Intelligence should not be rented - Local Studio",
 	"/product": "Product - Local Studio",
 	"/mobile": "Mobile - Local Studio",
 	"/docs": "Docs - Local Studio",

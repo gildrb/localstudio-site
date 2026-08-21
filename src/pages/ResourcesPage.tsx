@@ -88,7 +88,7 @@ function ResourceCell({ item }: { item: ResourceItem }) {
 		<article className="group relative border-r border-white/10 p-8 transition-colors duration-[130ms] last:border-r-0 hover:bg-(--hover) max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:last:border-b-0">
 			<h3 className="flex items-center gap-2">
 				<LocalLink
-					className="text-link text-white after:absolute after:inset-0"
+					className="text-link after:absolute after:inset-0"
 					href={item.href}
 					{...(item.external ? { target: "_blank", rel: "noreferrer" } : {})}
 				>
@@ -96,7 +96,7 @@ function ResourceCell({ item }: { item: ResourceItem }) {
 				</LocalLink>
 				<Icon
 					aria-hidden="true"
-					className="text-(--subtlest) transition-colors duration-[130ms] group-hover:text-white"
+					className="text-(--quiet) transition-colors duration-[130ms] group-hover:text-white"
 					size={16}
 					strokeWidth={1.25}
 				/>
@@ -112,7 +112,7 @@ export function ResourcesPage() {
 			<PageIntro
 				id="resources-title"
 				layout="left"
-				title="Everything around Local Studio."
+				title="Everything around Local Studio"
 				description="Documentation, setup paths, downloads, and the surrounding ecosystem in one place."
 				actions={
 					<CtaPair secondary={{ href: "/docs", label: "Read the docs" }} />

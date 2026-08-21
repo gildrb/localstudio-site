@@ -33,9 +33,9 @@ export function DocsPage() {
 			/>
 			<div className="docs-layout section-width grid grid-cols-[240px_minmax(0,1fr)] gap-12 pb-30 max-[900px]:grid-cols-1 max-[900px]:gap-12">
 				<aside className="sticky top-24 self-start max-[900px]:static">
-					<p className="text-sm/5 text-white/70">On this page</p>
+					<p className="docs-toc__label text-sm/5">On this page</p>
 					<nav className="docs-toc" aria-label="Documentation sections">
-						<ul className="mt-4 grid gap-2 border-l border-white/10 p-0 pl-4 text-base/6 text-white/60">
+						<ul className="docs-toc__list mt-4 grid gap-2 border-l p-0 pl-4 text-base/6">
 							{toc.map(([label, id]) => (
 								<li key={id}>
 									<LocalLink href={`/docs#${id}`}>{label}</LocalLink>
@@ -44,7 +44,7 @@ export function DocsPage() {
 						</ul>
 					</nav>
 				</aside>
-				<article className="docs-prose min-w-0 text-base/6 text-white/70 [&_li]:mb-2">
+				<article className="docs-prose min-w-0 text-base/6 text-(--dim) [&_li]:mb-2">
 					<p>
 						<span translate="no">Local Studio</span> is a local-first
 						workstation for running, managing, and using self-hosted LLM

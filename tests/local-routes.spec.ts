@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-	["/", "Local intelligence. - Local Studio", "Intelligence should not be rented"],
+	["/", "Intelligence should not be rented - Local Studio", "Intelligence should not be rented"],
 	["/product", "Product - Local Studio", "One place to run local AI"],
 	["/mobile", "Mobile - Local Studio", "Your local agents"],
 	["/docs", "Docs - Local Studio", "Get Local Studio running"],
@@ -427,7 +427,7 @@ test("shared action links fully brighten within 130ms", async ({ page }) => {
 		const style = getComputedStyle(element);
 		return { color: style.color, duration: style.transitionDuration.split(", ").every(d => d === "0.13s") };
 	});
-	expect(rest).toEqual({ color: "rgb(143, 143, 143)", duration: true });
+	expect(rest).toEqual({ color: "rgb(122, 122, 122)", duration: true });
 	await link.hover();
 	await page.waitForTimeout(150);
 	const hover = await link.evaluate(element => ({
@@ -963,7 +963,7 @@ test("unknown routes render a local not-found page", async ({ page }) => {
 	await page.goto("/not-a-route");
 	await expect(page).toHaveTitle("Page not found - Local Studio");
 	await expect(
-		page.getByRole("heading", { level: 1, name: "This page is not local." }),
+		page.getByRole("heading", { level: 1, name: "This page is not local" }),
 	).toBeVisible();
 });
 

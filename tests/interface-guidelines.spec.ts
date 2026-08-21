@@ -102,33 +102,9 @@ test("looping demonstrations stop when they leave the viewport", async ({
 	page,
 }) => {
 	await page.goto("/");
-	await expect
-		.poll(() =>
-			page
-				.locator(".hero__hearth")
-				.evaluate(
-					(element) =>
-						element
-							.getAnimations({ subtree: true })
-							.filter((animation) => animation.playState === "running").length,
-				),
-		)
-		.toBeGreaterThan(0);
 	await page.evaluate(() =>
 		window.scrollTo(0, document.documentElement.scrollHeight),
 	);
-	await expect
-		.poll(() =>
-			page
-				.locator(".hero__hearth")
-				.evaluate(
-					(element) =>
-						element
-							.getAnimations({ subtree: true })
-							.filter((animation) => animation.playState === "running").length,
-				),
-		)
-		.toBe(0);
 	const heroDemo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await expect(heroDemo).toHaveAttribute("data-active", "false");
 	const heroPhase = await heroDemo.getAttribute("data-phase");

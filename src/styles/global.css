@@ -28,6 +28,7 @@
 	--foreground: #ffffff;
 	--dim: #b3b3b3;
 	--subtlest: #8f8f8f;
+	--quiet: #7a7a7a;
 	--border: rgba(255, 255, 255, 0.12);
 	--border-soft: rgba(255, 255, 255, 0.1);
 	--border-strong: rgba(255, 255, 255, 0.28);
@@ -37,12 +38,6 @@
 	--nav-surface: rgba(10, 10, 10, 0.78);
 	--foreground-hover: #eaeaea;
 	--button-ink: #000000;
-	--hero-hearth: #2A5278;
-	--hero-hearth-glow: rgba(42, 82, 120, 0.65);
-	--hero-hearth-glow-soft: rgba(42, 82, 120, 0.22);
-	--hero-hearth-glow-wide: rgba(42, 82, 120, 0.34);
-	--hero-hearth-faint: rgba(42, 82, 120, 0.14);
-	--hero-hearth-mid: rgba(42, 82, 120, 0.24);
 	--media-tone: #e5e5e5;
 	--media-ring-inner: rgba(255, 255, 255, 0.012);
 	--media-ring-outer: rgba(255, 255, 255, 0.035);
@@ -833,7 +828,7 @@ button {
 .nav__links a {
 	position: relative;
 	isolation: isolate;
-	color: var(--dim);
+	color: var(--quiet);
 	font-size: 14px;
 	line-height: 20px;
 }
@@ -868,7 +863,7 @@ button {
 	align-items: center;
 	justify-content: center;
 	border-radius: var(--radius-control);
-	color: var(--dim);
+	color: var(--quiet);
 	text-decoration: none;
 	transition:
 		color 130ms ease-out,
@@ -921,7 +916,7 @@ button {
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
-	color: var(--subtlest);
+	color: var(--quiet);
 	font: var(--type-body);
 	text-decoration: none;
 	transition: color 130ms ease-out;
@@ -972,8 +967,16 @@ button {
 	white-space: nowrap;
 }
 
+.docs-toc__label {
+	color: var(--dim);
+}
+
+.docs-toc__list {
+	border-color: var(--border-soft);
+}
+
 .docs-toc a {
-	color: var(--subtlest);
+	color: var(--quiet);
 	transition: color 130ms ease-out;
 }
 
@@ -990,82 +993,6 @@ button {
 	padding-bottom: 40px;
 }
 
-.hero__gradient {
-	position: absolute;
-	z-index: 0;
-	pointer-events: none;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	isolation: isolate;
-	background: transparent;
-}
-
-.hero__hearth,
- .hero__hearth-field {
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-}
-
-.hero__hearth {
-	overflow: hidden;
-}
-
-.hero__hearth-field {
-	font: 400 13px / 18px var(--font-mono);
-	color: transparent;
-	background: linear-gradient(
-		to bottom,
-		var(--hero-hearth-faint) 72px,
-		var(--hero-hearth-mid) 430px,
-		var(--hero-hearth) 700px
-	);
-	background-clip: text;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	white-space: pre;
-	user-select: none;
-}
-
-
-.hero__ember {
-	position: absolute;
-	left: 50%;
-	top: 100%;
-	font: 500 14px / 1 var(--font-mono);
-	color: var(--hero-hearth);
-	opacity: 0;
-	user-select: none;
-	transform: translate(-50%, -50%);
-	text-shadow: 0 0 8px var(--hero-hearth-glow-soft);
-}
-
-.hero__star {
-	position: absolute;
-	left: 50%;
-	top: 100%;
-	font: 500 14px / 1 var(--font-mono);
-	color: var(--hero-hearth);
-	opacity: 0;
-	user-select: none;
-	transform: translate(-50%, -50%);
-	text-shadow:
-		0 0 6px var(--hero-hearth-glow),
-		0 0 20px var(--hero-hearth-glow-wide);
-}
-
-@media (min-width: 901px) {
-	.hero__ember {
-		font-size: 16px;
-		text-shadow: 0 0 14px var(--hero-hearth-glow-soft);
-	}
-
-	.hero__star {
-		font-size: 16px;
-	}
-}
 
 .hero__inner {
 	position: relative;
@@ -1255,7 +1182,7 @@ button {
 	grid-template-columns: 1fr;
 	align-items: baseline;
 	padding: 0;
-	color: var(--subtlest);
+	color: var(--quiet);
 	text-align: left;
 	transition: color 130ms ease-out;
 }
@@ -1472,7 +1399,7 @@ button {
 	gap: 32px;
 	margin-top: auto;
 	padding: 80px 0 calc(48px + env(safe-area-inset-bottom, 0px));
-	color: var(--subtlest);
+	color: var(--quiet);
 	font: var(--type-meta);
 }
 
@@ -1502,13 +1429,17 @@ button {
 }
 
 .footer__links a,
- .not-found__routes a {
+.not-found__routes a {
 	display: flex;
 	align-items: center;
 	min-height: 32px;
 	padding: 4px 12px;
 	color: var(--subtlest);
 	text-decoration: none;
+}
+
+.footer__links a {
+	color: var(--quiet);
 }
 
 @media (max-width: 900px) {
@@ -2284,7 +2215,7 @@ button {
 	gap: 6px;
 	padding: 0 14px;
 	border: 0;
-	color: var(--dim);
+	color: var(--quiet);
 	background: transparent;
 	font: var(--type-meta);
 	cursor: pointer;
@@ -2300,7 +2231,6 @@ button {
 	left: 0;
 	height: var(--nav-mega-height);
 	isolation: isolate;
-	border-bottom: 1px solid var(--border);
 	background: transparent;
 }
 

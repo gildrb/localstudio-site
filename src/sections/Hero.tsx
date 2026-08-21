@@ -1,20 +1,14 @@
 import { lazy, Suspense } from "react";
 import { CtaPair } from "../components/Links";
 import { useMachine } from "../machine";
-import { useReducedMotion } from "../hooks/use-reduced-motion";
-import { HeroHearth } from "./hero/hearth";
 
 const HeroDemo = lazy(() => import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })));
 
 export function Hero() {
-	const reduceMotion = useReducedMotion();
 	const { toggleMachine } = useMachine();
 	return (
 		<>
 			<section className="hero" id="top" aria-labelledby="landing-title">
-				<div className="hero__gradient" aria-hidden="true">
-					<HeroHearth reduceMotion={reduceMotion} />
-				</div>
 				<div className="hero__inner">
 					<div className="hero__copy">
 						<h1
@@ -24,7 +18,7 @@ export function Hero() {
 						>
 							Intelligence should not be{" "}
 							<span className="hero__title-end">
-								rented.
+								rented
 								<button
 									className="hero__mark-button"
 									type="button"

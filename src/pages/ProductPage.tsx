@@ -13,7 +13,7 @@ export function ProductPage() {
 		<PageShell>
 			<PageIntro
 				id="product-title"
-				title="One place to run local AI."
+				title="One place to run local AI"
 				description={
 					<>
 						<span translate="no">Local Studio</span> is a local-first

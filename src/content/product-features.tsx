@@ -16,7 +16,7 @@ export const productFeatures = [
 		storyTitle: "Control",
 		storyDescription:
 			"Local and remote controllers, live status, launch state, logs, and metrics.",
-		productTitle: "Control the runtime.",
+		productTitle: "Control the runtime",
 		productText:
 			"Launch and evict models, manage recipes and downloads, and watch GPU, process, log, and usage state from one controller.",
 		image: "/images/usage-proxy.png",
@@ -33,7 +33,7 @@ export const productFeatures = [
 				surface.
 			</>
 		),
-		productTitle: "Run the backend that fits.",
+		productTitle: "Run the backend that fits",
 		productText: (
 			<>
 				Configure <span translate="no">vLLM</span>,{" "}
@@ -52,7 +52,7 @@ export const productFeatures = [
 		storyTitle: "Work",
 		storyDescription:
 			"Models, providers, browser, files, terminal, and agents in the same session.",
-		productTitle: "Work where models run.",
+		productTitle: "Work where models run",
 		productText: (
 			<>
 				Use the <span translate="no">Pi</span>-powered Workbench for agent
@@ -68,7 +68,7 @@ export const productFeatures = [
 		storyTitle: "Automate",
 		storyDescription:
 			"Scheduled health checks, downloads, and reports that run on this machine.",
-		productTitle: "Keep the machine working.",
+		productTitle: "Keep the machine working",
 		productText:
 			"Automations run on the controller. Proxy checks, model pulls, and recap jobs stay on your hardware.",
 		image: "/images/workbench-terminal.png",
@@ -79,7 +79,7 @@ export const productFeatures = [
 		storyTitle: "Configure",
 		storyDescription:
 			"Hardware, runtimes, and controller identity for the machine the models run on.",
-		productTitle: "Name the hardware.",
+		productTitle: "Name the hardware",
 		productText:
 			"Runtimes, devices, and controller settings stay with the machine. Nothing important is hidden in a cloud console.",
 		image: "/images/configure-models.png",

@@ -352,6 +352,7 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 			gridLeft: [brand, inner, entryGrid, firstSection].map((element) =>
 				Math.round(element.getBoundingClientRect().left),
 			),
+			panelBorder: getComputedStyle(panel).borderBottomWidth,
 			panelPseudo: getComputedStyle(panel, "::before").content,
 			panelDirectChrome: [
 				getComputedStyle(panel).backgroundColor,
@@ -396,6 +397,7 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 	expect(geometry.navChrome).toEqual(restingNav);
 	expect(geometry.navBorder).toBe("0px");
 	expect(geometry.surfaceBottom).toBe(geometry.panelTop + geometry.panelHeight);
+	expect(geometry.panelBorder).toBe("0px");
 	expect(geometry.panelPseudo).toBe("none");
 	expect(geometry.navDirectChrome).toEqual(["rgba(0, 0, 0, 0)", "none"]);
 	expect(geometry.panelDirectChrome).toEqual(geometry.navDirectChrome);

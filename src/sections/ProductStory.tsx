@@ -98,7 +98,7 @@ export function ProductStory() {
 		<>
 			<section id="media" className="story section-width" aria-labelledby="system-title">
 				<div className="story__intro">
-					<h2 id="system-title">Local AI is hard. Running it shouldn’t be.</h2>
+					<h2 id="system-title">Local AI should be easy to run</h2>
 					<p>
 						<span translate="no">Local Studio</span> keeps the model, the runtime, and the hardware
 						together. Nothing important disappears behind a provider abstraction.

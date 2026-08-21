@@ -11,7 +11,7 @@ export function DownloadPage() {
 			<div className="download-page">
 				<PageIntro
 					id="download-page-title"
-					title="Download for macOS."
+					title="Download for macOS"
 					description={
 						<>
 							The desktop app for running local controllers, models, providers,

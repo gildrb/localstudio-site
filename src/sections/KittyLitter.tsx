@@ -40,7 +40,7 @@ export function KittyLitter() {
 			aria-labelledby="kittylitter-title"
 		>
 			<div className="kitty__intro">
-				<h2 id="kittylitter-title">Leave the desk. Keep the session.</h2>
+				<h2 id="kittylitter-title">Keep the session when you leave the desk</h2>
 				<div className="kitty__copy">
 					<p>
 						<span translate="no">KittyLitter</span> is a native iOS + Android

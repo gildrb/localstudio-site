@@ -10,7 +10,7 @@ export function PromptPage() {
 			<PageIntro
 				id="prompt-title"
 				layout="left"
-				title="Give this to any coding model."
+				title="Give this to any coding model"
 				description="It will inspect the machine, choose the right runtime, install Local Studio, and prove a real inference request works."
 				actions={
 					<CtaPair secondary={{ href: "/docs", label: "Read the docs" }} />

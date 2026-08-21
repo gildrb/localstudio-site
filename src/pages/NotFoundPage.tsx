@@ -17,7 +17,7 @@ export function NotFoundPage() {
 		<PageShell>
 			<PageIntro
 				id="not-found-title"
-				title="This page is not local."
+				title="This page is not local"
 				description={
 					<>
 						The route does not exist in this{" "}

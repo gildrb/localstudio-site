@@ -42,7 +42,7 @@ export type AgentDocument = {
 export const HTML_ROUTES: readonly HtmlRoute[] = [
 	{
 		path: "/",
-		title: "Local intelligence. - Local Studio",
+		title: "Intelligence should not be rented - Local Studio",
 		summary: "Homepage: Local Studio + KittyLitter product surface.",
 		priority: "1.0",
 	},

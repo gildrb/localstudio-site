@@ -72,7 +72,7 @@ export function MobilePage() {
 			<PageIntro
 				id="mobile-title"
 				layout="split"
-				title="Your local agents, away from your desk."
+				title="Your local agents, away from your desk"
 				description={
 					<>
 						Pair <span translate="no">KittyLitter</span> once, then read and
@@ -102,7 +102,7 @@ export function MobilePage() {
 				aria-labelledby="pair-title"
 			>
 				<div className={sectionHeader}>
-					<h2 id="pair-title">3 steps, no server setup.</h2>
+					<h2 id="pair-title">3 steps, no server setup</h2>
 					<p className={`mt-6 ${prose}`}>
 						<span translate="no">Local Studio</span> creates the connection.{" "}
 						<span translate="no">KittyLitter</span> saves it securely so you do
@@ -123,7 +123,7 @@ export function MobilePage() {
 			</section>
 			<section className={section} aria-labelledby="runtime-title">
 				<div className={sectionHeader}>
-					<h2 id="runtime-title">A window into the same runtime.</h2>
+					<h2 id="runtime-title">A window into the same runtime</h2>
 					<p className={`mt-6 ${prose}`}>
 						<span translate="no">KittyLitter</span> is not a separate cloud copy
 						of <span translate="no">Local Studio</span>. It connects to the
@@ -144,7 +144,7 @@ export function MobilePage() {
 			</section>
 			<section className={section} aria-labelledby="security-title">
 				<div className={sectionHeader}>
-					<h2 id="security-title">Treat the pairing code like a password.</h2>
+					<h2 id="security-title">Treat the pairing code like a password</h2>
 					<p className={`mt-6 ${prose}`}>
 						The QR code and copied connection JSON contain a private controller
 						credential. Scan only with a device you trust.
@@ -169,7 +169,7 @@ export function MobilePage() {
 				aria-labelledby="mobile-cta-title"
 			>
 				<div>
-					<h2 id="mobile-cta-title">Take the session with you.</h2>
+					<h2 id="mobile-cta-title">Take the session with you</h2>
 					<div className="hero__actions">
 						<StoreButtons />
 					</div>

@@ -29,7 +29,7 @@ export function AgentsPage() {
 			<PageIntro
 				id="agents-title"
 				layout="left"
-				title="Set up the stack."
+				title="Set up the stack"
 				description="A copy-paste instruction sheet for coding agents covering controllers, providers, runtimes, and Pi."
 				actions={
 					<CtaPair secondary={{ href: "/docs", label: "Read the docs" }} />
@@ -41,7 +41,7 @@ export function AgentsPage() {
 			>
 				<div className="max-w-3xl">
 					<h2 id="agents-capabilities-title" className={sectionTitle}>
-						Three moving parts.
+						Three moving parts
 					</h2>
 					<p className={`mt-6 ${prose}`}>
 						The agent runtime talks to saved controllers, routes through
@@ -73,7 +73,7 @@ export function AgentsPage() {
 				aria-labelledby="instructions-title"
 			>
 				<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-4">
-					<h2 id="instructions-title">One sheet for the agent.</h2>
+					<h2 id="instructions-title">One sheet for the agent</h2>
 					<p className={prose}>
 						Paste it into any coding agent. It operates the real install and
 						never touches secrets.
@@ -116,7 +116,7 @@ export function AgentsPage() {
 				aria-labelledby="agents-cta-title"
 			>
 				<div>
-					<h2 id="agents-cta-title">Give your agents a local home.</h2>
+					<h2 id="agents-cta-title">Give your agents a local home</h2>
 					<div className="hero__actions">
 						<CtaPair secondary={{ href: "/prompt", label: "Setup prompt" }} />
 					</div>
