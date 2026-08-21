@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { productFeatures } from "../content/product-features";
 
 const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
@@ -82,14 +81,13 @@ export function ProductStory() {
 	const { activeIndex, showcaseRef } = useStoryProgress();
 	const [demoInRange, setDemoInRange] = useState(false);
 	const visualRef = useRef<HTMLElement>(null);
-	const reduceMotion = useReducedMotion();
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
 
 	useEffect(() => {
 		const visual = visualRef.current;
 		if (!visual) return;
 		const observer = new IntersectionObserver(
-			([entry]) => setDemoInRange(entry?.isIntersecting ?? false),
+			(entries) => setDemoInRange(entries.at(-1)?.isIntersecting ?? false),
 			{ rootMargin: "800px 0px" },
 		);
 		observer.observe(visual);
@@ -97,7 +95,7 @@ export function ProductStory() {
 	}, []);
 
 	return (
-		<LazyMotion features={domAnimation} strict>
+		<>
 			<section id="media" className="story section-width" aria-labelledby="system-title">
 				<div className="story__intro">
 					<h2 id="system-title">Local AI is hard. Running it shouldn’t be.</h2>
@@ -142,15 +140,10 @@ export function ProductStory() {
 							>
 								{demoInRange ? (
 									<Suspense fallback={DEMO_PLACEHOLDER}>
-										<m.div
-											key={activeFeature.slug}
-											initial={reduceMotion ? false : { opacity: 0 }}
-											animate={{ opacity: 1 }}
-											transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-										>
-											<FeatureDemo scene={activeFeature.slug} />
-										</m.div>
-									</Suspense>
+									<div key={activeFeature.slug}>
+										<FeatureDemo scene={activeFeature.slug} />
+									</div>
+								</Suspense>
 								) : (
 									DEMO_PLACEHOLDER
 								)}
@@ -168,6 +161,6 @@ export function ProductStory() {
 					</div>
 				</div>
 			</section>
-		</LazyMotion>
+		</>
 	);
 }

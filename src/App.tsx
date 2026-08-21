@@ -1,14 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AgentsPage } from "./pages/AgentsPage";
-import { DocsPage } from "./pages/DocsPage";
-import { DownloadPage } from "./pages/DownloadPage";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HomePage } from "./pages/HomePage";
-import { MachinePage } from "./pages/MachinePage";
-import { MobilePage } from "./pages/MobilePage";
-import { NotFoundPage } from "./pages/NotFoundPage";
-import { ProductPage } from "./pages/ProductPage";
-import { PromptPage } from "./pages/PromptPage";
-import { ResourcesPage } from "./pages/ResourcesPage";
 import { MachineContext } from "./machine";
 import {
 	emitNavigation,
@@ -18,6 +9,34 @@ import {
 	scrollToHash,
 	subscribeToNavigation,
 } from "./routing";
+
+const AgentsPage = lazy(() =>
+	import("./pages/AgentsPage").then(({ AgentsPage }) => ({ default: AgentsPage })),
+);
+const DocsPage = lazy(() =>
+	import("./pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),
+);
+const DownloadPage = lazy(() =>
+	import("./pages/DownloadPage").then(({ DownloadPage }) => ({ default: DownloadPage })),
+);
+const MachinePage = lazy(() =>
+	import("./pages/MachinePage").then(({ MachinePage }) => ({ default: MachinePage })),
+);
+const MobilePage = lazy(() =>
+	import("./pages/MobilePage").then(({ MobilePage }) => ({ default: MobilePage })),
+);
+const NotFoundPage = lazy(() =>
+	import("./pages/NotFoundPage").then(({ NotFoundPage }) => ({ default: NotFoundPage })),
+);
+const ProductPage = lazy(() =>
+	import("./pages/ProductPage").then(({ ProductPage }) => ({ default: ProductPage })),
+);
+const PromptPage = lazy(() =>
+	import("./pages/PromptPage").then(({ PromptPage }) => ({ default: PromptPage })),
+);
+const ResourcesPage = lazy(() =>
+	import("./pages/ResourcesPage").then(({ ResourcesPage }) => ({ default: ResourcesPage })),
+);
 
 const titles = {
 	"/": "Local intelligence. - Local Studio",
@@ -84,20 +103,43 @@ export default function App() {
 			? titles[pathname]
 			: "Page not found - Local Studio";
 		const hash = window.location.hash;
-		if (hash) {
-			window.requestAnimationFrame(() => scrollToHash(hash));
-		} else if (navigationSource.current === "push") {
+		let frame = 0;
+		let timeout = 0;
+		let observer: MutationObserver | undefined;
+
+		const stopWaiting = () => {
+			observer?.disconnect();
+			window.clearTimeout(timeout);
+		};
+		const finishNavigation = () => {
+			if (hash) return scrollToHash(hash);
+			if (navigationSource.current !== "push") return true;
 			window.scrollTo({ top: 0 });
 			const heading = document.querySelector("main h1, .machine");
-			if (heading instanceof HTMLElement) {
-				heading.focus({ preventScroll: true });
-			}
-		}
+			if (!(heading instanceof HTMLElement)) return false;
+			heading.focus({ preventScroll: true });
+			return true;
+		};
+
+		frame = window.requestAnimationFrame(() => {
+			if (finishNavigation()) return;
+			observer = new MutationObserver(() => {
+				if (finishNavigation()) stopWaiting();
+			});
+			observer.observe(document.body, { childList: true, subtree: true });
+			timeout = window.setTimeout(stopWaiting, 3000);
+		});
+		return () => {
+			window.cancelAnimationFrame(frame);
+			stopWaiting();
+		};
 	}, [location, pathname]);
 
 	return (
 		<MachineContext.Provider value={machine}>
-			{routeFor(pathname)}
+			<Suspense fallback={<div className="route-pending" aria-hidden="true" />}>
+				{routeFor(pathname)}
+			</Suspense>
 		</MachineContext.Provider>
 	);
 }

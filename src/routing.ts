@@ -30,9 +30,9 @@ export function scrollToHash(hash: string) {
 	try {
 		target = document.querySelector(anchor);
 	} catch {
-		return;
+		return false;
 	}
-	if (!target) return;
+	if (!target) return false;
 	target.scrollIntoView({ block: "start", behavior: "instant" });
 	const heading = target.matches("h1, h2, h3")
 		? target
@@ -43,10 +43,11 @@ export function scrollToHash(hash: string) {
 			: target instanceof HTMLElement
 				? target
 				: null;
-	if (focusTarget === null) return;
+	if (focusTarget === null) return true;
 	if (!focusTarget.hasAttribute("tabindex")) {
 		focusTarget.tabIndex = -1;
 	}
 	focusTarget.focus({ preventScroll: true });
+	return true;
 }
 

@@ -8,7 +8,7 @@ import {
 	type CSSProperties,
 	type FormEvent,
 } from "react";
-import { useReducedMotion } from "motion/react";
+import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { useDemoTabBoundary } from "./demo-tab-boundary";
 import { useElementActive } from "../hooks/use-element-activity";
 import { ArrowUp, ChevronDown, Plus } from "@/ui/icon-registry";
@@ -71,8 +71,12 @@ function useDemoFrame() {
 			const mobile = window.matchMedia(`(max-width: ${DEMO_MOBILE}px)`).matches;
 			const scale = mobile ? host.clientWidth / DEMO_FIT : 1;
 			const tokens = getComputedStyle(document.documentElement);
-			const pageWidth = Number.parseFloat(tokens.getPropertyValue("--page-width"));
-			const gutter = Number.parseFloat(tokens.getPropertyValue("--page-gutter"));
+			const pageWidth = Number.parseFloat(
+				tokens.getPropertyValue("--page-width"),
+			);
+			const gutter = Number.parseFloat(
+				tokens.getPropertyValue("--page-gutter"),
+			);
 			const centered = Math.min(pageWidth, window.innerWidth - gutter);
 			setFrame({
 				mobile,
@@ -104,7 +108,7 @@ function useDemoFrame() {
 		};
 	}, []);
 	return { hostRef, active, ...frame };
- }
+}
 
 const demoModel: AgentModel = {
 	id: "qwen38-27b",
@@ -145,8 +149,9 @@ const inboxMessages: ChatMessage[] = [
 function ignore(): void {}
 
 function useHeroDemoModel() {
- const { hostRef, active, mobile, scale, clipRight, clipBottom } = useDemoFrame();
- useDemoTabBoundary(hostRef);
+	const { hostRef, active, mobile, scale, clipRight, clipBottom } =
+		useDemoFrame();
+	useDemoTabBoundary(hostRef);
 	const reduceMotion = useReducedMotion() === true;
 	const [state, dispatch] = useReducer(
 		demoReducer,
@@ -165,10 +170,12 @@ function useHeroDemoModel() {
 		weekend: "",
 		inbox: "",
 	});
-	const [followUps, setFollowUps] = useState<Record<HeroTaskId, ChatMessage[]>>({
-		weekend: [],
-		inbox: [],
-	});
+	const [followUps, setFollowUps] = useState<Record<HeroTaskId, ChatMessage[]>>(
+		{
+			weekend: [],
+			inbox: [],
+		},
+	);
 	const [userEditing, setUserEditing] = useState(false);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollerRef = useRef<HTMLDivElement>(null);
@@ -184,20 +191,15 @@ function useHeroDemoModel() {
 	const title = titles[activeTask];
 	const extras = followUps[activeTask];
 	const messages = weekendTask ? null : [...inboxMessages, ...extras];
-	const session = demoSession(
-		state,
-		submitted,
-		activeTask,
-		title,
-		extras,
-	);
+	const session = demoSession(state, submitted, activeTask, title, extras);
 
 	useEffect(() => {
 		if (reduceMotion) {
 			dispatch({ type: "finish" });
 			return;
 		}
-		if (!active || !weekendTask || !state.playing || state.phase === "done") return;
+		if (!active || !weekendTask || !state.playing || state.phase === "done")
+			return;
 		const id = window.setTimeout(() => {
 			dispatch({ type: "advance" });
 		}, demoDelay(state));
@@ -209,11 +211,11 @@ function useHeroDemoModel() {
 	useLayoutEffect(() => {
 		const scroller = scrollerRef.current;
 		if (!active || !scroller || !submitted) return;
-		const followLive =
-			state.phase === "stream" || state.phase === "tool";
+		const followLive = state.phase === "stream" || state.phase === "tool";
 		scroller.scrollTo({
 			top: scroller.scrollHeight,
-			behavior: reduceMotion || followLive || state.resultVisible ? "auto" : "smooth",
+			behavior:
+				reduceMotion || followLive || state.resultVisible ? "auto" : "smooth",
 		});
 	}, [
 		active,
@@ -252,7 +254,8 @@ function useHeroDemoModel() {
 	const openTabs = COMPUTER_TAB_ORDER.filter(
 		(item) =>
 			item === "status" ||
-			(item === "files" && (state.toolsStarted > 0 || extraTabs.includes("files"))) ||
+			(item === "files" &&
+				(state.toolsStarted > 0 || extraTabs.includes("files"))) ||
 			(item === "diff" && (state.reviewReady || extraTabs.includes("diff"))) ||
 			extraTabs.includes(item),
 	);
@@ -375,11 +378,43 @@ export default HeroDemo;
 
 function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 	const {
-		hostRef, active, mobile, scale, clipRight, clipBottom, state, setPickedTab, panelOpen,
-		setPanelOpen, activeTask, setUserFile, titles, inputRef, scrollerRef, weekendTask,
-		submitted, output, running, tools, title, extras, messages, session, autoPrompt,
-		composerValue, openFile, tab, openTabs, selectTab, closeTab, selectModel, selectTask,
-		renameTask, takeComposer, sendFollowUp, gitSummary,
+		hostRef,
+		active,
+		mobile,
+		scale,
+		clipRight,
+		clipBottom,
+		state,
+		setPickedTab,
+		panelOpen,
+		setPanelOpen,
+		activeTask,
+		setUserFile,
+		titles,
+		inputRef,
+		scrollerRef,
+		weekendTask,
+		submitted,
+		output,
+		running,
+		tools,
+		title,
+		extras,
+		messages,
+		session,
+		autoPrompt,
+		composerValue,
+		openFile,
+		tab,
+		openTabs,
+		selectTab,
+		closeTab,
+		selectModel,
+		selectTask,
+		renameTask,
+		takeComposer,
+		sendFollowUp,
+		gitSummary,
 	} = model;
 	const sendDisabled = !composerValue.trim() || autoPrompt;
 	const appStyle: CSSProperties = { width: DEMO_WIDTH, height: DEMO_HEIGHT };
@@ -390,7 +425,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 	return (
 		<section
 			ref={hostRef}
-			className="demo ls-app"
+			className="demo ls-app hero__enter hero__enter--stage"
 			data-theme="zai-dark"
 			data-phase={state.phase}
 			data-active={active ? "true" : "false"}
@@ -398,8 +433,8 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 			data-mobile={mobile ? "true" : undefined}
 			data-clip-right={clipRight ? "true" : undefined}
 			data-clip-bottom={clipBottom ? "true" : undefined}
-   aria-label="Local Studio workbench"
-   inert={mobile}
+			aria-label="Local Studio workbench"
+			inert={mobile}
 		>
 			<p className="sr-only" role="status">
 				{demoStatus(state)}
@@ -408,248 +443,232 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 				className="demo__viewport"
 				style={mobile ? { height: DEMO_HEIGHT * scale } : undefined}
 			>
-				<div
-					className="demo__app"
-					style={appStyle}
-				>
-				<HeroDesktopSidebar
-					activeTask={activeTask}
-					onSelectTask={selectTask}
-					titles={titles}
-				/>
-				<main
-					data-no-topbar="true"
-					className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-(--agent-bg)"
-				>
-					<div className="agent-workspace flex h-full min-h-0 w-full flex-col text-(--fg)">
-						<div className="agent-workspace-panel-row relative flex min-h-0 flex-1">
-							<section className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-(--agent-bg) shadow-[inset_1px_0_rgba(255,255,255,0.015)]">
-								<AgentChatPaneHeader
-									title={title}
-									pinned={false}
-									rightPanelOpen={panelOpen}
-									canFork={false}
-									canClose={false}
-									onTogglePinned={ignore}
-									onRename={renameTask}
-									onToggleRightPanel={() =>
-										setPanelOpen((open) => !open)
-									}
-								/>
-								{submitted ? (
-									<div className="agent-timeline-frame relative flex min-h-0 min-w-0 flex-1">
-										<div
-											ref={scrollerRef}
-											data-timeline-scroller
-											className="agent-chat-scroller min-h-0 min-w-0 flex-1 overflow-y-auto bg-(--agent-bg) px-4 pb-0 pt-2 [overflow-anchor:none] [overscroll-behavior:contain] [scrollbar-gutter:stable] sm:px-5"
-										>
+				<div className="demo__app" style={appStyle}>
+					<HeroDesktopSidebar
+						activeTask={activeTask}
+						onSelectTask={selectTask}
+						titles={titles}
+					/>
+					<main
+						data-no-topbar="true"
+						className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-(--agent-bg)"
+					>
+						<div className="agent-workspace flex h-full min-h-0 w-full flex-col text-(--fg)">
+							<div className="agent-workspace-panel-row relative flex min-h-0 flex-1">
+								<section className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-(--agent-bg) shadow-[inset_1px_0_rgba(255,255,255,0.015)]">
+									<AgentChatPaneHeader
+										title={title}
+										pinned={false}
+										rightPanelOpen={panelOpen}
+										canFork={false}
+										canClose={false}
+										onTogglePinned={ignore}
+										onRename={renameTask}
+										onToggleRightPanel={() => setPanelOpen((open) => !open)}
+									/>
+									{submitted ? (
+										<div className="agent-timeline-frame relative flex min-h-0 min-w-0 flex-1">
 											<div
-												data-timeline-list
-												className="agent-thread-shell mx-auto flex flex-col"
+												ref={scrollerRef}
+												data-timeline-scroller
+												className="agent-chat-scroller min-h-0 min-w-0 flex-1 overflow-y-auto bg-(--agent-bg) px-4 pb-0 pt-2 [overflow-anchor:none] [overscroll-behavior:contain] [scrollbar-gutter:stable] sm:px-5"
 											>
-												{messages ? (
-													<StaticThread messages={messages} />
-												) : (
-													<>
-												<ScenarioThread
-															output={output}
-															resultVisible={state.resultVisible}
-															running={running}
-															tools={tools}
-														/>
-														{extras.length > 0 ? (
-															<StaticThread lead={false} messages={extras} />
-														) : null}
-													</>
-												)}
-												<div aria-hidden="true" className="h-2" />
-											</div>
-										</div>
-									</div>
-								) : (
-									<div className="flex min-h-0 flex-1 overflow-y-auto bg-(--agent-bg) px-6 pb-10 pt-2">
-										<div className="agent-thread-shell mx-auto flex flex-1">
-											<div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-												<p className="max-w-[24ch] text-[clamp(1.45rem,2.6vw,2.1rem)] font-semibold leading-[1.22] tracking-[-0.02em] text-(--fg)/90">
-													A dream is something you build for
-													yourself.
-												</p>
-												<p className="text-[length:var(--fs-xl)] text-(--dim)">
-													Just talk to it.
-												</p>
-											</div>
-										</div>
-									</div>
-								)}
-								<form
-									onSubmit={(event: FormEvent) => {
-										event.preventDefault();
-										sendFollowUp();
-									}}
-									className="relative z-[100] shrink-0 bg-transparent px-3 pb-2 pt-0 sm:px-5"
-								>
-									<div className="agent-composer-box relative z-10 mx-auto w-full max-w-[calc(var(--composer-w)*0.9)] overflow-visible rounded-[var(--composer-radius)] border border-(--border) bg-(--composer) shadow-[var(--composer-elevation)] backdrop-blur-lg [corner-shape:superellipse(1.5)] sm:w-[90%]">
-										<label className="sr-only" htmlFor="hero-demo-composer">
-											Message
-										</label>
-										<AgentComposerTextArea
-											inputRef={inputRef}
-											value={composerValue}
-											onPaste={(event) => {
-												const text = event.clipboardData.getData("text");
-												if (!text) return;
-												event.preventDefault();
-												takeComposer(`${composerValue}${text}`);
-											}}
-											onChange={(event) => takeComposer(event.target.value)}
-											onKeyDown={(event) => {
-												if (event.key !== "Enter" || event.shiftKey) return;
-												event.preventDefault();
-												sendFollowUp();
-											}}
-											placeholder={
-												submitted
-													? "Ask for follow-up changes"
-													: "Do anything"
-											}
-										/>
-										<div className="agent-composer-actions-row flex min-h-9 items-center gap-0.5 bg-transparent px-2 pb-2 pt-0 text-xs">
-											<button
-												type="button"
-												className="inline-flex !h-7 !min-h-7 !w-7 !min-w-7 shrink-0 items-center justify-center rounded-full text-(--hl2) hover:bg-(--hover) hover:text-(--fg)"
-												aria-label="Attach files"
-												title="Attach files (or paste/drop into composer)"
-											>
-												<Plus
-													className="h-4 w-4"
-													strokeWidth={1.75}
-												/>
-											</button>
-											<div className="ml-auto flex min-w-0 shrink items-center gap-0.5">
-												<button
-												type="button"
-												onClick={selectModel}
-												className="group/model inline-flex !h-[30px] !min-h-[30px] !min-w-0 max-w-full items-center justify-between gap-1 rounded-lg bg-transparent pl-2 pr-1.5 text-[length:var(--fs-base)] whitespace-nowrap text-(--fg)/85 transition-colors hover:bg-(--hover) hover:text-(--fg)"
-												aria-label={`Model: ${state.modelSelected || !weekendTask ? DEMO_MODEL : "Select model"}`}
+												<div
+													data-timeline-list
+													className="agent-thread-shell mx-auto flex flex-col"
 												>
-													<span
-														className="min-w-0 max-w-[180px] truncate text-left"
-														translate="no"
+													{messages ? (
+														<StaticThread messages={messages} />
+													) : (
+														<>
+															<ScenarioThread
+																output={output}
+																resultVisible={state.resultVisible}
+																running={running}
+																tools={tools}
+															/>
+															{extras.length > 0 ? (
+																<StaticThread lead={false} messages={extras} />
+															) : null}
+														</>
+													)}
+													<div aria-hidden="true" className="h-2" />
+												</div>
+											</div>
+										</div>
+									) : (
+										<div className="flex min-h-0 flex-1 overflow-y-auto bg-(--agent-bg) px-6 pb-10 pt-2">
+											<div className="agent-thread-shell mx-auto flex flex-1">
+												<div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+													<p className="max-w-[24ch] text-[clamp(1.45rem,2.6vw,2.1rem)] font-semibold leading-[1.22] tracking-[-0.02em] text-(--fg)/90">
+														A dream is something you build for yourself.
+													</p>
+													<p className="text-[length:var(--fs-xl)] text-(--dim)">
+														Just talk to it.
+													</p>
+												</div>
+											</div>
+										</div>
+									)}
+									<form
+										onSubmit={(event: FormEvent) => {
+											event.preventDefault();
+											sendFollowUp();
+										}}
+										className="relative z-[100] shrink-0 bg-transparent px-3 pb-2 pt-0 sm:px-5"
+									>
+										<div className="agent-composer-box relative z-10 mx-auto w-full max-w-[calc(var(--composer-w)*0.9)] overflow-visible rounded-[var(--composer-radius)] border border-(--border) bg-(--composer) shadow-[var(--composer-elevation)] backdrop-blur-lg [corner-shape:superellipse(1.5)] sm:w-[90%]">
+											<label className="sr-only" htmlFor="hero-demo-composer">
+												Message
+											</label>
+											<AgentComposerTextArea
+												inputRef={inputRef}
+												value={composerValue}
+												onPaste={(event) => {
+													const text = event.clipboardData.getData("text");
+													if (!text) return;
+													event.preventDefault();
+													takeComposer(`${composerValue}${text}`);
+												}}
+												onChange={(event) => takeComposer(event.target.value)}
+												onKeyDown={(event) => {
+													if (event.key !== "Enter" || event.shiftKey) return;
+													event.preventDefault();
+													sendFollowUp();
+												}}
+												placeholder={
+													submitted
+														? "Ask for follow-up changes"
+														: "Do anything"
+												}
+											/>
+											<div className="agent-composer-actions-row flex min-h-9 items-center gap-0.5 bg-transparent px-2 pb-2 pt-0 text-xs">
+												<button
+													type="button"
+													className="inline-flex !h-7 !min-h-7 !w-7 !min-w-7 shrink-0 items-center justify-center rounded-full text-(--hl2) hover:bg-(--hover) hover:text-(--fg)"
+													aria-label="Attach files"
+													title="Attach files (or paste/drop into composer)"
+												>
+													<Plus className="h-4 w-4" strokeWidth={1.75} />
+												</button>
+												<div className="ml-auto flex min-w-0 shrink items-center gap-0.5">
+													<button
+														type="button"
+														onClick={selectModel}
+														className="group/model inline-flex !h-[30px] !min-h-[30px] !min-w-0 max-w-full items-center justify-between gap-1 rounded-lg bg-transparent pl-2 pr-1.5 text-[length:var(--fs-base)] whitespace-nowrap text-(--fg)/85 transition-colors hover:bg-(--hover) hover:text-(--fg)"
+														aria-label={`Model: ${state.modelSelected || !weekendTask ? DEMO_MODEL : "Select model"}`}
 													>
-												{state.modelSelected || !weekendTask
-															? DEMO_MODEL
-															: "Select model"}
-													</span>
-													<ChevronDown className="pointer-events-none h-3.5 w-3.5 shrink-0 text-(--dim)" />
-												</button>
-												<button
-													type="submit"
-													disabled={sendDisabled}
-													className="inline-flex !h-[30px] !min-h-[30px] !w-[30px] !min-w-[30px] shrink-0 items-center justify-center rounded-full bg-(--fg) text-(--bg) transition-opacity hover:opacity-85 disabled:bg-(--hl3) disabled:opacity-100"
-													aria-label="Send"
-													title={sendDisabled ? undefined : "Send (Enter)"}
-												>
-													<ArrowUp className="h-4 w-4 stroke-[2.25]" />
-												</button>
+														<span
+															className="min-w-0 max-w-[180px] truncate text-left"
+															translate="no"
+														>
+															{state.modelSelected || !weekendTask
+																? DEMO_MODEL
+																: "Select model"}
+														</span>
+														<ChevronDown className="pointer-events-none h-3.5 w-3.5 shrink-0 text-(--dim)" />
+													</button>
+													<button
+														type="submit"
+														disabled={sendDisabled}
+														className="inline-flex !h-[30px] !min-h-[30px] !w-[30px] !min-w-[30px] shrink-0 items-center justify-center rounded-full bg-(--fg) text-(--bg) transition-opacity hover:opacity-85 disabled:bg-(--hl3) disabled:opacity-100"
+														aria-label="Send"
+														title={sendDisabled ? undefined : "Send (Enter)"}
+													>
+														<ArrowUp className="h-4 w-4 stroke-[2.25]" />
+													</button>
+												</div>
 											</div>
 										</div>
-									</div>
-									<AgentComposerStatusBar
-										cwd={demoProject.path}
-										gitBranch="main"
-										gitSummary={gitSummary}
-										currentContextTokens={
-										state.resultVisible || !weekendTask ? 2400 : 0
-										}
-										contextWindow={contextWindow}
-										onOpenStatus={() => selectTab("status")}
-										onOpenDiff={() => selectTab("diff")}
-									/>
-								</form>
-							</section>
-							{panelOpen ? (
-								<aside
-									className="agent-computer-panel relative flex min-h-0 shrink-0 flex-col border-l border-(--border) bg-(--color-panel)"
-									style={{ width: HERO_COMPUTER_WIDTH }}
-								>
-									<ComputerHeader
-										tab={tab}
-										openTabs={openTabs}
-										terminalState={emptyTerminals}
-										onSelectTab={selectTab}
-										onOpenCurrentTerminal={() =>
-											selectTab("terminal")
-										}
-										onSelectTerminalOwner={ignore}
-										onCloseTerminalOwner={ignore}
-										onCloseTab={closeTab}
-										onShowLauncher={() => selectTab("tools")}
-										onClosePanel={() => setPanelOpen(false)}
-									/>
-									{tab === "status" ? (
-										<ComputerStatusPanel
-											activeProject={demoProject}
-											activeModel={
-											state.modelSelected || !weekendTask
-													? demoModel
-													: null
-											}
-											focusedSession={session}
-											sessions={[session]}
+										<AgentComposerStatusBar
+											cwd={demoProject.path}
+											gitBranch="main"
 											gitSummary={gitSummary}
+											currentContextTokens={
+												state.resultVisible || !weekendTask ? 2400 : 0
+											}
+											contextWindow={contextWindow}
+											onOpenStatus={() => selectTab("status")}
+											onOpenDiff={() => selectTab("diff")}
 										/>
-									) : null}
-									{tab === "tools" ? (
-										<ComputerLauncherPanel
-											activeTab={tab}
-											onOpenSideChat={() =>
-												selectTab("side-chat")
-											}
-											onOpenTerminal={() =>
-												selectTab("terminal")
-											}
+									</form>
+								</section>
+								{panelOpen ? (
+									<aside
+										className="agent-computer-panel relative flex min-h-0 shrink-0 flex-col border-l border-(--border) bg-(--color-panel)"
+										style={{ width: HERO_COMPUTER_WIDTH }}
+									>
+										<ComputerHeader
+											tab={tab}
+											openTabs={openTabs}
+											terminalState={emptyTerminals}
 											onSelectTab={selectTab}
+											onOpenCurrentTerminal={() => selectTab("terminal")}
+											onSelectTerminalOwner={ignore}
+											onCloseTerminalOwner={ignore}
+											onCloseTab={closeTab}
+											onShowLauncher={() => selectTab("tools")}
+											onClosePanel={() => setPanelOpen(false)}
 										/>
-									) : null}
-									{tab === "files" ? (
-										<HeroFilesystemTree
-											openFile={openFile}
-											onOpenFile={(rel) => {
-												setPickedTab("files");
-												setUserFile(rel);
-											}}
-										/>
-									) : null}
-									{tab === "diff" ? (
-										<HeroReviewPanel ready={state.reviewReady} />
-									) : null}
-									{tab === "browser" ? (
-										<div className="size-full overflow-y-auto bg-(--bg) px-5 py-8 text-(--fg)">
-											<div className="mx-auto max-w-3xl">
-												<div className="text-[length:var(--fs-lg)] font-medium text-(--dim)">
-													Trip research
-												</div>
-												<div className="mt-1 text-[length:var(--fs-sm)] text-(--dim)">
-													Saturday stays dry until 16:00. Rydal Water to Grasmere keeps the route under two hours.
+										{tab === "status" ? (
+											<ComputerStatusPanel
+												activeProject={demoProject}
+												activeModel={
+													state.modelSelected || !weekendTask ? demoModel : null
+												}
+												focusedSession={session}
+												sessions={[session]}
+												gitSummary={gitSummary}
+											/>
+										) : null}
+										{tab === "tools" ? (
+											<ComputerLauncherPanel
+												activeTab={tab}
+												onOpenSideChat={() => selectTab("side-chat")}
+												onOpenTerminal={() => selectTab("terminal")}
+												onSelectTab={selectTab}
+											/>
+										) : null}
+										{tab === "files" ? (
+											<HeroFilesystemTree
+												openFile={openFile}
+												onOpenFile={(rel) => {
+													setPickedTab("files");
+													setUserFile(rel);
+												}}
+											/>
+										) : null}
+										{tab === "diff" ? (
+											<HeroReviewPanel ready={state.reviewReady} />
+										) : null}
+										{tab === "browser" ? (
+											<div className="size-full overflow-y-auto bg-(--bg) px-5 py-8 text-(--fg)">
+												<div className="mx-auto max-w-3xl">
+													<div className="text-[length:var(--fs-lg)] font-medium text-(--dim)">
+														Trip research
+													</div>
+													<div className="mt-1 text-[length:var(--fs-sm)] text-(--dim)">
+														Saturday stays dry until 16:00. Rydal Water to
+														Grasmere keeps the route under two hours.
+													</div>
 												</div>
 											</div>
-										</div>
-									) : null}
-									{tab === "terminal" ? (
-										<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
-										Home shell
-										</section>
-									) : null}
-									{tab === "side-chat" ? (
-										<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
-											Side chat
-										</section>
-									) : null}
-								</aside>
-							) : null}
+										) : null}
+										{tab === "terminal" ? (
+											<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
+												Home shell
+											</section>
+										) : null}
+										{tab === "side-chat" ? (
+											<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
+												Side chat
+											</section>
+										) : null}
+									</aside>
+								) : null}
+							</div>
 						</div>
-					</div>
-				</main>
+					</main>
 				</div>
 			</div>
 		</section>
@@ -688,14 +707,9 @@ function ScenarioThread({
 				</div>
 			))}
 			{output.length > 0 || resultVisible ? (
-				<div
-					data-timeline-message-id="assistant-1"
-					className="pt-2 pb-4"
-				>
+				<div data-timeline-message-id="assistant-1" className="pt-2 pb-4">
 					<article className="min-w-0">
-						<div className="chat-markdown whitespace-pre-wrap">
-							{output}
-						</div>
+						<div className="chat-markdown whitespace-pre-wrap">{output}</div>
 						{resultVisible ? (
 							<AssistantMessageActions copyText={output} />
 						) : null}
@@ -780,11 +794,7 @@ function demoSession(
 	extras: ChatMessage[],
 ): Session {
 	const inbox = task === "inbox";
-	const base = inbox
-		? inboxMessages
-		: submitted
-			? [userMessage()]
-			: [];
+	const base = inbox ? inboxMessages : submitted ? [userMessage()] : [];
 	return {
 		id: inbox ? "session-inbox" : "session-weekend",
 		piSessionId: inbox ? "pi-inbox" : "pi-weekend",

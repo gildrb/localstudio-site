@@ -176,8 +176,8 @@ a.nav-link:hover,
 
 :root[data-theme="omlx-dark"] ::selection,
 .dark ::selection {
-  background: color-mix(in srgb, var(--hl1) 52%, #000 28%);
-  color: #fff;
+  background: color-mix(in srgb, var(--hl1) 52%, var(--button-ink) 28%);
+  color: var(--foreground);
 }
 
 /* Scroll shadows */

@@ -897,8 +897,8 @@ a.nav-link:hover,
 
 .demo[data-theme="omlx-dark"] ::selection,
 .dark ::selection {
-  background: color-mix(in srgb, var(--hl1) 52%, #000 28%);
-  color: #fff;
+  background: color-mix(in srgb, var(--hl1) 52%, var(--color-black) 28%);
+  color: var(--color-white);
 }
 
 /* Scroll shadows */
@@ -1011,7 +1011,6 @@ a.nav-link:hover,
   font-size: var(--codex-chat-font-size);
   line-height: var(--codex-chat-line-height);
   font-weight: var(--codex-chat-font-weight);
-  /* Codex primary chat text: white at 85% over #181818 (sampled #d7d7d7). */
   color: color-mix(in srgb, var(--fg) 85%, transparent);
   letter-spacing: 0;
 }
@@ -1396,7 +1395,7 @@ a.nav-link:hover,
   background: transparent;
   border: 0;
   padding: 0;
-  color: #fff;
+  color: var(--color-white);
   white-space: pre;
   word-break: normal;
 }

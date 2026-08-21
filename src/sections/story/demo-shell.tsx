@@ -1,17 +1,14 @@
 import type { ReactNode } from "react";
 import { useDemoTabBoundary } from "../demo-tab-boundary";
-import { HeroDesktopSidebar } from "../hero/desktop-sidebar";
 import { DEMO_HEIGHT, DEMO_WIDTH, useDemoFrame, type DemoCrop } from "./demo-frame";
 import type { FeatureScene } from "./scenes";
 
 export function DemoShell({
-	pathname,
 	label,
 	scene,
 	crop,
 	children,
 }: {
-	pathname: string;
 	label: string;
 	scene: FeatureScene;
 	crop: DemoCrop;
@@ -38,13 +35,10 @@ export function DemoShell({
 					style={{
 						width: DEMO_WIDTH,
 						height: DEMO_HEIGHT,
-						transform: mobile
-							? `scale(${scale}) translate(${shiftX}px, ${shiftY}px)`
-							: `translate(${shiftX}px, ${shiftY}px) scale(${scale})`,
+						transform: `scale(${scale}) translate(${shiftX}px, ${shiftY}px)`,
 						transformOrigin: "top left",
 					}}
 				>
-					<HeroDesktopSidebar pathname={pathname} showProjects={false} />
 					<main className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-(--agent-bg)">
 						{children}
 					</main>

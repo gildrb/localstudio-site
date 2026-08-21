@@ -1,5 +1,5 @@
 import { ArrowRight, Laptop, ShieldCheck, Smartphone } from "lucide-react";
-import { useReducedMotion } from "motion/react";
+import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { useEffect, useReducer } from "react";
 import { useElementActivity } from "../hooks/use-element-activity";
 
