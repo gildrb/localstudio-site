@@ -1033,11 +1033,11 @@ button {
 .hero-logo-renderer__fallback {
 	padding: 9.5%;
 	opacity: 0.08;
-	filter: invert(1) drop-shadow(0 0 32px var(--border-strong));
+	filter: invert(1);
 	transition: opacity 700ms linear;
 }
 .hero-logo-renderer__fallback--hidden {
-	opacity: 0;
+	opacity: 0.02;
 }
 
 
@@ -1064,18 +1064,17 @@ button {
 	content: "";
 	position: absolute;
 	z-index: -1;
-	top: 48%;
-	left: 50%;
-	width: clamp(760px, 82vw, 1120px);
-	height: clamp(520px, 56vw, 760px);
+	top: 43%;
+	left: 42%;
+	width: clamp(620px, 44vw, 700px);
+	height: clamp(280px, 22vw, 340px);
 	transform: translate(-50%, -50%);
 	pointer-events: none;
 	background: radial-gradient(
 		ellipse at center,
-		color-mix(in srgb, var(--background) 98%, transparent) 0%,
-		color-mix(in srgb, var(--background) 94%, transparent) 30%,
-		color-mix(in srgb, var(--background) 72%, transparent) 54%,
-		color-mix(in srgb, var(--background) 28%, transparent) 74%,
+		color-mix(in srgb, var(--background) 65%, transparent) 0%,
+		color-mix(in srgb, var(--background) 48%, transparent) 34%,
+		color-mix(in srgb, var(--background) 18%, transparent) 68%,
 		transparent 90%
 	);
 	filter: blur(18px);
