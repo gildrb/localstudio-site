@@ -210,11 +210,9 @@ test("navigation lists have continuous hit areas", async ({
 test("the favicon follows the system color scheme", async ({ page }) => {
 	await page.goto("/");
 	await expect(
-		page.locator('link[rel="icon"][type="image/svg+xml"]'),
+		page.locator('link[rel="icon"][media="(prefers-color-scheme: light)"]'),
 	).toHaveAttribute("href", "/images/favicon.svg");
-	const response = await page.request.get("/images/favicon.svg");
-	expect(response.ok()).toBe(true);
-	expect(await response.text()).toContain(
-		"@media (prefers-color-scheme: dark)",
-	);
+	await expect(
+		page.locator('link[rel="icon"][media="(prefers-color-scheme: dark)"]'),
+	).toHaveAttribute("href", "/images/favicon-dark.svg");
 });

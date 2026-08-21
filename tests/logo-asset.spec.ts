@@ -29,13 +29,25 @@ test("footer no longer renders the outline mark", async ({ page }) => {
 	await expect(page.locator('footer img[src="/images/optimized-outline.svg"]')).toHaveCount(0);
 });
 
-test("document uses the local favicon asset", async ({ page }) => {
+test("document uses transparent light and dark favicon assets", async ({ page }) => {
 	await page.goto("/");
-	const favicon = page.locator('link[rel="icon"][href="/images/favicon.ico"]');
-	await expect(favicon).toHaveCount(1);
-	const response = await page.request.get("/images/favicon.ico");
-	expect(response.ok()).toBeTruthy();
-	expect(response.headers()["content-type"]).toContain("image/x-icon");
+	const lightFavicon = page.locator(
+		'link[rel="icon"][media="(prefers-color-scheme: light)"]',
+	);
+	const darkFavicon = page.locator(
+		'link[rel="icon"][media="(prefers-color-scheme: dark)"]',
+	);
+	await expect(lightFavicon).toHaveAttribute("href", "/images/favicon.svg");
+	await expect(darkFavicon).toHaveAttribute(
+		"href",
+		"/images/favicon-dark.svg",
+	);
+	for (const path of ["/images/favicon.svg", "/images/favicon-dark.svg"]) {
+		const response = await page.request.get(path);
+		expect(response.ok()).toBeTruthy();
+		expect(response.headers()["content-type"]).toContain("image/svg+xml");
+		expect(await response.text()).toContain('fill-rule="evenodd"');
+	}
 });
 
 test("navbar uses compact text and an accessible GitHub icon", async ({ page }) => {
