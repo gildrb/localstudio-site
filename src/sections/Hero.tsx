@@ -1,31 +1,16 @@
 import { lazy, Suspense } from "react";
 import { CtaPair } from "../components/Links";
 import { useMachine } from "../machine";
+import { LocalAiLogoShader } from "./localai-logo-shader";
 
 const HeroDemo = lazy(() => import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })));
-const LocalAiLogoShader = lazy(() =>
-  import("./localai-logo-shader").then(({ LocalAiLogoShader }) => ({ default: LocalAiLogoShader })),
-);
 
 export function Hero() {
 	const { toggleMachine } = useMachine();
 	return (
 		<>
 			<section className="hero" id="top" aria-labelledby="landing-title">
-				<Suspense
-					fallback={
-						<div className="hero-logo-renderer" aria-hidden="true">
-							<img
-								className="hero-logo-renderer__fallback"
-								src="/images/localai_dark.svg"
-								alt=""
-								draggable={false}
-							/>
-						</div>
-					}
-				>
-					<LocalAiLogoShader />
-				</Suspense>
+				<LocalAiLogoShader />
 				<div className="hero__inner">
 					<div className="hero__copy">
 						<h1

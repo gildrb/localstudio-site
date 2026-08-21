@@ -230,13 +230,13 @@ export function LocalAiLogoShader() {
 			const transitionDebug: EveTransitionDebugState = {
 				overrideEnabled: false,
 				progress: 0,
-				gridScaleMultiplier: 1.31,
+				gridScaleMultiplier: 0.9,
 				glyphScale: IMPRINT_GLYPH_SCALE,
 				durationSeconds: LOGO_MODE_TRANSITION_DURATION_SECONDS,
 				paintDecayPerFrame120: DEFAULT_PAINT_DECAY_PER_FRAME_120,
 				diffusionAmount: DEFAULT_PAINT_DIFFUSION_RATE,
 				diffusionJitter: DEFAULT_PAINT_DIFFUSION_JITTER,
-				brushRadius: DEFAULT_PAINT_BRUSH_RADIUS,
+				brushRadius: DEFAULT_PAINT_BRUSH_RADIUS * 1.5,
 				brushStrength: DEFAULT_PAINT_BRUSH_STRENGTH,
 				visualizePaintBuffer: false,
 			};

@@ -37,7 +37,7 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":3381,
+			"count":5422,
 			"max":[
 				0.07394599169492722,
 				0.07393037527799606,
@@ -53,51 +53,51 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":3381,
+			"count":5422,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":3381,
+			"count":5422,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":10008,
+			"count":16236,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":40572,
+			"byteLength":65064,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":40572,
-			"byteOffset":40572,
+			"byteLength":65064,
+			"byteOffset":65064,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":27048,
-			"byteOffset":81144,
+			"byteLength":43376,
+			"byteOffset":130128,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":20016,
-			"byteOffset":108192,
+			"byteLength":32472,
+			"byteOffset":173504,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":128208,
+			"byteLength":205976,
 			"uri":"localai-logo.bin"
 		}
 	]
