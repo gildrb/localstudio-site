@@ -366,6 +366,7 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 				getComputedStyle(header).backgroundColor,
 				getComputedStyle(header).backdropFilter,
 			],
+			navBorder: getComputedStyle(header).borderBottomWidth,
 			navZIndex: Number.parseInt(getComputedStyle(header).zIndex, 10),
 			sectionBorders: [...panel.querySelectorAll<HTMLElement>(".nav__mega-section")].map(
 				(section) => [
@@ -389,10 +390,11 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 	expect(geometry.gridLeft).toEqual(Array(4).fill(geometry.gridLeft[0]));
 	expect(geometry.pageOverlay).toBe("none");
 	expect(restingNav).toEqual([
-		"rgba(0, 0, 0, 0.64)",
-		"blur(24px) brightness(0.7)",
+		"rgba(10, 10, 10, 0.78)",
+		"blur(12px)",
 	]);
 	expect(geometry.navChrome).toEqual(restingNav);
+	expect(geometry.navBorder).toBe("0px");
 	expect(geometry.surfaceBottom).toBe(geometry.panelTop + geometry.panelHeight);
 	expect(geometry.panelPseudo).toBe("none");
 	expect(geometry.navDirectChrome).toEqual(["rgba(0, 0, 0, 0)", "none"]);
