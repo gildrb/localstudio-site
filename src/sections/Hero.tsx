@@ -1,23 +1,31 @@
 import { lazy, Suspense } from "react";
+import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { CtaPair } from "../components/Links";
 import { useMachine } from "../machine";
 import { LocalAiLogoShader } from "./localai-logo-shader";
 
-const HeroDemo = lazy(() => import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })));
+const HeroDemo = lazy(() =>
+	import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })),
+);
+
+const ease = [0.16, 1, 0.3, 1] as const;
+const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
 
 export function Hero() {
 	const { toggleMachine } = useMachine();
+	const reduceMotion = useReducedMotion();
+	const enter = (delay: number) => ({
+		initial: reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
+		animate: settle,
+		transition: { duration: 0.9, ease, delay },
+	});
 	return (
-		<>
+		<LazyMotion features={domAnimation} strict>
 			<section className="hero" id="top" aria-labelledby="landing-title">
 				<LocalAiLogoShader />
 				<div className="hero__inner">
 					<div className="hero__copy">
-						<h1
-							id="landing-title"
-							tabIndex={-1}
-							className="hero__enter hero__enter--title"
-						>
+						<m.h1 id="landing-title" tabIndex={-1} {...enter(0.12)}>
 							Intelligence should be{" "}
 							<span className="hero__title-end">
 								owned
@@ -38,21 +46,26 @@ export function Hero() {
 									/>
 								</button>
 							</span>
-						</h1>
-						<div className="hero__actions hero__enter hero__enter--actions">
+						</m.h1>
+						<m.div className="hero__actions" {...enter(0.24)}>
 							<CtaPair secondary={{ href: "/setup", label: "Setup prompt" }} />
-						</div>
+						</m.div>
 					</div>
 				</div>
-				<div
+				<m.div
 					className="hero__stage section-width"
 					id="product"
+					{...enter(0.75)}
 				>
-					<Suspense fallback={<div className="hero__demo-placeholder" aria-hidden="true" />}>
+					<Suspense
+						fallback={
+							<div className="hero__demo-placeholder" aria-hidden="true" />
+						}
+					>
 						<HeroDemo />
 					</Suspense>
-				</div>
+				</m.div>
 			</section>
-		</>
+		</LazyMotion>
 	);
 }
