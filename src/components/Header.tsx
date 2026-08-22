@@ -1,5 +1,6 @@
 import { ChevronDown, Equal, X } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { DownloadButton } from "./Links";
 import { LocalLink } from "./LocalLink";
 
@@ -22,10 +23,6 @@ type MenuListProps = {
 	desktop?: boolean;
 }
 
-type MenuSection = {
-	readonly label: string;
-	readonly items: readonly NavLink[];
-}
 const products = [
 	{ label: "Local AI", href: "https://local.ai", external: true },
 	{ label: "Local Studio", href: "/download" },
@@ -40,18 +37,15 @@ const resources = [
 	{ label: "Mobile", href: "/mobile" },
 ] as const satisfies readonly NavLink[];
 
-const menuSections = {
-	products: [
-		{ label: "Platform", items: [products[0]] },
-		{ label: "Desktop", items: [products[1]] },
-		{ label: "Mobile", items: [products[2]] },
-	],
-	resources: [
-		{ label: "Start", items: [resources[0], resources[2]] },
-		{ label: "Learn", items: [resources[1], resources[3]] },
-		{ label: "Connect", items: [resources[4]] },
-	],
-} as const satisfies Record<MenuId, readonly MenuSection[]>;
+const sybil = [
+	{ label: "Sybil Solutions", href: "https://www.sybilsolutions.ai/", external: true },
+	{ label: "GitHub", href: "https://github.com/sybil-solutions", external: true },
+] as const satisfies readonly NavLink[];
+
+const menuColumns = {
+	products: [products],
+	resources: [resources, sybil],
+} as const satisfies Record<MenuId, readonly (readonly NavLink[])[]>;
 const githubUrl = "https://github.com/sybil-solutions/local-studio";
 const mobileQuery = "(max-width: 900px)";
 
@@ -120,6 +114,31 @@ function DesktopMenu({
 	onNavigate: () => void;
 }) {
 	const label = menu === "products" ? "Products" : "Resources";
+	const innerRef = useRef<HTMLDivElement>(null);
+	const [offset, setOffset] = useState(0);
+	useLayoutEffect(() => {
+		function sync() {
+			const trigger = document.querySelector<HTMLElement>(
+				`[aria-controls="nav-menu-${menu}"]`,
+			);
+			const inner = innerRef.current;
+			const header = inner?.closest<HTMLElement>("header");
+			if (!trigger || !inner || !header) return;
+			const triggerText =
+				trigger.getBoundingClientRect().left -
+				inner.getBoundingClientRect().left +
+				Number.parseFloat(getComputedStyle(trigger).paddingLeft);
+			setOffset(triggerText);
+			header.style.setProperty(
+				"--nav-mega-height",
+				`${Math.ceil(inner.getBoundingClientRect().height)}px`,
+			);
+		}
+		sync();
+		window.addEventListener("resize", sync);
+		return () => window.removeEventListener("resize", sync);
+	}, [menu]);
+
 	return (
 		<div
 			className="nav__mega nav__menu-panel"
@@ -144,12 +163,15 @@ function DesktopMenu({
 				items[next]?.focus();
 			}}
 		>
-			<div className="nav__mega-inner">
-				<div className="nav__mega-grid">
-					{menuSections[menu].map((section) => (
-						<section className="nav__mega-section" key={section.label}>
-							<p>{section.label}</p>
-							<MenuItems items={section.items} onNavigate={onNavigate} desktop />
+			<div className="nav__mega-inner" ref={innerRef}>
+				<div
+					className="nav__mega-grid"
+					// SAFETY: custom CSS properties are valid style keys at runtime but missing from CSSProperties.
+					style={{ "--mega-col": `${offset}px` } as CSSProperties}
+				>
+					{menuColumns[menu].map((column) => (
+						<section className="nav__mega-section" key={column[0].label}>
+							<MenuItems items={column} onNavigate={onNavigate} desktop />
 						</section>
 					))}
 				</div>

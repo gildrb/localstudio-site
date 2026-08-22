@@ -39,10 +39,6 @@ export function Hero() {
 								</button>
 							</span>
 						</h1>
-						<p className="hero__lede hero__enter hero__enter--lede">
-							Run AI at home, on hardware you own. Keep your models, prompts, files, and agent
-							workflows private, secure, and entirely under your control.
-						</p>
 						<div className="hero__actions hero__enter hero__enter--actions">
 							<CtaPair secondary={{ href: "/setup", label: "Setup prompt" }} />
 						</div>

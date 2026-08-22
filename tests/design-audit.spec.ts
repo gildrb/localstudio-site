@@ -323,33 +323,54 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 	await trigger.hover();
 	const menu = page.locator(".nav__mega");
 	await expect(menu).toBeVisible();
-	await expect(menu.locator(".nav__mega-section")).toHaveCount(3);
+	await expect(menu.locator(".nav__mega-section")).toHaveCount(2);
 	const geometry = await page.evaluate(() => {
 		const header = document.querySelector<HTMLElement>("header.nav");
 		const panel = document.querySelector<HTMLElement>(".nav__mega");
 		const inner = document.querySelector<HTMLElement>(".nav__mega-inner");
 		const entryGrid = document.querySelector<HTMLElement>(".nav__mega-grid");
-		const firstSection = document.querySelector<HTMLElement>(".nav__mega-section");
+		const sections = [...panel.querySelectorAll<HTMLElement>(".nav__mega-section")];
+		const firstSection = sections[0];
+		const secondSection = sections[1];
+		const resourcesTrigger = document.querySelector<HTMLElement>(
+			'[aria-controls="nav-menu-resources"]',
+		);
 		const brand = document.querySelector<HTMLElement>(".brand");
-		if (!header || !panel || !inner || !entryGrid || !firstSection || !brand) {
+		if (
+			!header ||
+			!panel ||
+			!inner ||
+			!entryGrid ||
+			!firstSection ||
+			!secondSection ||
+			!brand
+		) {
 			throw new Error("Desktop menu did not open");
 		}
 		const pageOverlay = getComputedStyle(document.body, "::after");
 		const headerBox = header.getBoundingClientRect();
+		const triggerBox = resourcesTrigger?.getBoundingClientRect();
 		const panelBox = panel.getBoundingClientRect();
 		const innerBox = inner.getBoundingClientRect();
-		const entryGridBox = entryGrid.getBoundingClientRect();
+		const sectionLefts = sections.map((section) =>
+			Math.round(section.getBoundingClientRect().left),
+		);
 		return {
 			panelTop: Math.round(panelBox.top),
 			headerBottom: Math.round(headerBox.bottom),
 			panelWidth: Math.round(panelBox.width),
 			containerWidth: Math.round(innerBox.width),
-			entryGridWidth: Math.round(entryGridBox.width),
+			sectionLefts,
+			triggerLeft: Math.round(triggerBox?.left ?? Number.NaN),
+			triggerPad: Number.parseFloat(
+				getComputedStyle(resourcesTrigger).paddingLeft,
+			),
+			firstWidth: Math.round(firstSection.getBoundingClientRect().width),
 			panelHeight: Math.round(panelBox.height),
 			surfaceBottom: Math.round(
 				headerBox.top + Number.parseFloat(getComputedStyle(header, "::before").height),
 			),
-			gridLeft: [brand, inner, entryGrid, firstSection].map((element) =>
+			gridLeft: [brand, inner, entryGrid].map((element) =>
 				Math.round(element.getBoundingClientRect().left),
 			),
 			panelBorder: getComputedStyle(panel).borderBottomWidth,
@@ -369,26 +390,16 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 			],
 			navBorder: getComputedStyle(header).borderBottomWidth,
 			navZIndex: Number.parseInt(getComputedStyle(header).zIndex, 10),
-			sectionBorders: [...panel.querySelectorAll<HTMLElement>(".nav__mega-section")].map(
-				(section) => [
-					getComputedStyle(section).borderLeftWidth,
-					getComputedStyle(section).borderRightWidth,
-				],
-			),
-			labelFonts: [...panel.querySelectorAll<HTMLElement>(".nav__mega-section > p")].map(
-				(label) => {
-					const style = getComputedStyle(label);
-					return [style.fontSize, style.lineHeight, style.fontWeight];
-				},
-			),
+			sectionBorders: sections.map((section) => [
+				getComputedStyle(section).borderLeftWidth,
+				getComputedStyle(section).borderRightWidth,
+			]),
 		};
 	});
 	expect(Math.abs(geometry.panelTop - geometry.headerBottom)).toBeLessThanOrEqual(1);
-	expect(geometry.headerBottom).toBeGreaterThanOrEqual(72);
+	expect(geometry.gridLeft).toEqual(Array(3).fill(geometry.gridLeft[0]));
 	expect(geometry.panelWidth).toBe(1440);
 	expect(geometry.containerWidth).toBe(geometry.panelWidth - 48);
-	expect(geometry.entryGridWidth).toBe(Math.round(geometry.containerWidth * 0.6));
-	expect(geometry.gridLeft).toEqual(Array(4).fill(geometry.gridLeft[0]));
 	expect(geometry.pageOverlay).toBe("none");
 	expect(restingNav).toEqual([
 		"rgba(10, 10, 10, 0.78)",
@@ -402,8 +413,15 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 	expect(geometry.navDirectChrome).toEqual(["rgba(0, 0, 0, 0)", "none"]);
 	expect(geometry.panelDirectChrome).toEqual(geometry.navDirectChrome);
 	await expect(page.locator(".nav__page-overlay, .nav__backdrop")).toHaveCount(0);
-	expect(geometry.sectionBorders).toEqual(Array(3).fill(["0px", "0px"]));
-	expect(geometry.labelFonts).toEqual(Array(3).fill(["16px", "24px", "400"]));
+	expect(geometry.sectionBorders).toEqual(Array(2).fill(["0px", "0px"]));
+	expect(
+		Math.abs(geometry.sectionLefts[0] - (geometry.triggerLeft + geometry.triggerPad)),
+	).toBeLessThanOrEqual(1);
+	expect(
+		Math.abs(
+			geometry.sectionLefts[1] - (geometry.sectionLefts[0] + geometry.firstWidth + 64),
+		),
+	).toBeLessThanOrEqual(1);
 	const targets = await menu.locator("a").evaluateAll((links) =>
 		links.map((link) => ({
 			height: Math.round(link.getBoundingClientRect().height),
@@ -415,11 +433,11 @@ test("desktop menus use one continuous navbar surface and align to the page grid
 			],
 		})),
 	);
-	expect(targets.length).toBe(5);
+	expect(targets.length).toBe(7);
 	expect(Math.min(...targets.map((target) => target.height))).toBeGreaterThanOrEqual(48);
 	expect(new Set(targets.map((target) => target.color))).toEqual(new Set(["rgb(255, 255, 255)"]));
 	expect(new Set(targets.map((target) => target.font.join("/")))).toEqual(
-		new Set(["28px/36px/400"]),
+		new Set(["19px/28px/425"]),
 	);
 	await page.getByRole("menuitem", { name: "Documentation", exact: true }).hover();
 	await expect(menu).toBeVisible();

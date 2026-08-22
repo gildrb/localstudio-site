@@ -179,7 +179,7 @@ test("navigation lists have continuous hit areas", async ({
 	await firstMenuItem.focus();
 	await page.keyboard.press("ArrowDown");
 	await expect(
-		page.getByRole("menuitem", { name: "Setup", exact: true }),
+		page.getByRole("menuitem", { name: "Documentation", exact: true }),
 	).toBeFocused();
 
 	const context = await browser.newContext({

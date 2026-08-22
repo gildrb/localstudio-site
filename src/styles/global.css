@@ -757,11 +757,11 @@ img {
 }
 
 .nav.has-menu--products {
-	--nav-mega-height: 144px;
+	--nav-mega-height: 208px;
 }
 
 .nav.has-menu--resources {
-	--nav-mega-height: 194px;
+	--nav-mega-height: 304px;
 }
 
 .nav.has-menu::before {
@@ -1013,7 +1013,7 @@ button {
 	z-index: 1;
 	/* Sits behind the centered hero copy; top tracks the copy block so the
 	   mark is optically centered against the headline. */
-	top: clamp(48px, 8svh, 88px);
+	top: clamp(72px, 11svh, 120px);
 	left: 50%;
 	width: clamp(720px, 58vw, 940px);
 	/* Matches the cloud mark's real width/height ratio so the camera radius
@@ -1059,7 +1059,7 @@ button {
 	align-items: flex-start;
 	justify-content: center;
 	margin-inline: auto;
-	padding-top: clamp(82px, 11svh, 118px);
+	padding-top: clamp(140px, 18svh, 208px);
 	text-align: center;
 }
 
@@ -1073,14 +1073,12 @@ button {
    crosses the reflective 3D mark. */
 .hero__copy::before {
 	content: "";
-	position: absolute;
-	z-index: -1;
-	inset: -12% -18%;
+	inset: -16% -22%;
 	background: radial-gradient(
 		50% 50% at 50% 50%,
-		rgb(0 0 0 / 0.5),
-		rgb(0 0 0 / 0.28) 55%,
-		transparent 78%
+		rgb(0 0 0 / 0.82),
+		rgb(0 0 0 / 0.55) 55%,
+		transparent 80%
 	);
 	pointer-events: none;
 }
@@ -1116,14 +1114,11 @@ button {
 	font: var(--type-hero-title);
 	letter-spacing: var(--tracking-header-title);
 	text-wrap: balance;
+	text-shadow:
+		0 1px 3px rgb(0 0 0 / 0.7),
+		0 4px 28px rgb(0 0 0 / 0.85);
 }
 
-.hero__lede {
-	max-width: 560px;
-	margin: 22px auto 0;
-	color: var(--dim);
-	font: var(--type-body);
-}
 .hero__actions {
 	display: flex;
 	align-items: center;
@@ -1134,13 +1129,14 @@ button {
 
 .hero__copy .hero__actions {
 	justify-content: center;
+	filter: drop-shadow(0 2px 14px rgb(0 0 0 / 0.75));
 }
 
 .hero__stage {
 	position: relative;
 	z-index: 4;
 	width: min(var(--page-width), calc(100% - var(--page-gutter)));
-	margin: 72px auto 0;
+	margin: 48px auto 0;
 }
 
 .hero__demo-placeholder {
@@ -2097,9 +2093,6 @@ button {
 .hero__enter--title {
 	--hero-enter-delay: 40ms;
 }
-.hero__enter--lede {
-	--hero-enter-delay: 80ms;
-}
 .hero__enter--actions {
 	--hero-enter-delay: 120ms;
 }
@@ -2316,25 +2309,19 @@ button {
 	z-index: 1;
 	width: min(var(--page-width), calc(100% - var(--page-gutter)));
 	margin-inline: auto;
-	padding: 28px 0 36px;
+	padding: 12px 0 32px;
 }
 
 .nav__mega-grid {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(2, minmax(0, max-content));
 	column-gap: 64px;
-	width: 60%;
+	padding-left: var(--mega-col, 0px);
 }
-
 .nav__mega-section {
 	min-width: 0;
 }
 
-.nav__mega-section > p {
-	margin: 0 0 8px;
-	color: var(--subtlest);
-	font: var(--type-body);
-}
 
 .nav__chevron {
 	transition: rotate 130ms ease-out;
@@ -2368,8 +2355,7 @@ button {
 	padding: 0 12px;
 	border-radius: var(--radius-control);
 	color: var(--foreground);
-	font: var(--type-section-title);
-	font-weight: 400;
+	font: var(--type-compact-heading);
 	text-decoration: none;
 	text-align: left;
 	transition:

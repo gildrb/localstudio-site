@@ -866,10 +866,12 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 	const panel = page.locator(".nav__menu-panel");
 	await expect.poll(async () => panel.getByRole("menuitem").allTextContents()).toEqual([
 		"Overview",
-		"Setup",
 		"Documentation",
+		"Setup",
 		"Agents",
 		"Mobile",
+		"Sybil Solutions",
+		"GitHub",
 	]);
 	await expect(
 		panel.getByRole("menuitem", { name: "Overview", exact: true }),
@@ -880,7 +882,6 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 	await expect(
 		panel.getByRole("menuitem", { name: "Setup", exact: true }),
 	).toHaveAttribute("href", "/setup");
-	await expect(panel.getByRole("menuitem", { name: "GitHub", exact: true })).toHaveCount(0);
 	await expect(panel.getByRole("menuitem", { name: "Download", exact: true })).toHaveCount(0);
 	await panel.getByRole("menuitem", { name: "Overview", exact: true }).click();
 	await expect(page).toHaveURL("/overview");
