@@ -120,14 +120,16 @@ export function ProductStory() {
 											<span className="story__option-title">{feature.storyTitle}</span>
 										</div>
 											{selected ? (
-												<p
+												<m.p
 													key={feature.slug}
-												className="story__description"
-											>
-												{feature.storyDescription}
-											</p>
-										) : null}
-										{selected ? <span className="story__timer" aria-hidden="true" /> : null}
+													className="story__description"
+													initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+													animate={{ opacity: 1, y: 0 }}
+													transition={{ duration: 0.2, ease: "easeOut" }}
+												>
+													{feature.storyDescription}
+												</m.p>
+											) : null}
 									</li>
 								);
 							})}
