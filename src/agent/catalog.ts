@@ -53,12 +53,6 @@ export const HTML_ROUTES: readonly HtmlRoute[] = [
 		priority: "0.9",
 	},
 	{
-		path: "/mobile",
-		title: "Mobile - Local Studio",
-		summary: "Pair KittyLitter to the same Local Studio sessions.",
-		priority: "0.8",
-	},
-	{
 		path: "/docs",
 		title: "Documentation - Local Studio",
 		summary: "Install, runtimes, agent runtime, remote/LAN, validation.",
@@ -69,12 +63,6 @@ export const HTML_ROUTES: readonly HtmlRoute[] = [
 		title: "Setup - Local Studio",
 		summary: "Portable setup prompt for a coding model on the target machine.",
 		priority: "0.7",
-	},
-	{
-		path: "/agents",
-		title: "Agents - Local Studio",
-		summary: "DLTL runbook: controllers, providers, runtimes, Pi sessions.",
-		priority: "0.8",
 	},
 	{
 		path: "/overview",

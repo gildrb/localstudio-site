@@ -3,10 +3,8 @@ import type { RoutePath } from "../routing";
 
 const links = [
 	["Machines", "/machine"],
-	["Mobile", "/mobile"],
 	["Docs", "/docs"],
 	["Setup", "/setup"],
-	["Agents", "/agents"],
 	["Download", "/download"],
 ] as const satisfies readonly (readonly [string, RoutePath])[];
 

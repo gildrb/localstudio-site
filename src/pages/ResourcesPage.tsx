@@ -1,6 +1,7 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
+import { PageCta } from "../components/PageCta";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 
@@ -48,12 +49,6 @@ const groups: readonly ResourceGroup[] = [
 			"Coding agents against your local controllers, on desktop and phone.",
 		items: [
 			{
-				name: "Agent setup",
-				text: "Controllers, providers, runtimes, and Pi sessions in one runbook.",
-				href: "/agents",
-				external: false,
-			},
-			{
 				name: "KittyLitter",
 				text: "The native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid.",
 				href: "https://kittylitter.app",
@@ -75,6 +70,8 @@ const groups: readonly ResourceGroup[] = [
 		],
 	},
 ];
+const container = "mx-auto w-[min(1399px,calc(100%_-_48px))]";
+const prose = "text-base/6 text-white/70";
 
 function ResourceCell({ item }: { item: ResourceItem }) {
 	const Icon = item.external ? ArrowUpRight : ArrowRight;
@@ -115,12 +112,14 @@ export function ResourcesPage() {
 			{groups.map((group, index) => (
 				<section
 					aria-labelledby={`resources-group-${index}`}
-					className="page-section mx-auto w-[min(1399px,calc(100%_-_48px))] border-t border-white/10 py-30 max-[900px]:py-16"
+					className={`${container} page-section ${
+						index === 0 ? "pb-30" : "border-t border-white/10 py-30 max-[900px]:py-16"
+					}`}
 					key={group.title}
 				>
 					<div className="grid grid-cols-[minmax(0,1fr)_minmax(280px,.55fr)] items-end gap-20 max-[900px]:grid-cols-1 max-[900px]:gap-4">
 						<h2 id={`resources-group-${index}`}>{group.title}</h2>
-						<p className="text-base/6 text-white/70">{group.description}</p>
+						<p className={prose}>{group.description}</p>
 					</div>
 					<div
 						className={`surface-panel mt-16 grid border border-white/10 max-[900px]:grid-cols-1 ${
@@ -133,6 +132,7 @@ export function ResourcesPage() {
 					</div>
 				</section>
 			))}
+			<PageCta id="resources-cta-title" />
 		</PageShell>
 	);
 }

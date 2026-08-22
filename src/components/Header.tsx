@@ -33,8 +33,6 @@ const resources = [
 	{ label: "Overview", href: "/overview" },
 	{ label: "Documentation", href: "/docs" },
 	{ label: "Setup", href: "/setup" },
-	{ label: "Agents", href: "/agents" },
-	{ label: "Mobile", href: "/mobile" },
 ] as const satisfies readonly NavLink[];
 
 const sybil = [

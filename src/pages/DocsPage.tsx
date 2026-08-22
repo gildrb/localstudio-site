@@ -240,17 +240,6 @@ export function DocsPage() {
 							controller typecheck{`\n`}npm run test:integration # controller
 							integration + frontend regression
 						</pre>
-						<p>
-							For the full agent runbook covering controllers, providers, runtimes, and{" "}
-							<span translate="no">Pi</span> sessions, see{" "}
-							<LocalLink
-								className="text-white underline underline-offset-4"
-								href="/agents"
-							>
-								the agents page
-							</LocalLink>
-							.
-						</p>
 					</section>
 				</article>
 			</div>

@@ -1,10 +1,8 @@
 export const routePaths = [
 	"/",
 	"/product",
-	"/mobile",
 	"/docs",
 	"/setup",
-	"/agents",
 	"/download",
 	"/overview",
 	"/machine",

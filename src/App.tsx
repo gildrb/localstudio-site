@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSkySelection } from "./hooks/use-sky-selection";
 import { HomePage } from "./pages/HomePage";
+import { MachinePage } from "./pages/MachinePage";
 import { MachineContext } from "./machine";
 import {
 	emitNavigation,
@@ -11,21 +12,20 @@ import {
 	subscribeToNavigation,
 } from "./routing";
 
-const AgentsPage = lazy(() =>
-	import("./pages/AgentsPage").then(({ AgentsPage }) => ({ default: AgentsPage })),
-);
 const DocsPage = lazy(() =>
 	import("./pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),
 );
 const DownloadPage = lazy(() =>
 	import("./pages/DownloadPage").then(({ DownloadPage }) => ({ default: DownloadPage })),
 );
-const MachinePage = lazy(() =>
-	import("./pages/MachinePage").then(({ MachinePage }) => ({ default: MachinePage })),
-);
-const MobilePage = lazy(() =>
-	import("./pages/MobilePage").then(({ MobilePage }) => ({ default: MobilePage })),
-);
+const prefetchRoutes = () => {
+	void import("./pages/DocsPage");
+	void import("./pages/DownloadPage");
+	void import("./pages/NotFoundPage");
+	void import("./pages/ProductPage");
+	void import("./pages/PromptPage");
+	void import("./pages/ResourcesPage");
+};
 const NotFoundPage = lazy(() =>
 	import("./pages/NotFoundPage").then(({ NotFoundPage }) => ({ default: NotFoundPage })),
 );
@@ -42,10 +42,8 @@ const ResourcesPage = lazy(() =>
 const titles = {
 	"/": "Intelligence should be owned - Local Studio",
 	"/product": "Product - Local Studio",
-	"/mobile": "Mobile - Local Studio",
 	"/docs": "Documentation - Local Studio",
 	"/setup": "Setup - Local Studio",
-	"/agents": "Agents - Local Studio",
 	"/download": "Download for macOS - Local Studio",
 	"/overview": "Overview - Local Studio",
 	"/machine": "Machines - Local Studio",
@@ -57,10 +55,8 @@ function routeFor(pathname: string) {
 	if (pathname === "/machine") return <MachinePage />;
 	if (!isRoutePath(pathname)) return <NotFoundPage />;
 	if (pathname === "/product") return <ProductPage />;
-	if (pathname === "/mobile") return <MobilePage />;
 	if (pathname === "/docs") return <DocsPage />;
 	if (pathname === "/setup") return <PromptPage />;
-	if (pathname === "/agents") return <AgentsPage />;
 	if (pathname === "/download") return <DownloadPage />;
 	if (pathname === "/overview") return <ResourcesPage />;
 	return <HomePage />;
@@ -68,6 +64,12 @@ function routeFor(pathname: string) {
 
 export default function App() {
 	useSkySelection();
+	useEffect(() => {
+		const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
+		const cancel = window.cancelIdleCallback ?? ((id: number) => window.clearTimeout(id));
+		const id = idle(prefetchRoutes);
+		return () => cancel(id);
+	}, []);
 	const [location, setLocation] = useState(
 		() => `${window.location.pathname}${window.location.hash}`,
 	);
@@ -87,6 +89,9 @@ export default function App() {
 	useEffect(() => {
 		function updateLocation(source: NavigationSource) {
 			navigationSource.current = source;
+			if (source === "push" && !window.location.hash) {
+				window.scrollTo({ top: 0, behavior: "instant" });
+			}
 			setLocation(`${window.location.pathname}${window.location.hash}`);
 		}
 		function handlePopState() {
@@ -116,7 +121,6 @@ export default function App() {
 		const finishNavigation = () => {
 			if (hash) return scrollToHash(hash);
 			if (navigationSource.current !== "push") return true;
-			window.scrollTo({ top: 0 });
 			const heading = document.querySelector("main h1, .machine");
 			if (!(heading instanceof HTMLElement)) return false;
 			heading.focus({ preventScroll: true });

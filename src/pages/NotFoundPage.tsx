@@ -5,10 +5,8 @@ import { PageShell } from "../components/PageShell";
 const suggestions = [
 	["Overview", "/"],
 	["Product", "/product"],
-	["Mobile", "/mobile"],
 	["Docs", "/docs"],
 	["Setup prompt", "/setup"],
-	["Agents", "/agents"],
 	["Download", "/download"],
 ] as const;
 
