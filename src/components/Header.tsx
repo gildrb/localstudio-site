@@ -35,14 +35,9 @@ const resources = [
 	{ label: "Setup", href: "/setup" },
 ] as const satisfies readonly NavLink[];
 
-const sybil = [
-	{ label: "Sybil Solutions", href: "https://www.sybilsolutions.ai/", external: true },
-	{ label: "GitHub", href: "https://github.com/sybil-solutions", external: true },
-] as const satisfies readonly NavLink[];
-
 const menuColumns = {
 	products: [products],
-	resources: [resources, sybil],
+	resources: [resources],
 } as const satisfies Record<MenuId, readonly (readonly NavLink[])[]>;
 const githubUrl = "https://github.com/sybil-solutions/local-studio";
 const mobileQuery = "(max-width: 900px)";

@@ -1409,13 +1409,6 @@ button {
 	font: var(--type-body);
 }
 
-@media (min-width: 901px) {
-	/* Reserve room for the tallest hover description so expanding
-	   never pushes the feature grid downward. */
-	.kitty__index {
-		min-height: 290px;
-	}
-}
 
 
 .kitty__actions {
@@ -1443,9 +1436,11 @@ button {
 	isolation: isolate;
 	aspect-ratio: 1;
 	overflow: hidden;
-	border: 1px solid var(--border);
+	padding: 1px;
 	border-radius: var(--radius-frame);
-	background: var(--surface-faint);
+	background:
+		linear-gradient(var(--surface-faint), var(--surface-faint)) padding-box,
+		linear-gradient(to bottom, var(--border), rgb(0 0 0)) border-box;
 }
 
 .kitty__feature-media::before,

@@ -869,8 +869,6 @@ test("internal navigation never leaves the local origin", async ({ page }) => {
 		"Setup",
 		"Agents",
 		"Mobile",
-		"Sybil Solutions",
-		"GitHub",
 	]);
 	await expect(
 		panel.getByRole("menuitem", { name: "Overview", exact: true }),
