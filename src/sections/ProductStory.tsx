@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { productFeatures } from "../content/product-features";
-
 const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
 
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
@@ -83,6 +83,7 @@ export function ProductStory() {
 	const { activeIndex, showcaseRef } = useStoryProgress();
 	const [demoInRange, setDemoInRange] = useState(false);
 	const visualRef = useRef<HTMLElement>(null);
+	const reduceMotion = useReducedMotion();
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
 
 	useEffect(() => {
@@ -97,7 +98,7 @@ export function ProductStory() {
 	}, []);
 
 	return (
-		<>
+		<LazyMotion features={domAnimation} strict>
 			<section id="media" className="story section-width" aria-label="Local Studio product story">
 				<div className="story__showcase" ref={showcaseRef}>
 					<div className="story__sticky">
@@ -138,12 +139,17 @@ export function ProductStory() {
 								ref={visualRef}
 								data-active-feature={activeFeature.storyTitle}
 							>
-								{demoInRange ? (
-									<Suspense fallback={DEMO_PLACEHOLDER}>
-									<div key={activeFeature.slug}>
-										<FeatureDemo scene={activeFeature.slug} />
-									</div>
-								</Suspense>
+									{demoInRange ? (
+										<Suspense fallback={DEMO_PLACEHOLDER}>
+											<m.div
+												key={activeFeature.slug}
+												initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
+												animate={{ opacity: 1, filter: "blur(0px)" }}
+												transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+											>
+												<FeatureDemo scene={activeFeature.slug} />
+											</m.div>
+										</Suspense>
 								) : (
 									DEMO_PLACEHOLDER
 								)}
@@ -161,6 +167,6 @@ export function ProductStory() {
 					</div>
 				</div>
 			</section>
-		</>
+		</LazyMotion>
 	);
 }

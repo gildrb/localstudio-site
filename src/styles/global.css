@@ -1263,12 +1263,6 @@ button {
 .story__option:first-child {
 	border-top: 0;
 }
-.story__option.is-active {
-	background-color: var(--surface-faint);
-}
-.story__option:first-child {
-	border-top: 0;
-}
 .story__option-control {
 	display: grid;
 	width: 100%;
