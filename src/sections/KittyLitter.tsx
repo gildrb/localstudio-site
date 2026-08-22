@@ -99,16 +99,9 @@ export function KittyLitter() {
 				aria-labelledby="kittylitter-title"
 			>
 				<div className="kitty__intro">
-					<div className="kitty__intro-main">
-						<h2 id="kittylitter-title">
-							Keep the session when you leave your desk
-						</h2>
-						<div className="kitty__actions">
-							<TextLink href="https://kittylitter.app/" target="_blank" rel="noreferrer">
-								Go to KittyLitter
-							</TextLink>
-						</div>
-					</div>
+					<h2 id="kittylitter-title">
+						Keep the session when you leave your desk
+					</h2>
 					<ul className="kitty__index">
 						{features.map((feature, index) => (
 							<FeatureIndexItem
@@ -121,6 +114,15 @@ export function KittyLitter() {
 							/>
 						))}
 					</ul>
+				</div>
+				<div className="kitty__actions">
+					<TextLink
+						href="https://kittylitter.app/"
+						target="_blank"
+						rel="noreferrer"
+					>
+						Go to KittyLitter
+					</TextLink>
 				</div>
 				<div className="kitty__grid">
 					{features.map((feature) => (

@@ -13,7 +13,7 @@ export function PromptPage() {
 				title="Give this to any coding model"
 				description="It will inspect the machine, choose the right runtime, install Local Studio, and prove a real inference request works."
 				actions={
-					<CtaPair secondary={{ href: "/docs", label: "Read the docs" }} />
+					<CtaPair secondary={{ href: "/overview", label: "Go to overview" }} />
 				}
 			/>
 			<section className="section-width pb-30" aria-label="Setup handoff">

@@ -3,6 +3,7 @@ import type { RoutePath } from "../routing";
 
 const links = [
 	["Machines", "/machine"],
+	["Overview", "/overview"],
 	["Docs", "/docs"],
 	["Setup", "/setup"],
 	["Download", "/download"],
