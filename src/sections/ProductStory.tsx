@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
+import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
 import { productFeatures } from "../content/product-features";
 const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
 
@@ -98,7 +98,7 @@ export function ProductStory() {
 	}, []);
 
 	return (
-		<LazyMotion features={domAnimation} strict>
+		<LazyMotion features={domMax} strict>
 			<section id="media" className="story section-width" aria-label="Local Studio product story">
 				<div className="story__showcase" ref={showcaseRef}>
 					<div className="story__sticky">
@@ -123,6 +123,7 @@ export function ProductStory() {
 												<m.p
 													key={feature.slug}
 													className="story__description"
+													layout="position"
 													initial={reduceMotion ? false : { opacity: 0, y: 6 }}
 													animate={{ opacity: 1, y: 0 }}
 													transition={{ duration: 0.2, ease: "easeOut" }}

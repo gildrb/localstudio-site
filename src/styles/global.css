@@ -2102,25 +2102,13 @@ button {
 
 
 
-@keyframes copy-symbol-enter {
-	from {
-		opacity: 0;
-		transform: translate(-50%, -50%) scale(0.8);
-	}
-}
 
 .copy-icon__symbol {
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	animation: copy-symbol-enter 120ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.copy-icon__symbol {
-		animation: none;
-	}
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	transform-origin: center;
 }
 
 .route-pending {
