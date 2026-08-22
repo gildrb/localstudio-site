@@ -111,12 +111,11 @@ test("homepage hero, product story, and mobile story have no separators", async 
 			return element;
 		}
 		const hero = html(".hero").getBoundingClientRect();
-		const intro = html(".story__intro").getBoundingClientRect();
-		const showcase = html(".story__showcase").getBoundingClientRect();
+		const showcaseTop = html(".story__showcase").getBoundingClientRect().top;
 		const kittyHeading = html(".kitty h2").getBoundingClientRect();
 		return {
 			borders: [".hero", ".story"].map((selector) => getComputedStyle(html(selector)).borderBottomWidth),
-			firstGap: Math.round(intro.top - hero.bottom),
+			firstGap: Math.round(showcaseTop - hero.bottom),
 			secondGap: Math.round(kittyHeading.top - showcase.bottom),
 		};
 	});

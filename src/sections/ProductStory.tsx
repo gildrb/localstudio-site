@@ -98,14 +98,7 @@ export function ProductStory() {
 
 	return (
 		<>
-			<section id="media" className="story section-width" aria-labelledby="system-title">
-				<div className="story__intro">
-					<h2 id="system-title">Local AI should be easy to run</h2>
-					<p>
-						<span translate="no">Local Studio</span> keeps the model, the runtime, and the hardware
-						together. Nothing important disappears behind a provider abstraction.
-					</p>
-				</div>
+			<section id="media" className="story section-width" aria-label="Local Studio product story">
 				<div className="story__showcase" ref={showcaseRef}>
 					<div className="story__sticky">
 						<div className="story__options-window">

@@ -1167,7 +1167,7 @@ button {
 	margin: 0 0 36px;
 	font: var(--type-meta);
 	color: var(--quiet);
-	text-align: center;
+	text-align: left;
 }
 
 .sponsors__list {
@@ -1196,25 +1196,12 @@ button {
 	padding: var(--homepage-story-gap) 0 0;
 }
 
-.story__intro {
-	max-width: 900px;
-	margin: 0 auto 80px;
-	text-align: center;
-}
-
 .story h2,
 .kitty h2,
 .final-callout h2 {
 	margin-top: 0;
 	font: var(--type-subheadline);
 	letter-spacing: var(--tracking-header-title);
-}
-
-.story__intro > p:last-child {
-	max-width: 620px;
-	margin: 30px auto 0;
-	color: var(--dim);
-	font: var(--type-body);
 }
 
 .story__showcase {
@@ -1237,6 +1224,7 @@ button {
 	align-self: center;
 	width: 100%;
 	height: min(787px, calc(100svh - var(--story-sticky-top) - 48px));
+	min-height: 0;
 	overflow: visible;
 }
 .story__options {
@@ -1310,6 +1298,7 @@ button {
 .story__visual-home {
 	align-self: center;
 	max-height: min(787px, calc(100svh - var(--story-sticky-top) - 48px));
+	min-height: 0;
 	overflow: clip;
 }
 .story__scroll-track {
@@ -1673,15 +1662,11 @@ button {
 		padding: var(--homepage-story-gap) 0 0;
 	}
 
-	.story__intro {
-		margin-bottom: 64px;
-	}
 	.story {
 		overflow-x: clip;
 	}
 	.story__sticky {
 		grid-template-columns: minmax(0, 1fr);
-		grid-template-rows: auto auto;
 		align-content: center;
 		gap: 24px;
 		padding-block: 20px;
