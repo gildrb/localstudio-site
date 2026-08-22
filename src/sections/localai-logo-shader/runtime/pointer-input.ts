@@ -2,7 +2,7 @@ import type { RefObject } from "react";
 import { evePointerInteractionMode } from "../mobile-motion";
 import { bloomRadiusForDevicePixelRatio, mapClientPointToPaintCell } from "../render";
 import {
-  getBrowserDevicePixelRatio,
+  getEffectiveDevicePixelRatio,
   type CanvasLayoutRef,
   type DevicePixelRatioRef,
 } from "./canvas-sizing";
@@ -111,7 +111,12 @@ export function createPointerController({
       deactivateBrush();
       return;
     }
-    const devicePixelRatio = getBrowserDevicePixelRatio(devicePixelRatioRef.current);
+    const layout = canvasLayoutRef.current;
+    const devicePixelRatio = getEffectiveDevicePixelRatio(
+      layout.width,
+      layout.height,
+      devicePixelRatioRef.current,
+    );
     const paddingRadius = bloomRadiusForDevicePixelRatio(devicePixelRatio);
     const logicalWidth = Math.max(1, canvas.width - paddingRadius * 2);
     const logicalHeight = Math.max(1, canvas.height - paddingRadius * 2);

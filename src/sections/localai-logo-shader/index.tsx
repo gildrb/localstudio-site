@@ -168,6 +168,11 @@ export function LocalAiLogoShader() {
 
 		const canvas = canvasRef.current;
 		if (canvas) canvas.style.opacity = "";
+		// Start from a clean placeholder state: remounts (HMR, StrictMode)
+		// can inherit the --visible class from a previous runtime.
+		fallbackRef.current?.classList.remove(
+			"hero-logo-renderer__fallback--visible",
+		);
 		if (prefersReducedMotion || prefersReducedMotionSync()) {
 			// Static path: the flat SVG is the final render, show it now.
 			handleFallback();
@@ -215,12 +220,24 @@ export function LocalAiLogoShader() {
 
 		async function start() {
 			const activeCanvas = canvasRef.current;
-			if (!activeCanvas || !navigator.gpu) return;
+			if (!activeCanvas || !navigator.gpu) {
+				// No WebGPU: the static SVG becomes the permanent render; show it
+				// immediately instead of leaving the hero blank for the timer delay.
+				handleFallback();
+				return;
+			}
 			const context = activeCanvas.getContext("webgpu");
-			if (!context || !("configure" in context)) return;
+			if (!context || !("configure" in context)) {
+				handleFallback();
+				return;
+			}
 
 			const mesh = await loadMesh();
 			if (state.cancelled) return;
+			// Mesh is in: cancel the placeholder timer so only genuinely slow
+			// networks ever show it. Remaining GPU init/pipeline compile time
+			// stays calmly blank instead of flashing SVG -> render.
+			window.clearTimeout(fallbackPlaceholderTimerRef.current);
 			state.activeMesh = mesh;
 			// Frame the real mark: it is wider than tall, so a height-only fit
 			// would clip the silhouette at both canvas edges.
@@ -281,7 +298,9 @@ export function LocalAiLogoShader() {
 				fatalErrorRef.current = null;
 				runtime.drawLoopDispose?.();
 				if (activeCanvas) activeCanvas.style.opacity = "";
-				if (!state.cancelled) handleFallback();
+				// No handleFallback here: fatal paths (device lost, render throw)
+				// call it explicitly before dispose, and on remount a re-shown
+				// placeholder would flash SVG -> render again.
 				renderer.dispose();
 				app.device.destroy();
 				disposeRuntime = undefined;

@@ -20,7 +20,6 @@ export const AGENTS_ENV_YAW_LERP_SPEED = 3;
 const AGENTS_ENV_YAW_OFFSET = -Math.PI * 0.1;
 const ASCII_MOUSE_LERP_SPEED = 6;
 const PAINT_MOVEMENT_GRACE_MS = 72;
-const CANVAS_FADE_FALLBACK_MS = 800;
 const CANVAS_REVEAL_RENDER_COUNT = 3;
 const MAX_FRAME_DELTA_SECONDS = 0.05;
 export const AGENTS_MAX_FRAME_DELTA_SECONDS = MAX_FRAME_DELTA_SECONDS;
@@ -104,7 +103,6 @@ export function createDrawLoop({
   onFatalError: () => void;
 }) {
   let successfulRenderCount = 0;
-  let finishCanvasFade: (() => void) | undefined;
   let running = false;
   const frameLoopProbe = getHeroFrameLoopProbe();
   let lastProbeDatasetWrite = 0;
@@ -235,8 +233,11 @@ export function createDrawLoop({
 
     successfulRenderCount += 1;
     if (successfulRenderCount === CANVAS_REVEAL_RENDER_COUNT) {
+      // Reveal the canvas and retire the placeholder in the same frame so the
+      // two 240ms fades crossfade cleanly — waiting for transitionend leaves a
+      // window where the placeholder timer can re-show the flat SVG (flicker).
       canvas.style.opacity = "1";
-      finishCanvasFade = onCanvasFullyOpaque(canvas, onCanvasRevealed);
+      onCanvasRevealed();
     }
 
     if (frameLoopProbe) {
@@ -275,7 +276,6 @@ export function createDrawLoop({
     step: draw,
     dispose() {
       stop();
-      finishCanvasFade?.();
     },
   };
 }
@@ -291,23 +291,4 @@ function stepLogoModeProgress(
   const step = Math.max(0, deltaSeconds) / safeDuration;
   if (Math.abs(safeTarget - current) <= step) return safeTarget;
   return current + Math.sign(safeTarget - current) * step;
-}
-
-function onCanvasFullyOpaque(canvas: HTMLCanvasElement, callback: () => void) {
-  let done = false;
-  let timeout = 0;
-  const finish = () => {
-    if (done) return;
-    done = true;
-    canvas.removeEventListener("transitionend", onTransitionEnd);
-    window.clearTimeout(timeout);
-    if (canvas.isConnected) callback();
-  };
-  const onTransitionEnd = (event: TransitionEvent) => {
-    if (event.propertyName === "opacity") finish();
-  };
-
-  canvas.addEventListener("transitionend", onTransitionEnd);
-  timeout = window.setTimeout(finish, CANVAS_FADE_FALLBACK_MS);
-  return finish;
 }

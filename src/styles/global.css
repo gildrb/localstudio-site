@@ -1013,9 +1013,9 @@ button {
 	z-index: 1;
 	/* Sits behind the centered hero copy; top tracks the copy block so the
 	   mark is optically centered against the headline. */
-	top: clamp(64px, 10svh, 104px);
+	top: clamp(48px, 8svh, 88px);
 	left: 50%;
-	width: clamp(560px, 44vw, 720px);
+	width: clamp(720px, 58vw, 940px);
 	/* Matches the cloud mark's real width/height ratio so the camera radius
 	   fit frames the complete shape with symmetric margins. */
 	aspect-ratio: 1.52;
@@ -1624,9 +1624,9 @@ button {
 	}
 
 	.hero-logo-renderer {
-		top: 32px;
+		top: 24px;
 		left: 50%;
-		width: min(92vw, 520px);
+		width: min(96vw, 620px);
 	}
 
 	.hero__stage {

@@ -51,7 +51,7 @@ export function createEve5Renderer(
       imprint.gridScaleMultiplier,
     );
     const requiresBackSurfaceTargets =
-      backRefractionEnabled ||
+      (backRefractionEnabled && controls.material === "glass") ||
       controls.material === "back-albedo" ||
       controls.material === "back-depth" ||
       controls.material === "thickness";
@@ -151,6 +151,9 @@ export function createEve5Renderer(
       BLOOM_STRENGTH_ON,
       clampUnit(imprint.progress ?? 0),
     );
+    // The horizontal pass samples the full-resolution scene, so its radius
+    // stays in scene texels; the vertical pass reads the half-resolution
+    // horizontal target and needs half the radius for the same blur extent.
     renderBlur(device, resources, targets.scene, targets.horizontal, [1, 0], true, paddingRadius);
     renderBlur(
       device,
@@ -159,7 +162,7 @@ export function createEve5Renderer(
       targets.vertical,
       [0, 1],
       false,
-      paddingRadius,
+      Math.max(0, Math.round(paddingRadius / 2)),
     );
     renderComposite(device, resources, target, targets, targets.vertical, effectiveBloomStrength);
   };

@@ -67,13 +67,21 @@ export function createBloomTargetCache(device: Device) {
           padded.width,
           padded.height,
         ),
+        // Bloom runs at half resolution: the glow is a low-frequency effect,
+        // so quartering the blur pixels is visually identical and cuts the
+        // dominant per-frame cost of the wide separable gaussian.
         horizontal: createBloomTexture(
           device,
           "eve-5-bloom-horizontal",
-          padded.width,
-          padded.height,
+          Math.max(1, Math.ceil(padded.width / 2)),
+          Math.max(1, Math.ceil(padded.height / 2)),
         ),
-        vertical: createBloomTexture(device, "eve-5-bloom-vertical", padded.width, padded.height),
+        vertical: createBloomTexture(
+          device,
+          "eve-5-bloom-vertical",
+          Math.max(1, Math.ceil(padded.width / 2)),
+          Math.max(1, Math.ceil(padded.height / 2)),
+        ),
       };
       return targets;
     },
