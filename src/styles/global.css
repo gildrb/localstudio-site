@@ -1069,16 +1069,16 @@ button {
 	max-width: 790px;
 }
 
-/* Faint drop shadow behind the copy so the headline stays legible where it
-   crosses the reflective 3D mark. */
+/* Nearly invisible wide radial: only enough density to protect glyphs where
+   they cross the brightest cloud reflections; falloff never reads as an edge. */
 .hero__copy::before {
 	content: "";
-	inset: -16% -22%;
+	inset: -60% -80%;
 	background: radial-gradient(
 		50% 50% at 50% 50%,
-		rgb(0 0 0 / 0.82),
-		rgb(0 0 0 / 0.55) 55%,
-		transparent 80%
+		rgb(0 0 0 / 0.32),
+		rgb(0 0 0 / 0.16) 55%,
+		transparent 100%
 	);
 	pointer-events: none;
 }
@@ -1114,9 +1114,8 @@ button {
 	font: var(--type-hero-title);
 	letter-spacing: var(--tracking-header-title);
 	text-wrap: balance;
-	text-shadow:
-		0 1px 3px rgb(0 0 0 / 0.7),
-		0 4px 28px rgb(0 0 0 / 0.85);
+	/* Hairline contact shadow only: no wide blur, nothing that reads as a halo. */
+	text-shadow: 0 1px 2px rgb(0 0 0 / 0.38);
 }
 
 .hero__actions {
@@ -1129,7 +1128,7 @@ button {
 
 .hero__copy .hero__actions {
 	justify-content: center;
-	filter: drop-shadow(0 2px 14px rgb(0 0 0 / 0.75));
+	filter: drop-shadow(0 1px 8px rgb(0 0 0 / 0.4));
 }
 
 .hero__stage {
@@ -1158,6 +1157,39 @@ button {
 	margin-left: var(--hero-stage-pad);
 	margin-right: 0;
 	overflow: clip;
+}
+
+.sponsors {
+	margin-top: 96px;
+}
+
+.sponsors__title {
+	margin: 0 0 36px;
+	font: var(--type-meta);
+	color: var(--quiet);
+	text-align: center;
+}
+
+.sponsors__list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px 48px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.sponsors__list img {
+	display: block;
+	width: auto;
+}
+
+@media (max-width: 900px) {
+	.sponsors__list {
+		justify-content: center;
+	}
 }
 
 .story {

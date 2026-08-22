@@ -111,11 +111,11 @@ fn cloud_field(dir: vec3f) -> vec2f {
 
 fn sky_radiance(dir: vec3f) -> vec3f {
   let y = dir.y;
-  // Deep dusk-blue vertical gradient, scene-linear. The sky is kept very dark
-  // so the metal reads near-black; the softbox streaks and the sun glint
-  // supply the "reflecting light" moments, and clouds stay legible but moody.
-  let zenith = vec3f(0.008, 0.016, 0.038);
-  let horizon = vec3f(0.085, 0.11, 0.155);
+  // Dusk-blue vertical gradient, scene-linear. Dark enough that the metal
+  // reads near-black, bright enough that the sky and clouds stay clearly
+  // visible inside every reflection.
+  let zenith = vec3f(0.020, 0.045, 0.100);
+  let horizon = vec3f(0.220, 0.300, 0.420);
   let horizonWeight = pow(1.0 - clamp(y, 0.0, 1.0), 2.2);
   var radiance = mix(zenith, horizon, horizonWeight);
 
@@ -124,11 +124,11 @@ fn sky_radiance(dir: vec3f) -> vec3f {
   if (y > 0.015) {
     let field = cloud_field(dir);
     let density = field.x;
-    // Cloud bodies: moonlit tops against darker steel-grey thick cores,
-    // with a faint silver-lining forward-scatter toward the sun.
+    // Moonlit cloud tops against steel-grey thick cores, with a clear
+    // silver-lining forward-scatter toward the sun.
     let thickness = clamp(field.y * 0.9 + 0.25, 0.0, 1.0);
-    let body = mix(vec3f(0.165, 0.175, 0.195), vec3f(0.040, 0.047, 0.062), thickness);
-    let silverLining = pow(max(cosSun, 0.0), 4.0) * 0.16;
+    let body = mix(vec3f(0.420, 0.460, 0.520), vec3f(0.090, 0.105, 0.135), thickness);
+    let silverLining = pow(max(cosSun, 0.0), 4.0) * 0.30;
     let cloudColor = body + vec3f(silverLining);
     // Clouds compress into haze at the horizon instead of aliasing.
     let horizonFade = smoothstep(0.015, 0.18, y);
@@ -138,7 +138,7 @@ fn sky_radiance(dir: vec3f) -> vec3f {
   // Crisp HDR sun: a small hot disc whose glint sweeps across the metal as
   // the pointer rotates the environment, plus a restrained atmospheric halo.
   radiance += vec3f(1.0, 0.97, 0.92) * pow(max(cosSun, 0.0), 1400.0) * 26.0;
-  radiance += vec3f(0.9, 0.95, 1.0) * pow(max(cosSun, 0.0), 9.0) * 0.10;
+  radiance += vec3f(0.9, 0.95, 1.0) * pow(max(cosSun, 0.0), 9.0) * 0.18;
 
   if (y < 0.0) {
     // Below the horizon: near-black water/ground keeps reflection contrast.
@@ -148,6 +148,7 @@ fn sky_radiance(dir: vec3f) -> vec3f {
 
   return radiance;
 }
+
 
 @fragment
 fn fs_main(input: VertexOutput) -> @location(0) vec4f {
