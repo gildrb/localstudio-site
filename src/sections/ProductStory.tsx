@@ -118,9 +118,14 @@ export function ProductStory() {
 										<div className="story__option-control">
 											<span className="story__option-title">{feature.storyTitle}</span>
 										</div>
-										<div hidden={!selected}>
-											<p className="story__description">{feature.storyDescription}</p>
-										</div>
+											{selected ? (
+												<p
+													key={feature.slug}
+												className="story__description"
+											>
+												{feature.storyDescription}
+											</p>
+										) : null}
 										{selected ? <span className="story__timer" aria-hidden="true" /> : null}
 									</li>
 								);
