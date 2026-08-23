@@ -1,4 +1,12 @@
-export { isRoutePath, routePaths, type RoutePath } from "./domain/route";
+import { hashAnchor } from "./domain/route";
+
+export {
+	hashAnchor,
+	isRoutePath,
+	normalizePath,
+	routePaths,
+	type RoutePath,
+} from "./domain/route";
 
 type NavigationListener = () => void;
 
@@ -17,15 +25,8 @@ export function emitNavigation() {
 	}
 }
 
-export function normalizePath(pathname: string) {
-	if (pathname !== "/" && pathname.endsWith("/")) {
-		return pathname.slice(0, -1);
-	}
-	return pathname;
-}
-
 export function scrollToHash(hash: string) {
-	const anchor = hash.split("=")[0];
+	const anchor = hashAnchor(hash);
 	let target: Element | null;
 	try {
 		target = document.querySelector(anchor);
@@ -50,4 +51,3 @@ export function scrollToHash(hash: string) {
 	focusTarget.focus({ preventScroll: true });
 	return true;
 }
-

@@ -169,3 +169,40 @@ export function markdownPages(): ReadonlyMap<string, string> {
 	}
 	return new Map(entries);
 }
+
+export function normalizePath(pathname: string): string {
+	if (pathname !== "/" && pathname.endsWith("/")) {
+		return pathname.slice(0, -1);
+	}
+	return pathname;
+}
+
+export type LinkDecision =
+	| { readonly kind: "external" }
+	| { readonly kind: "push"; readonly next: string }
+	| { readonly kind: "hash"; readonly hash: string }
+	| { readonly kind: "top" };
+
+export function decideSameOriginNavigation(
+	href: string,
+	currentOrigin: string,
+	currentPath: string,
+): LinkDecision {
+	let target: URL;
+	try {
+		target = new URL(href, currentOrigin + currentPath);
+	} catch {
+		return { kind: "external" };
+	}
+	const current = new URL(currentPath, currentOrigin);
+	if (target.origin !== current.origin) return { kind: "external" };
+	const next = `${target.pathname}${target.search}${target.hash}`;
+	const here = `${current.pathname}${current.search}${current.hash}`;
+	if (next !== here) return { kind: "push", next };
+	if (target.hash) return { kind: "hash", hash: target.hash };
+	return { kind: "top" };
+}
+
+export function hashAnchor(hash: string): string {
+	return hash.split("=")[0] ?? hash;
+}
