@@ -9,15 +9,15 @@ const SITE_ORIGIN = site.origin;
 const DOWNLOAD = release;
 
 export function markdownPage(title: string, body: string): string {
-	return `# ${title}\n\nCompany: Sybil Solutions (${site.company.url}).\n\n${body.trim()}\n`;
+	return `# ${title}\n\nCompany: ${site.company.name} (${site.company.url}).\n\n${body.trim()}\n`;
 }
 
 export function llmsTxt(): string {
-	return `# Local Studio - Sybil Solutions
+	return `# ${site.products.localStudio.name} - ${site.company.name}
 
-> Canonical LLM / agent reference for Local Studio and the Sybil Solutions products listed here.
+> Canonical LLM / agent reference for ${site.products.localStudio.name} and the ${site.company.name} products listed here.
 
-- Company: [Sybil Solutions](${site.company.url})
+- Company: [${site.company.name}](${site.company.url})
 - Site: [${SITE_ORIGIN}](${SITE_ORIGIN})
 - Machine index: [${SITE_ORIGIN}/machine](${SITE_ORIGIN}/machine)
 - Full text: [${SITE_ORIGIN}/llms-full.txt](${SITE_ORIGIN}/llms-full.txt)

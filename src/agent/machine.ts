@@ -15,8 +15,8 @@ export function machineSections(): MachineSection[] {
 		[
 			"COMPANY",
 			[
-				field("name", "Sybil Solutions"),
-				field("legal", "Sybil Solutions"),
+				field("name", site.company.name),
+				field("legal", site.company.name),
 				field("tagline", "Software · AI · Automation"),
 				field("mission", "Building production systems with AI"),
 				field("focus", "local-first tooling for self-hosted LLM backends"),
@@ -31,14 +31,14 @@ export function machineSections(): MachineSection[] {
 				"you own the box it runs on. This website (localstudio.ai) is the",
 				"public surface for Local Studio, the company's primary product.",
 				"",
-				"products ...... Local Studio, KittyLitter, Codex Shim",
+				`${"products ...... "}${site.products.localStudio.name}, ${site.products.kittyLitter.name}, ${site.products.codexShim.name}`,
 			],
 		],
 		[
 			"THIS_SITE",
 			[
 				field("host", "localstudio.ai"),
-				field("name", "Local Studio"),
+				field("name", site.products.localStudio.name),
 				field("aka", "localstudio, local-studio"),
 				field("kind", "public product site + machine-readable index"),
 				field("stack", "React 19, TypeScript, Vite, Tailwind CSS"),
