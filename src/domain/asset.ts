@@ -31,6 +31,10 @@ export const assets = {
 	sponsorLambda: "/images/sponsors/lambda.svg",
 	sponsorPrime: "/images/sponsors/prime-intellect.svg",
 	sponsorTng: "/images/sponsors/tng.svg",
+	fontSans: "/fonts/geist-sans.woff2",
+	fontMono: "/fonts/geist-mono.woff2",
+	logoMesh: "/localai/localai-logo.gltf",
+	logoMeshBin: "/localai/localai-logo.bin",
 } as const;
 
 const registered = new Set<string>(Object.values(assets));
