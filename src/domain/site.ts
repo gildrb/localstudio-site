@@ -6,6 +6,7 @@ export const site = {
 		alias: "https://sybilsolutions.ai",
 		github: "https://github.com/sybil-solutions",
 		contact: "sherif@sybilsolutions.ai",
+		x: "https://x.com/0xsero",
 	},
 	products: {
 		localStudio: {

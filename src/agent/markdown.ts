@@ -48,7 +48,7 @@ Controller default: \`127.0.0.1:8080\`. Non-loopback bind requires \`LOCAL_STUDI
 Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. Connect from LAN, SSH, or Alleycat P2P QR pairing. Open source, always free. Pairs to Local Studio 2.9.0+ (KittyLitter 1.6.0+). Shared Rust core via UniFFI. Work stays on the Mac/server.
 
 - Site: ${site.products.kittyLitter.url}
-- Source: https://github.com/dnakov/litter
+- Source: ${site.products.kittyLitter.source}
 - App Store: ${site.products.kittyLitter.appStore}
 - Play: ${site.products.kittyLitter.playStore}
 - Pairing: Local Studio → Settings → Profile & phone → Connect your phone. Treat QR / connection JSON as a password.
@@ -65,7 +65,7 @@ Local Python/aiohttp Responses-API endpoint on loopback. Codex Desktop keeps nat
 - URL: ${site.company.url}
 - Contact: ${site.company.contact}
 - GitHub: ${site.company.github}
-- X: https://x.com/0xsero
+- X: ${site.company.x}
 - Focus: local-first tooling for self-hosted LLM backends
 
 ## Discovery
@@ -324,13 +324,13 @@ export function peopleMarkdown(): string {
 - **Sybil Solutions** - Software · AI · Automation. ${site.company.url}
 - Contact: ${site.company.contact}
 - GitHub org: ${site.company.github}
-- X: https://x.com/0xsero
+- X: ${site.company.x}
 
 ## Products and source
 
 - Local Studio - ${site.products.localStudio.repository}
 - Codex Shim - ${site.products.codexShim.repository}
-- KittyLitter / Litter - https://github.com/dnakov/litter (also associated with 0xSero)
+- KittyLitter / Litter - ${site.products.kittyLitter.source} (also associated with 0xSero)
 
 This marketing site source: https://github.com/gildrb/ls-web
 `,
