@@ -4,7 +4,7 @@ import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
-import { assets, frameSizes, heroSizes, responsiveSrcSet } from "../images";
+import { assets, frameSizes, heroSizes, responsiveSrcSet } from "../domain/asset";
 
 export function ProductPage() {
 	return (

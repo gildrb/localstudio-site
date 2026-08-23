@@ -49,34 +49,10 @@
 			"sha256": "3493f5f4527c0b8efad79e71856ee9daf78b8f169d9b51ddab2b4fff16b8b2f1"
 		},
 		{
-			"path": "public/images/favicon.ico",
-			"role": "icon",
-			"bytes": 15086,
-			"sha256": "7b87a29b17dfe296c0e89f40f62fd787092e5f15f09815bd9a4082bb94241be9"
-		},
-		{
 			"path": "public/images/favicon.svg",
 			"role": "icon",
 			"bytes": 989,
 			"sha256": "8de45cde7dccd23487c1159336bd4a10477f75b3c81da5064e790f2ff5185edf"
-		},
-		{
-			"path": "public/images/hero-grain.png",
-			"role": "image",
-			"bytes": 9711,
-			"sha256": "91b96c1e2c989b38bf0e73cef5aca9ef7702ecd5b492f400977f42d80dc85ae8"
-		},
-		{
-			"path": "public/images/kittylitter-connect-dark.png",
-			"role": "image",
-			"bytes": 161467,
-			"sha256": "8d8817dd12e2db73ebdb54839367ae2fa089c1d1f559bce69521ce8f2aec461a"
-		},
-		{
-			"path": "public/images/kittylitter-connect-light.png",
-			"role": "image",
-			"bytes": 161313,
-			"sha256": "f4c80f96704a65332be871d2d1869542c9c531cf38f07f822ce7f27631de3bee"
 		},
 		{
 			"path": "public/images/kittylitter-feature-alleycat-1320.webp",
@@ -91,18 +67,6 @@
 			"sha256": "47bec038378259ad88697a9ac96e116887f63c736fea42bd262bdea9ecaed62b"
 		},
 		{
-			"path": "public/images/kittylitter-feature-alleycat.png",
-			"role": "image",
-			"bytes": 1061009,
-			"sha256": "74105c2b3ad38094fe5035549bfee79b5c025b9139c53b6242e43c612857e503"
-		},
-		{
-			"path": "public/images/kittylitter-feature-discovery.png",
-			"role": "image",
-			"bytes": 665460,
-			"sha256": "4ac60a41484926d12bc9444da711359f9dd9d9bf90ec5e9b053699f6c798b3cb"
-		},
-		{
 			"path": "public/images/kittylitter-feature-multi-agent-1320.webp",
 			"role": "image",
 			"bytes": 109734,
@@ -113,18 +77,6 @@
 			"role": "image",
 			"bytes": 53218,
 			"sha256": "8e1f265cd77f34df4fa329041dfca04a7940a628417154227084fb59fdf9c088"
-		},
-		{
-			"path": "public/images/kittylitter-feature-multi-agent.png",
-			"role": "image",
-			"bytes": 884137,
-			"sha256": "ffa61b16b6c5fe43990743f9df7254577478f0544eabca802596ca6123564bda"
-		},
-		{
-			"path": "public/images/kittylitter-feature-open-source.png",
-			"role": "image",
-			"bytes": 193026,
-			"sha256": "e6609d46421eb0b22427b78acb1d053f595423ef10693cbefda1d74ca5082cd6"
 		},
 		{
 			"path": "public/images/kittylitter-feature-sessions-1320.webp",
@@ -139,36 +91,6 @@
 			"sha256": "49021a31d3d469c2f6adce4bd226a11a0f74ed7006453e1bcbb51ff3631f46d6"
 		},
 		{
-			"path": "public/images/kittylitter-feature-sessions.png",
-			"role": "image",
-			"bytes": 772196,
-			"sha256": "20224f323ea7975118b4c5f11f237b17360bac038ce7deb9ce4602fe409798f6"
-		},
-		{
-			"path": "public/images/kittylitter-feature-ssh.png",
-			"role": "image",
-			"bytes": 1164614,
-			"sha256": "947ee4173d3db6520c7a71ad360e2dd7d1d89b44ff365c13e3b12a9e8b382fda"
-		},
-		{
-			"path": "public/images/kittylitter-feature-themes.png",
-			"role": "image",
-			"bytes": 569854,
-			"sha256": "18348c0f6ae256194efa729476ef03df5556ff19a138044fe5555b67e918e8fe"
-		},
-		{
-			"path": "public/images/kittylitter-feature-voice.png",
-			"role": "image",
-			"bytes": 426861,
-			"sha256": "4e5467ecbe2c3efdd181422ad22ed7f1a39c03260c05d86408a7960039330282"
-		},
-		{
-			"path": "public/images/kittylitter-iphone.jpeg",
-			"role": "image",
-			"bytes": 48860,
-			"sha256": "6f3e1d39f16638c19ea38e51d8e8d4cecb5eb150b8c979940e5904494ac1a896"
-		},
-		{
 			"path": "public/images/localai_dark.svg",
 			"role": "image",
 			"bytes": 1587,
@@ -179,12 +101,6 @@
 			"role": "image",
 			"bytes": 11897,
 			"sha256": "bd557b5019673946aea18c080cb7ea9f5d6039527dabae3bb2379c46ec7aeef9"
-		},
-		{
-			"path": "public/images/optimized-outline.svg",
-			"role": "image",
-			"bytes": 1172,
-			"sha256": "eff146f37fcb341ffb12de018b667e44bd43ced904c8775e360baa9bc28426fb"
 		},
 		{
 			"path": "public/images/optimized.svg",

@@ -1,8 +1,20 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { assets, heroSizes, responsiveSrcSet } from "./images";
+import { assets, heroSizes, responsiveSrcSet } from "./domain/asset";
 import "./styles/global.css";
+
+function setFavicon(href: string, media: string) {
+	const link = document.createElement("link");
+	link.rel = "icon";
+	link.type = "image/svg+xml";
+	link.href = href;
+	link.media = media;
+	document.head.append(link);
+}
+
+setFavicon(assets.favicon, "(prefers-color-scheme: light)");
+setFavicon(assets.faviconDark, "(prefers-color-scheme: dark)");
 
 const heroImageRoutes = new Set(["/product"]);
 
