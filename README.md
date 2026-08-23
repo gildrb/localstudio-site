@@ -27,7 +27,7 @@ pnpm build
 pnpm bundle:check
 ```
 
-`pnpm check` runs lint, TypeScript, context and graph gates, leftover-path checks, design-manifest, asset-manifest, and browser-free unit tests.
+`pnpm check` runs lint, TypeScript, context and graph gates, leftover-path checks, design-manifest, asset-manifest, vercel-header drift, and browser-free unit tests.
 
 Optional:
 
