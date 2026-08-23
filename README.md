@@ -25,3 +25,4 @@ pnpm preview
 
 `pnpm check` runs lint, types, context/graph reports, and generated-style drift.
 The first-party token gate stays report-only until copied Local Studio source is extracted.
+`pnpm reproducible:check` builds twice and compares dist hashes.

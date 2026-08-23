@@ -20,7 +20,8 @@
     "graph:check": "node scripts/graph.mjs check",
     "check": "pnpm lint && pnpm exec tsc -b && pnpm context:check && pnpm graph:check && pnpm design:check && pnpm generated:check && pnpm design:manifest:check",
     "design:manifest": "node scripts/design-manifest.mjs write",
-    "design:manifest:check": "node scripts/design-manifest.mjs check"
+    "design:manifest:check": "node scripts/design-manifest.mjs check",
+    "reproducible:check": "node scripts/reproducible.mjs"
   },
   "dependencies": {
     "@vgpu/core": "0.0.7",
