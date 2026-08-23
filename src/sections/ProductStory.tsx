@@ -20,7 +20,6 @@ function useStoryProgress() {
 		let showcaseTop = 0;
 		let navHeight = 72;
 		let scrollRange = 1;
-		let renderedProgress = Number.NaN;
 		let disposed = false;
 
 		const update = () => {
@@ -31,11 +30,6 @@ function useStoryProgress() {
 			);
 			const scenePosition = (traveled / scrollRange) * productFeatures.length;
 			const nextIndex = Math.min(productFeatures.length - 1, Math.floor(scenePosition));
-			const nextProgress = Math.min(1, scenePosition - nextIndex);
-			if (nextProgress !== renderedProgress) {
-				renderedProgress = nextProgress;
-				showcase.style.setProperty("--story-progress", String(nextProgress));
-			}
 			setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
 		};
 
