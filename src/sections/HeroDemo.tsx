@@ -12,8 +12,8 @@ import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { useDemoTabBoundary } from "./demo-tab-boundary";
 import { useElementActive } from "../hooks/use-element-activity";
 import { ArrowUp, ChevronDown, Plus } from "@local-studio/demo-ui";
-import { AgentChatPaneHeader } from "@/features/agent/ui/agent-chat-pane-header";
-import { AgentComposerStatusBar } from "@/features/agent/ui/agent-composer-status-bar";
+import { AgentChatPaneHeader } from "@local-studio/demo-ui";
+import { AgentComposerStatusBar } from "@local-studio/demo-ui";
 import { AgentComposerTextArea } from "@local-studio/demo-ui";
 import { ComputerStatusPanel } from "@/features/agent/ui/computer-status-panel";
 import { AssistantMessageActions } from "@/features/agent/ui/timeline/assistant-message-actions";
@@ -480,11 +480,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 									<section className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-(--agent-bg) shadow-[inset_1px_0_rgba(255,255,255,0.015)]">
 										<AgentChatPaneHeader
 											title={title}
-											pinned={false}
 											rightPanelOpen={panelOpen}
-											canFork={false}
-											canClose={false}
-											onTogglePinned={ignore}
 											onRename={renameTask}
 											onToggleRightPanel={() => setPanelOpen((open) => !open)}
 										/>
