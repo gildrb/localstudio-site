@@ -48,3 +48,13 @@ export { ComputerStatusPanel } from "./workbench/computer-status-panel";
 
 export { HeroDemo } from "./hero/HeroDemo";
 export { FeatureDemo } from "./story/FeatureDemo";
+
+export {
+	DEMO_PROMPT,
+	DEMO_TOOLS,
+	demoReducer,
+	finishedDemoState,
+	initialDemoState,
+	type DemoAction,
+	type DemoState,
+} from "./scenario/sequence";

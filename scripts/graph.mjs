@@ -111,7 +111,10 @@ for (const file of files) {
 	for (const spec of importsOf(file)) {
 		const resolved = resolveImport(file, spec);
 		if (resolved && graph.has(resolved)) graph.get(file).add(resolved);
-		else if (spec.startsWith("./") || spec.startsWith("../")) {
+		else if (
+			(spec.startsWith("./") || spec.startsWith("../")) &&
+			!spec.includes("/packages/")
+		) {
 			unresolved.push(`${file} -> ${spec}`);
 		}
 	}

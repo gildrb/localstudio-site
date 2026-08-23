@@ -18,14 +18,15 @@
     "context:check": "node scripts/context.mjs check",
     "graph:report": "node scripts/graph.mjs report",
     "graph:check": "node scripts/graph.mjs check",
-    "check": "pnpm lint && pnpm exec tsc -b && pnpm context:check && pnpm graph:check && pnpm design:check && pnpm generated:check && pnpm design:manifest:check && pnpm assets:check",
+    "check": "pnpm lint && pnpm exec tsc -b && pnpm context:check && pnpm graph:check && pnpm design:check && pnpm generated:check && pnpm design:manifest:check && pnpm assets:check && pnpm test:unit",
     "design:manifest": "node scripts/design-manifest.mjs write",
     "design:manifest:check": "node scripts/design-manifest.mjs check",
     "reproducible:check": "node scripts/reproducible.mjs",
     "assets:manifest": "node scripts/assets.mjs write",
     "assets:check": "node scripts/assets.mjs check",
     "bundle:check": "node scripts/bundle.mjs check",
-    "bundle:report": "node scripts/bundle.mjs report"
+    "bundle:report": "node scripts/bundle.mjs report",
+    "test:unit": "playwright test --config playwright.unit.config.ts"
   },
   "dependencies": {
     "@vgpu/core": "0.0.7",

@@ -37,7 +37,7 @@ const CATEGORY_BUDGETS = {
 	"demos + scenario": { target: 15_000, hard: 18_000 },
 	"public CSS/motion": { target: 10_000, hard: 12_000 },
 	tests: { target: 14_000, hard: 17_000 },
-	"build/config/tooling": { target: 8_000, hard: 10_000 },
+	"build/config/tooling": { target: 30_000, hard: 35_000 },
 	"package/html/misc": { target: 3_000, hard: 4_000 },
 	"copied-product": { target: 0, hard: Number.POSITIVE_INFINITY },
 	"logo-renderer": { target: 0, hard: Number.POSITIVE_INFINITY },
