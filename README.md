@@ -38,5 +38,5 @@ pnpm preview
 ```
 
 `pnpm test` needs Playwright Chromium. This NixOS host cannot launch it.
-Ubuntu CI installs Chromium and runs `pnpm test`.
-`pnpm test:visual` records route screenshots; generate them on Ubuntu with `--update-snapshots`.
+Ubuntu CI installs Chromium and runs `pnpm test` plus `pnpm test:visual`.
+Record the first visual snapshots on Ubuntu with `pnpm test:visual --update-snapshots`, then commit `tests/visual`.
