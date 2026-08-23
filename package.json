@@ -23,7 +23,8 @@
     "assets:check": "node scripts/assets.mjs check",
     "bundle:check": "node scripts/bundle.mjs check",
     "bundle:report": "node scripts/bundle.mjs report",
-    "test:unit": "playwright test --config playwright.unit.config.ts"
+    "test:unit": "playwright test --config playwright.unit.config.ts",
+    "test:visual": "playwright test --config playwright.visual.config.ts"
   },
   "dependencies": {
     "@vgpu/core": "0.0.7",

@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-	testIgnore: /unit-.*\.spec\.ts/,
+	testIgnore: /unit-.*\.spec\.ts|visual\.spec\.ts/,
 	fullyParallel: true,
 	use: {
 		baseURL: "http://127.0.0.1:4173",

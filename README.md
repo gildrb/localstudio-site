@@ -36,4 +36,6 @@ pnpm reproducible:check
 pnpm preview
 ```
 
-`pnpm test` needs Playwright Chromium. This NixOS host is missing `libnspr4.so`.
+`pnpm test` needs Playwright Chromium. This NixOS host cannot launch it.
+Ubuntu CI installs Chromium and runs `pnpm test`.
+`pnpm test:visual` records route screenshots; generate them on Ubuntu with `--update-snapshots`.
