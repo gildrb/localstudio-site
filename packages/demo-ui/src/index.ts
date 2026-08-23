@@ -38,3 +38,4 @@ export { isRouteActive, tabs } from "./shell/left-sidebar-nav-model";
 export { TokenActivityHeatmap } from "./usage/token-activity-heatmap";
 export { AgentComposerTextArea } from "./workbench/agent-composer-textarea";
 export { fileTone } from "./files/filesystem-tree-model";
+export { default } from "./shims/next-link";
