@@ -257,9 +257,7 @@ function check(rows) {
 	for (const [category, stats] of Object.entries(totals)) {
 		const budget = CATEGORY_BUDGETS[category];
 		if (Number.isFinite(budget.hard) && stats.tokens > budget.hard) {
-			const message = `${category} ${stats.tokens} exceeds hard ${budget.hard}`;
-			if (process.env.CONTEXT_ENFORCE === "1") failures.push(message);
-			else console.warn(`warning: ${message}`);
+			failures.push(`${category} ${stats.tokens} exceeds hard ${budget.hard}`);
 		}
 	}
 	if (countedTotal >= TOTAL_WARN && countedTotal <= TOTAL_OPERATING) {

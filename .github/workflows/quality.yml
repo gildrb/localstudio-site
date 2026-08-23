@@ -20,5 +20,6 @@ jobs:
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
+      - run: pnpm context:bundle
       - run: pnpm build
       - run: pnpm bundle:check
