@@ -76,7 +76,7 @@
   --radius-panel: 16px;
   --radius-panel-large: 24px;
   --radius-full: 9999px;
-  --homepage-story-gap: 240px;
+  --homepage-story-gap: 120px;
 }
 
 .surface-panel,
@@ -1333,7 +1333,7 @@ button {
   pointer-events: none;
 }
 .story__scroll-step {
-  height: clamp(360px, 55svh, 500px);
+  height: clamp(300px, 42svh, 420px);
 }
 .story__visual-home,
 .story__visual {
@@ -1752,7 +1752,7 @@ button {
 
 @media (max-width: 620px) {
   :root {
-    --homepage-story-gap: 160px;
+    --homepage-story-gap: 96px;
   }
 
   .page-intro {
