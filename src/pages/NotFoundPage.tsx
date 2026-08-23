@@ -1,4 +1,4 @@
-import { notFoundSuggestions } from "../domain/route";
+import { notFoundSuggestions , homePath } from "../domain/route";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -17,7 +17,7 @@ export function NotFoundPage() {
 					</>
 				}
 				actions={
-					<LocalLink className="button" href="/">
+					<LocalLink className="button" href={homePath}>
 						Back to <span translate="no">Local Studio</span>
 					</LocalLink>
 				}

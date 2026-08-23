@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { setupPath } from "../domain/route";
 import { CtaPair } from "./Links";
 
 export function PageCta({
@@ -26,7 +27,7 @@ export function PageCta({
 				<h2 id={id}>{title}</h2>
 				<div className="hero__actions">
 					{actions ?? (
-						<CtaPair secondary={{ href: "/setup", label: "Setup prompt" }} />
+						<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
 					)}
 				</div>
 			</div>

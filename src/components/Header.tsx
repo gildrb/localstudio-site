@@ -3,7 +3,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { assets } from "../domain/asset";
 import { site } from "../domain/site";
 import { cssVars } from "../system/css-vars";
-import { downloadPath, resourceNav } from "../domain/route";
+import { downloadPath, homePath, resourceNav } from "../domain/route";
 import {
 	closedNav,
 	desktopMenu,
@@ -345,7 +345,7 @@ export function Header() {
 			<div className="nav__primary">
 				<LocalLink
 					className="brand"
-					href="/"
+					href={homePath}
 					aria-label="Local Studio"
 					onClick={closeMobile}
 					onPointerEnter={close}

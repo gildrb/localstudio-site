@@ -1,3 +1,4 @@
+import { setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
@@ -27,7 +28,7 @@ export function DocsPage() {
 				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
 				actions={
 					<CtaPair
-						secondary={{ href: "/setup", label: "Setup prompt" }}
+						secondary={{ href: setupPath, label: "Setup prompt" }}
 					/>
 				}
 			/>

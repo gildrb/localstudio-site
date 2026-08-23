@@ -1,6 +1,7 @@
 import { assets } from "../domain/asset";
 import { lazy, Suspense } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
+import { setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { motion } from "../domain/motion";
 import { useMachine } from "../app/machine-mode";
@@ -49,7 +50,7 @@ export function Hero() {
 							</span>
 						</m.h1>
 						<m.div className="hero__actions" {...enter(0.24)}>
-							<CtaPair secondary={{ href: "/setup", label: "Setup prompt" }} />
+							<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
 						</m.div>
 					</div>
 				</div>

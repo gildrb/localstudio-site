@@ -1,3 +1,4 @@
+import { docsPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { MediaFrame } from "../components/MediaFrame";
 import { PageIntro } from "../components/PageIntro";
@@ -21,7 +22,7 @@ export function ProductPage() {
 				}
 				actions={
 					<CtaPair
-						secondary={{ href: "/docs", label: "Read the docs" }}
+						secondary={{ href: docsPath, label: "Read the docs" }}
 					/>
 				}
 			/>

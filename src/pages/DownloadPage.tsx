@@ -1,3 +1,4 @@
+import { docsPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -23,7 +24,7 @@ export function DownloadPage() {
 					actions={
 						<CtaPair
 							primary={{ href: release.url, label: "Download DMG" }}
-							secondary={{ href: "/docs#prerequisites", label: "Read prerequisites" }}
+							secondary={{ href: `${docsPath}#prerequisites`, label: "Read prerequisites" }}
 						/>
 					}
 				/>
