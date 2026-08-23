@@ -9,6 +9,7 @@ import {
 } from "../../src/agent/documents";
 import { markdownPages, routePaths } from "../../src/domain/route";
 import { site } from "../../src/domain/site";
+import { release } from "../../src/domain/release";
 import { productFeatures, renderInlineMarkdown } from "../../src/content/product";
 import { productMarkdown } from "../../src/agent/markdown";
 
@@ -91,4 +92,12 @@ test("agent documents use canonical site facts", () => {
 	expect(llms).toContain(site.products.kittyLitter.appStore);
 	expect(llms).toContain(site.products.codexShim.repository);
 	expect(llms).toContain(site.company.x);
+});
+
+test("release URLs are derived from the Local Studio repository", () => {
+	expect(release.url.startsWith(`${site.products.localStudio.repository}/releases/download/`)).toBe(true);
+	expect(release.releases).toBe(`${site.products.localStudio.repository}/releases`);
+	expect(release.latestAlias).toBe(
+		`${site.products.localStudio.repository}/releases/latest/download/${release.artifact}`,
+	);
 });
