@@ -1,3 +1,4 @@
+import { site } from "./site.ts";
 export const routes = {
 	"/": {
 		title: "Intelligence should be owned - Local Studio",
@@ -151,9 +152,23 @@ export function footerRoutes(): readonly { path: RoutePath; label: string }[] {
 
 export function resourceNav(): readonly { href: RoutePath; label: string }[] {
 	return [
-		{ href: "/overview", label: "Overview" },
-		{ href: "/docs", label: "Documentation" },
-		{ href: "/setup", label: "Setup" },
+		{ href: overviewPath, label: "Overview" },
+		{ href: docsPath, label: "Documentation" },
+		{ href: setupPath, label: "Setup" },
+	];
+}
+
+export type ProductNavItem = {
+	readonly label: string;
+	readonly href: string;
+	readonly external?: true;
+};
+
+export function productNav(): readonly ProductNavItem[] {
+	return [
+		{ label: site.products.localAi.name, href: site.products.localAi.url, external: true },
+		{ label: site.products.localStudio.name, href: downloadPath },
+		{ label: site.products.kittyLitter.name, href: site.products.kittyLitter.url, external: true },
 	];
 }
 

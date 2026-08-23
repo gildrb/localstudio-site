@@ -1,3 +1,4 @@
+import { downloadPath } from "./route.ts";
 import { site } from "./site.ts";
 
 const version = "2.11.2";
@@ -16,7 +17,7 @@ export const release = {
 	url: `${site.products.localStudio.repository}/releases/download/${tag}/${artifact}`,
 	releases: `${site.products.localStudio.repository}/releases`,
 	latestAlias: `${site.products.localStudio.repository}/releases/latest/download/${artifact}`,
-	sitePath: "/download",
+	sitePath: downloadPath,
 } as const;
 
 export type Release = typeof release;

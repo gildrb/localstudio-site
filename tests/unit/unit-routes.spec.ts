@@ -2,11 +2,14 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import {
 	decideSameOriginNavigation,
+	downloadPath,
 	isRoutePath,
 	normalizePath,
+	productNav,
 	redirectFor,
 	routePaths,
 } from "../../src/domain/route";
+import { site } from "../../src/domain/site";
 
 test("normalizePath strips a trailing slash except at root", () => {
 	expect(normalizePath("/")).toBe("/");
@@ -68,4 +71,12 @@ test("design-manifest routes match the canonical route model", () => {
 	expect(manifest.routes).toEqual([...routePaths]);
 	expect(manifest.redirects).toEqual(["/mobile", "/agents"]);
 	expect(manifest.motion).toEqual(["ease", "heroEnter", "quickFade", "featureSwap"]);
+});
+
+test("product nav uses canonical product facts", () => {
+	expect(productNav()).toEqual([
+		{ label: site.products.localAi.name, href: site.products.localAi.url, external: true },
+		{ label: site.products.localStudio.name, href: downloadPath },
+		{ label: site.products.kittyLitter.name, href: site.products.kittyLitter.url, external: true },
+	]);
 });
