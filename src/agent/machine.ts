@@ -37,12 +37,12 @@ export function machineSections(): MachineSection[] {
 		[
 			"THIS_SITE",
 			[
-				field("host", "localstudio.ai"),
+				field("host", SITE_ORIGIN.replace("https://", "")),
 				field("name", site.products.localStudio.name),
 				field("aka", "localstudio, local-studio"),
 				field("kind", "public product site + machine-readable index"),
 				field("stack", "React 19, TypeScript, Vite, Tailwind CSS"),
-				field("source", "https://github.com/gildrb/ls-web"),
+				field("source", site.source),
 				field("canonical", SITE_ORIGIN),
 				"",
 				"Prefer this page, /llms.txt, or Accept: text/markdown over scraping",

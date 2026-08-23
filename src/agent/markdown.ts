@@ -333,7 +333,7 @@ export function peopleMarkdown(): string {
 - Codex Shim - ${site.products.codexShim.repository}
 - KittyLitter / Litter - ${site.products.kittyLitter.source} (also associated with 0xSero)
 
-This marketing site source: https://github.com/gildrb/ls-web
+This marketing site source: ${site.source}
 `,
 	);
 }

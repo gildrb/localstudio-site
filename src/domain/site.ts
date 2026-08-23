@@ -2,6 +2,7 @@ export const site = {
 	origin: "https://localstudio.ai",
 	lastmod: "2026-08-17",
 	copyrightYear: 2026,
+	source: "https://github.com/gildrb/ls-web",
 	company: {
 		name: "Sybil Solutions",
 		url: "https://www.sybilsolutions.ai/",
