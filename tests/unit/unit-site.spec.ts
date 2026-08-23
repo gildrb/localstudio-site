@@ -43,3 +43,11 @@ test("footer copyright reads year and product name from site facts", () => {
 	expect(source.includes("site.products.localStudio.name")).toBe(true);
 	expect(source.includes("© 2026")).toBe(false);
 });
+
+test("header and machine chrome labels read the product name from site facts", () => {
+	const header = readFileSync("src/components/Header.tsx", "utf8");
+	expect(header.includes("site.products.localStudio.name")).toBe(true);
+	expect(header.includes('aria-label="Local Studio"')).toBe(false);
+	const machine = readFileSync("src/pages/MachinePage.tsx", "utf8");
+	expect(machine.includes("site.products.localStudio.name")).toBe(true);
+});

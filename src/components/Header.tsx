@@ -342,7 +342,7 @@ export function Header() {
 				<LocalLink
 					className="brand"
 					href={homePath}
-					aria-label="Local Studio"
+					aria-label={site.products.localStudio.name}
 					onClick={closeMobile}
 					onPointerEnter={close}
 				>
@@ -372,7 +372,7 @@ export function Header() {
 					href={githubUrl}
 					target="_blank"
 					rel="noreferrer"
-					aria-label="Local Studio on GitHub"
+					aria-label={`${site.products.localStudio.name} on GitHub`}
 					onPointerEnter={close}
 				>
 					<GitHubMark />

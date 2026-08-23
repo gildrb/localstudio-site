@@ -4,6 +4,7 @@ import { routePaths } from "../domain/route";
 import { LocalLink } from "../components/LocalLink";
 import { PageShell } from "../components/PageShell";
 import { useMachine } from "../app/machine-mode";
+import { site } from "../domain/site";
 
 const sections = machineSections();
 
@@ -17,7 +18,7 @@ export function MachinePage() {
 						className="machine__banner"
 						type="button"
 						onClick={() => toggleMachine(false)}
-						aria-label="Back to Local Studio"
+						aria-label={`Back to ${site.products.localStudio.name}`}
 					>
 						<pre>{localStudioAscii}</pre>
 					</button>
