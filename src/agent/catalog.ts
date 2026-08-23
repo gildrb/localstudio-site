@@ -1,4 +1,4 @@
-import type { RoutePath } from "../routes.ts";
+import { routes, routePaths, type RoutePath } from "../domain/route.ts";
 
 export const SITE_ORIGIN = "https://localstudio.ai";
 
@@ -39,51 +39,12 @@ export type AgentDocument = {
 	contentType: string;
 };
 
-export const HTML_ROUTES: readonly HtmlRoute[] = [
-	{
-		path: "/",
-		title: "Intelligence should be owned - Local Studio",
-		summary: "Homepage: Local Studio + KittyLitter product surface.",
-		priority: "1.0",
-	},
-	{
-		path: "/product",
-		title: "Product - Local Studio",
-		summary: "Control, serve, and work: controller, runtimes, Workbench.",
-		priority: "0.9",
-	},
-	{
-		path: "/docs",
-		title: "Documentation - Local Studio",
-		summary: "Install, runtimes, agent runtime, remote/LAN, validation.",
-		priority: "0.8",
-	},
-	{
-		path: "/setup",
-		title: "Setup - Local Studio",
-		summary: "Portable setup prompt for a coding model on the target machine.",
-		priority: "0.7",
-	},
-	{
-		path: "/overview",
-		title: "Overview - Local Studio",
-		summary: "Docs, setup, download, agents, KittyLitter, GitHub, brand.",
-		priority: "0.6",
-	},
-	{
-		path: "/download",
-		title: "Download for macOS - Local Studio",
-		summary: "Signed Apple Silicon DMG from GitHub Releases.",
-		priority: "0.8",
-	},
-	{
-		path: "/machine",
-		title: "Machines - Local Studio",
-		summary:
-			"Dense machine-readable index of company, products, and discovery.",
-		priority: "0.9",
-	},
-];
+export const HTML_ROUTES: readonly HtmlRoute[] = routePaths.map((path) => ({
+	path,
+	title: routes[path].title,
+	summary: routes[path].summary,
+	priority: routes[path].priority.toFixed(1),
+}));
 
 export const LASTMOD = "2026-08-17";
 
@@ -1200,13 +1161,7 @@ export function agentDocument(path: string): AgentDocument | null {
 	return agentDocuments().find((document) => document.path === path) ?? null;
 }
 
-export function markdownPathFor(pathname: string): string {
-	if (pathname === "/") return "/index.md";
-	if (pathname.endsWith(".md")) return pathname;
-	const route = HTML_ROUTES.find((entry) => entry.path === pathname);
-	if (route) return `${route.path}.md`;
-	return pathname;
-}
+export { markdownPathFor } from "../domain/route.ts";
 
 export function wantsMarkdown(acceptHeader: string): boolean {
 	return (

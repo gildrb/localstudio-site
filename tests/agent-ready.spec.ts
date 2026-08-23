@@ -1,16 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-const pages = [
-	"/",
-	"/product",
-	"/mobile",
-	"/docs",
-	"/setup",
-	"/agents",
-	"/overview",
-	"/download",
-	"/machine",
-] as const;
+import { routePaths } from "../src/domain/route";
+
+const pages = routePaths;
 
 test("robots.txt is plain text with crawl rules, AI bots, sitemap, and content signals", async ({
 	request,

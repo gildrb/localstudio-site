@@ -1,20 +1,12 @@
+import { footerRoutes } from "../domain/route";
 import { LocalLink } from "./LocalLink";
-import type { RoutePath } from "../routing";
-
-const links = [
-	["Machines", "/machine"],
-	["Overview", "/overview"],
-	["Docs", "/docs"],
-	["Setup", "/setup"],
-	["Download", "/download"],
-] as const satisfies readonly (readonly [string, RoutePath])[];
 
 export function Footer() {
 	return (
 		<footer className="footer">
 			<nav className="footer__links" aria-label="Footer navigation">
-				{links.map(([label, href]) => (
-					<LocalLink href={href} key={href}>
+				{footerRoutes().map(({ label, path }) => (
+					<LocalLink href={path} key={path}>
 						{label}
 					</LocalLink>
 				))}

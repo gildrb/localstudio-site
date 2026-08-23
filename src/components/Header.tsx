@@ -1,6 +1,8 @@
 import { ChevronDown, Equal, X } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
+import { site } from "../domain/site";
+import { resourceNav } from "../domain/route";
 import { DownloadButton } from "./Links";
 import { LocalLink } from "./LocalLink";
 
@@ -24,22 +26,21 @@ type MenuListProps = {
 }
 
 const products = [
-	{ label: "Local AI", href: "https://local.ai", external: true },
-	{ label: "Local Studio", href: "/download" },
-	{ label: "KittyLitter", href: "https://kittylitter.app", external: true },
+	{ label: site.products.localAi.name, href: site.products.localAi.url, external: true },
+	{ label: site.products.localStudio.name, href: "/download" },
+	{ label: site.products.kittyLitter.name, href: site.products.kittyLitter.url, external: true },
 ] as const satisfies readonly NavLink[];
 
-const resources = [
-	{ label: "Overview", href: "/overview" },
-	{ label: "Documentation", href: "/docs" },
-	{ label: "Setup", href: "/setup" },
-] as const satisfies readonly NavLink[];
+const resources = resourceNav().map((item) => ({
+	label: item.label,
+	href: item.href,
+})) satisfies readonly NavLink[];
 
 const menuColumns = {
 	products: [products],
 	resources: [resources],
 } as const satisfies Record<MenuId, readonly (readonly NavLink[])[]>;
-const githubUrl = "https://github.com/sybil-solutions/local-studio";
+const githubUrl = site.products.localStudio.repository;
 const mobileQuery = "(max-width: 900px)";
 
 function Chevron({ open }: ChevronProps) {
@@ -351,7 +352,7 @@ export function Header() {
 					{menu("products", "Products")}
 					{menu("resources", "Resources")}
 					<a
-						href="https://www.sybilsolutions.ai/"
+						href={site.company.url}
 						onPointerEnter={close}
 					>
 						Company
@@ -433,7 +434,7 @@ export function Header() {
 					</details>
 					<a
 						className="nav__sheet-link"
-						href="https://www.sybilsolutions.ai/"
+						href={site.company.url}
 						onClick={closeMobile}
 					>
 						Company

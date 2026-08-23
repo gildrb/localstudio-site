@@ -1,14 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-const routes = [
-	"/",
-	"/product",
-	"/mobile",
-	"/docs",
-	"/setup",
-	"/agents",
-	"/download",
-];
+import { routePaths } from "../src/domain/route";
+
+const routes = routePaths.filter((path) => path !== "/machine");
 
 test("typography and interaction motion use the global interface policy", async ({
 	page,
@@ -112,7 +106,7 @@ test("looping demonstrations stop when they leave the viewport", async ({
 	await expect(heroDemo).toHaveAttribute("data-phase", heroPhase ?? "");
 
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto("/mobile");
+	await page.goto("/#mobile");
 	const demo = page.locator(".mobile-connection-demo");
 	await demo.scrollIntoViewIfNeeded();
 	await expect.poll(() => demo.getAttribute("data-phase")).not.toBe("0");

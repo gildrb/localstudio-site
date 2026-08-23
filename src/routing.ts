@@ -1,4 +1,4 @@
-export { isRoutePath, routePaths, type RoutePath } from "./routes";
+export { isRoutePath, routePaths, type RoutePath } from "./domain/route";
 
 type NavigationListener = () => void;
 

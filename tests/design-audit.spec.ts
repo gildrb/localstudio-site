@@ -1,14 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-const routes = [
-	"/",
-	"/product",
-	"/mobile",
-	"/docs",
-	"/setup",
-	"/agents",
-	"/download",
-] as const;
+import { routePaths } from "../src/domain/route";
+
+const routes = routePaths.filter((path) => path !== "/machine");
 
 test("landmarks are separate and a skip link targets main content", async ({
 	page,

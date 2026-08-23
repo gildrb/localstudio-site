@@ -1,14 +1,10 @@
-const markdownPages = new Map([
-	["/", "/index.md"],
-	["/product", "/product.md"],
-	["/mobile", "/mobile.md"],
-	["/docs", "/docs.md"],
-	["/setup", "/setup.md"],
-	["/agents", "/agents.md"],
-	["/overview", "/overview.md"],
-	["/download", "/download.md"],
-	["/machine", "/machine.md"],
-]);
+import {
+	markdownPages,
+	redirects,
+	routePaths,
+} from "./src/domain/route.ts";
+
+const markdownByPath = markdownPages();
 
 const homepageLink = [
 	'</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
@@ -23,24 +19,10 @@ const homepageLink = [
 ].join(", ");
 
 export const config = {
-	matcher: [
-		"/",
-		"/product",
-		"/mobile",
-		"/docs",
-		"/setup",
-		"/agents",
-		"/overview",
-		"/download",
-		"/machine",
-	],
+	matcher: [...routePaths, ...Object.keys(redirects)],
 };
 
 export default async function middleware(request) {
-	const accept = request.headers.get("accept") ?? "";
-	const wantsMarkdown =
-		accept.includes("text/markdown") && !accept.includes("text/html");
-	if (!wantsMarkdown) return;
 	let url;
 	try {
 		url = new URL(request.url);
@@ -54,7 +36,15 @@ export default async function middleware(request) {
 		url.pathname !== "/" && url.pathname.endsWith("/")
 			? url.pathname.slice(0, -1)
 			: url.pathname;
-	const markdownPath = markdownPages.get(pathname);
+	const redirect = redirects[pathname];
+	if (redirect) {
+		return Response.redirect(new URL(redirect, url.origin), 308);
+	}
+	const accept = request.headers.get("accept") ?? "";
+	const wantsMarkdown =
+		accept.includes("text/markdown") && !accept.includes("text/html");
+	if (!wantsMarkdown) return;
+	const markdownPath = markdownByPath.get(pathname);
 	if (markdownPath === undefined) return;
 	const upstream = await fetch(new URL(markdownPath, url.origin));
 	if (!upstream.ok) return;

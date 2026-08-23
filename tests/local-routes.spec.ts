@@ -1,15 +1,24 @@
 import { expect, test } from "@playwright/test";
 
-const routes = [
-	["/", "Intelligence should be owned - Local Studio", "Intelligence should be owned"],
-	["/product", "Product - Local Studio", "One place to run local AI"],
-	["/mobile", "Mobile - Local Studio", "Your local agents"],
-	["/docs", "Documentation - Local Studio", "Get Local Studio running"],
-	["/setup", "Setup - Local Studio", "Give this to any coding model"],
-	["/agents", "Agents - Local Studio", "Set up the stack"],
-	["/download", "Download for macOS - Local Studio", "Download for macOS"],
-	["/overview", "Overview - Local Studio", "Everything around Local Studio"],
-] as const;
+import { routes as siteRoutes, routePaths } from "../src/domain/route";
+
+const routes = routePaths
+	.filter((path) => path !== "/machine")
+	.map((path) => [path, siteRoutes[path].title, siteRoutes[path].heading] as const);
+
+test("/mobile redirects to the homepage mobile section", async ({ page }) => {
+	await page.goto("/mobile");
+	await expect(page).toHaveURL(/\/#mobile$/);
+	await expect(page.locator("#mobile")).toBeVisible();
+});
+
+test("/agents redirects to setup", async ({ page }) => {
+	await page.goto("/agents");
+	await expect(page).toHaveURL(/\/setup$/);
+	await expect(
+		page.getByRole("heading", { level: 1, name: /Give this to any coding model/ }),
+	).toBeVisible();
+});
 
 for (const [route, title, heading] of routes) {
 	test(`${route} loads locally`, async ({ page }) => {

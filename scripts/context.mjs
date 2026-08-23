@@ -86,7 +86,7 @@ function classify(rel) {
 	if (
 		rel.startsWith("src/agent/") ||
 		rel.startsWith("src/content/") ||
-		rel === "src/routes.ts" ||
+		rel.startsWith("src/domain/") ||
 		rel === "src/images.ts" ||
 		rel === "src/machine.ts"
 	) {

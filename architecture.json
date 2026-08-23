@@ -19,7 +19,9 @@
 		"src/pages/DownloadPage.tsx": "canonical route module",
 		"src/pages/ResourcesPage.tsx": "canonical route module",
 		"src/pages/MachinePage.tsx": "canonical route module",
-		"src/pages/NotFoundPage.tsx": "unmatched fallback route module"
+		"src/pages/NotFoundPage.tsx": "unmatched fallback route module",
+		"src/domain/site.ts": "canonical site facts",
+		"src/domain/route.ts": "canonical route, document, and redirect model"
 	},
 	"roots": [
 		"src/main.tsx",

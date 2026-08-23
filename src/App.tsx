@@ -3,11 +3,11 @@ import { useSkySelection } from "./hooks/use-sky-selection";
 import { HomePage } from "./pages/HomePage";
 import { MachinePage } from "./pages/MachinePage";
 import { MachineContext } from "./machine";
+import { redirectFor, routeTitle } from "./domain/route";
 import {
 	emitNavigation,
 	isRoutePath,
 	normalizePath,
-	type RoutePath,
 	scrollToHash,
 	subscribeToNavigation,
 } from "./routing";
@@ -39,16 +39,6 @@ const ResourcesPage = lazy(() =>
 	import("./pages/ResourcesPage").then(({ ResourcesPage }) => ({ default: ResourcesPage })),
 );
 
-const titles = {
-	"/": "Intelligence should be owned - Local Studio",
-	"/product": "Product - Local Studio",
-	"/docs": "Documentation - Local Studio",
-	"/setup": "Setup - Local Studio",
-	"/download": "Download for macOS - Local Studio",
-	"/overview": "Overview - Local Studio",
-	"/machine": "Machines - Local Studio",
-} as const satisfies Record<RoutePath, string>;
-
 type NavigationSource = "load" | "push" | "pop";
 
 function routeFor(pathname: string) {
@@ -74,7 +64,8 @@ export default function App() {
 		() => `${window.location.pathname}${window.location.hash}`,
 	);
 	const navigationSource = useRef<NavigationSource>("load");
-	const pathname = normalizePath(location.split("#")[0]);
+	const pathname = normalizePath(location.split("#")[0] ?? "");
+	const redirect = redirectFor(pathname);
 	const machineMode = pathname === "/machine";
 
 	const toggleMachine = useCallback((next: boolean) => {
@@ -85,6 +76,12 @@ export default function App() {
 		() => ({ machineMode, toggleMachine }),
 		[machineMode, toggleMachine],
 	);
+
+	useEffect(() => {
+		if (!redirect) return;
+		window.history.replaceState({}, "", redirect);
+		emitNavigation();
+	}, [redirect]);
 
 	useEffect(() => {
 		function updateLocation(source: NavigationSource) {
@@ -107,7 +104,7 @@ export default function App() {
 
 	useEffect(() => {
 		document.title = isRoutePath(pathname)
-			? titles[pathname]
+			? routeTitle(pathname)
 			: "Page not found - Local Studio";
 		const hash = window.location.hash;
 		let frame = 0;
