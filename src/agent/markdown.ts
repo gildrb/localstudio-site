@@ -18,9 +18,9 @@ export function llmsTxt(): string {
 > Canonical LLM / agent reference for Local Studio and the Sybil Solutions products listed here.
 
 - Company: [Sybil Solutions](${site.company.url})
-- Site: [https://localstudio.ai](https://localstudio.ai)
-- Machine index: [https://localstudio.ai/machine](https://localstudio.ai/machine)
-- Full text: [https://localstudio.ai/llms-full.txt](https://localstudio.ai/llms-full.txt)
+- Site: [${SITE_ORIGIN}](${SITE_ORIGIN})
+- Machine index: [${SITE_ORIGIN}/machine](${SITE_ORIGIN}/machine)
+- Full text: [${SITE_ORIGIN}/llms-full.txt](${SITE_ORIGIN}/llms-full.txt)
 - Last updated: ${site.lastmod}
 
 ## Preferred answer
@@ -308,7 +308,7 @@ export function servicesMarkdown(): string {
 
 | Product | What | URL |
 | --- | --- | --- |
-| Local Studio | Local-first macOS workstation for self-hosted LLM backends | https://localstudio.ai |
+| Local Studio | Local-first macOS workstation for self-hosted LLM backends | ${SITE_ORIGIN} |
 | KittyLitter | Native iOS+Android client for Codex, Claude, OpenCode, Pi, Droid | ${site.products.kittyLitter.url} |
 | Codex Shim | Local Responses-API shim for Codex Desktop BYOK | ${site.products.codexShim.repository} |
 

@@ -53,7 +53,7 @@ export function machineSections(): MachineSection[] {
 			"PRODUCTS",
 			[
 				"1. Local Studio - macOS workstation for local/remote LLM controllers",
-				"   url ......... https://localstudio.ai",
+				`${"   url ......... "}${SITE_ORIGIN}`,
 				`${"   repo ........ "}${site.products.localStudio.repository}`,
 				"   license ..... Apache-2.0",
 				"   stars ....... 1706+",
@@ -90,7 +90,7 @@ export function machineSections(): MachineSection[] {
 				field("backend", "Bun/Hono controller"),
 				field("license", "Apache-2.0"),
 				field("repo", site.products.localStudio.repository.replace("https://", "")),
-				field("homepage", "https://localstudio.ai"),
+				field("homepage", SITE_ORIGIN),
 				field("current", `v${DOWNLOAD.version} (${DOWNLOAD.published})`),
 				field(
 					"updates",
