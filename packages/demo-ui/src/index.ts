@@ -41,3 +41,5 @@ export { fileTone } from "./files/filesystem-tree-model";
 export { default } from "./shims/next-link";
 export { AgentChatPaneHeader } from "./workbench/agent-chat-pane-header";
 export { AgentComposerStatusBar } from "./workbench/agent-composer-status-bar";
+export { UserMessage } from "./workbench/user-message";
+export { AssistantMessageActions } from "./workbench/assistant-message-actions";
