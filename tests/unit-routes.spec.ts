@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import {
 	decideSameOriginNavigation,
@@ -44,4 +45,10 @@ test("same-origin link decisions stay pure", () => {
 	expect(
 		decideSameOriginNavigation("/", "https://localstudio.ai", "/"),
 	).toEqual({ kind: "top" });
+});
+
+test("every HTML route has a page module", () => {
+	const source = readFileSync("src/app/pages.ts", "utf8");
+	const keys = [...source.matchAll(/"(\/[^"]*)":/g)].map((match) => match[1]);
+	expect(keys).toEqual([...routePaths]);
 });

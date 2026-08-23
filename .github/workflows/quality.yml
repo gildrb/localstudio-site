@@ -23,3 +23,5 @@ jobs:
       - run: pnpm context:bundle
       - run: pnpm build
       - run: pnpm bundle:check
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test
