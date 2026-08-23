@@ -13,7 +13,25 @@ const HeroDemo = lazy(() =>
 
 const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
 
+const fastClock = {
+	now: () => Date.now(),
+	timeout: (callback: () => void, delay: number) => {
+		void delay;
+		return window.setTimeout(callback, 0);
+	},
+	clear: (id: ReturnType<typeof setTimeout>) => {
+		window.clearTimeout(id);
+	},
+};
+
+function useHeroClock() {
+	return new URLSearchParams(window.location.search).has("demoClock")
+		? fastClock
+		: undefined;
+}
+
 export function Hero() {
+	const clock = useHeroClock();
 	const { toggleMachine } = useMachine();
 	const reduceMotion = useReducedMotion();
 	const enter = (delay: number) => ({
@@ -64,7 +82,7 @@ export function Hero() {
 							<div className="hero__demo-placeholder" aria-hidden="true" />
 						}
 					>
-						<HeroDemo />
+						<HeroDemo clock={clock} />
 					</Suspense>
 				</m.div>
 			</section>

@@ -3,6 +3,7 @@ import {
 	DEMO_PROMPT,
 	DEMO_TOOLS,
 	browserDemoClock,
+	immediateDemoClock,
 	demoReducer,
 	finishedDemoState,
 	initialDemoState,
@@ -47,4 +48,13 @@ test("browser demo clock can schedule and clear a timer", () => {
 	browserDemoClock.clear(id);
 	expect(fired).toBe(false);
 	expect(browserDemoClock.now() > 0).toBe(true);
+});
+
+test("immediate demo clock ignores delay", () => {
+	let fired = false;
+	const id = immediateDemoClock.timeout(() => {
+		fired = true;
+	}, 10_000);
+	immediateDemoClock.clear(id);
+	expect(fired).toBe(false);
 });

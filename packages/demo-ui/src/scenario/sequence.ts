@@ -351,3 +351,14 @@ export const browserDemoClock: DemoClock = {
 		globalThis.clearTimeout(id);
 	},
 };
+
+export const immediateDemoClock: DemoClock = {
+	now: () => Date.now(),
+	timeout: (callback, delay) => {
+		void delay;
+		return globalThis.setTimeout(callback, 0);
+	},
+	clear: (id) => {
+		globalThis.clearTimeout(id);
+	},
+};

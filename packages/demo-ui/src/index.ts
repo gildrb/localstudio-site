@@ -53,6 +53,7 @@ export {
 	DEMO_PROMPT,
 	DEMO_TOOLS,
 	browserDemoClock,
+	immediateDemoClock,
 	demoReducer,
 	finishedDemoState,
 	initialDemoState,
