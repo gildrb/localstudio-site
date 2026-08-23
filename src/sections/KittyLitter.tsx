@@ -8,6 +8,7 @@ import {
 	useReducedMotion,
 } from "motion/react";
 import { motion } from "../domain/motion";
+import { StoreButtons } from "../components/Links";
 
 type KittyFeature = {
 	readonly title: string;
@@ -115,6 +116,9 @@ export function KittyLitter() {
 							/>
 						))}
 					</ul>
+				</div>
+				<div className="hero__actions">
+					<StoreButtons />
 				</div>
 				<div className="kitty__grid">
 					{features.map((feature) => (

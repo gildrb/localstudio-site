@@ -2,6 +2,7 @@ import { site } from "../domain/site.ts";
 import { release } from "../domain/release.ts";
 import { HTML_ROUTES, LASTMOD } from "./routes.ts";
 import { machineText } from "./machine.ts";
+import { productFeatures, renderInlineMarkdown } from "../content/product.ts";
 
 const SITE_ORIGIN = site.origin;
 const DOWNLOAD = release;
@@ -118,21 +119,14 @@ Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. LAN, SSH
 }
 
 export function productMarkdown(): string {
+	const sections = productFeatures
+		.map((feature) => `## ${feature.productTitle}\n\n${renderInlineMarkdown(feature.productText)}`)
+		.join("\n\n");
 	return markdownPage(
 		"Product - Local Studio",
 		`One place to run local AI. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
 
-## Control the runtime
-
-Launch and evict models, manage recipes and downloads, and watch GPU, process, log, and usage state from one controller.
-
-## Run the backend that fits
-
-Configure vLLM, SGLang, llama.cpp, or MLX targets, then serve them through one OpenAI-compatible proxy. Runtime discovery and saved selections stay with the controller.
-
-## Work where models run
-
-Use the Pi-powered Workbench for agent sessions with models, providers, browser, files, terminal, and registered tools in one timeline.
+${sections}
 `,
 	);
 }

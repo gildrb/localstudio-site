@@ -1,7 +1,7 @@
 import {
+	htmlMatcher,
 	markdownPages,
 	redirects,
-	routePaths,
 } from "./src/domain/route.ts";
 import {
 	HOMEPAGE_LINK_HEADER,
@@ -12,7 +12,7 @@ import {
 const markdownByPath = markdownPages();
 
 export const config = {
-	matcher: [...routePaths, ...Object.keys(redirects)],
+	matcher: [...htmlMatcher(), ...Object.keys(redirects)],
 };
 
 export default async function middleware(request) {
