@@ -52,9 +52,11 @@ export { FeatureDemo } from "./story/FeatureDemo";
 export {
 	DEMO_PROMPT,
 	DEMO_TOOLS,
+	browserDemoClock,
 	demoReducer,
 	finishedDemoState,
 	initialDemoState,
+	type DemoClock,
 	type DemoAction,
 	type DemoState,
 } from "./scenario/sequence";

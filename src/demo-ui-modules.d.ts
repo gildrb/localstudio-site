@@ -1,5 +1,11 @@
 declare module "@local-studio/demo-ui/hero" {
-	export function HeroDemo(): import("react").ReactNode;
+	export function HeroDemo(props?: {
+		clock?: {
+			now: () => number;
+			timeout: (callback: () => void, delay: number) => ReturnType<typeof setTimeout>;
+			clear: (id: ReturnType<typeof setTimeout>) => void;
+		};
+	}): import("react").ReactNode;
 	export default HeroDemo;
 }
 declare module "@local-studio/demo-ui/story" {

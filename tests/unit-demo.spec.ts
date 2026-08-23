@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import {
 	DEMO_PROMPT,
 	DEMO_TOOLS,
+	browserDemoClock,
 	demoReducer,
 	finishedDemoState,
 	initialDemoState,
@@ -36,4 +37,14 @@ test("pause and replay are pure", () => {
 	expect(paused.phase).toBe(initialDemoState.phase);
 	const replayed = demoReducer(finishedDemoState, { type: "replay" });
 	expect(replayed).toEqual({ ...initialDemoState, playing: true });
+});
+
+test("browser demo clock can schedule and clear a timer", () => {
+	let fired = false;
+	const id = browserDemoClock.timeout(() => {
+		fired = true;
+	}, 0);
+	browserDemoClock.clear(id);
+	expect(fired).toBe(false);
+	expect(browserDemoClock.now() > 0).toBe(true);
 });

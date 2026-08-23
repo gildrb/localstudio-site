@@ -335,3 +335,19 @@ function advanceDemo(state: DemoState): DemoState {
 			return { ...state, playing: false };
 	}
 }
+
+export type DemoTimer = ReturnType<typeof globalThis.setTimeout>;
+
+export type DemoClock = {
+	readonly now: () => number;
+	readonly timeout: (callback: () => void, delay: number) => DemoTimer;
+	readonly clear: (id: DemoTimer) => void;
+};
+
+export const browserDemoClock: DemoClock = {
+	now: () => Date.now(),
+	timeout: (callback, delay) => globalThis.setTimeout(callback, delay),
+	clear: (id) => {
+		globalThis.clearTimeout(id);
+	},
+};

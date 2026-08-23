@@ -207,7 +207,7 @@ const inboxMessages: ChatMessage[] = [
 
 function ignore(): void {}
 
-function useHeroDemoModel() {
+function useHeroDemoModel(clock: DemoClock) {
 	const {
 		hostRef,
 		active,
@@ -266,11 +266,11 @@ function useHeroDemoModel() {
 		}
 		if (!active || !weekendTask || !state.playing || state.phase === "done")
 			return;
-		const id = window.setTimeout(() => {
+		const id = clock.timeout(() => {
 			dispatch({ type: "advance" });
 		}, demoDelay(state));
 		return () => {
-			window.clearTimeout(id);
+			clock.clear(id);
 		};
 	}, [active, weekendTask, reduceMotion, state]);
 
@@ -436,8 +436,8 @@ function useHeroDemoModel() {
 	};
 }
 
-export function HeroDemo() {
-	const model = useHeroDemoModel();
+export function HeroDemo({ clock = browserDemoClock }: { clock?: DemoClock } = {}) {
+	const model = useHeroDemoModel(clock);
 	return <HeroDemoView {...model} />;
 }
 
