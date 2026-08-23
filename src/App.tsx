@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { useSkySelection } from "./hooks/use-sky-selection";
 import { HomePage } from "./pages/HomePage";
 import { MachinePage } from "./pages/MachinePage";
-import { MachineContext } from "./machine";
+import { MachineContext } from "./app/machine-mode";
 import { redirectFor, routeTitle } from "./domain/route";
 import {
 	emitNavigation,

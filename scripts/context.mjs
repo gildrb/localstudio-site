@@ -94,8 +94,7 @@ function classify(rel) {
 		rel.startsWith("src/agent/") ||
 		rel.startsWith("src/content/") ||
 		rel.startsWith("src/domain/") ||
-		rel === "src/images.ts" ||
-		rel === "src/machine.ts"
+		rel === "src/images.ts"
 	) {
 		return "domain/content/agent";
 	}

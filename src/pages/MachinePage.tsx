@@ -3,7 +3,7 @@ import { machineSections } from "../agent/machine";
 import { routePaths } from "../domain/route";
 import { LocalLink } from "../components/LocalLink";
 import { PageShell } from "../components/PageShell";
-import { useMachine } from "../machine";
+import { useMachine } from "../app/machine-mode";
 
 const sections = machineSections();
 

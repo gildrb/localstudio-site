@@ -7,22 +7,28 @@ Read the [`ls-designmd` system](https://github.com/gildrb/ls-designmd/blob/main/
 ## Run
 
 ```sh
-pnpm install
+corepack enable
+pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 pnpm dev
 ```
 
-Production checks:
+## Check
 
 ```sh
-corepack enable
-pnpm install --frozen-lockfile
 pnpm check
 pnpm build
 pnpm test
 pnpm preview
 ```
 
-`pnpm check` runs lint, types, context/graph reports, and generated-style drift.
-The first-party token gate stays report-only until copied Local Studio source is extracted.
-`pnpm reproducible:check` builds twice and compares dist hashes.
+`pnpm check` runs lint, TypeScript, context/graph reports, generated-style drift, design-manifest, and asset-manifest checks.
+
+Optional:
+
+```sh
+pnpm context:bundle
+pnpm reproducible:check
+```
+
+Playwright Chromium needs system libraries. This NixOS host is missing `libnspr4.so`.

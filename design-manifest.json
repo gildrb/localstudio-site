@@ -1,5 +1,5 @@
 {
-	"hash": "80859b658b7d9f0763ef583743983f958c6f8e13ba4c722d65c447917ecda98e",
+	"hash": "9386f0599f52cd579f79fcb7f002688393fe14def63e42545c9b3afca5af03d1",
 	"routes": [
 		"/",
 		"/product",
@@ -84,6 +84,7 @@
 		"src/domain/route.ts": "canonical route, document, and redirect model",
 		"src/domain/release.ts": "canonical download/release metadata",
 		"src/domain/asset.ts": "canonical public asset registry",
+		"src/app/machine-mode.ts": "owns machine-mode React context boundary",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",
 		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
 		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer",

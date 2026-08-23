@@ -3,7 +3,7 @@ import { lazy, Suspense } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { CtaPair } from "../components/Links";
 import { motion } from "../domain/motion";
-import { useMachine } from "../machine";
+import { useMachine } from "../app/machine-mode";
 import { LocalAiLogo } from "../logo/LocalAiLogo";
 
 const HeroDemo = lazy(() =>

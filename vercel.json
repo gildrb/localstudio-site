@@ -4,10 +4,9 @@
 			"source": "/",
 			"headers": [
 				{
-					"key": "Link",
-					"value": "</.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", <https://localstudio.ai/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", </llms.txt>; rel=\"describedby\"; type=\"text/markdown\", </index.md>; rel=\"alternate\"; type=\"text/markdown\", </docs>; rel=\"service-doc\"; type=\"text/html\", </docs.md>; rel=\"service-doc\"; type=\"text/markdown\", </.well-known/agent-card.json>; rel=\"service-desc\"; type=\"application/json\", </sitemap.xml>; rel=\"describedby\"; type=\"application/xml\", <https://localstudio.ai/>; rel=\"canonical\"; type=\"text/html\""
+					"key": "Vary",
+					"value": "Accept"
 				},
-				{ "key": "Vary", "value": "Accept" },
 				{
 					"key": "Content-Signal",
 					"value": "search=yes, ai-input=yes, ai-train=yes"
@@ -17,38 +16,59 @@
 		{
 			"source": "/robots.txt",
 			"headers": [
-				{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }
+				{
+					"key": "Content-Type",
+					"value": "text/plain; charset=utf-8"
+				}
 			]
 		},
 		{
 			"source": "/sitemap.xml",
 			"headers": [
-				{ "key": "Content-Type", "value": "application/xml; charset=utf-8" }
+				{
+					"key": "Content-Type",
+					"value": "application/xml; charset=utf-8"
+				}
 			]
 		},
 		{
 			"source": "/(.*)\\.md",
 			"headers": [
-				{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
-				{ "key": "Vary", "value": "Accept" }
+				{
+					"key": "Content-Type",
+					"value": "text/markdown; charset=utf-8"
+				},
+				{
+					"key": "Vary",
+					"value": "Accept"
+				}
 			]
 		},
 		{
 			"source": "/llms.txt",
 			"headers": [
-				{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" }
+				{
+					"key": "Content-Type",
+					"value": "text/markdown; charset=utf-8"
+				}
 			]
 		},
 		{
 			"source": "/llms-full.txt",
 			"headers": [
-				{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" }
+				{
+					"key": "Content-Type",
+					"value": "text/markdown; charset=utf-8"
+				}
 			]
 		},
 		{
 			"source": "/.well-known/llms.txt",
 			"headers": [
-				{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" }
+				{
+					"key": "Content-Type",
+					"value": "text/markdown; charset=utf-8"
+				}
 			]
 		},
 		{
@@ -63,7 +83,10 @@
 		{
 			"source": "/.well-known/agent-card.json",
 			"headers": [
-				{ "key": "Content-Type", "value": "application/json; charset=utf-8" }
+				{
+					"key": "Content-Type",
+					"value": "application/json; charset=utf-8"
+				}
 			]
 		}
 	]
