@@ -50,4 +50,7 @@ test("header and machine chrome labels read the product name from site facts", (
 	expect(header.includes('aria-label="Local Studio"')).toBe(false);
 	const machine = readFileSync("src/pages/MachinePage.tsx", "utf8");
 	expect(machine.includes("site.products.localStudio.name")).toBe(true);
+	const notFound = readFileSync("src/pages/NotFoundPage.tsx", "utf8");
+	expect(notFound.includes("site.products.localStudio.name")).toBe(true);
+	expect(notFound.includes(">Local Studio<")).toBe(false);
 });
