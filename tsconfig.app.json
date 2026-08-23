@@ -91,6 +91,7 @@
   "exclude": [
     "src/ls",
     "src/ls-shared",
-    "src/ls-contracts"
+    "src/ls-contracts",
+    "packages/logo-renderer"
   ]
 }

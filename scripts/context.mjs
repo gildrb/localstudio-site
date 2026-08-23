@@ -79,7 +79,12 @@ function classify(rel) {
 	) {
 		return "copied-product";
 	}
-	if (rel.startsWith("src/sections/localai-logo-shader/")) return "logo-renderer";
+	if (
+		rel.startsWith("src/sections/localai-logo-shader/") ||
+		rel.startsWith("packages/logo-renderer/")
+	) {
+		return "logo-renderer";
+	}
 	if (rel === "src/styles/ls-app.css" || rel.startsWith("src/styles/ls/")) {
 		return "generated";
 	}

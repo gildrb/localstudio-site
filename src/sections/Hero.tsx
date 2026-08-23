@@ -3,7 +3,7 @@ import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { CtaPair } from "../components/Links";
 import { motion } from "../domain/motion";
 import { useMachine } from "../machine";
-import { LocalAiLogoShader } from "./localai-logo-shader";
+import { LocalAiLogo } from "../logo/LocalAiLogo";
 
 const HeroDemo = lazy(() =>
 	import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })),
@@ -22,7 +22,7 @@ export function Hero() {
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section className="hero" id="top" aria-labelledby="landing-title">
-				<LocalAiLogoShader />
+				<LocalAiLogo />
 				<div className="hero__inner">
 					<div className="hero__copy">
 						<m.h1 id="landing-title" tabIndex={-1} {...enter(0.12)}>

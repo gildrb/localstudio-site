@@ -14,6 +14,7 @@ export default defineConfig({
 		".roo/**",
 		".windsurf/**",
 		"tools/oxlint/anti-slop/**",
+		"packages/logo-renderer/**",
 		"src/ls/**",
 		"src/ls-shared/**",
 		"src/ls-contracts/**",

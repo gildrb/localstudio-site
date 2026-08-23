@@ -22,7 +22,8 @@
 		"src/domain/site.ts": "canonical site facts",
 		"src/domain/route.ts": "canonical route, document, and redirect model",
 		"src/domain/release.ts": "canonical download/release metadata",
-		"src/ui/prose.tsx": "React interpreter for React-free product prose"
+		"src/ui/prose.tsx": "React interpreter for React-free product prose",
+		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary"
 	},
 	"roots": [
 		"src/main.tsx",

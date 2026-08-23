@@ -19,6 +19,7 @@ const EXCLUDE_DIRS = new Set([
 	"src/ls-shared",
 	"src/ls-contracts",
 	"src/sections/localai-logo-shader",
+	"packages",
 ]);
 
 function walk(directory) {
