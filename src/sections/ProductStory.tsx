@@ -3,6 +3,7 @@ import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
 import { motion } from "../domain/motion";
 import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
+import { site } from "../domain/site";
 const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
 
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
@@ -95,13 +96,13 @@ export function ProductStory() {
 
 	return (
 		<LazyMotion features={domMax} strict>
-			<section id="media" className="story section-width" aria-label="Local Studio product story">
+			<section id="media" className="story section-width" aria-label={`${site.products.localStudio.name} product story`}>
 				<div className="story__showcase" ref={showcaseRef}>
 					<div className="story__sticky">
 						<div className="story__options-window">
 							<ol
 								className="story__options"
-								aria-label="Local Studio capabilities"
+								aria-label={`${site.products.localStudio.name} capabilities`}
 								data-active-index={activeIndex}
 							>
 							{productFeatures.map((feature, index) => {

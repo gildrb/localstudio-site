@@ -92,3 +92,10 @@ test("HTML titles use the canonical product name", () => {
 	expect(routeTitle("/")).toBe(`Intelligence should be owned - ${site.products.localStudio.name}`);
 	expect(notFoundTitle()).toBe(`Page not found - ${site.products.localStudio.name}`);
 });
+
+test("Docs and overview headings come from the route model", () => {
+	const docs = readFileSync("src/pages/DocsPage.tsx", "utf8");
+	const overview = readFileSync("src/pages/ResourcesPage.tsx", "utf8");
+	expect(docs.includes("routes[docsPath].heading")).toBe(true);
+	expect(overview.includes("routes[overviewPath].heading")).toBe(true);
+});

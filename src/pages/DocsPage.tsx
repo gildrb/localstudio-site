@@ -1,4 +1,4 @@
-import { setupPath } from "../domain/route";
+import { docsPath, routes, setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
@@ -25,7 +25,7 @@ export function DocsPage() {
 			<PageIntro
 				id="docs-title"
 				layout="left"
-				title="Get Local Studio running"
+				title={routes[docsPath].heading}
 				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
 				actions={
 					<CtaPair

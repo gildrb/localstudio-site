@@ -1,5 +1,5 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { docsPath, downloadLabel, downloadPath, setupPath } from "../domain/route";
+import { docsPath, downloadLabel, downloadPath, overviewPath, routes, setupPath } from "../domain/route";
 import { site } from "../domain/site";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
@@ -104,7 +104,7 @@ export function ResourcesPage() {
 			<PageIntro
 				id="resources-title"
 				layout="left"
-				title="Everything around Local Studio"
+				title={routes[overviewPath].heading}
 				description="Documentation, setup paths, downloads, and the surrounding ecosystem in one place."
 				actions={
 					<CtaPair secondary={{ href: docsPath, label: "Read the docs" }} />
