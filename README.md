@@ -15,20 +15,25 @@ pnpm dev
 
 ## Check
 
+A clean checkout must pass:
+
 ```sh
+corepack enable
+pnpm install --frozen-lockfile
 pnpm check
+pnpm context:bundle
 pnpm build
-pnpm test
-pnpm preview
+pnpm bundle:check
 ```
 
-`pnpm check` runs lint, TypeScript, context/graph reports, generated-style drift, design-manifest, and asset-manifest checks.
+`pnpm check` runs lint, TypeScript, context and graph gates, leftover-path checks, design-manifest, asset-manifest, and browser-free unit tests.
 
 Optional:
 
 ```sh
-pnpm context:bundle
+pnpm test
 pnpm reproducible:check
+pnpm preview
 ```
 
-Playwright Chromium needs system libraries. This NixOS host is missing `libnspr4.so`.
+`pnpm test` needs Playwright Chromium. This NixOS host is missing `libnspr4.so`.

@@ -38,7 +38,6 @@
 		"oxlint.config.ts",
 		"playwright.config.ts",
 		"playwright.unit.config.ts",
-		"scripts/sync-ls-demo-styles.mjs",
 		"packages/logo-renderer/scripts/generate-logo-mesh.mjs",
 		"scripts/context.mjs",
 		"scripts/graph.mjs",
