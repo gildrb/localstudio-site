@@ -82,3 +82,13 @@ test("vercel headers match agent document content types", () => {
 		`"value": "${agentDocument("/.well-known/agent-card.json")?.contentType}"`,
 	);
 });
+
+test("agent documents use canonical site facts", () => {
+	const llms = agentDocument("/llms.txt")?.body ?? "";
+	expect(llms).toContain(site.company.url);
+	expect(llms).toContain(site.products.localStudio.repository);
+	expect(llms).toContain(site.products.kittyLitter.url);
+	expect(llms).toContain(site.products.kittyLitter.appStore);
+	expect(llms).toContain(site.products.codexShim.repository);
+	expect(llms).toContain(site.company.x);
+});

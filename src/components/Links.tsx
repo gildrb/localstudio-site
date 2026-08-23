@@ -8,7 +8,7 @@ interface TextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 	href: string;
 }
 
-export function TextLink({
+function TextLink({
 	children,
 	href,
 	className = "",
