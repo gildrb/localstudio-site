@@ -42,6 +42,7 @@
 		"scripts/verify-generated.mjs",
 		"scripts/design-manifest.mjs",
 		"scripts/reproducible.mjs",
+		"scripts/assets.mjs",
 		"src/agent/markdown.ts",
 		"src/demo-ui-modules.d.ts",
 		"src/logo-renderer.d.ts"

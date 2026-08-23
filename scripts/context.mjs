@@ -29,7 +29,7 @@ const EXCLUDE_DIRS = new Set([
 	".context",
 ]);
 const EXCLUDE_FILES = new Set(["pnpm-lock.yaml"]);
-const EXCLUDE_NAMES = new Set(["LS_WEB_REFACTOR_SPEC.md", "design-manifest.json"]);
+const EXCLUDE_NAMES = new Set(["LS_WEB_REFACTOR_SPEC.md", "design-manifest.json", "asset-manifest.json"]);
 
 const CATEGORY_BUDGETS = {
 	"domain/content/agent": { target: 15_000, hard: 18_000 },
