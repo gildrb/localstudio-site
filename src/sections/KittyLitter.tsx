@@ -139,7 +139,6 @@ export function KittyLitter() {
 									decoding="async"
 									draggable={false}
 								/>
-								<span className="kitty__scrim" aria-hidden="true" />
 							</div>
 						</article>
 					))}

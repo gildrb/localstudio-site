@@ -1476,13 +1476,6 @@ button {
   filter: grayscale(1) contrast(0.88);
 }
 
-.kitty__scrim {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(to top, rgb(0 0 0 / 0.82), rgb(0 0 0 / 0) 55%);
-}
 
 .page-cta {
   display: grid;
