@@ -1,5 +1,5 @@
 {
-	"hash": "f154995164771b0bc0bc4a3015d85bd191da327a4514309b7aaa293e6f3f483b",
+	"hash": "170e3dfdccf31716583193ffab7267f9dee493fb9439e8c8a6f3eba61fdb622c",
 	"routes": [
 		"/",
 		"/product",
@@ -84,6 +84,7 @@
 		"src/domain/route.ts": "canonical route, document, and redirect model",
 		"src/domain/release.ts": "canonical download/release metadata",
 		"src/domain/asset.ts": "canonical public asset registry",
+		"src/domain/nav.ts": "canonical header surface-state reducer",
 		"src/app/machine-mode.ts": "owns machine-mode React context boundary",
 		"src/app/browser-location.ts": "owns browser history, hash scroll, and navigation events",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",

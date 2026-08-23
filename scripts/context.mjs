@@ -248,22 +248,23 @@ function check(rows) {
 	const countedRows = counted(rows);
 	const countedTotal = countedRows.reduce((sum, row) => sum + row.tokens, 0);
 	const failures = [];
-	if (process.env.CONTEXT_ENFORCE === "1") {
-		if (countedTotal > TOTAL_HARD) {
-			failures.push(`total ${countedTotal} exceeds hard ceiling ${TOTAL_HARD}`);
+	if (countedTotal > TOTAL_HARD) {
+		failures.push(`total ${countedTotal} exceeds hard ceiling ${TOTAL_HARD}`);
+	}
+	if (countedTotal > TOTAL_OPERATING) {
+		failures.push(`total ${countedTotal} exceeds operating gate ${TOTAL_OPERATING}`);
+	}
+	const totals = categoryTotals(countedRows);
+	for (const [category, stats] of Object.entries(totals)) {
+		const budget = CATEGORY_BUDGETS[category];
+		if (Number.isFinite(budget.hard) && stats.tokens > budget.hard) {
+			const message = `${category} ${stats.tokens} exceeds hard ${budget.hard}`;
+			if (process.env.CONTEXT_ENFORCE === "1") failures.push(message);
+			else console.warn(`warning: ${message}`);
 		}
-		if (countedTotal > TOTAL_OPERATING) {
-			failures.push(`total ${countedTotal} exceeds operating gate ${TOTAL_OPERATING}`);
-		}
-		const totals = categoryTotals(countedRows);
-		for (const [category, stats] of Object.entries(totals)) {
-			const budget = CATEGORY_BUDGETS[category];
-			if (Number.isFinite(budget.hard) && stats.tokens > budget.hard) {
-				failures.push(`${category} ${stats.tokens} exceeds hard ${budget.hard}`);
-			}
-		}
-	} else if (countedTotal >= TOTAL_WARN) {
-		console.warn(`warning: counted tokens ${countedTotal} >= ${TOTAL_WARN} (report-only until CONTEXT_ENFORCE=1)`);
+	}
+	if (countedTotal >= TOTAL_WARN && countedTotal <= TOTAL_OPERATING) {
+		console.warn(`warning: counted tokens ${countedTotal} >= ${TOTAL_WARN}`);
 	}
 	if (failures.length > 0) {
 		console.error(failures.join("\n"));

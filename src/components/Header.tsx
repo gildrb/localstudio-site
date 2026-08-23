@@ -4,6 +4,14 @@ import { assets } from "../domain/asset";
 import { site } from "../domain/site";
 import { cssVars } from "../system/css-vars";
 import { resourceNav } from "../domain/route";
+import {
+	closedNav,
+	desktopMenu,
+	isMobileOpen,
+	reduceNav,
+	type MenuId,
+	type NavSurface,
+} from "../domain/nav";
 import { DownloadButton } from "./Links";
 import { LocalLink } from "./LocalLink";
 
@@ -12,8 +20,6 @@ type NavLink = {
 	readonly href: string;
 	readonly external?: true;
 }
-
-type MenuId = "products" | "resources";
 
 type ChevronProps = {
 	open: boolean;
@@ -175,8 +181,9 @@ function DesktopMenu({
 }
 
 export function Header() {
-	const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
-	const [mobileOpen, setMobileOpen] = useState(false);
+	const [nav, setNav] = useState<NavSurface>(closedNav);
+	const openMenu = desktopMenu(nav);
+	const mobileOpen = isMobileOpen(nav);
 	const menusRef = useRef<HTMLElement>(null);
 	const toggleRef = useRef<HTMLButtonElement>(null);
 	const sheetRef = useRef<HTMLDialogElement>(null);
@@ -191,13 +198,13 @@ export function Header() {
 
 	function close() {
 		cancelMenuClose();
-		setOpenMenu(null);
+		setNav(closedNav);
 	}
 
 	function scheduleMenuClose() {
 		cancelMenuClose();
 		closeTimerRef.current = window.setTimeout(() => {
-			setOpenMenu(null);
+			setNav(closedNav);
 			closeTimerRef.current = null;
 		}, 100);
 	}
@@ -208,7 +215,7 @@ export function Header() {
 			const target = event.target;
 			if (!(target instanceof Node)) return;
 			if (!menusRef.current?.contains(target)) {
-				setOpenMenu(null);
+				setNav(closedNav);
 			}
 		}
 		function onKeyDown(event: KeyboardEvent) {
@@ -216,7 +223,7 @@ export function Header() {
 				const trigger = menusRef.current?.querySelector<HTMLButtonElement>(
 					`[aria-controls="nav-menu-${openMenu}"]`,
 				);
-				setOpenMenu(null);
+				setNav(closedNav);
 				trigger?.focus();
 			}
 		}
@@ -232,7 +239,7 @@ export function Header() {
 	useEffect(() => {
 		const media = window.matchMedia(mobileQuery);
 		function onChange() {
-			if (media.matches) setOpenMenu(null);
+			if (media.matches) setNav(closedNav);
 			if (!media.matches) setSheetOpen(false);
 		}
 		media.addEventListener("change", onChange);
@@ -286,7 +293,7 @@ export function Header() {
 
 	function setSheetOpen(open: boolean) {
 		document.documentElement.classList.toggle("nav-open", open);
-		setMobileOpen(open);
+		setNav((current) => reduceNav(current, open ? { type: "openMobile" } : { type: "closeMobile" }));
 	}
 
 	const closeMobile = () => setSheetOpen(false);
@@ -302,13 +309,17 @@ export function Header() {
 					aria-expanded={open}
 					aria-controls={`nav-menu-${id}`}
 					onClick={(event) =>
-						setOpenMenu(event.detail === 0 && open ? null : id)
+						setNav(
+							event.detail === 0 && open
+								? closedNav
+								: reduceNav(nav, { type: "openDesktop", menu: id }),
+						)
 					}
-					onPointerEnter={() => setOpenMenu(id)}
+					onPointerEnter={() => setNav({ kind: "desktop", menu: id })}
 					onKeyDown={(event) => {
 						if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
 						event.preventDefault();
-						setOpenMenu(id);
+						setNav({ kind: "desktop", menu: id });
 						window.requestAnimationFrame(() => {
 							const items = menusRef.current?.querySelectorAll<HTMLElement>(
 								`#nav-menu-${id} [role="menuitem"]`,

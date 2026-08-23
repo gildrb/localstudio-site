@@ -218,7 +218,7 @@ function printReport() {
 }
 
 printReport();
-if (command === "check" && process.env.GRAPH_ENFORCE === "1") {
+if (command === "check") {
 	const failures = [];
 	if (unreachable.length) failures.push(`unreachable files: ${unreachable.join(", ")}`);
 	if (singleConsumer.length) {
