@@ -13,6 +13,10 @@ export default defineConfig({
 	resolve: {
 		alias: [
 			{
+				find: "@local-ai/logo-renderer/react",
+				replacement: path.resolve(root, "packages/logo-renderer/src/renderer/index.tsx"),
+			},
+			{
 				find: "@local-studio/demo-ui/hero",
 				replacement: path.resolve(root, "packages/demo-ui/src/hero/HeroDemo.tsx"),
 			},

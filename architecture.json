@@ -23,6 +23,7 @@
 		"src/domain/release.ts": "canonical download/release metadata",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",
 		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
+		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer",
 		"src/sections/HeroDemo.tsx": "website adapter for the demo-ui hero demonstration"
 	},
 	"roots": [
@@ -39,6 +40,7 @@
 		"scripts/graph.mjs",
 		"scripts/verify-generated.mjs",
 		"src/agent/markdown.ts",
-		"src/demo-ui-modules.d.ts"
+		"src/demo-ui-modules.d.ts",
+		"src/logo-renderer.d.ts"
 	]
 }
