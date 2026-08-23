@@ -1,7 +1,7 @@
 import { ChevronDown, Equal, X } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import { site } from "../domain/site";
+import { cssVars } from "../system/css-vars";
 import { resourceNav } from "../domain/route";
 import { DownloadButton } from "./Links";
 import { LocalLink } from "./LocalLink";
@@ -160,8 +160,7 @@ function DesktopMenu({
 			<div className="nav__mega-inner" ref={innerRef}>
 				<div
 					className="nav__mega-grid"
-					// SAFETY: custom CSS properties are valid style keys at runtime but missing from CSSProperties.
-					style={{ "--mega-col": `${offset}px` } as CSSProperties}
+					style={cssVars({ "--mega-col": `${offset}px` })}
 				>
 					{menuColumns[menu].map((column) => (
 						<section className="nav__mega-section" key={column[0].label}>
