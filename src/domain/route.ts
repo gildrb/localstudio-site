@@ -99,11 +99,8 @@ export const downloadPath = "/download" satisfies RoutePath;
 export const setupPath = "/setup" satisfies RoutePath;
 export const docsPath = "/docs" satisfies RoutePath;
 export const overviewPath = "/overview" satisfies RoutePath;
-export const productPath = "/product" satisfies RoutePath;
-export const heroImageRoutes = [productPath] as const;
-
 export function isHeroImageRoute(pathname: string): boolean {
-	return pathname === productPath;
+	return pathname === "/product";
 }
 
 export function routeTitle(path: RoutePath): string {

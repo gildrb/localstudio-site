@@ -8,6 +8,8 @@ import {
 } from "../../src/agent/documents";
 import { markdownPages, routePaths } from "../../src/domain/route";
 import { site } from "../../src/domain/site";
+import { productFeatures, renderInlineMarkdown } from "../../src/content/product";
+import { productMarkdown } from "../../src/agent/markdown";
 
 test("robots and sitemap stay deterministic", () => {
 	const robots = agentDocument("/robots.txt");
@@ -57,4 +59,12 @@ test("discovery documents and Accept negotiation are shared", () => {
 	expect(agentDocuments().map((document) => document.path)).toContain(
 		"/machine.md",
 	);
+});
+
+test("product markdown is generated from canonical feature prose", () => {
+	const body = productMarkdown();
+	for (const feature of productFeatures) {
+		expect(body).toContain(feature.productTitle);
+		expect(body).toContain(renderInlineMarkdown(feature.productText));
+	}
 });

@@ -33,8 +33,6 @@ export const assets = {
 	sponsorTng: "/images/sponsors/tng.svg",
 } as const;
 
-export type AssetId = keyof typeof assets;
-
 const registered = new Set<string>(Object.values(assets));
 
 export function responsiveSrcSet(path: string) {
