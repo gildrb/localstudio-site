@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
+import { motion } from "../domain/motion";
 
 interface CopyIconProps {
 	text: string;
@@ -10,7 +11,6 @@ const copyPath =
 const checkPath =
 	"m15.56 4-.53.53-8.8 8.8c-.68.68-1.78.68-2.47 0l.53-.54-.53.53-2.79-2.79L.44 10 1.5 8.94l.53.53 2.8 2.8c.1.09.25.09.35 0l8.79-8.8.53-.53z";
 
-const ease = [0.16, 1, 0.3, 1] as const;
 
 function glyphState(active: boolean, reduceMotion: boolean) {
 	if (reduceMotion) return { opacity: active ? 1 : 0 };
@@ -24,7 +24,7 @@ function glyphState(active: boolean, reduceMotion: boolean) {
 export function CopyIcon({ text }: CopyIconProps) {
 	const [copied, setCopied] = useState(false);
 	const reduceMotion = useReducedMotion();
-	const transition = { duration: reduceMotion ? 0 : 0.18, ease };
+	const transition = { duration: reduceMotion ? 0 : 0.18, ease: motion.ease };
 
 	async function copy() {
 		if (copied) return;

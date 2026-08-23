@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { CtaPair } from "../components/Links";
+import { motion } from "../domain/motion";
 import { useMachine } from "../machine";
 import { LocalAiLogoShader } from "./localai-logo-shader";
 
@@ -8,7 +9,6 @@ const HeroDemo = lazy(() =>
 	import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })),
 );
 
-const ease = [0.16, 1, 0.3, 1] as const;
 const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
 
 export function Hero() {
@@ -17,7 +17,7 @@ export function Hero() {
 	const enter = (delay: number) => ({
 		initial: reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
 		animate: settle,
-		transition: { duration: 0.9, ease, delay },
+		transition: { ...motion.heroEnter, delay },
 	});
 	return (
 		<LazyMotion features={domAnimation} strict>
