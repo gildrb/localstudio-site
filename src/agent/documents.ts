@@ -1,8 +1,28 @@
 import { robotsTxt } from "./robots.ts";
 import { sitemapXml } from "./sitemap.ts";
-export { HTML_ROUTES, LASTMOD, type HtmlRoute, type HtmlRoutePath } from "./routes.ts";
-import { release } from "../domain/release.ts";
+import { machineText } from "./machine.ts";
 import { site } from "../domain/site.ts";
+import { markdownPathFor } from "../domain/route.ts";
+import {
+	agentCard,
+	agentsMarkdown,
+	apiCatalog,
+	docsMarkdown,
+	downloadMarkdown,
+	faqMarkdown,
+	indexMarkdown,
+	llmsFull,
+	llmsTxt,
+	markdownPage,
+	mobileMarkdown,
+	peopleMarkdown,
+	productMarkdown,
+	promptMarkdown,
+	resourcesMarkdown,
+	servicesMarkdown,
+	showcaseMarkdown,
+	sitemapMarkdown,
+} from "./markdown.ts";
 
 export type AgentDocument = {
 	readonly path: string;
@@ -10,27 +30,18 @@ export type AgentDocument = {
 	readonly contentType: string;
 };
 
-export const SITE_ORIGIN = site.origin;
-export { machineSections, machineText, type MachineSection } from "./machine.ts";
-
-export const DOWNLOAD = release;
-
 export const HOMEPAGE_LINK_HEADER = [
 	`</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"`,
-	`<${SITE_ORIGIN}/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"`,
+	`<${site.origin}/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"`,
 	`</llms.txt>; rel="describedby"; type="text/markdown"`,
 	`</index.md>; rel="alternate"; type="text/markdown"`,
 	`</docs>; rel="service-doc"; type="text/html"`,
 	`</docs.md>; rel="service-doc"; type="text/markdown"`,
 	`</.well-known/agent-card.json>; rel="service-desc"; type="application/json"`,
 	`</sitemap.xml>; rel="describedby"; type="application/xml"`,
-	`<${SITE_ORIGIN}/>; rel="canonical"; type="text/html"`,
+	`<${site.origin}/>; rel="canonical"; type="text/html"`,
 ].join(", ");
 
-import { machineText } from "./machine.ts";
-import {
-	markdownPage, llmsTxt, indexMarkdown, productMarkdown, mobileMarkdown, docsMarkdown, promptMarkdown, agentsMarkdown, resourcesMarkdown, downloadMarkdown, servicesMarkdown, peopleMarkdown, showcaseMarkdown, faqMarkdown, sitemapMarkdown, apiCatalog, agentCard, llmsFull
-} from "./markdown.ts";
 export function agentDocuments(): readonly AgentDocument[] {
 	const markdown = "text/markdown; charset=utf-8";
 	const llms = llmsTxt();
@@ -55,11 +66,7 @@ export function agentDocuments(): readonly AgentDocument[] {
 		{ path: "/setup.md", body: promptMarkdown(), contentType: markdown },
 		{ path: "/agents.md", body: agentsMarkdown(), contentType: markdown },
 		{ path: "/overview.md", body: resourcesMarkdown(), contentType: markdown },
-		{
-			path: "/download.md",
-			body: downloadMarkdown(),
-			contentType: markdown,
-		},
+		{ path: "/download.md", body: downloadMarkdown(), contentType: markdown },
 		{
 			path: "/machine.md",
 			body: markdownPage("Machine-readable index", machineText()),
@@ -87,7 +94,7 @@ export function agentDocument(path: string): AgentDocument | null {
 	return agentDocuments().find((document) => document.path === path) ?? null;
 }
 
-export { markdownPathFor } from "../domain/route.ts";
+export { markdownPathFor };
 
 export function wantsMarkdown(acceptHeader: string): boolean {
 	return (

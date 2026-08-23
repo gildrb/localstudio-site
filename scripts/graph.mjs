@@ -72,11 +72,16 @@ function resolveImport(fromRel, spec) {
 function importsOf(rel) {
 	const text = readFileSync(join(root, rel), "utf8");
 	const specs = [];
-	const pattern =
-		/(?:import|export)\s+(?:type\s+)?(?:[^'"\n]+from\s+)?["']([^"']+)["']|import\(\s*["']([^"']+)["']\s*\)/g;
-	let match;
-	while ((match = pattern.exec(text))) {
-		specs.push(match[1] ?? match[2]);
+	const patterns = [
+		/\b(?:import|export)\b[\s\S]*?\bfrom\s+["']([^"']+)["']/g,
+		/^import\s+["']([^"']+)["']/gm,
+		/import\(\s*["']([^"']+)["']\s*\)/g,
+	];
+	for (const pattern of patterns) {
+		let match;
+		while ((match = pattern.exec(text))) {
+			specs.push(match[1]);
+		}
 	}
 	return specs;
 }

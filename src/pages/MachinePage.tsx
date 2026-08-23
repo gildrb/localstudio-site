@@ -1,5 +1,5 @@
 import localStudioAscii from "../content/local-studio-ascii.txt?raw";
-import { machineSections } from "../agent/catalog";
+import { machineSections } from "../agent/machine";
 import { routePaths } from "../domain/route";
 import { LocalLink } from "../components/LocalLink";
 import { PageShell } from "../components/PageShell";
