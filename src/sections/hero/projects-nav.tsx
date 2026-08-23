@@ -1,4 +1,4 @@
-import { Folder, FolderOpen } from "@/ui/icons";
+import { Folder, FolderOpen } from "@local-studio/demo-ui";
 import {
 	SidebarRail,
 	SidebarSectionHeader,

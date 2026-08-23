@@ -10,8 +10,8 @@ import {
 	Plus,
 	TerminalSquare,
 	type LucideIcon,
-} from "@/ui/icon-registry";
-import { CloseIcon } from "@/ui/icons";
+} from "@local-studio/demo-ui";
+import { CloseIcon } from "@local-studio/demo-ui";
 import type { ComputerTab } from "@/features/agent/tools/types";
 import type { TerminalOwnersSnapshot } from "@/features/agent/ui/use-persistent-terminal-owners";
 import { terminalOwnerLabel } from "@/features/agent/terminal-owners";

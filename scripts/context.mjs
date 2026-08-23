@@ -79,9 +79,8 @@ function classify(rel) {
 	) {
 		return "copied-product";
 	}
-	if (rel.startsWith("packages/") && !rel.startsWith("packages/logo-renderer/")) {
-		return "copied-product";
-	}
+	if (rel.startsWith("packages/logo-renderer/")) return "logo-renderer";
+	if (rel.startsWith("packages/demo-ui/")) return "copied-product";
 	if (
 		rel.startsWith("src/sections/localai-logo-shader/") ||
 		rel.startsWith("packages/logo-renderer/")

@@ -1,4 +1,4 @@
-import { Cpu, Monitor, Plus, Server, SquarePen } from "@/ui/icon-registry";
+import { Cpu, Monitor, Plus, Server, SquarePen } from "@local-studio/demo-ui";
 import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 

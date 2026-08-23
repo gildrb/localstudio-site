@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Check, Clock, Pause, Play, Plus, Search } from "@/ui/icon-registry";
+import { Check, Clock, Pause, Play, Plus, Search } from "@local-studio/demo-ui";
 import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 

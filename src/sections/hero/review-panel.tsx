@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { GitBranchIcon } from "@/ui/icons";
+import { GitBranchIcon } from "@local-studio/demo-ui";
 import { DiffFileList } from "@/features/agent/ui/git-diff-panel-diff-view";
 import {
 	parseUnifiedDiff,

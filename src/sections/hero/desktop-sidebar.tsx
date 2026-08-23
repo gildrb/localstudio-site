@@ -7,9 +7,9 @@ import {
 	PanelLeftFilled,
 	Settings,
 	Smartphone,
-} from "@/ui/icon-registry";
-import { NavItemDesktop } from "@/features/shell/left-sidebar-nav";
-import { isRouteActive, tabs } from "@/features/shell/left-sidebar-nav-model";
+} from "@local-studio/demo-ui";
+import { NavItemDesktop } from "@local-studio/demo-ui";
+import { isRouteActive, tabs } from "@local-studio/demo-ui";
 import { DEFAULT_SIDEBAR_WIDTH } from "@/store";
 import { ProfileAvatar, useLocalProfile } from "@/features/shell/local-profile";
 import { HeroProjectsNav, type HeroTaskId } from "./projects-nav";

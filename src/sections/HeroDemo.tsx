@@ -11,10 +11,10 @@ import {
 import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { useDemoTabBoundary } from "./demo-tab-boundary";
 import { useElementActive } from "../hooks/use-element-activity";
-import { ArrowUp, ChevronDown, Plus } from "@/ui/icon-registry";
+import { ArrowUp, ChevronDown, Plus } from "@local-studio/demo-ui";
 import { AgentChatPaneHeader } from "@/features/agent/ui/agent-chat-pane-header";
 import { AgentComposerStatusBar } from "@/features/agent/ui/agent-composer-status-bar";
-import { AgentComposerTextArea } from "@/features/agent/ui/agent-composer-textarea";
+import { AgentComposerTextArea } from "@local-studio/demo-ui";
 import { ComputerStatusPanel } from "@/features/agent/ui/computer-status-panel";
 import { AssistantMessageActions } from "@/features/agent/ui/timeline/assistant-message-actions";
 import { ToolBlockView } from "@/features/agent/ui/timeline/tool-block-view";

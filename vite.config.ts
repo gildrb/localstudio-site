@@ -13,6 +13,10 @@ export default defineConfig({
 	resolve: {
 		alias: [
 			{
+				find: "@local-studio/demo-ui",
+				replacement: path.resolve(root, "packages/demo-ui/src/index.ts"),
+			},
+			{
 				find: "@/store",
 				replacement: path.resolve(root, "src/ls/stubs/store.ts"),
 			},

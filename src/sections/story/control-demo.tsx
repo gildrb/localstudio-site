@@ -1,4 +1,4 @@
-import { TokenActivityHeatmap } from "@/features/usage/token-activity-heatmap";
+import { TokenActivityHeatmap } from "@local-studio/demo-ui";
 import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 

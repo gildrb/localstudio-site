@@ -1,6 +1,6 @@
-import { ChevronDown, ChevronRight, File, Folder } from "@/ui/icon-registry";
+import { ChevronDown, ChevronRight, File, Folder } from "@local-studio/demo-ui";
 import type { FsEntry } from "@/features/agent/filesystem-types";
-import { fileTone } from "@/features/agent/ui/filesystem-tree-model";
+import { fileTone } from "@local-studio/demo-ui";
 
 const entries: FsEntry[] = [
 	{

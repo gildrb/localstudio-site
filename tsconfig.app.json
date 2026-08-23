@@ -76,6 +76,9 @@
       ],
       "@/features/agent/messages/*": [
         "src/ls/stubs/messages/*"
+      ],
+      "@local-studio/demo-ui": [
+        "packages/demo-ui/src/index.ts"
       ]
     },
     "noImplicitReturns": true,
@@ -92,6 +95,7 @@
     "src/ls",
     "src/ls-shared",
     "src/ls-contracts",
-    "packages/logo-renderer"
+    "packages/logo-renderer",
+    "packages/demo-ui"
   ]
 }
