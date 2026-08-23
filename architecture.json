@@ -21,6 +21,7 @@
 		"src/domain/site.ts": "canonical site facts",
 		"src/domain/route.ts": "canonical route, document, and redirect model",
 		"src/domain/release.ts": "canonical download/release metadata",
+		"src/domain/asset.ts": "canonical public asset registry",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",
 		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
 		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer",

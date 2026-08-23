@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { heroSizes, responsiveSrcSet } from "./images";
+import { assets, heroSizes, responsiveSrcSet } from "./images";
 import "./styles/global.css";
 
 const heroImageRoutes = new Set(["/product"]);
@@ -35,10 +35,10 @@ if (heroImageRoutes.has(window.location.pathname)) {
 	preload.rel = "preload";
 	preload.as = "image";
 	preload.setAttribute("fetchpriority", "high");
-	preload.href = "/images/workbench-browser-1300.png";
+	preload.href = assets.workbenchBrowserHero;
 	preload.setAttribute(
 		"imagesrcset",
-		responsiveSrcSet("/images/workbench-browser.png"),
+		responsiveSrcSet(assets.workbenchBrowser),
 	);
 	preload.setAttribute("imagesizes", heroSizes);
 	document.head.append(preload);

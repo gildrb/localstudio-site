@@ -1,3 +1,4 @@
+import { assets } from "../domain/asset";
 import { lazy, Suspense } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { CtaPair } from "../components/Links";
@@ -37,7 +38,7 @@ export function Hero() {
 								>
 									<img
 										className="hero__mark"
-										src="/images/optimized.svg"
+										src={assets.mark}
 										alt=""
 										width="525"
 										height="525"

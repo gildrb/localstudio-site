@@ -1,5 +1,6 @@
 import { ChevronDown, Equal, X } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { assets } from "../domain/asset";
 import { site } from "../domain/site";
 import { cssVars } from "../system/css-vars";
 import { resourceNav } from "../domain/route";
@@ -340,7 +341,7 @@ export function Header() {
 				>
 					<img
 						className="brand__logo"
-						src="/images/localstudio-logo.svg"
+						src={assets.wordmark}
 						alt=""
 						width="4667"
 						height="525"

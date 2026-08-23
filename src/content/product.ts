@@ -1,3 +1,4 @@
+import { assets } from "../domain/asset";
 export type Inline =
 	| { readonly kind: "text"; readonly text: string }
 	| { readonly kind: "term"; readonly term: string };
@@ -17,7 +18,7 @@ export const productFeatures = [
 		productText: [
 			text("Launch and evict models, manage recipes and downloads, and watch GPU, process, log, and usage state from one controller."),
 		],
-		image: "/images/usage-proxy.png",
+		image: assets.usageProxy,
 		alt: "Local Studio usage screen showing proxied tokens, requests, sessions, active days, and token activity.",
 	},
 	{
@@ -45,7 +46,7 @@ export const productFeatures = [
 			term("MLX"),
 			text(" targets, then serve them through one OpenAI-compatible proxy. Runtime discovery and saved selections stay with the controller."),
 		],
-		image: "/images/configure-models.png",
+		image: assets.configureModels,
 		alt: "Local Studio model configuration screen showing searchable Hugging Face models, hardware fit, and downloads.",
 	},
 	{
@@ -60,7 +61,7 @@ export const productFeatures = [
 			term("Pi"),
 			text("-powered Workbench for agent sessions with models, providers, browser, files, terminal, and registered tools in one timeline."),
 		],
-		image: "/images/workbench-terminal.png",
+		image: assets.workbenchTerminal,
 		alt: "Local Studio workbench with agent reasoning, terminal output, repository changes, and tool activity.",
 	},
 	{
@@ -73,7 +74,7 @@ export const productFeatures = [
 		productText: [
 			text("Automations run on the controller. Proxy checks, model pulls, and recap jobs stay on your hardware."),
 		],
-		image: "/images/workbench-terminal.png",
+		image: assets.workbenchTerminal,
 		alt: "Local Studio automations list with scheduled controller tasks.",
 	},
 	{
@@ -86,7 +87,7 @@ export const productFeatures = [
 		productText: [
 			text("Runtimes, devices, and controller settings stay with the machine. Nothing important is hidden in a cloud console."),
 		],
-		image: "/images/configure-models.png",
+		image: assets.configureModels,
 		alt: "Local Studio configure screen showing local hardware and runtime targets.",
 	},
 ] as const;

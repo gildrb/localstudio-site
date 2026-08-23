@@ -4,7 +4,7 @@ import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
-import { frameSizes, heroSizes, responsiveSrcSet } from "../images";
+import { assets, frameSizes, heroSizes, responsiveSrcSet } from "../images";
 
 export function ProductPage() {
 	return (
@@ -31,8 +31,8 @@ export function ProductPage() {
 			>
 				<MediaFrame
 					className="mb-30"
-					src="/images/workbench-browser-1300.png"
-					srcSet={responsiveSrcSet("/images/workbench-browser.png")}
+					src={assets.workbenchBrowserHero}
+					srcSet={responsiveSrcSet(assets.workbenchBrowser)}
 					sizes={heroSizes}
 					alt="Local Studio Workbench showing a coding agent and integrated browser."
 					width="5118"
