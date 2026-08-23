@@ -36,7 +36,7 @@ export function ProductPage() {
 					src={assets.workbenchBrowserHero}
 					srcSet={responsiveSrcSet(assets.workbenchBrowser)}
 					sizes={heroSizes}
-					alt="Local Studio Workbench showing a coding agent and integrated browser."
+					alt={`${site.products.localStudio.name} Workbench showing a coding agent and integrated browser.`}
 					width="5118"
 					height="2800"
 					fetchPriority="high"

@@ -23,7 +23,7 @@ interface ResourceGroup {
 const groups: readonly ResourceGroup[] = [
 	{
 		title: "Getting started",
-		description: "Three paths into Local Studio, from zero to first inference.",
+		description: `Three paths into ${site.products.localStudio.name}, from zero to first inference.`,
 		items: [
 			{
 				name: "Documentation",
@@ -33,7 +33,7 @@ const groups: readonly ResourceGroup[] = [
 			},
 			{
 				name: "Setup prompt",
-				text: "A portable prompt that installs Local Studio with any coding model.",
+				text: `A portable prompt that installs ${site.products.localStudio.name} with any coding model.`,
 				href: setupPath,
 				external: false,
 			},
@@ -61,7 +61,7 @@ const groups: readonly ResourceGroup[] = [
 	{
 		title: "Project",
 		description:
-			"Source, releases, and identity for everything under Local Studio.",
+			`Source, releases, and identity for everything under ${site.products.localStudio.name}.`,
 		items: [
 			{
 				name: "GitHub",
