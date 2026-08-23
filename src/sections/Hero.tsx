@@ -7,7 +7,7 @@ import { useMachine } from "../app/machine-mode";
 import { LocalAiLogo } from "../logo/LocalAiLogo";
 
 const HeroDemo = lazy(() =>
-	import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })),
+	import("@local-studio/demo-ui/hero").then(({ HeroDemo }) => ({ default: HeroDemo })),
 );
 
 const settle = { opacity: 1, y: 0, filter: "blur(0px)" };

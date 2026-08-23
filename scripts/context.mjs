@@ -101,8 +101,7 @@ function classify(rel) {
 	if (
 		rel.startsWith("src/demo/") ||
 		rel.startsWith("src/sections/hero/") ||
-		rel.startsWith("src/sections/story/") ||
-		rel === "src/sections/HeroDemo.tsx"
+		rel.startsWith("src/sections/story/")
 	) {
 		return "demos + scenario";
 	}

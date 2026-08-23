@@ -1,5 +1,5 @@
 {
-	"hash": "170e3dfdccf31716583193ffab7267f9dee493fb9439e8c8a6f3eba61fdb622c",
+	"hash": "cde855d4a361e5b72a4e7c8b93e48b0340bc4d6eb3d5350ea8c477a4fc9f6e56",
 	"routes": [
 		"/",
 		"/product",
@@ -89,7 +89,6 @@
 		"src/app/browser-location.ts": "owns browser history, hash scroll, and navigation events",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",
 		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
-		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer",
-		"src/sections/HeroDemo.tsx": "website adapter for the demo-ui hero demonstration"
+		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer"
 	}
 }

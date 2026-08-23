@@ -27,8 +27,7 @@
 		"src/app/browser-location.ts": "owns browser history, hash scroll, and navigation events",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",
 		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
-		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer",
-		"src/sections/HeroDemo.tsx": "website adapter for the demo-ui hero demonstration"
+		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer"
 	},
 	"roots": [
 		"src/main.tsx",
