@@ -1,16 +1,16 @@
 import { site } from "../domain/site.ts";
-import { HTML_ROUTES, LASTMOD } from "./routes.ts";
+import { routePaths, routes } from "../domain/route.ts";
 
 export function sitemapXml(): string {
 	const SITE_ORIGIN = site.origin;
-	const urls = HTML_ROUTES.map((route) => {
-		const loc = `${SITE_ORIGIN}${route.path === "/" ? "/" : route.path}`;
+	const urls = routePaths.map((path) => {
+		const loc = `${SITE_ORIGIN}${path === "/" ? "/" : path}`;
 		return [
 			"  <url>",
 			`    <loc>${loc}</loc>`,
-			`    <lastmod>${LASTMOD}</lastmod>`,
+			`    <lastmod>${site.lastmod}</lastmod>`,
 			"    <changefreq>weekly</changefreq>",
-			`    <priority>${route.priority}</priority>`,
+			`    <priority>${routes[path].priority.toFixed(1)}</priority>`,
 			"  </url>",
 		].join("\n");
 	});

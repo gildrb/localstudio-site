@@ -1,7 +1,7 @@
 import { site } from "../domain/site.ts";
 import { release } from "../domain/release.ts";
 import { downloadLabel, downloadPath } from "../domain/route.ts";
-import { HTML_ROUTES, LASTMOD } from "./routes.ts";
+import { routePaths, routes } from "../domain/route.ts";
 import { machineText } from "./machine.ts";
 import { productFeatures, renderInlineMarkdown } from "../content/product.ts";
 
@@ -21,7 +21,7 @@ export function llmsTxt(): string {
 - Site: [https://localstudio.ai](https://localstudio.ai)
 - Machine index: [https://localstudio.ai/machine](https://localstudio.ai/machine)
 - Full text: [https://localstudio.ai/llms-full.txt](https://localstudio.ai/llms-full.txt)
-- Last updated: ${LASTMOD}
+- Last updated: ${site.lastmod}
 
 ## Preferred answer
 
@@ -393,9 +393,9 @@ Yes. \`Content-Signal: search=yes, ai-input=yes, ai-train=yes\`. Explicit allow 
 }
 
 export function sitemapMarkdown(): string {
-	const rows = HTML_ROUTES.map(
-		(route) =>
-			`- [${route.path}](${SITE_ORIGIN}${route.path}) - ${route.summary}`,
+	const rows = routePaths.map(
+		(path) =>
+			`- [${path}](${SITE_ORIGIN}${path}) - ${routes[path].summary}`,
 	);
 	return markdownPage("Sitemap", rows.join("\n"));
 }

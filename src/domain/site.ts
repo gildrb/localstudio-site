@@ -1,5 +1,6 @@
 export const site = {
 	origin: "https://localstudio.ai",
+	lastmod: "2026-08-17",
 	copyrightYear: 2026,
 	company: {
 		name: "Sybil Solutions",
