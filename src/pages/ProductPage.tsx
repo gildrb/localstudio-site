@@ -2,7 +2,8 @@ import { CtaPair } from "../components/Links";
 import { MediaFrame } from "../components/MediaFrame";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
-import { productFeatures } from "../content/product-features";
+import { productFeatures } from "../content/product";
+import { renderInlineReact } from "../ui/prose";
 import { frameSizes, heroSizes, responsiveSrcSet } from "../images";
 
 const container =
@@ -55,7 +56,7 @@ export function ProductPage() {
 								{section.productTitle}
 							</h2>
 							<p className="mt-6 max-w-md text-base/6 text-white/70">
-								{section.productText}
+								{renderInlineReact(section.productText)}
 							</p>
 						</div>
 						<MediaFrame

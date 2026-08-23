@@ -1,6 +1,8 @@
 import { routes, routePaths, type RoutePath } from "../domain/route.ts";
+import { release } from "../domain/release.ts";
+import { site } from "../domain/site.ts";
 
-export const SITE_ORIGIN = "https://localstudio.ai";
+export const SITE_ORIGIN = site.origin;
 
 export type HtmlRoutePath = RoutePath;
 export type AgentDocumentPath =
@@ -48,21 +50,7 @@ export const HTML_ROUTES: readonly HtmlRoute[] = routePaths.map((path) => ({
 
 export const LASTMOD = "2026-08-17";
 
-export const DOWNLOAD = {
-	version: "2.11.2",
-	artifact: "Local-Studio-arm64.dmg",
-	zip: "Local-Studio-2.11.2-arm64-mac.zip",
-	bytes: 255134313,
-	label: "255 MB",
-	arch: "arm64",
-	platform: "macOS (Apple Silicon)",
-	published: "2026-08-12",
-	url: "https://github.com/sybil-solutions/local-studio/releases/download/v2.11.2/Local-Studio-arm64.dmg",
-	releases: "https://github.com/sybil-solutions/local-studio/releases",
-	latestAlias:
-		"https://github.com/sybil-solutions/local-studio/releases/latest/download/Local-Studio-arm64.dmg",
-	sitePath: "/download",
-} as const;
+export const DOWNLOAD = release;
 
 export const HOMEPAGE_LINK_HEADER = [
 	`</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"`,

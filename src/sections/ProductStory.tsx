@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
-import { productFeatures } from "../content/product-features";
+import { productFeatures } from "../content/product";
+import { renderInlineReact } from "../ui/prose";
 const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
 
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
@@ -128,7 +129,7 @@ export function ProductStory() {
 													animate={{ opacity: 1, y: 0 }}
 													transition={{ duration: 0.2, ease: "easeOut" }}
 												>
-													{feature.storyDescription}
+													{renderInlineReact(feature.storyDescription)}
 												</m.p>
 											) : null}
 									</li>
@@ -157,7 +158,7 @@ export function ProductStory() {
 									DEMO_PLACEHOLDER
 								)}
 								<p className="sr-only" role="status">
-									{activeFeature.storyTitle}. {activeFeature.storyDescription}
+									{activeFeature.storyTitle}. {renderInlineReact(activeFeature.storyDescription)}
 								</p>
 							</figure>
 						</div>

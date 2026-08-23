@@ -1,6 +1,3 @@
-export type FeatureScene =
-	| "control"
-	| "serve"
-	| "work"
-	| "automate"
-	| "configure";
+import type { FeatureSlug } from "../../content/product";
+
+export type FeatureScene = FeatureSlug;

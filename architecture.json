@@ -21,7 +21,10 @@
 		"src/pages/MachinePage.tsx": "canonical route module",
 		"src/pages/NotFoundPage.tsx": "unmatched fallback route module",
 		"src/domain/site.ts": "canonical site facts",
-		"src/domain/route.ts": "canonical route, document, and redirect model"
+		"src/domain/route.ts": "canonical route, document, and redirect model",
+		"src/domain/release.ts": "canonical download/release metadata",
+		"src/ui/prose.tsx": "React interpreter for React-free product prose",
+		"src/agent/machine.ts": "machine renderer adapter over canonical records"
 	},
 	"roots": [
 		"src/main.tsx",
