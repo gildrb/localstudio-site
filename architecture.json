@@ -1,0 +1,37 @@
+{
+	"singleConsumerComponents": {
+		"src/components/MediaFrame.tsx": "owns framed media srcset/sizes invariant",
+		"src/components/CopyIcon.tsx": "owns clipboard fallback and live-region behavior",
+		"src/components/PromptBlock.tsx": "owns prompt expand/copy surface",
+		"src/components/Header.tsx": "owns site navigation dialog and mega-menu invariants",
+		"src/components/Footer.tsx": "owns site footer landmark",
+		"src/components/PageCta.tsx": "owns shared closing CTA; FinalCallout merge is pending",
+		"src/sections/Hero.tsx": "owns homepage hero composition",
+		"src/sections/HeroDemo.tsx": "owns interactive hero demonstration",
+		"src/sections/KittyLitter.tsx": "owns homepage KittyLitter section",
+		"src/sections/ProductStory.tsx": "owns scroll-driven product story",
+		"src/sections/Sponsors.tsx": "owns homepage sponsor row",
+		"src/sections/FinalCallout.tsx": "temporary homepage CTA until merged into PageCta",
+		"src/pages/HomePage.tsx": "canonical route module",
+		"src/pages/ProductPage.tsx": "canonical route module",
+		"src/pages/DocsPage.tsx": "canonical route module",
+		"src/pages/PromptPage.tsx": "canonical route module",
+		"src/pages/DownloadPage.tsx": "canonical route module",
+		"src/pages/ResourcesPage.tsx": "canonical route module",
+		"src/pages/MachinePage.tsx": "canonical route module",
+		"src/pages/NotFoundPage.tsx": "unmatched fallback route module"
+	},
+	"roots": [
+		"src/main.tsx",
+		"agent-ready.plugin.ts",
+		"middleware.js",
+		"vite.config.ts",
+		"eslint.config.js",
+		"oxlint.config.ts",
+		"playwright.config.ts",
+		"scripts/sync-ls-demo-styles.mjs",
+		"scripts/generate-logo-mesh.mjs",
+		"scripts/context.mjs",
+		"scripts/graph.mjs"
+	]
+}

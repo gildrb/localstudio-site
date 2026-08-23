@@ -11,7 +11,12 @@
     "design:check": "node scripts/sync-ls-demo-styles.mjs --check",
     "preview": "vite preview",
     "test": "playwright test",
-    "doctor": "npx react-doctor@latest"
+    "doctor": "npx react-doctor@latest",
+    "context:report": "node scripts/context.mjs report",
+    "context:bundle": "node scripts/context.mjs bundle",
+    "context:check": "node scripts/context.mjs check",
+    "graph:report": "node scripts/graph.mjs report",
+    "graph:check": "node scripts/graph.mjs check"
   },
   "dependencies": {
     "@vgpu/core": "0.0.7",
