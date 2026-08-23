@@ -6,7 +6,6 @@ import {
 	m,
 	useReducedMotion,
 } from "motion/react";
-import { TextLink } from "../components/Links";
 
 type KittyFeature = {
 	readonly title: string;
@@ -114,15 +113,6 @@ export function KittyLitter() {
 							/>
 						))}
 					</ul>
-				</div>
-				<div className="kitty__actions">
-					<TextLink
-						href="https://kittylitter.app/"
-						target="_blank"
-						rel="noreferrer"
-					>
-						Go to KittyLitter
-					</TextLink>
 				</div>
 				<div className="kitty__grid">
 					{features.map((feature) => (

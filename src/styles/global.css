@@ -1387,6 +1387,7 @@ button {
   gap: 20px 80px;
   align-items: start;
   text-align: left;
+  min-height: 230px;
 }
 
 .kitty__index {
@@ -1415,15 +1416,6 @@ button {
   padding-bottom: 14px;
   color: var(--dim);
   font: var(--type-body);
-}
-
-.kitty__actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 16px 24px;
-  margin-top: 24px;
 }
 
 .kitty__grid {
@@ -1475,7 +1467,6 @@ button {
   object-fit: cover;
   filter: grayscale(1) contrast(0.88);
 }
-
 
 .page-cta {
   display: grid;
@@ -1878,6 +1869,7 @@ button {
   .kitty__intro {
     grid-template-columns: minmax(0, 1fr);
     gap: 8px;
+    min-height: 340px;
   }
 
   .kitty__grid {
@@ -1896,17 +1888,6 @@ button {
   .page-cta {
     padding: 100px 0;
   }
-
-  .final-callout {
-    min-height: 540px;
-    padding-block: 0;
-  }
-  .footer {
-    grid-template-columns: 1fr;
-    gap: 32px;
-    padding: 64px 0 calc(36px + env(safe-area-inset-bottom, 0px));
-  }
-
   .footer__links {
     order: 1;
     display: grid;
