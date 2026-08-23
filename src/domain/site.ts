@@ -12,6 +12,8 @@ export const site = {
 		kittyLitter: {
 			name: "KittyLitter",
 			url: "https://kittylitter.app",
+			appStore: "https://apps.apple.com/us/app/kittylitter/id6759521788",
+			playStore: "https://play.google.com/store/apps/details?id=com.sigkitten.litter.android",
 		},
 		localAi: {
 			name: "Local AI",
