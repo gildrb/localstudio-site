@@ -1,4 +1,4 @@
-# [Local Studio web](https://localstudio-web.vercel.app/)
+# [Local Studio web](https://localstudio.ai/)
 
 ## Design
 
@@ -27,7 +27,7 @@ pnpm build
 pnpm bundle:check
 ```
 
-`pnpm check` runs lint, TypeScript, context and graph gates, leftover-path checks, design-manifest, asset-manifest, vercel-header drift, and browser-free unit tests.
+`pnpm check` runs lint, TypeScript, context and graph gates, leftover-path checks, design-manifest, asset-manifest, vercel-header drift, generated `index.html`, and browser-free unit tests.
 
 Optional:
 
