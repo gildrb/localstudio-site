@@ -6,6 +6,7 @@ import { PageShell } from "../components/PageShell";
 import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
 import { assets, frameSizes, heroSizes, responsiveSrcSet } from "../domain/asset";
+import { site } from "../domain/site";
 
 export function ProductPage() {
 	return (
@@ -15,7 +16,7 @@ export function ProductPage() {
 				title="One place to run local AI"
 				description={
 					<>
-						<span translate="no">Local Studio</span> is a local-first
+						<span translate="no">{site.products.localStudio.name}</span> is a local-first
 						workstation for running, managing, and using self-hosted
 						language-model backends on local or remote controllers.
 					</>
