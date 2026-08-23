@@ -1,4 +1,5 @@
 import { footerRoutes } from "../domain/route";
+import { site } from "../domain/site";
 import { LocalLink } from "./LocalLink";
 
 export function Footer() {
@@ -12,7 +13,8 @@ export function Footer() {
 				))}
 			</nav>
 			<span className="footer__copyright">
-				© 2026 <span translate="no">Local Studio</span>
+				© {site.copyrightYear}{" "}
+				<span translate="no">{site.products.localStudio.name}</span>
 			</span>
 		</footer>
 	);

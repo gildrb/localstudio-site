@@ -36,3 +36,10 @@ test("first-party source does not hardcode product URLs outside site.ts", () => 
 	}
 	expect(violations).toEqual([]);
 });
+
+test("footer copyright reads year and product name from site facts", () => {
+	const source = readFileSync("src/components/Footer.tsx", "utf8");
+	expect(source.includes("site.copyrightYear")).toBe(true);
+	expect(source.includes("site.products.localStudio.name")).toBe(true);
+	expect(source.includes("© 2026")).toBe(false);
+});
