@@ -28,7 +28,7 @@ export function robotsTxt(): string {
 	const SITE_ORIGIN = site.origin;
 	const blocks = [
 		"# Site: https://localstudio.ai/",
-		"# Company: Sybil Solutions - https://www.sybilsolutions.ai/",
+		`# Company: Sybil Solutions - ${site.company.url}`,
 		"# Products: Local Studio, KittyLitter, Codex Shim",
 		"# LLM reference: https://localstudio.ai/llms.txt",
 		"# Machine index: https://localstudio.ai/machine",

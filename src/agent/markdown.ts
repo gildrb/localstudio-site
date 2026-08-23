@@ -32,7 +32,7 @@ export function llmsTxt(): string {
 
 Local-first workstation. Electron + Next.js frontend. Bun/Hono controller. Apache-2.0. Current desktop build: v${DOWNLOAD.version} arm64 DMG (${DOWNLOAD.label}), signed and notarized, auto-updates from GitHub Releases.
 
-- Repository: https://github.com/sybil-solutions/local-studio
+- Repository: ${site.products.localStudio.repository}
 - Download: ${DOWNLOAD.url}
 - Docs: ${SITE_ORIGIN}/docs
 - Agents: ${SITE_ORIGIN}/agents
@@ -47,10 +47,10 @@ Controller default: \`127.0.0.1:8080\`. Non-loopback bind requires \`LOCAL_STUDI
 
 Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. Connect from LAN, SSH, or Alleycat P2P QR pairing. Open source, always free. Pairs to Local Studio 2.9.0+ (KittyLitter 1.6.0+). Shared Rust core via UniFFI. Work stays on the Mac/server.
 
-- Site: https://kittylitter.app
+- Site: ${site.products.kittyLitter.url}
 - Source: https://github.com/dnakov/litter
-- App Store: https://apps.apple.com/us/app/kittylitter/id6759521788
-- Play: https://play.google.com/store/apps/details?id=com.sigkitten.litter.android
+- App Store: ${site.products.kittyLitter.appStore}
+- Play: ${site.products.kittyLitter.playStore}
 - Pairing: Local Studio → Settings → Profile & phone → Connect your phone. Treat QR / connection JSON as a password.
 
 ### Codex Shim
@@ -152,8 +152,8 @@ KittyLitter is not a cloud copy. One session list. Complete timeline (content, r
 
 QR and connection JSON are private controller credentials. Treat them like a password. This site has no pairing upload. Bridge requests are signed and replay-protected.
 
-Download on App Store: https://apps.apple.com/us/app/kittylitter/id6759521788
-Download on Google Play: https://play.google.com/store/apps/details?id=com.sigkitten.litter.android
+Download on App Store: ${site.products.kittyLitter.appStore}
+Download on Google Play: ${site.products.kittyLitter.playStore}
 `,
 	);
 }

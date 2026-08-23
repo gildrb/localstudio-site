@@ -1,5 +1,6 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { docsPath, downloadPath, setupPath } from "../domain/route";
+import { site } from "../domain/site";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageCta } from "../components/PageCta";
@@ -52,7 +53,7 @@ const groups: readonly ResourceGroup[] = [
 			{
 				name: "KittyLitter",
 				text: "The native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid.",
-				href: "https://kittylitter.app",
+				href: site.products.kittyLitter.url,
 				external: true,
 			},
 		],
@@ -65,7 +66,7 @@ const groups: readonly ResourceGroup[] = [
 			{
 				name: "GitHub",
 				text: "Source code, releases, and issue tracking.",
-				href: "https://github.com/sybil-solutions/local-studio",
+				href: site.products.localStudio.repository,
 				external: true,
 			},
 		],
