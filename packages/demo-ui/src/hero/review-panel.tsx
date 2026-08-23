@@ -1,5 +1,5 @@
-import { GitBranchIcon } from "@local-studio/demo-ui";
-import { DEMO_DIFF } from "../../demo/sequence";
+import { GitBranchIcon } from "..";
+import { DEMO_DIFF } from "../scenario/sequence";
 
 export function HeroReviewPanel({ ready }: { ready: boolean }) {
 	return (

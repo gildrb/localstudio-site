@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useDemoTabBoundary } from "../demo-tab-boundary";
+import { useDemoTabBoundary } from "../hooks/demo-tab-boundary";
 import { DEMO_HEIGHT, DEMO_WIDTH, useDemoFrame, type DemoCrop } from "./demo-frame";
 import type { FeatureScene } from "./scenes";
 

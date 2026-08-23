@@ -1,4 +1,4 @@
-import Link from "@local-studio/demo-ui";
+import Link from "..";
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -7,9 +7,9 @@ import {
 	PanelLeftFilled,
 	Settings,
 	Smartphone,
-} from "@local-studio/demo-ui";
-import { NavItemDesktop } from "@local-studio/demo-ui";
-import { isRouteActive, tabs } from "@local-studio/demo-ui";
+} from "..";
+import { NavItemDesktop } from "..";
+import { isRouteActive, tabs } from "..";
 const DEFAULT_SIDEBAR_WIDTH = 244;
 function ProfileAvatar({ profile }: { profile: { name: string } }) {
 	return <span className="inline-block h-6 w-6 rounded-full bg-(--hover)" aria-hidden="true" title={profile.name} />;

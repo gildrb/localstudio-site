@@ -1,6 +1,6 @@
-import { ChevronDown, ChevronRight, File, Folder } from "@local-studio/demo-ui";
+import { ChevronDown, ChevronRight, File, Folder } from "..";
 type FsEntry = { name: string; path: string; rel: string; kind: string; size?: number };
-import { fileTone } from "@local-studio/demo-ui";
+import { fileTone } from "..";
 
 const entries: FsEntry[] = [
 	{

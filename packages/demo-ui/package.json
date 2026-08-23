@@ -5,6 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./styles.css": "./src/styles/workbench-demo.css"
+    "./styles.css": "./src/styles/workbench-demo.css",
+    "./hero": "./src/hero/HeroDemo.tsx",
+    "./story": "./src/story/FeatureDemo.tsx"
   }
 }

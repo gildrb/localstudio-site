@@ -7,8 +7,7 @@
 		"src/components/Footer.tsx": "owns site footer landmark",
 		"src/components/PageCta.tsx": "owns shared closing CTA and homepage download landmark",
 		"src/sections/Hero.tsx": "owns homepage hero composition",
-		"src/sections/HeroDemo.tsx": "owns interactive hero demonstration",
-		"src/sections/KittyLitter.tsx": "owns homepage KittyLitter section",
+				"src/sections/KittyLitter.tsx": "owns homepage KittyLitter section",
 		"src/sections/ProductStory.tsx": "owns scroll-driven product story",
 		"src/sections/Sponsors.tsx": "owns homepage sponsor row",
 		"src/pages/HomePage.tsx": "canonical route module",
@@ -23,7 +22,8 @@
 		"src/domain/route.ts": "canonical route, document, and redirect model",
 		"src/domain/release.ts": "canonical download/release metadata",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",
-		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary"
+		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
+		"src/sections/HeroDemo.tsx": "website adapter for the demo-ui hero demonstration"
 	},
 	"roots": [
 		"src/main.tsx",
@@ -38,6 +38,7 @@
 		"scripts/context.mjs",
 		"scripts/graph.mjs",
 		"scripts/verify-generated.mjs",
-		"src/agent/markdown.ts"
+		"src/agent/markdown.ts",
+		"src/demo-ui-modules.d.ts"
 	]
 }

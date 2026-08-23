@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
 import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
-const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
+const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
 
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
 

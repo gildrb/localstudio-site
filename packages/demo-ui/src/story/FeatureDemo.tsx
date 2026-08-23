@@ -1,4 +1,4 @@
-import "@local-studio/demo-ui/styles.css";
+import "../styles/workbench-demo.css";
 import { memo } from "react";
 import { AutomateDemo } from "./automate-demo";
 import { ConfigureDemo } from "./configure-demo";

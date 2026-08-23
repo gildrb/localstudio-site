@@ -1,4 +1,4 @@
-import { Folder, FolderOpen } from "@local-studio/demo-ui";
+import { Folder, FolderOpen } from "..";
 function SidebarRail({ children }: { children: import("react").ReactNode }) {
 	return <div className="flex min-h-0 flex-1 flex-col">{children}</div>;
 }
