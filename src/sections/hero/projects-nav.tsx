@@ -1,8 +1,17 @@
 import { Folder, FolderOpen } from "@local-studio/demo-ui";
-import {
-	SidebarRail,
-	SidebarSectionHeader,
-} from "@/features/agent/ui/projects-nav/nav-chrome";
+function SidebarRail({ children }: { children: import("react").ReactNode }) {
+	return <div className="flex min-h-0 flex-1 flex-col">{children}</div>;
+}
+function SidebarSectionHeader({
+	label,
+}: {
+	label: string;
+	open?: boolean;
+	onToggle?: () => void;
+	children?: import("react").ReactNode;
+}) {
+	return <div className="px-2 py-1 text-[length:var(--fs-xs)] text-(--dim)">{label}</div>;
+}
 
 export type HeroTaskId = "weekend" | "inbox";
 

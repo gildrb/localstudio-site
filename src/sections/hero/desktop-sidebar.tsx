@@ -10,8 +10,13 @@ import {
 } from "@local-studio/demo-ui";
 import { NavItemDesktop } from "@local-studio/demo-ui";
 import { isRouteActive, tabs } from "@local-studio/demo-ui";
-import { DEFAULT_SIDEBAR_WIDTH } from "@/store";
-import { ProfileAvatar, useLocalProfile } from "@/features/shell/local-profile";
+const DEFAULT_SIDEBAR_WIDTH = 244;
+function ProfileAvatar({ profile }: { profile: { name: string } }) {
+	return <span className="inline-block h-6 w-6 rounded-full bg-(--hover)" aria-hidden="true" title={profile.name} />;
+}
+function useLocalProfile(): [{ name: string }] {
+	return [{ name: "Sero" }];
+}
 import { HeroProjectsNav, type HeroTaskId } from "./projects-nav";
 
 const HISTORY_STEPPER_CLASS =

@@ -15,15 +15,10 @@ import { ArrowUp, ChevronDown, Plus } from "@local-studio/demo-ui";
 import { AgentChatPaneHeader } from "@local-studio/demo-ui";
 import { AgentComposerStatusBar } from "@local-studio/demo-ui";
 import { AgentComposerTextArea } from "@local-studio/demo-ui";
-import { ComputerStatusPanel } from "@/features/agent/ui/computer-status-panel";
+import { ComputerStatusPanel } from "@local-studio/demo-ui";
 import { AssistantMessageActions } from "@local-studio/demo-ui";
-import { ToolBlockView } from "@/features/agent/ui/timeline/tool-block-view";
+import { ToolBlockView } from "@local-studio/demo-ui";
 import { UserMessage } from "@local-studio/demo-ui";
-import type { ComputerTab } from "@/features/agent/tools/types";
-import type { ChatMessage, ToolBlock } from "@/features/agent/messages";
-import type { AgentModel } from "@/features/agent/models";
-import type { Project } from "@/features/agent/projects/types";
-import type { Session } from "@/features/agent/runtime/types";
 import {
 	DEMO_MODEL,
 	DEMO_PROMPT,
@@ -37,6 +32,58 @@ import {
 	initialDemoState,
 	type DemoState,
 } from "../demo/sequence";
+
+type ComputerTab =
+	| "status"
+	| "tools"
+	| "side-chat"
+	| "browser"
+	| "files"
+	| "diff"
+	| "terminal";
+type ChatMessage = { id: string; role: "user" | "assistant"; text: string };
+type ToolBlock = {
+	kind: "tool";
+	id: string;
+	name: string;
+	status: "done" | "running";
+	text: string;
+	args: unknown;
+	resultText?: string;
+};
+type AgentModel = {
+	id: string;
+	name: string;
+	provider: string;
+	contextWindow: number;
+	maxTokens: number;
+	reasoning: boolean;
+	vision: boolean;
+	active: boolean;
+};
+type Project = {
+	id: string;
+	name: string;
+	path: string;
+	addedAt: string;
+	exists: boolean;
+	hasGit: boolean;
+	branch: string;
+};
+type Session = {
+	id: string;
+	piSessionId: string;
+	projectId: string;
+	cwd: string;
+	modelId: string;
+	title: string;
+	messages: ChatMessage[];
+	status: "idle" | "starting" | "running";
+	error: string;
+	input: string;
+	tokenStats: { read: number; write: number; current: number };
+	contextUsage: { tokens: number; percent: number };
+};
 import { ComputerHeader, ComputerLauncherPanel } from "./hero/computer-header";
 import { HeroDesktopSidebar } from "./hero/desktop-sidebar";
 import { HeroFilesystemTree } from "./hero/files-tree";

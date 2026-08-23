@@ -12,9 +12,18 @@ import {
 	type LucideIcon,
 } from "@local-studio/demo-ui";
 import { CloseIcon } from "@local-studio/demo-ui";
-import type { ComputerTab } from "@/features/agent/tools/types";
-import type { TerminalOwnersSnapshot } from "@/features/agent/ui/use-persistent-terminal-owners";
-import { terminalOwnerLabel } from "@/features/agent/terminal-owners";
+type ComputerTab =
+	| "status"
+	| "tools"
+	| "side-chat"
+	| "browser"
+	| "files"
+	| "diff"
+	| "terminal";
+type TerminalOwnersSnapshot = { owners: { mountKey?: string }[]; activeOwnerKey: string | null };
+function terminalOwnerLabel(owner: { mountKey?: string }, index: number) {
+	return owner.mountKey ?? `Terminal ${index + 1}`;
+}
 
 const TAB_LABELS = {
 	status: "Status",
@@ -229,8 +238,8 @@ export function ComputerHeader({
 							title={shortcut ? `${label} (${shortcut})` : label}
 							shortcut={shortcut}
 							selected={selected}
-							onSelect={() => onSelectTerminalOwner(owner.mountKey)}
-							onClose={() => onCloseTerminalOwner(owner.mountKey)}
+							onSelect={() => onSelectTerminalOwner(owner.mountKey ?? "")}
+							onClose={() => onCloseTerminalOwner(owner.mountKey ?? "")}
 						/>
 					);
 				})}

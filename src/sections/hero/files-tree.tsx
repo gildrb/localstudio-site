@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronRight, File, Folder } from "@local-studio/demo-ui";
-import type { FsEntry } from "@/features/agent/filesystem-types";
+type FsEntry = { name: string; path: string; rel: string; kind: string; size?: number };
 import { fileTone } from "@local-studio/demo-ui";
 
 const entries: FsEntry[] = [
