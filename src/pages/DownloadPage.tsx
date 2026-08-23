@@ -1,4 +1,4 @@
-import { docsPath } from "../domain/route";
+import { docsPath, downloadLabel } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -11,7 +11,7 @@ export function DownloadPage() {
 			<div className="download-page">
 				<PageIntro
 					id="download-page-title"
-					title="Download for macOS"
+					title={downloadLabel()}
 					description={
 						<>
 							The desktop app for running local controllers, models, providers,

@@ -1,5 +1,5 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { docsPath, downloadPath, setupPath } from "../domain/route";
+import { docsPath, downloadLabel, downloadPath, setupPath } from "../domain/route";
 import { site } from "../domain/site";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
@@ -38,7 +38,7 @@ const groups: readonly ResourceGroup[] = [
 				external: false,
 			},
 			{
-				name: "Download for macOS",
+				name: downloadLabel(),
 				text: "The desktop app for Apple Silicon, hosted on GitHub Releases.",
 				href: downloadPath,
 				external: false,

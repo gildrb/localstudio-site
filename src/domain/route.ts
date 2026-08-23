@@ -236,3 +236,7 @@ export function decideSameOriginNavigation(
 export function hashAnchor(hash: string): string {
 	return hash.split("=")[0] ?? hash;
 }
+
+export function downloadLabel(): string {
+	return routes[downloadPath].heading;
+}

@@ -1,5 +1,6 @@
 import { site } from "../domain/site.ts";
 import { release } from "../domain/release.ts";
+import { downloadLabel, downloadPath } from "../domain/route.ts";
 import { HTML_ROUTES, LASTMOD } from "./routes.ts";
 import { machineText } from "./machine.ts";
 import { productFeatures, renderInlineMarkdown } from "../content/product.ts";
@@ -94,7 +95,7 @@ export function indexMarkdown(): string {
 
 Local intelligence. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
 
-- [Download for macOS](${SITE_ORIGIN}/download) - v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
+- [${downloadLabel()}](${SITE_ORIGIN}${downloadPath}) - v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
 - [Setup prompt](${SITE_ORIGIN}/setup)
 - [Product](${SITE_ORIGIN}/product)
 - [KittyLitter](${SITE_ORIGIN}/mobile)
@@ -271,7 +272,7 @@ export function resourcesMarkdown(): string {
 		"Resources",
 		`- [Documentation](${SITE_ORIGIN}/docs)
 - [Setup prompt](${SITE_ORIGIN}/setup)
-- [Download for macOS](${SITE_ORIGIN}/download)
+- [${downloadLabel()}](${SITE_ORIGIN}${downloadPath})
 - [Agent setup](${SITE_ORIGIN}/agents)
 - [KittyLitter](${site.products.kittyLitter.url})
 - [GitHub](${site.products.localStudio.repository})

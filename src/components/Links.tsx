@@ -1,5 +1,5 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
-import { downloadPath } from "../domain/route";
+import { downloadLabel, downloadPath } from "../domain/route";
 import { site } from "../domain/site";
 import { LocalLink } from "./LocalLink";
 
@@ -27,7 +27,7 @@ interface Cta {
 
 const downloadCta = {
 	href: downloadPath,
-	label: "Download for macOS",
+	label: downloadLabel(),
 } satisfies Cta;
 
 export function DownloadButton() {

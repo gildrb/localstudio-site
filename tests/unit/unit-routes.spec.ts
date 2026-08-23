@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import {
 	decideSameOriginNavigation,
+	downloadLabel,
 	downloadPath,
 	isRoutePath,
 	normalizePath,
@@ -79,4 +80,8 @@ test("product nav uses canonical product facts", () => {
 		{ label: site.products.localStudio.name, href: downloadPath },
 		{ label: site.products.kittyLitter.name, href: site.products.kittyLitter.url, external: true },
 	]);
+});
+
+test("download label comes from the download route heading", () => {
+	expect(downloadLabel()).toBe("Download for macOS");
 });

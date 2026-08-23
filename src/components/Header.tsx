@@ -3,7 +3,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { assets } from "../domain/asset";
 import { site } from "../domain/site";
 import { cssVars } from "../system/css-vars";
-import { downloadPath, homePath, productNav, resourceNav } from "../domain/route";
+import { downloadLabel, downloadPath, homePath, productNav, resourceNav } from "../domain/route";
 import {
 	closedNav,
 	desktopMenu,
@@ -453,7 +453,7 @@ export function Header() {
 						href={downloadPath}
 						onClick={closeMobile}
 					>
-						Download for macOS
+						{downloadLabel()}
 					</LocalLink>
 					<a
 						className="text-link"
