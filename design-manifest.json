@@ -1,0 +1,78 @@
+{
+	"hash": "2ec42b7a17c5de357fa612f7f6b05bc378d44d3227657e51ce3dc02c6d733549",
+	"routes": [
+		"/",
+		"/product",
+		"/docs",
+		"/setup",
+		"/download",
+		"/overview",
+		"/machine"
+	],
+	"documents": [
+		"/mobile.md",
+		"/agents.md",
+		"/services.md",
+		"/people.md",
+		"/showcase.md",
+		"/faq.md"
+	],
+	"redirects": [
+		"/mobile",
+		"/agents"
+	],
+	"assets": [
+		"wordmark",
+		"mark",
+		"workbenchBrowser",
+		"workbenchBrowserHero",
+		"workbenchTerminal",
+		"usageProxy",
+		"configureModels",
+		"kittySessions",
+		"kittySessions2x",
+		"kittyMultiAgent",
+		"kittyMultiAgent2x",
+		"kittyAlleycat",
+		"kittyAlleycat2x",
+		"sponsorNvidia",
+		"sponsorFactory",
+		"sponsorLambda",
+		"sponsorPrime",
+		"sponsorTng"
+	],
+	"motion": [
+		"ease",
+		"heroEnter",
+		"quickFade",
+		"featureSwap"
+	],
+	"components": {
+		"src/components/MediaFrame.tsx": "owns framed media srcset/sizes invariant",
+		"src/components/CopyButton.tsx": "owns clipboard fallback and live-region behavior",
+		"src/components/PromptBlock.tsx": "owns prompt expand/copy surface",
+		"src/components/Header.tsx": "owns site navigation dialog and mega-menu invariants",
+		"src/components/Footer.tsx": "owns site footer landmark",
+		"src/components/PageCta.tsx": "owns shared closing CTA and homepage download landmark",
+		"src/sections/Hero.tsx": "owns homepage hero composition",
+		"src/sections/KittyLitter.tsx": "owns homepage KittyLitter section",
+		"src/sections/ProductStory.tsx": "owns scroll-driven product story",
+		"src/sections/Sponsors.tsx": "owns homepage sponsor row",
+		"src/pages/HomePage.tsx": "canonical route module",
+		"src/pages/ProductPage.tsx": "canonical route module",
+		"src/pages/DocsPage.tsx": "canonical route module",
+		"src/pages/PromptPage.tsx": "canonical route module",
+		"src/pages/DownloadPage.tsx": "canonical route module",
+		"src/pages/ResourcesPage.tsx": "canonical route module",
+		"src/pages/MachinePage.tsx": "canonical route module",
+		"src/pages/NotFoundPage.tsx": "unmatched fallback route module",
+		"src/domain/site.ts": "canonical site facts",
+		"src/domain/route.ts": "canonical route, document, and redirect model",
+		"src/domain/release.ts": "canonical download/release metadata",
+		"src/domain/asset.ts": "canonical public asset registry",
+		"src/ui/prose.tsx": "React interpreter for React-free product prose",
+		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
+		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer",
+		"src/sections/HeroDemo.tsx": "website adapter for the demo-ui hero demonstration"
+	}
+}

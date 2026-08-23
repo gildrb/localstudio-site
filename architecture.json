@@ -40,6 +40,7 @@
 		"scripts/context.mjs",
 		"scripts/graph.mjs",
 		"scripts/verify-generated.mjs",
+		"scripts/design-manifest.mjs",
 		"src/agent/markdown.ts",
 		"src/demo-ui-modules.d.ts",
 		"src/logo-renderer.d.ts"
