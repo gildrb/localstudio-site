@@ -1,7 +1,12 @@
 import { site } from "./site.ts";
+
+function brandedTitle(label: string): string {
+	return `${label} - ${site.products.localStudio.name}`;
+}
+
 export const routes = {
 	"/": {
-		title: "Intelligence should be owned - Local Studio",
+		title: brandedTitle("Intelligence should be owned"),
 		heading: "Intelligence should be owned",
 		summary: "Homepage: Local Studio + KittyLitter product surface.",
 		markdown: "/index.md",
@@ -11,7 +16,7 @@ export const routes = {
 		machineLabel: "home",
 	},
 	"/product": {
-		title: "Product - Local Studio",
+		title: brandedTitle("Product"),
 		heading: "One place to run local AI",
 		summary: "Control, serve, and work: controller, runtimes, Workbench.",
 		markdown: "/product.md",
@@ -21,7 +26,7 @@ export const routes = {
 		machineLabel: "product",
 	},
 	"/docs": {
-		title: "Documentation - Local Studio",
+		title: brandedTitle("Documentation"),
 		heading: "Get Local Studio running",
 		summary: "Install, runtimes, agent runtime, remote/LAN, validation.",
 		markdown: "/docs.md",
@@ -31,7 +36,7 @@ export const routes = {
 		machineLabel: "docs",
 	},
 	"/setup": {
-		title: "Setup - Local Studio",
+		title: brandedTitle("Setup"),
 		heading: "Give this to any coding model",
 		summary: "Portable setup prompt for a coding model on the target machine.",
 		markdown: "/setup.md",
@@ -41,7 +46,7 @@ export const routes = {
 		machineLabel: "setup",
 	},
 	"/download": {
-		title: "Download for macOS - Local Studio",
+		title: brandedTitle("Download for macOS"),
 		heading: "Download for macOS",
 		summary: "Signed Apple Silicon DMG from GitHub Releases.",
 		markdown: "/download.md",
@@ -51,7 +56,7 @@ export const routes = {
 		machineLabel: "download",
 	},
 	"/overview": {
-		title: "Overview - Local Studio",
+		title: brandedTitle("Overview"),
 		heading: "Everything around Local Studio",
 		summary: "Docs, setup, download, KittyLitter, GitHub, brand.",
 		markdown: "/overview.md",
@@ -61,7 +66,7 @@ export const routes = {
 		machineLabel: "overview",
 	},
 	"/machine": {
-		title: "Machines - Local Studio",
+		title: brandedTitle("Machines"),
 		heading: "Machines",
 		summary:
 			"Dense machine-readable index of company, products, and discovery.",
@@ -239,4 +244,8 @@ export function hashAnchor(hash: string): string {
 
 export function downloadLabel(): string {
 	return routes[downloadPath].heading;
+}
+
+export function notFoundTitle(): string {
+	return brandedTitle("Page not found");
 }

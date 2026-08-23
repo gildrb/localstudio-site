@@ -6,9 +6,11 @@ import {
 	downloadPath,
 	isRoutePath,
 	normalizePath,
+	notFoundTitle,
 	productNav,
 	redirectFor,
 	routePaths,
+	routeTitle,
 } from "../../src/domain/route";
 import { site } from "../../src/domain/site";
 
@@ -84,4 +86,9 @@ test("product nav uses canonical product facts", () => {
 
 test("download label comes from the download route heading", () => {
 	expect(downloadLabel()).toBe("Download for macOS");
+});
+
+test("HTML titles use the canonical product name", () => {
+	expect(routeTitle("/")).toBe(`Intelligence should be owned - ${site.products.localStudio.name}`);
+	expect(notFoundTitle()).toBe(`Page not found - ${site.products.localStudio.name}`);
 });
