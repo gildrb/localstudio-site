@@ -327,12 +327,17 @@ img {
 }
 
 .page-intro--left .page-intro__content {
-  width: min(760px, 100%);
+  width: 100%;
 }
 
 .page-intro--left h1,
 .page-intro--left p {
   margin-left: 0;
+}
+
+.page-intro--left h1 {
+  width: max-content;
+  max-width: 100%;
 }
 
 .page-intro--left .hero__actions {
@@ -2069,9 +2074,10 @@ button {
 
 .machine {
   display: grid;
-  justify-content: center;
-  width: 100%;
-  padding: 88px 24px 120px;
+  justify-content: start;
+  width: min(var(--page-width), calc(100% - var(--page-gutter)));
+  margin-inline: auto;
+  padding: 88px 0 120px;
   color: var(--foreground);
   font-family: "Geist Mono", ui-monospace, monospace;
   font-size: 14px;
@@ -2086,14 +2092,18 @@ button {
   width: min(1080px, 100%);
   max-width: 100%;
   min-width: 0;
-  justify-self: center;
+  justify-self: start;
 }
 .machine__title {
+  width: max-content;
+  max-width: 100%;
   margin-top: 32px;
   color: var(--foreground);
 }
 
 .machine__note {
+  width: max-content;
+  max-width: 100%;
   margin-top: 8px;
   color: var(--subtlest);
 }
