@@ -37,10 +37,6 @@ export type AssetId = keyof typeof assets;
 
 const registered = new Set<string>(Object.values(assets));
 
-export function assetSrc(id: AssetId): string {
-	return assets[id];
-}
-
 export function responsiveSrcSet(path: string) {
 	const base = path.replace(/\.png$/, "");
 	const variants = [`${base}-800.png`, `${base}-1300.png`, `${base}-2600.png`];
@@ -53,5 +49,4 @@ export function responsiveSrcSet(path: string) {
 }
 
 export const heroSizes = "min(1399px, calc(100vw - 48px))";
-export const storySizes = "(min-width: 900px) 835px, calc(100vw - 48px)";
 export const frameSizes = "(min-width: 900px) 790px, calc(100vw - 48px)";
