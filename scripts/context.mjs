@@ -137,7 +137,7 @@ function classify(rel) {
 		rel.startsWith("src/sections/") ||
 		rel === "src/App.tsx" ||
 		rel === "src/main.tsx" ||
-		rel === "src/routing.ts"
+		rel.startsWith("src/app/")
 	) {
 		return "react pages/components/app";
 	}

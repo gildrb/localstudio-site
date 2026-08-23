@@ -23,7 +23,9 @@
     "design:manifest:check": "node scripts/design-manifest.mjs check",
     "reproducible:check": "node scripts/reproducible.mjs",
     "assets:manifest": "node scripts/assets.mjs write",
-    "assets:check": "node scripts/assets.mjs check"
+    "assets:check": "node scripts/assets.mjs check",
+    "bundle:check": "node scripts/bundle.mjs check",
+    "bundle:report": "node scripts/bundle.mjs report"
   },
   "dependencies": {
     "@vgpu/core": "0.0.7",

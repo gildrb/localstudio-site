@@ -7,7 +7,7 @@ const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const command = process.argv[2] ?? "report";
 const architecture = JSON.parse(readFileSync(join(root, "architecture.json"), "utf8"));
 
-const SOURCE_EXT = new Set([".ts", ".tsx", ".js", ".mjs", ".css"]);
+const SOURCE_EXT = new Set([".ts", ".tsx", ".js", ".mjs", ".css", ".txt"]);
 const EXCLUDE_DIRS = new Set([
 	"node_modules",
 	"dist",

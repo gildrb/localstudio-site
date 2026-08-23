@@ -1,4 +1,4 @@
-import { hashAnchor } from "./domain/route";
+import { hashAnchor } from "../domain/route";
 
 export {
 	hashAnchor,
@@ -6,7 +6,7 @@ export {
 	normalizePath,
 	routePaths,
 	type RoutePath,
-} from "./domain/route";
+} from "../domain/route";
 
 type NavigationListener = () => void;
 

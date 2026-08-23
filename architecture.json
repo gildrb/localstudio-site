@@ -23,6 +23,7 @@
 		"src/domain/release.ts": "canonical download/release metadata",
 		"src/domain/asset.ts": "canonical public asset registry",
 		"src/app/machine-mode.ts": "owns machine-mode React context boundary",
+		"src/app/browser-location.ts": "owns browser history, hash scroll, and navigation events",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",
 		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
 		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer",
@@ -44,6 +45,7 @@
 		"scripts/design-manifest.mjs",
 		"scripts/reproducible.mjs",
 		"scripts/assets.mjs",
+		"scripts/bundle.mjs",
 		"src/agent/markdown.ts",
 		"src/demo-ui-modules.d.ts",
 		"src/logo-renderer.d.ts"

@@ -10,7 +10,7 @@ import {
 	normalizePath,
 	scrollToHash,
 	subscribeToNavigation,
-} from "./routing";
+} from "./app/browser-location";
 
 const DocsPage = lazy(() =>
 	import("./pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),

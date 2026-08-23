@@ -1,6 +1,6 @@
 import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from "react";
 import { decideSameOriginNavigation } from "../domain/route";
-import { emitNavigation, scrollToHash } from "../routing";
+import { emitNavigation, scrollToHash } from "../app/browser-location";
 
 export function LocalLink({
 	children,
