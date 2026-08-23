@@ -15,7 +15,7 @@
     "context:check": "node scripts/context.mjs check",
     "graph:report": "node scripts/graph.mjs report",
     "graph:check": "node scripts/graph.mjs check",
-    "check": "pnpm lint && pnpm exec tsc -b && pnpm context:check && pnpm graph:check && pnpm generated:check && pnpm design:manifest:check && pnpm assets:check && pnpm vercel:check && pnpm test:unit",
+    "check": "pnpm lint && pnpm exec tsc -b && pnpm context:check && pnpm graph:check && pnpm generated:check && pnpm design:manifest:check && pnpm assets:check && pnpm vercel:check && pnpm index:html:check && pnpm test:unit",
     "design:manifest": "node scripts/design-manifest.mjs write",
     "design:manifest:check": "node scripts/design-manifest.mjs check",
     "reproducible:check": "node scripts/reproducible.mjs",
@@ -26,7 +26,9 @@
     "test:unit": "playwright test --config playwright.unit.config.ts",
     "test:visual": "playwright test --config playwright.visual.config.ts",
     "vercel:manifest": "node scripts/vercel.mjs write",
-    "vercel:check": "node scripts/vercel.mjs check"
+    "vercel:check": "node scripts/vercel.mjs check",
+    "index:html": "node --experimental-strip-types scripts/index-html.mjs write",
+    "index:html:check": "node --experimental-strip-types scripts/index-html.mjs check"
   },
   "dependencies": {
     "@vgpu/core": "0.0.7",
