@@ -2,6 +2,7 @@
 
 ## Design
 
+The migration spec lives in [`ls-designmd/LS_WEB_REFACTOR_SPEC.md`](https://github.com/gildrb/ls-designmd/blob/sync/ls-web-canonical-routes/LS_WEB_REFACTOR_SPEC.md).
 Read the [`ls-designmd` system](https://github.com/gildrb/ls-designmd/blob/main/design.md) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase.
 
 ## Run
