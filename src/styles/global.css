@@ -73,7 +73,6 @@
   --radius-frame: 10px;
   --radius-media-frame: 14px;
   --radius-panel: 16px;
-  --radius-full: 9999px;
   --homepage-story-gap: 120px;
 }
 
@@ -715,7 +714,6 @@ button {
 }
 
 .hero {
-  --hero-group-offset: 0px;
   position: relative;
   background: var(--background);
   overflow-x: clip;
