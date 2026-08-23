@@ -18,7 +18,7 @@ export function MachinePage() {
 	const { toggleMachine } = useMachine();
 	return (
 		<PageShell>
-			<main className="machine" id="content" tabIndex={-1}>
+			<div className="machine">
 				<div className="machine__inner">
 					<button
 						className="machine__banner"
@@ -55,7 +55,7 @@ export function MachinePage() {
 					))}
 					<p className="machine__end">:: end of index ::</p>
 				</div>
-			</main>
+			</div>
 		</PageShell>
 	);
 }
