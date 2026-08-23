@@ -1025,6 +1025,65 @@ button {
   }
 }
 
+.overview-rows {
+  display: grid;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.overview-row {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  gap: 0 32px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.overview-row__label {
+  align-self: start;
+  color: var(--foreground);
+  font: 500 16px/24px var(--font-sans);
+}
+
+.overview-row__label--code {
+  font: 400 16px/24px var(--font-mono);
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.overview-row__link {
+  display: inline-flex;
+  justify-self: start;
+  align-items: start;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.overview-row__arrow {
+  flex: none;
+  margin-top: 5px;
+  color: var(--quiet);
+  transition: color 130ms ease-out;
+}
+
+.overview-row__text {
+  color: var(--dim);
+}
+
+.overview-row__text a {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .overview-row__link:hover .overview-row__arrow,
+  .overview-row__text a:hover {
+    color: var(--foreground);
+  }
+}
+
 .hero {
   --hero-group-offset: 0px;
   position: relative;
@@ -1033,36 +1092,6 @@ button {
   overflow-y: visible;
   isolation: isolate;
   padding-bottom: 40px;
-}
-
-/* One-shot entrance video: covers the first viewport while it plays, sits
-   above the logo renderer and hero copy, and always stays below the nav.
-   Black backing matches the video's first frame so there is no flash
-   before the first frame decodes. */
-.hero__backdrop {
-  position: absolute;
-  /* .nav's 72px sticky rail sits above the hero in flow; start under it so
-     the video spans the true viewport and the nav's translucent surface
-     composites over it. Same constant as scroll-margin-top. */
-  inset: -72px 0 auto;
-  z-index: 3;
-  height: 100svh;
-  overflow: hidden;
-  background: #000;
-  pointer-events: none;
-}
-.hero__backdrop video {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Fades the (already warmed-up) logo renderer in as the frozen entrance
-   frame fades out. */
-.hero-logo-gate {
-  z-index: 1;
-  pointer-events: none;
 }
 
 .hero-logo-renderer {
@@ -1245,6 +1274,15 @@ button {
     justify-content: center;
   }
 }
+
+@media (max-width: 900px) {
+  .overview-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding: 12px 0;
+  }
+}
+
 
 .story {
   padding: var(--homepage-story-gap) 0 0;

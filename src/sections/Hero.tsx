@@ -1,10 +1,7 @@
-import { lazy, Suspense, useState } from "react";
-import { LazyMotion, domAnimation, m } from "motion/react";
-import { usePrefersReducedMotion } from "phase/react";
+import { lazy, Suspense } from "react";
+import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { CtaPair } from "../components/Links";
 import { useMachine } from "../machine";
-import { HeroEntranceVideo } from "./HeroEntranceVideo";
-import { hasHeroEntrancePlayed } from "./hero-entrance-state";
 import { LocalAiLogoShader } from "./localai-logo-shader";
 
 const HeroDemo = lazy(() =>
@@ -16,29 +13,16 @@ const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
 
 export function Hero() {
 	const { toggleMachine } = useMachine();
-	const reduceMotion = usePrefersReducedMotion();
-	// The entrance video covers the hero once per session; every other visit
-	// (and reduced motion) goes straight to the settled hero.
-	const [entranceDone, setEntranceDone] = useState(
-		() => reduceMotion || hasHeroEntrancePlayed(),
-	);
+	const reduceMotion = useReducedMotion();
 	const enter = (delay: number) => ({
 		initial: reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
-		animate: entranceDone || reduceMotion ? settle : undefined,
+		animate: settle,
 		transition: { duration: 0.9, ease, delay },
 	});
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section className="hero" id="top" aria-labelledby="landing-title">
-				<HeroEntranceVideo onComplete={() => setEntranceDone(true)} />
-				<m.div
-					className="hero-logo-gate"
-					initial={{ opacity: reduceMotion ? 1 : 0 }}
-					animate={{ opacity: entranceDone ? 1 : 0 }}
-					transition={{ duration: reduceMotion ? 0 : 0.6, ease }}
-				>
-					<LocalAiLogoShader />
-				</m.div>
+				<LocalAiLogoShader />
 				<div className="hero__inner">
 					<div className="hero__copy">
 						<m.h1 id="landing-title" tabIndex={-1} {...enter(0.12)}>
@@ -73,17 +57,13 @@ export function Hero() {
 					id="product"
 					{...enter(0.75)}
 				>
-					{entranceDone ? (
-						<Suspense
-							fallback={
-								<div className="hero__demo-placeholder" aria-hidden="true" />
-							}
-						>
-							<HeroDemo />
-						</Suspense>
-					) : (
-						<div className="hero__demo-placeholder" aria-hidden="true" />
-					)}
+					<Suspense
+						fallback={
+							<div className="hero__demo-placeholder" aria-hidden="true" />
+						}
+					>
+						<HeroDemo />
+					</Suspense>
 				</m.div>
 			</section>
 		</LazyMotion>
