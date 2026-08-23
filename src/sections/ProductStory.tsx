@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
+import { motion } from "../domain/motion";
 import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
 const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
@@ -127,7 +128,7 @@ export function ProductStory() {
 													layout="position"
 													initial={reduceMotion ? false : { opacity: 0, y: 6 }}
 													animate={{ opacity: 1, y: 0 }}
-													transition={{ duration: 0.2, ease: "easeOut" }}
+													transition={motion.quickFade}
 												>
 													{renderInlineReact(feature.storyDescription)}
 												</m.p>
@@ -149,7 +150,7 @@ export function ProductStory() {
 												key={activeFeature.slug}
 												initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
 												animate={{ opacity: 1, filter: "blur(0px)" }}
-												transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+												transition={motion.featureSwap}
 											>
 												<FeatureDemo scene={activeFeature.slug} />
 											</m.div>

@@ -7,6 +7,7 @@ import {
 	m,
 	useReducedMotion,
 } from "motion/react";
+import { motion } from "../domain/motion";
 
 type KittyFeature = {
 	readonly title: string;
@@ -78,7 +79,7 @@ function FeatureIndexItem({
 								? { height: 0, opacity: 0, transition: { duration: 0 } }
 								: { height: 0, opacity: 0 }
 						}
-						transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+						transition={motion.quickFade}
 					>
 						<p>{feature.text}</p>
 					</m.div>
