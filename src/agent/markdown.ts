@@ -8,7 +8,7 @@ const SITE_ORIGIN = site.origin;
 const DOWNLOAD = release;
 
 export function markdownPage(title: string, body: string): string {
-	return `# ${title}\n\nCompany: Sybil Solutions (https://www.sybilsolutions.ai/).\n\n${body.trim()}\n`;
+	return `# ${title}\n\nCompany: Sybil Solutions (${site.company.url}).\n\n${body.trim()}\n`;
 }
 
 export function llmsTxt(): string {
@@ -16,7 +16,7 @@ export function llmsTxt(): string {
 
 > Canonical LLM / agent reference for Local Studio and the Sybil Solutions products listed here.
 
-- Company: [Sybil Solutions](https://www.sybilsolutions.ai/)
+- Company: [Sybil Solutions](${site.company.url})
 - Site: [https://localstudio.ai](https://localstudio.ai)
 - Machine index: [https://localstudio.ai/machine](https://localstudio.ai/machine)
 - Full text: [https://localstudio.ai/llms-full.txt](https://localstudio.ai/llms-full.txt)
@@ -57,14 +57,14 @@ Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. Connect 
 
 Local Python/aiohttp Responses-API endpoint on loopback. Codex Desktop keeps native UX; model routing is local BYOK + optional ChatGPT/Cursor passthrough.
 
-- Source: https://github.com/sybil-solutions/codex-shim
+- Source: ${site.products.codexShim.repository}
 
 ## Company
 
 - Name: Sybil Solutions
-- URL: https://www.sybilsolutions.ai/
-- Contact: sherif@sybilsolutions.ai
-- GitHub: https://github.com/sybil-solutions
+- URL: ${site.company.url}
+- Contact: ${site.company.contact}
+- GitHub: ${site.company.github}
 - X: https://x.com/0xsero
 - Focus: local-first tooling for self-hosted LLM backends
 
@@ -90,7 +90,7 @@ Local Python/aiohttp Responses-API endpoint on loopback. Codex Desktop keeps nat
 export function indexMarkdown(): string {
 	return markdownPage(
 		"Local Studio",
-		`Company: [Sybil Solutions](https://www.sybilsolutions.ai/).
+		`Company: [Sybil Solutions](${site.company.url}).
 
 Local intelligence. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
 
@@ -113,7 +113,7 @@ Models, providers, browser, files, terminal, and agents in the same session.
 
 ## KittyLitter
 
-Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. LAN, SSH, or Alleycat. [kittylitter.app](https://kittylitter.app).
+Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. LAN, SSH, or Alleycat. [kittylitter.app](${site.products.kittyLitter.url}).
 `,
 	);
 }
@@ -216,7 +216,7 @@ export function promptMarkdown(): string {
 		"Setup prompt",
 		`Give the portable prompt on ${SITE_ORIGIN}/setup to a coding model that can operate a terminal on the target machine.
 
-Repository: https://github.com/sybil-solutions/local-studio
+Repository: ${site.products.localStudio.repository}
 
 Copy the entire prompt. Do not accept completion until health, model launch, and inference all pass.
 `,
@@ -273,9 +273,9 @@ export function resourcesMarkdown(): string {
 - [Setup prompt](${SITE_ORIGIN}/setup)
 - [Download for macOS](${SITE_ORIGIN}/download)
 - [Agent setup](${SITE_ORIGIN}/agents)
-- [KittyLitter](https://kittylitter.app)
-- [GitHub](https://github.com/sybil-solutions/local-studio)
-- [Company](https://www.sybilsolutions.ai/)
+- [KittyLitter](${site.products.kittyLitter.url})
+- [GitHub](${site.products.localStudio.repository})
+- [Company](${site.company.url})
 `,
 	);
 }
@@ -303,13 +303,13 @@ Prerequisites: ${SITE_ORIGIN}/docs#prerequisites
 export function servicesMarkdown(): string {
 	return markdownPage(
 		"Services / products - Sybil Solutions",
-		`Operator: Sybil Solutions (https://www.sybilsolutions.ai/).
+		`Operator: Sybil Solutions (${site.company.url}).
 
 | Product | What | URL |
 | --- | --- | --- |
 | Local Studio | Local-first macOS workstation for self-hosted LLM backends | https://localstudio.ai |
-| KittyLitter | Native iOS+Android client for Codex, Claude, OpenCode, Pi, Droid | https://kittylitter.app |
-| Codex Shim | Local Responses-API shim for Codex Desktop BYOK | https://github.com/sybil-solutions/codex-shim |
+| KittyLitter | Native iOS+Android client for Codex, Claude, OpenCode, Pi, Droid | ${site.products.kittyLitter.url} |
+| Codex Shim | Local Responses-API shim for Codex Desktop BYOK | ${site.products.codexShim.repository} |
 
 This website does not expose a public cloud inference API. The Local Studio controller API is local (\`127.0.0.1:8080\`) on the user's machine.
 `,
@@ -321,15 +321,15 @@ export function peopleMarkdown(): string {
 		"People",
 		`## Organization
 
-- **Sybil Solutions** - Software · AI · Automation. https://www.sybilsolutions.ai/
-- Contact: sherif@sybilsolutions.ai
-- GitHub org: https://github.com/sybil-solutions
+- **Sybil Solutions** - Software · AI · Automation. ${site.company.url}
+- Contact: ${site.company.contact}
+- GitHub org: ${site.company.github}
 - X: https://x.com/0xsero
 
 ## Products and source
 
-- Local Studio - https://github.com/sybil-solutions/local-studio
-- Codex Shim - https://github.com/sybil-solutions/codex-shim
+- Local Studio - ${site.products.localStudio.repository}
+- Codex Shim - ${site.products.codexShim.repository}
 - KittyLitter / Litter - https://github.com/dnakov/litter (also associated with 0xSero)
 
 This marketing site source: https://github.com/gildrb/ls-web
@@ -366,7 +366,7 @@ export function faqMarkdown(): string {
 		"FAQ",
 		`## Who makes Local Studio?
 
-Sybil Solutions (https://www.sybilsolutions.ai/).
+Sybil Solutions (${site.company.url}).
 
 ## What is Local Studio?
 
@@ -459,7 +459,7 @@ export function agentCard(): string {
 			documentationUrl: `${SITE_ORIGIN}/docs`,
 			provider: {
 				organization: "Sybil Solutions",
-				url: "https://www.sybilsolutions.ai/",
+				url: site.company.url,
 			},
 			preferredTransport: "https",
 			additionalInterfaces: [

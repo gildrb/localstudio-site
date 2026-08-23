@@ -3,6 +3,9 @@ export const site = {
 	company: {
 		name: "Sybil Solutions",
 		url: "https://www.sybilsolutions.ai/",
+		alias: "https://sybilsolutions.ai",
+		github: "https://github.com/sybil-solutions",
+		contact: "sherif@sybilsolutions.ai",
 	},
 	products: {
 		localStudio: {
@@ -14,10 +17,15 @@ export const site = {
 			url: "https://kittylitter.app",
 			appStore: "https://apps.apple.com/us/app/kittylitter/id6759521788",
 			playStore: "https://play.google.com/store/apps/details?id=com.sigkitten.litter.android",
+			source: "https://github.com/dnakov/litter",
 		},
 		localAi: {
 			name: "Local AI",
 			url: "https://local.ai",
+		},
+		codexShim: {
+			name: "Codex Shim",
+			repository: "https://github.com/sybil-solutions/codex-shim",
 		},
 	},
 } as const;
