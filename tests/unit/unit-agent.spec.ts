@@ -18,7 +18,10 @@ test("robots and sitemap stay deterministic", () => {
 	expect(robots?.contentType).toMatch(/text\/plain/);
 	expect(robots?.body).toContain("User-agent: *");
 	expect(robots?.body).toContain("Allow: /");
-	expect(robots?.body).toContain("Sitemap: https://localstudio.ai/sitemap.xml");
+	expect(robots?.body).toContain(`Sitemap: ${site.origin}/sitemap.xml`);
+	expect(robots?.body).toContain(`# Company: ${site.company.name} - ${site.company.url}`);
+	expect(robots?.body).toContain(site.products.localStudio.name);
+	expect(robots?.body).toContain(site.products.kittyLitter.name);
 	expect(robots?.body).toContain("User-agent: GPTBot");
 
 	const sitemap = agentDocument("/sitemap.xml");
