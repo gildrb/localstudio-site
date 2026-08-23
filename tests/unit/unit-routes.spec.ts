@@ -52,3 +52,10 @@ test("every HTML route has a page module", () => {
 	const keys = [...source.matchAll(/"(\/[^"]*)":/g)].map((match) => match[1]);
 	expect(keys).toEqual([...routePaths]);
 });
+
+test("design-manifest routes match the canonical route model", () => {
+	const manifest = JSON.parse(readFileSync("design-manifest.json", "utf8"));
+	expect(manifest.routes).toEqual([...routePaths]);
+	expect(manifest.redirects).toEqual(["/mobile", "/agents"]);
+	expect(manifest.motion).toEqual(["ease", "heroEnter", "quickFade", "featureSwap"]);
+});
