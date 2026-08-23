@@ -2,7 +2,7 @@ import { robotsTxt } from "./robots.ts";
 import { sitemapXml } from "./sitemap.ts";
 import { machineText } from "./machine.ts";
 import { site } from "../domain/site.ts";
-import { markdownPathFor } from "../domain/route.ts";
+import { docsPath, markdownPathFor } from "../domain/route.ts";
 import {
 	agentCard,
 	agentsMarkdown,
@@ -35,8 +35,8 @@ export const HOMEPAGE_LINK_HEADER = [
 	`<${site.origin}/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"`,
 	`</llms.txt>; rel="describedby"; type="text/markdown"`,
 	`</index.md>; rel="alternate"; type="text/markdown"`,
-	`</docs>; rel="service-doc"; type="text/html"`,
-	`</docs.md>; rel="service-doc"; type="text/markdown"`,
+	`<${docsPath}>; rel="service-doc"; type="text/html"`,
+	`<${docsPath}.md>; rel="service-doc"; type="text/markdown"`,
 	`</.well-known/agent-card.json>; rel="service-desc"; type="application/json"`,
 	`</sitemap.xml>; rel="describedby"; type="application/xml"`,
 	`<${site.origin}/>; rel="canonical"; type="text/html"`,

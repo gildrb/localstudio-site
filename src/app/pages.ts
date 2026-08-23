@@ -1,7 +1,16 @@
 import { lazy, type ComponentType } from "react";
 import { HomePage } from "../pages/HomePage";
 import { MachinePage } from "../pages/MachinePage";
-import type { RoutePath } from "../domain/route";
+import {
+	docsPath,
+	downloadPath,
+	homePath,
+	machinePath,
+	overviewPath,
+	productPath,
+	setupPath,
+	type RoutePath,
+} from "../domain/route";
 
 const DocsPage = lazy(() =>
 	import("../pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),
@@ -20,13 +29,13 @@ const ResourcesPage = lazy(() =>
 );
 
 export const pages = {
-	"/": HomePage,
-	"/product": ProductPage,
-	"/docs": DocsPage,
-	"/setup": PromptPage,
-	"/download": DownloadPage,
-	"/overview": ResourcesPage,
-	"/machine": MachinePage,
+	[homePath]: HomePage,
+	[productPath]: ProductPage,
+	[docsPath]: DocsPage,
+	[setupPath]: PromptPage,
+	[downloadPath]: DownloadPage,
+	[overviewPath]: ResourcesPage,
+	[machinePath]: MachinePage,
 } as const satisfies Record<RoutePath, ComponentType>;
 
 export function prefetchPages() {

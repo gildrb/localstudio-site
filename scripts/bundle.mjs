@@ -95,6 +95,11 @@ for (const file of routeChunks) {
 if (js.some((file) => file.name.startsWith("shader-") && file === criticalJs)) {
 	failures.push("WebGPU shader chunk is eager");
 }
+for (const hint of lazyHints) {
+	if (!js.some((file) => file.name.startsWith(`${hint}-`))) {
+		failures.push(`missing lazy ${hint} chunk`);
+	}
+}
 if (failures.length) {
 	console.error(failures.join("\n"));
 	process.exit(1);

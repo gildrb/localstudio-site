@@ -1,6 +1,12 @@
+import { site } from "./site.ts";
+
+function brandedTitle(label: string): string {
+	return `${label} - ${site.products.localStudio.name}`;
+}
+
 export const routes = {
 	"/": {
-		title: "Intelligence should be owned - Local Studio",
+		title: brandedTitle("Intelligence should be owned"),
 		heading: "Intelligence should be owned",
 		summary: "Homepage: Local Studio + KittyLitter product surface.",
 		markdown: "/index.md",
@@ -10,7 +16,7 @@ export const routes = {
 		machineLabel: "home",
 	},
 	"/product": {
-		title: "Product - Local Studio",
+		title: brandedTitle("Product"),
 		heading: "One place to run local AI",
 		summary: "Control, serve, and work: controller, runtimes, Workbench.",
 		markdown: "/product.md",
@@ -20,7 +26,7 @@ export const routes = {
 		machineLabel: "product",
 	},
 	"/docs": {
-		title: "Documentation - Local Studio",
+		title: brandedTitle("Documentation"),
 		heading: "Get Local Studio running",
 		summary: "Install, runtimes, agent runtime, remote/LAN, validation.",
 		markdown: "/docs.md",
@@ -30,7 +36,7 @@ export const routes = {
 		machineLabel: "docs",
 	},
 	"/setup": {
-		title: "Setup - Local Studio",
+		title: brandedTitle("Setup"),
 		heading: "Give this to any coding model",
 		summary: "Portable setup prompt for a coding model on the target machine.",
 		markdown: "/setup.md",
@@ -40,7 +46,7 @@ export const routes = {
 		machineLabel: "setup",
 	},
 	"/download": {
-		title: "Download for macOS - Local Studio",
+		title: brandedTitle("Download for macOS"),
 		heading: "Download for macOS",
 		summary: "Signed Apple Silicon DMG from GitHub Releases.",
 		markdown: "/download.md",
@@ -50,7 +56,7 @@ export const routes = {
 		machineLabel: "download",
 	},
 	"/overview": {
-		title: "Overview - Local Studio",
+		title: brandedTitle("Overview"),
 		heading: "Everything around Local Studio",
 		summary: "Docs, setup, download, KittyLitter, GitHub, brand.",
 		markdown: "/overview.md",
@@ -60,7 +66,7 @@ export const routes = {
 		machineLabel: "overview",
 	},
 	"/machine": {
-		title: "Machines - Local Studio",
+		title: brandedTitle("Machines"),
 		heading: "Machines",
 		summary:
 			"Dense machine-readable index of company, products, and discovery.",
@@ -94,16 +100,14 @@ export function isMachineRoute(pathname: string): pathname is "/machine" {
 }
 
 export const homePath = "/" satisfies RoutePath;
+export const productPath = "/product" satisfies RoutePath;
 export const machinePath = "/machine" satisfies RoutePath;
 export const downloadPath = "/download" satisfies RoutePath;
 export const setupPath = "/setup" satisfies RoutePath;
 export const docsPath = "/docs" satisfies RoutePath;
 export const overviewPath = "/overview" satisfies RoutePath;
-export const productPath = "/product" satisfies RoutePath;
-export const heroImageRoutes = [productPath] as const;
-
 export function isHeroImageRoute(pathname: string): boolean {
-	return pathname === productPath;
+	return pathname === "/product";
 }
 
 export function routeTitle(path: RoutePath): string {
@@ -153,9 +157,23 @@ export function footerRoutes(): readonly { path: RoutePath; label: string }[] {
 
 export function resourceNav(): readonly { href: RoutePath; label: string }[] {
 	return [
-		{ href: "/overview", label: "Overview" },
-		{ href: "/docs", label: "Documentation" },
-		{ href: "/setup", label: "Setup" },
+		{ href: overviewPath, label: "Overview" },
+		{ href: docsPath, label: "Documentation" },
+		{ href: setupPath, label: "Setup" },
+	];
+}
+
+export type ProductNavItem = {
+	readonly label: string;
+	readonly href: string;
+	readonly external?: true;
+};
+
+export function productNav(): readonly ProductNavItem[] {
+	return [
+		{ label: site.products.localAi.name, href: site.products.localAi.url, external: true },
+		{ label: site.products.localStudio.name, href: downloadPath },
+		{ label: site.products.kittyLitter.name, href: site.products.kittyLitter.url, external: true },
 	];
 }
 
@@ -222,4 +240,12 @@ export function decideSameOriginNavigation(
 
 export function hashAnchor(hash: string): string {
 	return hash.split("=")[0] ?? hash;
+}
+
+export function downloadLabel(): string {
+	return routes[downloadPath].heading;
+}
+
+export function notFoundTitle(): string {
+	return brandedTitle("Page not found");
 }

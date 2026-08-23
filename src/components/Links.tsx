@@ -1,5 +1,6 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
-import { downloadPath } from "../domain/route";
+import { downloadLabel, downloadPath } from "../domain/route";
+import { site } from "../domain/site";
 import { LocalLink } from "./LocalLink";
 
 interface TextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -7,7 +8,7 @@ interface TextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 	href: string;
 }
 
-export function TextLink({
+function TextLink({
 	children,
 	href,
 	className = "",
@@ -26,7 +27,7 @@ interface Cta {
 
 const downloadCta = {
 	href: downloadPath,
-	label: "Download for macOS",
+	label: downloadLabel(),
 } satisfies Cta;
 
 export function DownloadButton() {
@@ -52,23 +53,18 @@ export function CtaPair({ primary = downloadCta, secondary }: CtaPairProps) {
 		</div>
 	);
 }
-const appStoreHref =
-	"https://apps.apple.com/us/app/kittylitter/id6759521788";
-const playStoreHref =
-	"https://play.google.com/store/apps/details?id=com.sigkitten.litter.android";
-
 export function StoreButtons() {
 	return (
 		<div className="button-group">
 			<LocalLink
 				className="button"
-				href={appStoreHref}
+				href={site.products.kittyLitter.appStore}
 				target="_blank"
 				rel="noreferrer"
 			>
 				Download on App Store
 			</LocalLink>
-			<TextLink href={playStoreHref} target="_blank" rel="noreferrer">
+			<TextLink href={site.products.kittyLitter.playStore} target="_blank" rel="noreferrer">
 				Download on Google Play
 			</TextLink>
 		</div>

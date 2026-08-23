@@ -13,12 +13,6 @@
 			"sha256": "9b6f5ff45b278c744b5f379a2c4ecbaf858a842b8eaf82ac8d21b699ca16c608"
 		},
 		{
-			"path": "public/icon.svg",
-			"role": "image",
-			"bytes": 474,
-			"sha256": "c0c9afeae83db27bffe88a16e846ca7b9bf37e785c3a629ab7bf600a2b8a2985"
-		},
-		{
 			"path": "public/images/configure-models-1300.png",
 			"role": "image",
 			"bytes": 192232,

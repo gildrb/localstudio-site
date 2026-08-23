@@ -1,4 +1,5 @@
-import { notFoundSuggestions , homePath } from "../domain/route";
+import { homePath, notFoundSuggestions } from "../domain/route";
+import { site } from "../domain/site";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -12,13 +13,13 @@ export function NotFoundPage() {
 				description={
 					<>
 						The route does not exist in this{" "}
-						<span translate="no">Local Studio</span> website. Try one of the
+						<span translate="no">{site.products.localStudio.name}</span> website. Try one of the
 						routes below instead.
 					</>
 				}
 				actions={
 					<LocalLink className="button" href={homePath}>
-						Back to <span translate="no">Local Studio</span>
+						Back to <span translate="no">{site.products.localStudio.name}</span>
 					</LocalLink>
 				}
 			>

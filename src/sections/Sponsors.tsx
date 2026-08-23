@@ -1,4 +1,5 @@
 import { assets } from "../domain/asset";
+import { site } from "../domain/site";
 const SPONSORS = [
 	{ name: "NVIDIA", src: assets.sponsorNvidia, width: 112, height: 21 },
 	{ name: "Factory", src: assets.sponsorFactory, width: 140, height: 21 },
@@ -24,7 +25,7 @@ export function Sponsors() {
 			aria-labelledby="sponsors-title"
 		>
 			<p id="sponsors-title" className="sponsors__title">
-				Supporters of Sybil Solutions
+				Supporters of {site.company.name}
 			</p>
 			<ul className="sponsors__list">
 				{SPONSORS.map(({ name, src, width, height }) => (

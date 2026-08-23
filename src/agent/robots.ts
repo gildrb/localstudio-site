@@ -27,11 +27,11 @@ const AI_BOTS = [
 export function robotsTxt(): string {
 	const SITE_ORIGIN = site.origin;
 	const blocks = [
-		"# Site: https://localstudio.ai/",
-		"# Company: Sybil Solutions - https://www.sybilsolutions.ai/",
-		"# Products: Local Studio, KittyLitter, Codex Shim",
-		"# LLM reference: https://localstudio.ai/llms.txt",
-		"# Machine index: https://localstudio.ai/machine",
+		`# Site: ${site.origin}/`,
+		`# Company: ${site.company.name} - ${site.company.url}`,
+		`# Products: ${site.products.localStudio.name}, ${site.products.kittyLitter.name}, ${site.products.codexShim.name}`,
+		`# LLM reference: ${site.origin}/llms.txt`,
+		`# Machine index: ${site.origin}/machine`,
 		"#",
 		"# As a condition of accessing this website, you agree to abide by the",
 		"# following content signals:",

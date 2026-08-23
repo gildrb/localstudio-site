@@ -31,15 +31,13 @@ export const assets = {
 	sponsorLambda: "/images/sponsors/lambda.svg",
 	sponsorPrime: "/images/sponsors/prime-intellect.svg",
 	sponsorTng: "/images/sponsors/tng.svg",
+	fontSans: "/fonts/geist-sans.woff2",
+	fontMono: "/fonts/geist-mono.woff2",
+	logoMesh: "/localai/localai-logo.gltf",
+	logoMeshBin: "/localai/localai-logo.bin",
 } as const;
 
-export type AssetId = keyof typeof assets;
-
 const registered = new Set<string>(Object.values(assets));
-
-export function assetSrc(id: AssetId): string {
-	return assets[id];
-}
 
 export function responsiveSrcSet(path: string) {
 	const base = path.replace(/\.png$/, "");
@@ -53,5 +51,4 @@ export function responsiveSrcSet(path: string) {
 }
 
 export const heroSizes = "min(1399px, calc(100vw - 48px))";
-export const storySizes = "(min-width: 900px) 835px, calc(100vw - 48px)";
 export const frameSizes = "(min-width: 900px) 790px, calc(100vw - 48px)";

@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { useSkySelection } from "../hooks/use-sky-selection";
 import { MachineContext } from "./machine-mode";
 import { pages, prefetchPages } from "./pages";
-import { homePath, isMachineRoute, machinePath, redirectFor, routeTitle } from "../domain/route";
+import { homePath, isMachineRoute, machinePath, notFoundTitle, redirectFor, routeTitle } from "../domain/route";
 import {
 	emitNavigation,
 	isRoutePath,
@@ -76,7 +76,7 @@ export default function App() {
 	useEffect(() => {
 		document.title = isRoutePath(pathname)
 			? routeTitle(pathname)
-			: "Page not found - Local Studio";
+			: notFoundTitle();
 		const hash = window.location.hash;
 		let frame = 0;
 		let timeout = 0;

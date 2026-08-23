@@ -46,8 +46,6 @@ export { AssistantMessageActions } from "./workbench/assistant-message-actions";
 export { ToolBlockView } from "./workbench/tool-block";
 export { ComputerStatusPanel } from "./workbench/computer-status-panel";
 
-export { HeroDemo } from "./hero/HeroDemo";
-export { FeatureDemo } from "./story/FeatureDemo";
 
 export {
 	DEMO_PROMPT,

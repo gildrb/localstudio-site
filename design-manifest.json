@@ -1,5 +1,5 @@
 {
-	"hash": "09bc0fb26fa9dcae6e5e7058d86efa13a890bfa2a39cea121d2c0ce11f4ab8dc",
+	"hash": "316715becc7c8a55739ab76ff270b0f4a420fb57f69919dfa2fe48d4eab6c182",
 	"routes": [
 		"/",
 		"/product",
@@ -53,7 +53,11 @@
 		"sponsorFactory",
 		"sponsorLambda",
 		"sponsorPrime",
-		"sponsorTng"
+		"sponsorTng",
+		"fontSans",
+		"fontMono",
+		"logoMesh",
+		"logoMeshBin"
 	],
 	"motion": [
 		"ease",

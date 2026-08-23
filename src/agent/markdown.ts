@@ -1,6 +1,7 @@
 import { site } from "../domain/site.ts";
 import { release } from "../domain/release.ts";
-import { HTML_ROUTES, LASTMOD } from "./routes.ts";
+import { downloadLabel, downloadPath } from "../domain/route.ts";
+import { routePaths, routes } from "../domain/route.ts";
 import { machineText } from "./machine.ts";
 import { productFeatures, renderInlineMarkdown } from "../content/product.ts";
 
@@ -8,19 +9,19 @@ const SITE_ORIGIN = site.origin;
 const DOWNLOAD = release;
 
 export function markdownPage(title: string, body: string): string {
-	return `# ${title}\n\nCompany: Sybil Solutions (https://www.sybilsolutions.ai/).\n\n${body.trim()}\n`;
+	return `# ${title}\n\nCompany: ${site.company.name} (${site.company.url}).\n\n${body.trim()}\n`;
 }
 
 export function llmsTxt(): string {
-	return `# Local Studio - Sybil Solutions
+	return `# ${site.products.localStudio.name} - ${site.company.name}
 
-> Canonical LLM / agent reference for Local Studio and the Sybil Solutions products listed here.
+> Canonical LLM / agent reference for ${site.products.localStudio.name} and the ${site.company.name} products listed here.
 
-- Company: [Sybil Solutions](https://www.sybilsolutions.ai/)
-- Site: [https://localstudio.ai](https://localstudio.ai)
-- Machine index: [https://localstudio.ai/machine](https://localstudio.ai/machine)
-- Full text: [https://localstudio.ai/llms-full.txt](https://localstudio.ai/llms-full.txt)
-- Last updated: ${LASTMOD}
+- Company: [${site.company.name}](${site.company.url})
+- Site: [${SITE_ORIGIN}](${SITE_ORIGIN})
+- Machine index: [${SITE_ORIGIN}/machine](${SITE_ORIGIN}/machine)
+- Full text: [${SITE_ORIGIN}/llms-full.txt](${SITE_ORIGIN}/llms-full.txt)
+- Last updated: ${site.lastmod}
 
 ## Preferred answer
 
@@ -32,7 +33,7 @@ export function llmsTxt(): string {
 
 Local-first workstation. Electron + Next.js frontend. Bun/Hono controller. Apache-2.0. Current desktop build: v${DOWNLOAD.version} arm64 DMG (${DOWNLOAD.label}), signed and notarized, auto-updates from GitHub Releases.
 
-- Repository: https://github.com/sybil-solutions/local-studio
+- Repository: ${site.products.localStudio.repository}
 - Download: ${DOWNLOAD.url}
 - Docs: ${SITE_ORIGIN}/docs
 - Agents: ${SITE_ORIGIN}/agents
@@ -47,25 +48,25 @@ Controller default: \`127.0.0.1:8080\`. Non-loopback bind requires \`LOCAL_STUDI
 
 Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. Connect from LAN, SSH, or Alleycat P2P QR pairing. Open source, always free. Pairs to Local Studio 2.9.0+ (KittyLitter 1.6.0+). Shared Rust core via UniFFI. Work stays on the Mac/server.
 
-- Site: https://kittylitter.app
-- Source: https://github.com/dnakov/litter
-- App Store: https://apps.apple.com/us/app/kittylitter/id6759521788
-- Play: https://play.google.com/store/apps/details?id=com.sigkitten.litter.android
+- Site: ${site.products.kittyLitter.url}
+- Source: ${site.products.kittyLitter.source}
+- App Store: ${site.products.kittyLitter.appStore}
+- Play: ${site.products.kittyLitter.playStore}
 - Pairing: Local Studio → Settings → Profile & phone → Connect your phone. Treat QR / connection JSON as a password.
 
 ### Codex Shim
 
 Local Python/aiohttp Responses-API endpoint on loopback. Codex Desktop keeps native UX; model routing is local BYOK + optional ChatGPT/Cursor passthrough.
 
-- Source: https://github.com/sybil-solutions/codex-shim
+- Source: ${site.products.codexShim.repository}
 
 ## Company
 
 - Name: Sybil Solutions
-- URL: https://www.sybilsolutions.ai/
-- Contact: sherif@sybilsolutions.ai
-- GitHub: https://github.com/sybil-solutions
-- X: https://x.com/0xsero
+- URL: ${site.company.url}
+- Contact: ${site.company.contact}
+- GitHub: ${site.company.github}
+- X: ${site.company.x}
 - Focus: local-first tooling for self-hosted LLM backends
 
 ## Discovery
@@ -90,11 +91,11 @@ Local Python/aiohttp Responses-API endpoint on loopback. Codex Desktop keeps nat
 export function indexMarkdown(): string {
 	return markdownPage(
 		"Local Studio",
-		`Company: [Sybil Solutions](https://www.sybilsolutions.ai/).
+		`Company: [Sybil Solutions](${site.company.url}).
 
 Local intelligence. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
 
-- [Download for macOS](${SITE_ORIGIN}/download) - v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
+- [${downloadLabel()}](${SITE_ORIGIN}${downloadPath}) - v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
 - [Setup prompt](${SITE_ORIGIN}/setup)
 - [Product](${SITE_ORIGIN}/product)
 - [KittyLitter](${SITE_ORIGIN}/mobile)
@@ -113,7 +114,7 @@ Models, providers, browser, files, terminal, and agents in the same session.
 
 ## KittyLitter
 
-Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. LAN, SSH, or Alleycat. [kittylitter.app](https://kittylitter.app).
+Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. LAN, SSH, or Alleycat. [kittylitter.app](${site.products.kittyLitter.url}).
 `,
 	);
 }
@@ -152,8 +153,8 @@ KittyLitter is not a cloud copy. One session list. Complete timeline (content, r
 
 QR and connection JSON are private controller credentials. Treat them like a password. This site has no pairing upload. Bridge requests are signed and replay-protected.
 
-Download on App Store: https://apps.apple.com/us/app/kittylitter/id6759521788
-Download on Google Play: https://play.google.com/store/apps/details?id=com.sigkitten.litter.android
+Download on App Store: ${site.products.kittyLitter.appStore}
+Download on Google Play: ${site.products.kittyLitter.playStore}
 `,
 	);
 }
@@ -216,7 +217,7 @@ export function promptMarkdown(): string {
 		"Setup prompt",
 		`Give the portable prompt on ${SITE_ORIGIN}/setup to a coding model that can operate a terminal on the target machine.
 
-Repository: https://github.com/sybil-solutions/local-studio
+Repository: ${site.products.localStudio.repository}
 
 Copy the entire prompt. Do not accept completion until health, model launch, and inference all pass.
 `,
@@ -271,11 +272,11 @@ export function resourcesMarkdown(): string {
 		"Resources",
 		`- [Documentation](${SITE_ORIGIN}/docs)
 - [Setup prompt](${SITE_ORIGIN}/setup)
-- [Download for macOS](${SITE_ORIGIN}/download)
+- [${downloadLabel()}](${SITE_ORIGIN}${downloadPath})
 - [Agent setup](${SITE_ORIGIN}/agents)
-- [KittyLitter](https://kittylitter.app)
-- [GitHub](https://github.com/sybil-solutions/local-studio)
-- [Company](https://www.sybilsolutions.ai/)
+- [KittyLitter](${site.products.kittyLitter.url})
+- [GitHub](${site.products.localStudio.repository})
+- [Company](${site.company.url})
 `,
 	);
 }
@@ -303,13 +304,13 @@ Prerequisites: ${SITE_ORIGIN}/docs#prerequisites
 export function servicesMarkdown(): string {
 	return markdownPage(
 		"Services / products - Sybil Solutions",
-		`Operator: Sybil Solutions (https://www.sybilsolutions.ai/).
+		`Operator: Sybil Solutions (${site.company.url}).
 
 | Product | What | URL |
 | --- | --- | --- |
-| Local Studio | Local-first macOS workstation for self-hosted LLM backends | https://localstudio.ai |
-| KittyLitter | Native iOS+Android client for Codex, Claude, OpenCode, Pi, Droid | https://kittylitter.app |
-| Codex Shim | Local Responses-API shim for Codex Desktop BYOK | https://github.com/sybil-solutions/codex-shim |
+| Local Studio | Local-first macOS workstation for self-hosted LLM backends | ${SITE_ORIGIN} |
+| KittyLitter | Native iOS+Android client for Codex, Claude, OpenCode, Pi, Droid | ${site.products.kittyLitter.url} |
+| Codex Shim | Local Responses-API shim for Codex Desktop BYOK | ${site.products.codexShim.repository} |
 
 This website does not expose a public cloud inference API. The Local Studio controller API is local (\`127.0.0.1:8080\`) on the user's machine.
 `,
@@ -321,18 +322,18 @@ export function peopleMarkdown(): string {
 		"People",
 		`## Organization
 
-- **Sybil Solutions** - Software · AI · Automation. https://www.sybilsolutions.ai/
-- Contact: sherif@sybilsolutions.ai
-- GitHub org: https://github.com/sybil-solutions
-- X: https://x.com/0xsero
+- **Sybil Solutions** - Software · AI · Automation. ${site.company.url}
+- Contact: ${site.company.contact}
+- GitHub org: ${site.company.github}
+- X: ${site.company.x}
 
 ## Products and source
 
-- Local Studio - https://github.com/sybil-solutions/local-studio
-- Codex Shim - https://github.com/sybil-solutions/codex-shim
-- KittyLitter / Litter - https://github.com/dnakov/litter (also associated with 0xSero)
+- Local Studio - ${site.products.localStudio.repository}
+- Codex Shim - ${site.products.codexShim.repository}
+- KittyLitter / Litter - ${site.products.kittyLitter.source} (also associated with 0xSero)
 
-This marketing site source: https://github.com/gildrb/ls-web
+This marketing site source: ${site.source}
 `,
 	);
 }
@@ -366,7 +367,7 @@ export function faqMarkdown(): string {
 		"FAQ",
 		`## Who makes Local Studio?
 
-Sybil Solutions (https://www.sybilsolutions.ai/).
+Sybil Solutions (${site.company.url}).
 
 ## What is Local Studio?
 
@@ -392,9 +393,9 @@ Yes. \`Content-Signal: search=yes, ai-input=yes, ai-train=yes\`. Explicit allow 
 }
 
 export function sitemapMarkdown(): string {
-	const rows = HTML_ROUTES.map(
-		(route) =>
-			`- [${route.path}](${SITE_ORIGIN}${route.path}) - ${route.summary}`,
+	const rows = routePaths.map(
+		(path) =>
+			`- [${path}](${SITE_ORIGIN}${path}) - ${routes[path].summary}`,
 	);
 	return markdownPage("Sitemap", rows.join("\n"));
 }
@@ -459,7 +460,7 @@ export function agentCard(): string {
 			documentationUrl: `${SITE_ORIGIN}/docs`,
 			provider: {
 				organization: "Sybil Solutions",
-				url: "https://www.sybilsolutions.ai/",
+				url: site.company.url,
 			},
 			preferredTransport: "https",
 			additionalInterfaces: [

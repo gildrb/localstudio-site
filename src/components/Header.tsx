@@ -3,7 +3,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { assets } from "../domain/asset";
 import { site } from "../domain/site";
 import { cssVars } from "../system/css-vars";
-import { downloadPath, homePath, resourceNav } from "../domain/route";
+import { downloadLabel, downloadPath, homePath, productNav, resourceNav } from "../domain/route";
 import {
 	closedNav,
 	desktopMenu,
@@ -32,11 +32,7 @@ type MenuListProps = {
 	desktop?: boolean;
 }
 
-const products = [
-	{ label: site.products.localAi.name, href: site.products.localAi.url, external: true },
-	{ label: site.products.localStudio.name, href: downloadPath },
-	{ label: site.products.kittyLitter.name, href: site.products.kittyLitter.url, external: true },
-] as const satisfies readonly NavLink[];
+const products = productNav();
 
 const resources = resourceNav().map((item) => ({
 	label: item.label,
@@ -346,7 +342,7 @@ export function Header() {
 				<LocalLink
 					className="brand"
 					href={homePath}
-					aria-label="Local Studio"
+					aria-label={site.products.localStudio.name}
 					onClick={closeMobile}
 					onPointerEnter={close}
 				>
@@ -376,7 +372,7 @@ export function Header() {
 					href={githubUrl}
 					target="_blank"
 					rel="noreferrer"
-					aria-label="Local Studio on GitHub"
+					aria-label={`${site.products.localStudio.name} on GitHub`}
 					onPointerEnter={close}
 				>
 					<GitHubMark />
@@ -457,7 +453,7 @@ export function Header() {
 						href={downloadPath}
 						onClick={closeMobile}
 					>
-						Download for macOS
+						{downloadLabel()}
 					</LocalLink>
 					<a
 						className="text-link"

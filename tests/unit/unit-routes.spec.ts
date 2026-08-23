@@ -2,11 +2,17 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import {
 	decideSameOriginNavigation,
+	downloadLabel,
+	downloadPath,
 	isRoutePath,
 	normalizePath,
+	notFoundTitle,
+	productNav,
 	redirectFor,
 	routePaths,
+	routeTitle,
 } from "../../src/domain/route";
+import { site } from "../../src/domain/site";
 
 test("normalizePath strips a trailing slash except at root", () => {
 	expect(normalizePath("/")).toBe("/");
@@ -49,6 +55,47 @@ test("same-origin link decisions stay pure", () => {
 
 test("every HTML route has a page module", () => {
 	const source = readFileSync("src/app/pages.ts", "utf8");
-	const keys = [...source.matchAll(/"(\/[^"]*)":/g)].map((match) => match[1]);
-	expect(keys).toEqual([...routePaths]);
+	const names = [
+		"homePath",
+		"productPath",
+		"docsPath",
+		"setupPath",
+		"downloadPath",
+		"overviewPath",
+		"machinePath",
+	];
+	for (const name of names) {
+		expect(source.includes(`[${name}]`), name).toBe(true);
+	}
+});
+
+test("design-manifest routes match the canonical route model", () => {
+	const manifest = JSON.parse(readFileSync("design-manifest.json", "utf8"));
+	expect(manifest.routes).toEqual([...routePaths]);
+	expect(manifest.redirects).toEqual(["/mobile", "/agents"]);
+	expect(manifest.motion).toEqual(["ease", "heroEnter", "quickFade", "featureSwap"]);
+});
+
+test("product nav uses canonical product facts", () => {
+	expect(productNav()).toEqual([
+		{ label: site.products.localAi.name, href: site.products.localAi.url, external: true },
+		{ label: site.products.localStudio.name, href: downloadPath },
+		{ label: site.products.kittyLitter.name, href: site.products.kittyLitter.url, external: true },
+	]);
+});
+
+test("download label comes from the download route heading", () => {
+	expect(downloadLabel()).toBe("Download for macOS");
+});
+
+test("HTML titles use the canonical product name", () => {
+	expect(routeTitle("/")).toBe(`Intelligence should be owned - ${site.products.localStudio.name}`);
+	expect(notFoundTitle()).toBe(`Page not found - ${site.products.localStudio.name}`);
+});
+
+test("Docs and overview headings come from the route model", () => {
+	const docs = readFileSync("src/pages/DocsPage.tsx", "utf8");
+	const overview = readFileSync("src/pages/ResourcesPage.tsx", "utf8");
+	expect(docs.includes("routes[docsPath].heading")).toBe(true);
+	expect(overview.includes("routes[overviewPath].heading")).toBe(true);
 });

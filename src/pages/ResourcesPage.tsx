@@ -1,5 +1,6 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { docsPath, downloadPath, setupPath } from "../domain/route";
+import { docsPath, downloadLabel, downloadPath, overviewPath, routes, setupPath } from "../domain/route";
+import { site } from "../domain/site";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageCta } from "../components/PageCta";
@@ -22,7 +23,7 @@ interface ResourceGroup {
 const groups: readonly ResourceGroup[] = [
 	{
 		title: "Getting started",
-		description: "Three paths into Local Studio, from zero to first inference.",
+		description: `Three paths into ${site.products.localStudio.name}, from zero to first inference.`,
 		items: [
 			{
 				name: "Documentation",
@@ -32,12 +33,12 @@ const groups: readonly ResourceGroup[] = [
 			},
 			{
 				name: "Setup prompt",
-				text: "A portable prompt that installs Local Studio with any coding model.",
+				text: `A portable prompt that installs ${site.products.localStudio.name} with any coding model.`,
 				href: setupPath,
 				external: false,
 			},
 			{
-				name: "Download for macOS",
+				name: downloadLabel(),
 				text: "The desktop app for Apple Silicon, hosted on GitHub Releases.",
 				href: downloadPath,
 				external: false,
@@ -52,7 +53,7 @@ const groups: readonly ResourceGroup[] = [
 			{
 				name: "KittyLitter",
 				text: "The native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid.",
-				href: "https://kittylitter.app",
+				href: site.products.kittyLitter.url,
 				external: true,
 			},
 		],
@@ -60,12 +61,12 @@ const groups: readonly ResourceGroup[] = [
 	{
 		title: "Project",
 		description:
-			"Source, releases, and identity for everything under Local Studio.",
+			`Source, releases, and identity for everything under ${site.products.localStudio.name}.`,
 		items: [
 			{
 				name: "GitHub",
 				text: "Source code, releases, and issue tracking.",
-				href: "https://github.com/sybil-solutions/local-studio",
+				href: site.products.localStudio.repository,
 				external: true,
 			},
 		],
@@ -103,7 +104,7 @@ export function ResourcesPage() {
 			<PageIntro
 				id="resources-title"
 				layout="left"
-				title="Everything around Local Studio"
+				title={routes[overviewPath].heading}
 				description="Documentation, setup paths, downloads, and the surrounding ecosystem in one place."
 				actions={
 					<CtaPair secondary={{ href: docsPath, label: "Read the docs" }} />
