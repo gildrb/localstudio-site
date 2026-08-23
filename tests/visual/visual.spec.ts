@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { routePaths } from "../src/domain/route";
+import { routePaths } from "../../src/domain/route";
 
 const viewports = [
 	{ name: "desktop", width: 1440, height: 1000 },

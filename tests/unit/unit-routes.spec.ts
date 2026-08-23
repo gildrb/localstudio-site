@@ -6,7 +6,7 @@ import {
 	normalizePath,
 	redirectFor,
 	routePaths,
-} from "../src/domain/route";
+} from "../../src/domain/route";
 
 test("normalizePath strips a trailing slash except at root", () => {
 	expect(normalizePath("/")).toBe("/");

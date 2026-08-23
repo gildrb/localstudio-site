@@ -134,7 +134,7 @@ function classify(rel) {
 		rel.startsWith("src/components/") ||
 		rel.startsWith("src/hooks/") ||
 		rel.startsWith("src/sections/") ||
-		rel === "src/App.tsx" ||
+		rel === "src/app/App.tsx" ||
 		rel === "src/main.tsx" ||
 		rel.startsWith("src/app/")
 	) {

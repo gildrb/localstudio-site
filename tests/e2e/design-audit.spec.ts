@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { routePaths } from "../src/domain/route";
+import { routePaths } from "../../src/domain/route";
 
 test("one main landmark and a skip link", async ({ page }) => {
 	await page.goto("/");

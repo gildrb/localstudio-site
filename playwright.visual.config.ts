@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-	testMatch: /visual\.spec\.ts/,
+	testDir: "tests/visual",
 	fullyParallel: true,
 	expect: {
 		toHaveScreenshot: { maxDiffPixelRatio: 0.02 },

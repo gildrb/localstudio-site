@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
+import App from "./app/App";
 import { assets, heroSizes, responsiveSrcSet } from "./domain/asset";
 import { isHeroImageRoute } from "./domain/route";
 import "./styles/global.css";

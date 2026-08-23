@@ -4,7 +4,7 @@ import {
 	desktopMenu,
 	isMobileOpen,
 	reduceNav,
-} from "../src/domain/nav";
+} from "../../src/domain/nav";
 
 test("desktop and mobile menus cannot be open together", () => {
 	const desktop = reduceNav(closedNav, { type: "openDesktop", menu: "products" });

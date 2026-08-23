@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { routes, routePaths } from "../src/domain/route";
+import { routes, routePaths } from "../../src/domain/route";
 
 const pages = routePaths.filter((path) => path !== "/machine");
 

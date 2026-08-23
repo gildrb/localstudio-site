@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { routePaths } from "../src/domain/route";
+import { routePaths } from "../../src/domain/route";
 
 test("routes use the shared interface tokens", async ({ page }) => {
 	for (const path of routePaths.filter((item) => item !== "/machine")) {

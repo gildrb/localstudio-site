@@ -7,7 +7,7 @@ import {
 	demoReducer,
 	finishedDemoState,
 	initialDemoState,
-} from "../packages/demo-ui/src/scenario/sequence";
+} from "../../packages/demo-ui/src/scenario/sequence";
 
 test("finish jumps to the terminal demonstration state", () => {
 	expect(demoReducer(initialDemoState, { type: "finish" })).toEqual(

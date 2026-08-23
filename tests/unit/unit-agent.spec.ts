@@ -5,9 +5,9 @@ import {
 	agentDocuments,
 	markdownTokenCount,
 	wantsMarkdown,
-} from "../src/agent/documents";
-import { markdownPages, routePaths } from "../src/domain/route";
-import { site } from "../src/domain/site";
+} from "../../src/agent/documents";
+import { markdownPages, routePaths } from "../../src/domain/route";
+import { site } from "../../src/domain/site";
 
 test("robots and sitemap stay deterministic", () => {
 	const robots = agentDocument("/robots.txt");

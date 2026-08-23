@@ -1,18 +1,18 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSkySelection } from "./hooks/use-sky-selection";
-import { MachineContext } from "./app/machine-mode";
-import { pages, prefetchPages } from "./app/pages";
-import { homePath, isMachineRoute, machinePath, redirectFor, routeTitle } from "./domain/route";
+import { useSkySelection } from "../hooks/use-sky-selection";
+import { MachineContext } from "./machine-mode";
+import { pages, prefetchPages } from "./pages";
+import { homePath, isMachineRoute, machinePath, redirectFor, routeTitle } from "../domain/route";
 import {
 	emitNavigation,
 	isRoutePath,
 	normalizePath,
 	scrollToHash,
 	subscribeToNavigation,
-} from "./app/browser-location";
+} from "./browser-location";
 
 const NotFoundPage = lazy(() =>
-	import("./pages/NotFoundPage").then(({ NotFoundPage }) => ({ default: NotFoundPage })),
+	import("../pages/NotFoundPage").then(({ NotFoundPage }) => ({ default: NotFoundPage })),
 );
 
 type NavigationSource = "load" | "push" | "pop";
