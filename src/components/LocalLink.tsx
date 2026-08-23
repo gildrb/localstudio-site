@@ -1,17 +1,16 @@
 import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from "react";
-import { emitNavigation, scrollToHash } from "../routing";
-
-interface LocalLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
-	children: ReactNode;
-	href: string;
-}
+import { decideSameOriginNavigation } from "../domain/route";
+import { emitNavigation, scrollToHash } from "../app/browser-location";
 
 export function LocalLink({
 	children,
 	href,
 	onClick,
 	...props
-}: LocalLinkProps) {
+}: AnchorHTMLAttributes<HTMLAnchorElement> & {
+	children: ReactNode;
+	href: string;
+}) {
 	function handleClick(event: MouseEvent<HTMLAnchorElement>) {
 		onClick?.(event);
 		if (
@@ -26,22 +25,23 @@ export function LocalLink({
 			return;
 		}
 
-		const target = new URL(href, window.location.href);
-		if (target.origin !== window.location.origin) {
+		const decision = decideSameOriginNavigation(
+			href,
+			window.location.origin,
+			`${window.location.pathname}${window.location.search}${window.location.hash}`,
+		);
+		if (decision.kind === "external") return;
+		event.preventDefault();
+		if (decision.kind === "push") {
+			window.history.pushState({}, "", decision.next);
+			emitNavigation();
 			return;
 		}
-
-		event.preventDefault();
-		const next = `${target.pathname}${target.search}${target.hash}`;
-		const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-		if (next !== current) {
-			window.history.pushState({}, "", next);
-			emitNavigation();
-		} else if (target.hash) {
-			scrollToHash(target.hash);
-		} else {
-			window.scrollTo({ top: 0 });
+		if (decision.kind === "hash") {
+			scrollToHash(decision.hash);
+			return;
 		}
+		window.scrollTo({ top: 0 });
 	}
 
 	return (

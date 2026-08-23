@@ -1,0 +1,119 @@
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSkySelection } from "../hooks/use-sky-selection";
+import { MachineContext } from "./machine-mode";
+import { pages, prefetchPages } from "./pages";
+import { homePath, isMachineRoute, machinePath, redirectFor, routeTitle } from "../domain/route";
+import {
+	emitNavigation,
+	isRoutePath,
+	normalizePath,
+	scrollToHash,
+	subscribeToNavigation,
+} from "./browser-location";
+
+const NotFoundPage = lazy(() =>
+	import("../pages/NotFoundPage").then(({ NotFoundPage }) => ({ default: NotFoundPage })),
+);
+
+type NavigationSource = "load" | "push" | "pop";
+
+function routeFor(pathname: string) {
+	if (!isRoutePath(pathname)) return <NotFoundPage />;
+	const Page = pages[pathname];
+	return <Page />;
+}
+
+export default function App() {
+	useSkySelection();
+	useEffect(() => {
+		const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
+		const cancel = window.cancelIdleCallback ?? ((id: number) => window.clearTimeout(id));
+		const id = idle(prefetchPages);
+		return () => cancel(id);
+	}, []);
+	const [location, setLocation] = useState(
+		() => `${window.location.pathname}${window.location.hash}`,
+	);
+	const navigationSource = useRef<NavigationSource>("load");
+	const pathname = normalizePath(location.split("#")[0] ?? "");
+	const redirect = redirectFor(pathname);
+	const machineMode = isMachineRoute(pathname);
+
+	const toggleMachine = useCallback((next: boolean) => {
+		window.history.pushState({}, "", next ? machinePath : homePath);
+		emitNavigation();
+	}, []);
+	const machine = useMemo(
+		() => ({ machineMode, toggleMachine }),
+		[machineMode, toggleMachine],
+	);
+
+	useEffect(() => {
+		if (!redirect) return;
+		window.history.replaceState({}, "", redirect);
+		emitNavigation();
+	}, [redirect]);
+
+	useEffect(() => {
+		function updateLocation(source: NavigationSource) {
+			navigationSource.current = source;
+			if (source === "push" && !window.location.hash) {
+				window.scrollTo({ top: 0, behavior: "instant" });
+			}
+			setLocation(`${window.location.pathname}${window.location.hash}`);
+		}
+		function handlePopState() {
+			updateLocation("pop");
+		}
+		const unsubscribe = subscribeToNavigation(() => updateLocation("push"));
+		window.addEventListener("popstate", handlePopState);
+		return () => {
+			unsubscribe();
+			window.removeEventListener("popstate", handlePopState);
+		};
+	}, []);
+
+	useEffect(() => {
+		document.title = isRoutePath(pathname)
+			? routeTitle(pathname)
+			: "Page not found - Local Studio";
+		const hash = window.location.hash;
+		let frame = 0;
+		let timeout = 0;
+		let observer: MutationObserver | undefined;
+
+		const stopWaiting = () => {
+			observer?.disconnect();
+			window.clearTimeout(timeout);
+		};
+		const finishNavigation = () => {
+			if (hash) return scrollToHash(hash);
+			if (navigationSource.current !== "push") return true;
+			const heading = document.querySelector("main h1, .machine");
+			if (!(heading instanceof HTMLElement)) return false;
+			heading.focus({ preventScroll: true });
+			return true;
+		};
+
+		frame = window.requestAnimationFrame(() => {
+			if (finishNavigation()) return;
+			observer = new MutationObserver(() => {
+				if (finishNavigation()) stopWaiting();
+			});
+			observer.observe(document.body, { childList: true, subtree: true });
+			timeout = window.setTimeout(stopWaiting, 3000);
+		});
+		return () => {
+			window.cancelAnimationFrame(frame);
+			stopWaiting();
+		};
+	}, [location, pathname]);
+
+	return (
+		<MachineContext.Provider value={machine}>
+			<Suspense fallback={<div className="route-pending" aria-hidden="true" />}>
+				{routeFor(pathname)}
+			</Suspense>
+		</MachineContext.Provider>
+	);
+}

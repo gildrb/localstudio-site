@@ -1,46 +1,21 @@
-const markdownPages = new Map([
-	["/", "/index.md"],
-	["/product", "/product.md"],
-	["/mobile", "/mobile.md"],
-	["/docs", "/docs.md"],
-	["/setup", "/setup.md"],
-	["/agents", "/agents.md"],
-	["/overview", "/overview.md"],
-	["/download", "/download.md"],
-	["/machine", "/machine.md"],
-]);
+import {
+	htmlMatcher,
+	markdownPages,
+	redirects,
+} from "./src/domain/route.ts";
+import {
+	HOMEPAGE_LINK_HEADER,
+	wantsMarkdown as acceptWantsMarkdown,
+	markdownTokenCount,
+} from "./src/agent/documents.ts";
 
-const homepageLink = [
-	'</.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
-	'<https://localstudio.ai/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json"',
-	'</llms.txt>; rel="describedby"; type="text/markdown"',
-	'</index.md>; rel="alternate"; type="text/markdown"',
-	'</docs>; rel="service-doc"; type="text/html"',
-	'</docs.md>; rel="service-doc"; type="text/markdown"',
-	'</.well-known/agent-card.json>; rel="service-desc"; type="application/json"',
-	'</sitemap.xml>; rel="describedby"; type="application/xml"',
-	'<https://localstudio.ai/>; rel="canonical"; type="text/html"',
-].join(", ");
+const markdownByPath = markdownPages();
 
 export const config = {
-	matcher: [
-		"/",
-		"/product",
-		"/mobile",
-		"/docs",
-		"/setup",
-		"/agents",
-		"/overview",
-		"/download",
-		"/machine",
-	],
+	matcher: [...htmlMatcher(), ...Object.keys(redirects)],
 };
 
 export default async function middleware(request) {
-	const accept = request.headers.get("accept") ?? "";
-	const wantsMarkdown =
-		accept.includes("text/markdown") && !accept.includes("text/html");
-	if (!wantsMarkdown) return;
 	let url;
 	try {
 		url = new URL(request.url);
@@ -54,7 +29,13 @@ export default async function middleware(request) {
 		url.pathname !== "/" && url.pathname.endsWith("/")
 			? url.pathname.slice(0, -1)
 			: url.pathname;
-	const markdownPath = markdownPages.get(pathname);
+	const redirect = redirects[pathname];
+	if (redirect) {
+		return Response.redirect(new URL(redirect, url.origin), 308);
+	}
+	const accept = request.headers.get("accept") ?? "";
+	if (!acceptWantsMarkdown(accept)) return;
+	const markdownPath = markdownByPath.get(pathname);
 	if (markdownPath === undefined) return;
 	const upstream = await fetch(new URL(markdownPath, url.origin));
 	if (!upstream.ok) return;
@@ -63,10 +44,10 @@ export default async function middleware(request) {
 		"Cache-Control": "public, max-age=0, must-revalidate",
 		"Content-Type": "text/markdown; charset=utf-8",
 		Vary: "Accept",
-		"x-markdown-tokens": String(Math.max(1, Math.ceil(body.length / 4))),
+		"x-markdown-tokens": markdownTokenCount(body),
 	};
 	if (pathname === "/") {
-		headers.Link = homepageLink;
+		headers.Link = HOMEPAGE_LINK_HEADER;
 	}
 	return new Response(body, { status: 200, headers });
 }

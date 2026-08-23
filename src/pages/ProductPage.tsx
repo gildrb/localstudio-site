@@ -1,12 +1,11 @@
+import { docsPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { MediaFrame } from "../components/MediaFrame";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
-import { productFeatures } from "../content/product-features";
-import { frameSizes, heroSizes, responsiveSrcSet } from "../images";
-
-const container =
-	"mx-auto w-[min(1399px,calc(100%_-_48px))]";
+import { productFeatures } from "../content/product";
+import { renderInlineReact } from "../ui/prose";
+import { assets, frameSizes, heroSizes, responsiveSrcSet } from "../domain/asset";
 
 export function ProductPage() {
 	return (
@@ -23,18 +22,18 @@ export function ProductPage() {
 				}
 				actions={
 					<CtaPair
-						secondary={{ href: "/docs", label: "Read the docs" }}
+						secondary={{ href: docsPath, label: "Read the docs" }}
 					/>
 				}
 			/>
 			<section
-				className={`${container} pb-30`}
+				className={`section-width pb-30`}
 				aria-label="Product capabilities"
 			>
 				<MediaFrame
 					className="mb-30"
-					src="/images/workbench-browser-1300.png"
-					srcSet={responsiveSrcSet("/images/workbench-browser.png")}
+					src={assets.workbenchBrowserHero}
+					srcSet={responsiveSrcSet(assets.workbenchBrowser)}
 					sizes={heroSizes}
 					alt="Local Studio Workbench showing a coding agent and integrated browser."
 					width="5118"
@@ -55,7 +54,7 @@ export function ProductPage() {
 								{section.productTitle}
 							</h2>
 							<p className="mt-6 max-w-md text-base/6 text-white/70">
-								{section.productText}
+								{renderInlineReact(section.productText)}
 							</p>
 						</div>
 						<MediaFrame

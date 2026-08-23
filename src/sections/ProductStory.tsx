@@ -1,7 +1,9 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
-import { productFeatures } from "../content/product-features";
-const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
+import { motion } from "../domain/motion";
+import { productFeatures } from "../content/product";
+import { renderInlineReact } from "../ui/prose";
+const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
 
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
 
@@ -18,7 +20,6 @@ function useStoryProgress() {
 		let showcaseTop = 0;
 		let navHeight = 72;
 		let scrollRange = 1;
-		let renderedProgress = Number.NaN;
 		let disposed = false;
 
 		const update = () => {
@@ -29,11 +30,6 @@ function useStoryProgress() {
 			);
 			const scenePosition = (traveled / scrollRange) * productFeatures.length;
 			const nextIndex = Math.min(productFeatures.length - 1, Math.floor(scenePosition));
-			const nextProgress = Math.min(1, scenePosition - nextIndex);
-			if (nextProgress !== renderedProgress) {
-				renderedProgress = nextProgress;
-				showcase.style.setProperty("--story-progress", String(nextProgress));
-			}
 			setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
 		};
 
@@ -126,9 +122,9 @@ export function ProductStory() {
 													layout="position"
 													initial={reduceMotion ? false : { opacity: 0, y: 6 }}
 													animate={{ opacity: 1, y: 0 }}
-													transition={{ duration: 0.2, ease: "easeOut" }}
+													transition={motion.quickFade}
 												>
-													{feature.storyDescription}
+													{renderInlineReact(feature.storyDescription)}
 												</m.p>
 											) : null}
 									</li>
@@ -148,7 +144,7 @@ export function ProductStory() {
 												key={activeFeature.slug}
 												initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
 												animate={{ opacity: 1, filter: "blur(0px)" }}
-												transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+												transition={motion.featureSwap}
 											>
 												<FeatureDemo scene={activeFeature.slug} />
 											</m.div>
@@ -157,7 +153,7 @@ export function ProductStory() {
 									DEMO_PLACEHOLDER
 								)}
 								<p className="sr-only" role="status">
-									{activeFeature.storyTitle}. {activeFeature.storyDescription}
+									{activeFeature.storyTitle}. {renderInlineReact(activeFeature.storyDescription)}
 								</p>
 							</figure>
 						</div>

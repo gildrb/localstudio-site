@@ -1,4 +1,5 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
+import { downloadPath } from "../domain/route";
 import { LocalLink } from "./LocalLink";
 
 interface TextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -24,7 +25,7 @@ interface Cta {
 }
 
 const downloadCta = {
-	href: "/download",
+	href: downloadPath,
 	label: "Download for macOS",
 } satisfies Cta;
 

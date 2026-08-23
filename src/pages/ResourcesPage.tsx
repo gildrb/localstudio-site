@@ -1,4 +1,5 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { docsPath, downloadPath, setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageCta } from "../components/PageCta";
@@ -26,19 +27,19 @@ const groups: readonly ResourceGroup[] = [
 			{
 				name: "Documentation",
 				text: "Install the controller and desktop workspace, choose a runtime, and verify local inference.",
-				href: "/docs",
+				href: docsPath,
 				external: false,
 			},
 			{
 				name: "Setup prompt",
 				text: "A portable prompt that installs Local Studio with any coding model.",
-				href: "/setup",
+				href: setupPath,
 				external: false,
 			},
 			{
 				name: "Download for macOS",
 				text: "The desktop app for Apple Silicon, hosted on GitHub Releases.",
-				href: "/download",
+				href: downloadPath,
 				external: false,
 			},
 		],
@@ -70,7 +71,6 @@ const groups: readonly ResourceGroup[] = [
 		],
 	},
 ];
-const container = "mx-auto w-[min(1399px,calc(100%_-_48px))]";
 const prose = "text-base/6 text-white/70";
 
 function ResourceCell({ item }: { item: ResourceItem }) {
@@ -106,13 +106,13 @@ export function ResourcesPage() {
 				title="Everything around Local Studio"
 				description="Documentation, setup paths, downloads, and the surrounding ecosystem in one place."
 				actions={
-					<CtaPair secondary={{ href: "/docs", label: "Read the docs" }} />
+					<CtaPair secondary={{ href: docsPath, label: "Read the docs" }} />
 				}
 			/>
 			{groups.map((group, index) => (
 				<section
 					aria-labelledby={`resources-group-${index}`}
-					className={`${container} page-section ${
+					className={`section-width page-section ${
 						index === 0 ? "pb-30" : "border-t border-white/10 py-30 max-[900px]:py-16"
 					}`}
 					key={group.title}

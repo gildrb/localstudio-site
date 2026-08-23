@@ -1,0 +1,9 @@
+{
+  "name": "@local-ai/logo-renderer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./react": "./src/renderer/index.tsx"
+  }
+}

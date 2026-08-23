@@ -9,7 +9,7 @@ import {
 	markdownPathFor,
 	markdownTokenCount,
 	wantsMarkdown,
-} from "./src/agent/catalog.ts";
+} from "./src/agent/documents.ts";
 
 function requestPath(url: string): string {
 	try {

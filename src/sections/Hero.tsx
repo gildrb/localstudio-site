@@ -1,28 +1,48 @@
+import { assets } from "../domain/asset";
 import { lazy, Suspense } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
+import { setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
-import { useMachine } from "../machine";
-import { LocalAiLogoShader } from "./localai-logo-shader";
+import { motion } from "../domain/motion";
+import { useMachine } from "../app/machine-mode";
+import { LocalAiLogo } from "../logo/LocalAiLogo";
 
 const HeroDemo = lazy(() =>
-	import("./HeroDemo").then(({ HeroDemo }) => ({ default: HeroDemo })),
+	import("@local-studio/demo-ui/hero").then(({ HeroDemo }) => ({ default: HeroDemo })),
 );
 
-const ease = [0.16, 1, 0.3, 1] as const;
 const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
 
+const fastClock = {
+	now: () => Date.now(),
+	timeout: (callback: () => void, delay: number) => {
+		void delay;
+		return window.setTimeout(callback, 0);
+	},
+	clear: (id: ReturnType<typeof setTimeout>) => {
+		window.clearTimeout(id);
+	},
+};
+
+function useHeroClock() {
+	return new URLSearchParams(window.location.search).has("demoClock")
+		? fastClock
+		: undefined;
+}
+
 export function Hero() {
+	const clock = useHeroClock();
 	const { toggleMachine } = useMachine();
 	const reduceMotion = useReducedMotion();
 	const enter = (delay: number) => ({
 		initial: reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
 		animate: settle,
-		transition: { duration: 0.9, ease, delay },
+		transition: { ...motion.heroEnter, delay },
 	});
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section className="hero" id="top" aria-labelledby="landing-title">
-				<LocalAiLogoShader />
+				<LocalAiLogo />
 				<div className="hero__inner">
 					<div className="hero__copy">
 						<m.h1 id="landing-title" tabIndex={-1} {...enter(0.12)}>
@@ -37,7 +57,7 @@ export function Hero() {
 								>
 									<img
 										className="hero__mark"
-										src="/images/optimized.svg"
+										src={assets.mark}
 										alt=""
 										width="525"
 										height="525"
@@ -48,7 +68,7 @@ export function Hero() {
 							</span>
 						</m.h1>
 						<m.div className="hero__actions" {...enter(0.24)}>
-							<CtaPair secondary={{ href: "/setup", label: "Setup prompt" }} />
+							<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
 						</m.div>
 					</div>
 				</div>
@@ -62,7 +82,7 @@ export function Hero() {
 							<div className="hero__demo-placeholder" aria-hidden="true" />
 						}
 					>
-						<HeroDemo />
+						<HeroDemo clock={clock} />
 					</Suspense>
 				</m.div>
 			</section>
