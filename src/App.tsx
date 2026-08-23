@@ -1,9 +1,8 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSkySelection } from "./hooks/use-sky-selection";
-import { HomePage } from "./pages/HomePage";
-import { MachinePage } from "./pages/MachinePage";
 import { MachineContext } from "./app/machine-mode";
-import { redirectFor, routeTitle } from "./domain/route";
+import { pages, prefetchPages } from "./app/pages";
+import { homePath, isMachineRoute, machinePath, redirectFor, routeTitle } from "./domain/route";
 import {
 	emitNavigation,
 	isRoutePath,
@@ -12,44 +11,16 @@ import {
 	subscribeToNavigation,
 } from "./app/browser-location";
 
-const DocsPage = lazy(() =>
-	import("./pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),
-);
-const DownloadPage = lazy(() =>
-	import("./pages/DownloadPage").then(({ DownloadPage }) => ({ default: DownloadPage })),
-);
-const prefetchRoutes = () => {
-	void import("./pages/DocsPage");
-	void import("./pages/DownloadPage");
-	void import("./pages/NotFoundPage");
-	void import("./pages/ProductPage");
-	void import("./pages/PromptPage");
-	void import("./pages/ResourcesPage");
-};
 const NotFoundPage = lazy(() =>
 	import("./pages/NotFoundPage").then(({ NotFoundPage }) => ({ default: NotFoundPage })),
-);
-const ProductPage = lazy(() =>
-	import("./pages/ProductPage").then(({ ProductPage }) => ({ default: ProductPage })),
-);
-const PromptPage = lazy(() =>
-	import("./pages/PromptPage").then(({ PromptPage }) => ({ default: PromptPage })),
-);
-const ResourcesPage = lazy(() =>
-	import("./pages/ResourcesPage").then(({ ResourcesPage }) => ({ default: ResourcesPage })),
 );
 
 type NavigationSource = "load" | "push" | "pop";
 
 function routeFor(pathname: string) {
-	if (pathname === "/machine") return <MachinePage />;
 	if (!isRoutePath(pathname)) return <NotFoundPage />;
-	if (pathname === "/product") return <ProductPage />;
-	if (pathname === "/docs") return <DocsPage />;
-	if (pathname === "/setup") return <PromptPage />;
-	if (pathname === "/download") return <DownloadPage />;
-	if (pathname === "/overview") return <ResourcesPage />;
-	return <HomePage />;
+	const Page = pages[pathname];
+	return <Page />;
 }
 
 export default function App() {
@@ -57,7 +28,7 @@ export default function App() {
 	useEffect(() => {
 		const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
 		const cancel = window.cancelIdleCallback ?? ((id: number) => window.clearTimeout(id));
-		const id = idle(prefetchRoutes);
+		const id = idle(prefetchPages);
 		return () => cancel(id);
 	}, []);
 	const [location, setLocation] = useState(
@@ -66,10 +37,10 @@ export default function App() {
 	const navigationSource = useRef<NavigationSource>("load");
 	const pathname = normalizePath(location.split("#")[0] ?? "");
 	const redirect = redirectFor(pathname);
-	const machineMode = pathname === "/machine";
+	const machineMode = isMachineRoute(pathname);
 
 	const toggleMachine = useCallback((next: boolean) => {
-		window.history.pushState({}, "", next ? "/machine" : "/");
+		window.history.pushState({}, "", next ? machinePath : homePath);
 		emitNavigation();
 	}, []);
 	const machine = useMemo(

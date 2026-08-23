@@ -3,7 +3,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { assets } from "../domain/asset";
 import { site } from "../domain/site";
 import { cssVars } from "../system/css-vars";
-import { resourceNav } from "../domain/route";
+import { downloadPath, resourceNav } from "../domain/route";
 import {
 	closedNav,
 	desktopMenu,
@@ -34,7 +34,7 @@ type MenuListProps = {
 
 const products = [
 	{ label: site.products.localAi.name, href: site.products.localAi.url, external: true },
-	{ label: site.products.localStudio.name, href: "/download" },
+	{ label: site.products.localStudio.name, href: downloadPath },
 	{ label: site.products.kittyLitter.name, href: site.products.kittyLitter.url, external: true },
 ] as const satisfies readonly NavLink[];
 
@@ -454,7 +454,7 @@ export function Header() {
 				<div className="nav__sheet-actions">
 					<LocalLink
 						className="button"
-						href="/download"
+						href={downloadPath}
 						onClick={closeMobile}
 					>
 						Download for macOS

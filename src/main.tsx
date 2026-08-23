@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { assets, heroSizes, responsiveSrcSet } from "./domain/asset";
+import { isHeroImageRoute } from "./domain/route";
 import "./styles/global.css";
 
 function setFavicon(href: string, media: string) {
@@ -15,8 +16,6 @@ function setFavicon(href: string, media: string) {
 
 setFavicon(assets.favicon, "(prefers-color-scheme: light)");
 setFavicon(assets.faviconDark, "(prefers-color-scheme: dark)");
-
-const heroImageRoutes = new Set(["/product"]);
 
 function syncKeyboardMode(event: Event) {
 	if (event.type === "keydown") {
@@ -42,7 +41,7 @@ document.addEventListener("contextmenu", preventImageAction);
 document.addEventListener("dragstart", preventImageAction);
 document.addEventListener("selectstart", preventImageAction);
 
-if (heroImageRoutes.has(window.location.pathname)) {
+if (isHeroImageRoute(window.location.pathname)) {
 	const preload = document.createElement("link");
 	preload.rel = "preload";
 	preload.as = "image";

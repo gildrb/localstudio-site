@@ -1,5 +1,5 @@
 {
-	"hash": "cde855d4a361e5b72a4e7c8b93e48b0340bc4d6eb3d5350ea8c477a4fc9f6e56",
+	"hash": "67acba2773d46a5b4e8bc2acbe17a239a5032e947f8d3a7ff7e8e3c098d6760f",
 	"routes": [
 		"/",
 		"/product",
@@ -87,6 +87,7 @@
 		"src/domain/nav.ts": "canonical header surface-state reducer",
 		"src/app/machine-mode.ts": "owns machine-mode React context boundary",
 		"src/app/browser-location.ts": "owns browser history, hash scroll, and navigation events",
+		"src/app/pages.ts": "owns route-to-page registry and lazy page modules",
 		"src/ui/prose.tsx": "React interpreter for React-free product prose",
 		"src/logo/LocalAiLogo.tsx": "owns WebGPU logo renderer lifecycle boundary",
 		"src/logo/shader.ts": "lazy adapter for @local-ai/logo-renderer"

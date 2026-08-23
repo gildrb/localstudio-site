@@ -89,6 +89,23 @@ export function isRoutePath(pathname: string): pathname is RoutePath {
 	return Object.hasOwn(routes, pathname);
 }
 
+export function isMachineRoute(pathname: string): pathname is "/machine" {
+	return pathname === "/machine";
+}
+
+export const homePath = "/" satisfies RoutePath;
+export const machinePath = "/machine" satisfies RoutePath;
+export const downloadPath = "/download" satisfies RoutePath;
+export const setupPath = "/setup" satisfies RoutePath;
+export const docsPath = "/docs" satisfies RoutePath;
+export const overviewPath = "/overview" satisfies RoutePath;
+export const productPath = "/product" satisfies RoutePath;
+export const heroImageRoutes = [productPath] as const;
+
+export function isHeroImageRoute(pathname: string): boolean {
+	return pathname === productPath;
+}
+
 export function routeTitle(path: RoutePath): string {
 	return routes[path].title;
 }
