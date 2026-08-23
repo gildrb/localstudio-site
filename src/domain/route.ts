@@ -94,6 +94,7 @@ export function isMachineRoute(pathname: string): pathname is "/machine" {
 }
 
 export const homePath = "/" satisfies RoutePath;
+export const productPath = "/product" satisfies RoutePath;
 export const machinePath = "/machine" satisfies RoutePath;
 export const downloadPath = "/download" satisfies RoutePath;
 export const setupPath = "/setup" satisfies RoutePath;

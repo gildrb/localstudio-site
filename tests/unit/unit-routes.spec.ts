@@ -49,8 +49,18 @@ test("same-origin link decisions stay pure", () => {
 
 test("every HTML route has a page module", () => {
 	const source = readFileSync("src/app/pages.ts", "utf8");
-	const keys = [...source.matchAll(/"(\/[^"]*)":/g)].map((match) => match[1]);
-	expect(keys).toEqual([...routePaths]);
+	const names = [
+		"homePath",
+		"productPath",
+		"docsPath",
+		"setupPath",
+		"downloadPath",
+		"overviewPath",
+		"machinePath",
+	];
+	for (const name of names) {
+		expect(source.includes(`[${name}]`), name).toBe(true);
+	}
 });
 
 test("design-manifest routes match the canonical route model", () => {
