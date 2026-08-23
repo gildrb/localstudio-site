@@ -37,6 +37,7 @@
 		"packages/logo-renderer/scripts/generate-logo-mesh.mjs",
 		"scripts/context.mjs",
 		"scripts/graph.mjs",
-		"scripts/verify-generated.mjs"
+		"scripts/verify-generated.mjs",
+		"src/agent/markdown.ts"
 	]
 }
