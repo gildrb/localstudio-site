@@ -101,3 +101,11 @@ test("release URLs are derived from the Local Studio repository", () => {
 		`${site.products.localStudio.repository}/releases/latest/download/${release.artifact}`,
 	);
 });
+
+test("store buttons read KittyLitter URLs from site facts", () => {
+	const source = readFileSync("src/components/Links.tsx", "utf8");
+	expect(source).toContain("site.products.kittyLitter.appStore");
+	expect(source).toContain("site.products.kittyLitter.playStore");
+	expect(source.includes("apps.apple.com")).toBe(false);
+	expect(source.includes("play.google.com")).toBe(false);
+});
