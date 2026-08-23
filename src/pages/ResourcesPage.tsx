@@ -70,7 +70,6 @@ const groups: readonly ResourceGroup[] = [
 		],
 	},
 ];
-const container = "mx-auto w-[min(1399px,calc(100%_-_48px))]";
 const prose = "text-base/6 text-white/70";
 
 function ResourceCell({ item }: { item: ResourceItem }) {
@@ -112,7 +111,7 @@ export function ResourcesPage() {
 			{groups.map((group, index) => (
 				<section
 					aria-labelledby={`resources-group-${index}`}
-					className={`${container} page-section ${
+					className={`section-width page-section ${
 						index === 0 ? "pb-30" : "border-t border-white/10 py-30 max-[900px]:py-16"
 					}`}
 					key={group.title}

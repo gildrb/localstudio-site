@@ -6,9 +6,6 @@ import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
 import { frameSizes, heroSizes, responsiveSrcSet } from "../images";
 
-const container =
-	"mx-auto w-[min(1399px,calc(100%_-_48px))]";
-
 export function ProductPage() {
 	return (
 		<PageShell>
@@ -29,7 +26,7 @@ export function ProductPage() {
 				}
 			/>
 			<section
-				className={`${container} pb-30`}
+				className={`section-width pb-30`}
 				aria-label="Product capabilities"
 			>
 				<MediaFrame
