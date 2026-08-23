@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import {
 	HOMEPAGE_LINK_HEADER,
@@ -67,4 +68,17 @@ test("product markdown is generated from canonical feature prose", () => {
 		expect(body).toContain(feature.productTitle);
 		expect(body).toContain(renderInlineMarkdown(feature.productText));
 	}
+});
+
+test("vercel headers match agent document content types", () => {
+	const body = readFileSync("vercel.json", "utf8");
+	expect(body).toContain(`"value": "${agentDocument("/robots.txt")?.contentType}"`);
+	expect(body).toContain(`"value": "${agentDocument("/sitemap.xml")?.contentType}"`);
+	expect(body).toContain(`"value": "${agentDocument("/llms.txt")?.contentType}"`);
+	expect(body).toContain(
+		`"value": "${agentDocument("/.well-known/api-catalog")?.contentType}"`,
+	);
+	expect(body).toContain(
+		`"value": "${agentDocument("/.well-known/agent-card.json")?.contentType}"`,
+	);
 });
