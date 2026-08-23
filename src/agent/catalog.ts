@@ -1,54 +1,17 @@
-import { routes, routePaths, type RoutePath } from "../domain/route.ts";
+import { robotsTxt } from "./robots.ts";
+import { sitemapXml } from "./sitemap.ts";
+import { HTML_ROUTES, LASTMOD } from "./routes.ts";
+export { HTML_ROUTES, LASTMOD, type HtmlRoute, type HtmlRoutePath } from "./routes.ts";
 import { release } from "../domain/release.ts";
 import { site } from "../domain/site.ts";
 
-export const SITE_ORIGIN = site.origin;
-
-export type HtmlRoutePath = RoutePath;
-export type AgentDocumentPath =
-	| "/robots.txt"
-	| "/sitemap.xml"
-	| "/sitemap.md"
-	| "/llms.txt"
-	| "/llms-full.txt"
-	| "/index.md"
-	| "/product.md"
-	| "/mobile.md"
-	| "/docs.md"
-	| "/setup.md"
-	| "/agents.md"
-	| "/overview.md"
-	| "/download.md"
-	| "/machine.md"
-	| "/services.md"
-	| "/people.md"
-	| "/showcase.md"
-	| "/faq.md"
-	| "/.well-known/llms.txt"
-	| "/.well-known/api-catalog"
-	| "/.well-known/agent-card.json";
-
-export type HtmlRoute = {
-	path: HtmlRoutePath;
-	title: string;
-	summary: string;
-	priority: string;
-};
-
 export type AgentDocument = {
-	path: AgentDocumentPath;
-	body: string;
-	contentType: string;
+	readonly path: string;
+	readonly body: string;
+	readonly contentType: string;
 };
 
-export const HTML_ROUTES: readonly HtmlRoute[] = routePaths.map((path) => ({
-	path,
-	title: routes[path].title,
-	summary: routes[path].summary,
-	priority: routes[path].priority.toFixed(1),
-}));
-
-export const LASTMOD = "2026-08-17";
+export const SITE_ORIGIN = site.origin;
 
 export const DOWNLOAD = release;
 
@@ -63,30 +26,6 @@ export const HOMEPAGE_LINK_HEADER = [
 	`</sitemap.xml>; rel="describedby"; type="application/xml"`,
 	`<${SITE_ORIGIN}/>; rel="canonical"; type="text/html"`,
 ].join(", ");
-
-const AI_BOTS = [
-	"GPTBot",
-	"OAI-SearchBot",
-	"ChatGPT-User",
-	"Claude-Web",
-	"ClaudeBot",
-	"Claude-SearchBot",
-	"Claude-User",
-	"anthropic-ai",
-	"Google-Extended",
-	"Google-CloudVertexBot",
-	"Google-Agent",
-	"Amazonbot",
-	"Applebot-Extended",
-	"Bytespider",
-	"CCBot",
-	"PerplexityBot",
-	"Perplexity-User",
-	"Applebot",
-	"FacebookBot",
-	"Meta-ExternalAgent",
-	"meta-externalagent",
-] as const;
 
 function field(name: string, value: string): string {
 	return `${name.padEnd(14, ".")} ${value}`;
@@ -538,63 +477,6 @@ export function machineText(): string {
 
 function markdownPage(title: string, body: string): string {
 	return `# ${title}\n\nCompany: Sybil Solutions (https://www.sybilsolutions.ai/).\n\n${body.trim()}\n`;
-}
-
-function robotsTxt(): string {
-	const blocks = [
-		"# Site: https://localstudio.ai/",
-		"# Company: Sybil Solutions - https://www.sybilsolutions.ai/",
-		"# Products: Local Studio, KittyLitter, Codex Shim",
-		"# LLM reference: https://localstudio.ai/llms.txt",
-		"# Machine index: https://localstudio.ai/machine",
-		"#",
-		"# As a condition of accessing this website, you agree to abide by the",
-		"# following content signals:",
-		"#",
-		"# (a) If a content-signal = yes, you may collect content for the",
-		"#     corresponding use.",
-		"# (b) If a content-signal = no, you may not collect content for the",
-		"#     corresponding use.",
-		"# (c) If the website operator does not include a content signal for a",
-		"#     corresponding use, the website operator neither grants nor restricts",
-		"#     permission via content signal with respect to the corresponding use.",
-		"#",
-		"# search: building a search index and providing search results.",
-		"#         Search does not include providing AI-generated search summaries.",
-		"# ai-input: inputting content into one or more AI models (RAG, grounding).",
-		"# ai-train: training or fine-tuning AI models.",
-		"",
-		"User-agent: *",
-		"Content-Signal: search=yes, ai-input=yes, ai-train=yes",
-		"Allow: /",
-		"",
-	];
-	for (const bot of AI_BOTS) {
-		blocks.push(`User-agent: ${bot}`, "Allow: /", "");
-	}
-	blocks.push(`Sitemap: ${SITE_ORIGIN}/sitemap.xml`, "");
-	return blocks.join("\n");
-}
-
-function sitemapXml(): string {
-	const urls = HTML_ROUTES.map((route) => {
-		const loc = `${SITE_ORIGIN}${route.path === "/" ? "/" : route.path}`;
-		return [
-			"  <url>",
-			`    <loc>${loc}</loc>`,
-			`    <lastmod>${LASTMOD}</lastmod>`,
-			"    <changefreq>weekly</changefreq>",
-			`    <priority>${route.priority}</priority>`,
-			"  </url>",
-		].join("\n");
-	});
-	return [
-		`<?xml version="1.0" encoding="UTF-8"?>`,
-		`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
-		...urls,
-		"</urlset>",
-		"",
-	].join("\n");
 }
 
 function llmsTxt(): string {
