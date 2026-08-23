@@ -2,7 +2,7 @@ import { useState } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { motion } from "../domain/motion";
 
-interface CopyIconProps {
+interface CopyButtonProps {
 	text: string;
 }
 
@@ -21,7 +21,7 @@ function glyphState(active: boolean, reduceMotion: boolean) {
 	};
 }
 
-export function CopyIcon({ text }: CopyIconProps) {
+export function CopyButton({ text }: CopyButtonProps) {
 	const [copied, setCopied] = useState(false);
 	const reduceMotion = useReducedMotion();
 	const transition = { duration: reduceMotion ? 0 : 0.18, ease: motion.ease };

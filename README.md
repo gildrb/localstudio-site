@@ -15,9 +15,13 @@ pnpm dev
 Production checks:
 
 ```sh
-pnpm design:check
-pnpm lint
+corepack enable
+pnpm install --frozen-lockfile
+pnpm check
 pnpm build
 pnpm test
 pnpm preview
 ```
+
+`pnpm check` runs lint, types, context/graph reports, and generated-style drift.
+The first-party token gate stays report-only until copied Local Studio source is extracted.

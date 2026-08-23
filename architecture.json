@@ -1,7 +1,7 @@
 {
 	"singleConsumerComponents": {
 		"src/components/MediaFrame.tsx": "owns framed media srcset/sizes invariant",
-		"src/components/CopyIcon.tsx": "owns clipboard fallback and live-region behavior",
+		"src/components/CopyButton.tsx": "owns clipboard fallback and live-region behavior",
 		"src/components/PromptBlock.tsx": "owns prompt expand/copy surface",
 		"src/components/Header.tsx": "owns site navigation dialog and mega-menu invariants",
 		"src/components/Footer.tsx": "owns site footer landmark",
@@ -35,6 +35,7 @@
 		"scripts/sync-ls-demo-styles.mjs",
 		"scripts/generate-logo-mesh.mjs",
 		"scripts/context.mjs",
-		"scripts/graph.mjs"
+		"scripts/graph.mjs",
+		"scripts/verify-generated.mjs"
 	]
 }

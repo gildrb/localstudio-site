@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { CopyIcon } from "./CopyIcon";
+import { CopyButton } from "./CopyButton";
 
 interface PromptBlockProps {
 	label: string;
@@ -16,7 +16,7 @@ export function PromptBlock({ label, text }: PromptBlockProps) {
 			aria-label={label}
 			data-expanded={expanded ? "true" : "false"}
 		>
-			<CopyIcon text={text} />
+			<CopyButton text={text} />
 			<pre
 				id={contentId}
 				className="prompt-block__pre w-full min-w-0 overflow-hidden whitespace-pre-wrap break-words p-8 pr-20 font-mono text-sm/5 text-white/80 max-[620px]:p-5 max-[620px]:pr-12"
