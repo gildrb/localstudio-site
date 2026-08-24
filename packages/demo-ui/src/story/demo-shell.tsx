@@ -39,9 +39,9 @@ export function DemoShell({
 						transformOrigin: "top left",
 					}}
 				>
-					<main className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-(--agent-bg)">
+					<div className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-(--agent-bg)">
 						{children}
-					</main>
+					</div>
 				</div>
 			</div>
 		</section>

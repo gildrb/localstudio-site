@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { routes, routePaths } from "../../src/domain/route";
 
-const pages = routePaths.filter((path) => path !== "/machine");
+const pages = routePaths;
 
 test("/mobile redirects to the homepage mobile section", async ({ page }) => {
 	await page.goto("/mobile");

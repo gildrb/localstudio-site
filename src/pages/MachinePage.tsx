@@ -1,6 +1,6 @@
 import localStudioAscii from "../content/local-studio-ascii.txt?raw";
 import { machineSections } from "../agent/machine";
-import { routePaths } from "../domain/route";
+import { machinePath, routePaths, routes } from "../domain/route";
 import { LocalLink } from "../components/LocalLink";
 import { PageShell } from "../components/PageShell";
 import { useMachine } from "../app/machine-mode";
@@ -22,7 +22,10 @@ export function MachinePage() {
 					>
 						<pre>{localStudioAscii}</pre>
 					</button>
-					<h1 className="machine__title">
+					<h1
+						className="machine__title"
+						aria-label={routes[machinePath].heading}
+					>
 						<span translate="no">sybil solutions</span> /{" "}
 						<span translate="no">local studio</span> :: machine-readable index
 					</h1>

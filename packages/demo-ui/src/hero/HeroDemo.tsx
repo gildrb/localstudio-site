@@ -30,6 +30,8 @@ import {
 	demoStatus,
 	finishedDemoState,
 	initialDemoState,
+	browserDemoClock,
+	type DemoClock,
 	type DemoState,
 } from "../scenario/sequence";
 
@@ -518,7 +520,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 							onSelectTask={selectTask}
 							titles={titles}
 						/>
-						<main
+						<div
 							data-no-topbar="true"
 							className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-(--agent-bg)"
 						>
@@ -738,7 +740,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 									) : null}
 								</div>
 							</div>
-						</main>
+						</div>
 					</div>
 				) : null}
 			</div>

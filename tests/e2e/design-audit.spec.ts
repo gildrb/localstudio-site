@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { routePaths } from "../../src/domain/route";
 
-test("one main landmark and a skip link", async ({ page }) => {
-	await page.goto("/");
-	await expect(page.locator("main#content")).toHaveCount(1);
+test("every HTML route has one main landmark and a skip link", async ({ page }) => {
+	for (const path of routePaths) {
+		await page.goto(path);
+		await expect(page.locator("main#content")).toHaveCount(1);
+		await expect(page.locator("main")).toHaveCount(1);
+	}
 	const skip = page.getByRole("link", { name: "Skip to content" });
 	await expect(skip).toHaveAttribute("href", "#content");
 });
