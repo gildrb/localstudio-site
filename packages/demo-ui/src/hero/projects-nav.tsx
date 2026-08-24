@@ -80,7 +80,6 @@ export function HeroProjectsNav({
 					</span>
 				</button>
 			</SidebarRail>
-			<SidebarSectionHeader label="Terminals" open onToggle={() => undefined} />
 		</>
 	);
 }

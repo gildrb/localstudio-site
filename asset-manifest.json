@@ -83,70 +83,196 @@
 			"sha256": "8de45cde7dccd23487c1159336bd4a10477f75b3c81da5064e790f2ff5185edf"
 		},
 		{
-			"path": "public/images/kittylitter-feature-alleycat-1320.webp",
-			"role": "image",
-			"type": "image/webp",
-			"dimensions": {
-				"width": 1320,
-				"height": 1320
-			},
-			"bytes": 183864,
-			"sha256": "fae586254db527b05f4e833df91c7bda9218da25e3c219ca01b969906e0a3245"
+			"path": "public/images/kittylitter-appstore-ipad-01-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 10086,
+			"sha256": "569649c180994d48cc9a08f2adb9d6cbf63f8ae5dbf9b690b8fc274e6353d096"
 		},
 		{
-			"path": "public/images/kittylitter-feature-alleycat-660.webp",
-			"role": "image",
-			"type": "image/webp",
-			"dimensions": {
-				"width": 660,
-				"height": 660
-			},
-			"bytes": 80790,
-			"sha256": "47bec038378259ad88697a9ac96e116887f63c736fea42bd262bdea9ecaed62b"
+			"path": "public/images/kittylitter-appstore-ipad-01.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 19607,
+			"sha256": "d2c0aeea9685be0d8ebee1b15a4c4b55af4c06de44457ceded561e9528dc67ac"
 		},
 		{
-			"path": "public/images/kittylitter-feature-multi-agent-1320.webp",
-			"role": "image",
-			"type": "image/webp",
-			"dimensions": {
-				"width": 1320,
-				"height": 1320
-			},
-			"bytes": 109734,
-			"sha256": "49459dad47a7ce36f4dce93342ef50fde2c4a2f43c2e8e5b57d38e6783684fca"
+			"path": "public/images/kittylitter-appstore-ipad-06-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 7639,
+			"sha256": "5d92f797759a54509e62b6459d8cb038e265c77009a8189dbe9a0a469d0118c5"
 		},
 		{
-			"path": "public/images/kittylitter-feature-multi-agent-660.webp",
-			"role": "image",
-			"type": "image/webp",
-			"dimensions": {
-				"width": 660,
-				"height": 660
-			},
-			"bytes": 53218,
-			"sha256": "8e1f265cd77f34df4fa329041dfca04a7940a628417154227084fb59fdf9c088"
+			"path": "public/images/kittylitter-appstore-ipad-06.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 13383,
+			"sha256": "4630b2abbd52149b8a3da35edd26aab7d5f749f262b9e454a55db08c0c060edc"
 		},
 		{
-			"path": "public/images/kittylitter-feature-sessions-1320.webp",
-			"role": "image",
-			"type": "image/webp",
-			"dimensions": {
-				"width": 1320,
-				"height": 1320
-			},
-			"bytes": 60026,
-			"sha256": "1a487fe212c1e6767d1ec2f02f1cd5d47876e56aaa3c8f22892b15615ca48437"
+			"path": "public/images/kittylitter-appstore-iphone-01-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 14117,
+			"sha256": "b6576c823ff0103e9802e37ff85a22a68317420cd48e4058af31bea1a46468b8"
 		},
 		{
-			"path": "public/images/kittylitter-feature-sessions-660.webp",
-			"role": "image",
-			"type": "image/webp",
-			"dimensions": {
-				"width": 660,
-				"height": 660
-			},
-			"bytes": 24928,
-			"sha256": "49021a31d3d469c2f6adce4bd226a11a0f74ed7006453e1bcbb51ff3631f46d6"
+			"path": "public/images/kittylitter-appstore-iphone-01.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 28794,
+			"sha256": "d7b8ea359d08107e1019ff9f4d0647491f4469d5160f7bcac5729d3b4d38bcdf"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-02-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 44506,
+			"sha256": "6cb1a0f78d779d457dec6fe98cc05b1194f26b2fba0b84e503afa4cd084f0a3a"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-02.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 98626,
+			"sha256": "514f450f4d0ac0c9c5acbfb7d93ddd72ec9db13eb37f529b62ea0b62ca9563b9"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-03-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 43689,
+			"sha256": "d9287423dda90f66c1e8314b374febc5ea62e5379ef8c0002c7fa288a5ac7d34"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-03.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 97302,
+			"sha256": "4c18d9ddecaa503eec7c4a62d3ffa8463e70f340ccd051cde12a68638ac45824"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-04-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 38873,
+			"sha256": "94c0acebde60f32d4640dad290aec3fafe333649ba94552dd1040000d3135b12"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-04.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 93668,
+			"sha256": "1ad4628739874669e57eef1962e21034f81e67dcf2108b55a8c71fc77f348b07"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-05-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 33030,
+			"sha256": "706741861d03c2c163973df9a35acc96ee0c8f18d8639b6f3b3411aeffaa98ef"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-05.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 64884,
+			"sha256": "71abe1fca52ac8656ab2c4f4edd604feab58ee7ea0582af81e3813dc0efc2e6a"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-06-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 16407,
+			"sha256": "6c44379a5fa6cf4b04c66e11fbd3611f08619ba7ad9db449eedeeef7b5d0f0f9"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-06.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 34791,
+			"sha256": "04ed6ac87a8b73939ad980db9fea241a407805000a3abed70812dc4427735de7"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-07-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 35013,
+			"sha256": "6cb896dee796e9cd6ff4c699ffebf0c02bff1c87b4a0f55128d2ddda94d51693"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-07.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 70759,
+			"sha256": "c49b1f0ca4b08e88eee657deea4fbfc8c1f96d3ae2aebce5006b6d47519a01e7"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-08-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 44180,
+			"sha256": "51fcebefcf735339bfcc638ab97d13d6e4fe15f7cd6478d879590ba72ca2ba6d"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-08.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 95168,
+			"sha256": "d6f10b43aefd6b5f1529b6de2476cb725d1174ceb6306b279f2a221edd6adf4d"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-09-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 14255,
+			"sha256": "d30afa7a978b2688110a9d4d93be070e387d8f2d121e0e0b97299ffd492ac9e4"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-09.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 29228,
+			"sha256": "88a4d3eda5f94cdb70d2f69df57265f4700692d7c32a1a0a32279558653c6ee8"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-10-660.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 17727,
+			"sha256": "fdaa98f3c25e7d1a31ff6b3b1bbe90a029e9baed8908ad180a41749ab3ae700f"
+		},
+		{
+			"path": "public/images/kittylitter-appstore-iphone-10.avif",
+			"role": "binary",
+			"type": "application/octet-stream",
+			"dimensions": null,
+			"bytes": 29238,
+			"sha256": "8d10e7ef670d7c0d5f96f3e17ab0c41e18f8b33aa661787fb6669a312ea78619"
 		},
 		{
 			"path": "public/images/localai_dark.svg",

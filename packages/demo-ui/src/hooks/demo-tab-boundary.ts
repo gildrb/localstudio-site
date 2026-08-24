@@ -16,8 +16,22 @@ export function useDemoTabBoundary(ref: RefObject<HTMLElement | null>) {
 		const root = ref.current;
 		if (!root) return;
 		removeTabStops(root);
+		const blockInternalNavigation = (event: MouseEvent) => {
+			const target = event.target;
+			if (!(target instanceof Element)) return;
+			const anchor = target.closest("a");
+			if (!anchor || !root.contains(anchor)) return;
+			const href = anchor.getAttribute("href");
+			if (!href || href.startsWith("/") || href.startsWith("#")) {
+				event.preventDefault();
+			}
+		};
+		root.addEventListener("click", blockInternalNavigation, true);
 		const observer = new MutationObserver(() => removeTabStops(root));
 		observer.observe(root, { childList: true, subtree: true });
-		return () => observer.disconnect();
+		return () => {
+			root.removeEventListener("click", blockInternalNavigation, true);
+			observer.disconnect();
+		};
 	}, [ref]);
 }

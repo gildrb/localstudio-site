@@ -119,31 +119,26 @@ function HeroProfileFooter() {
 	const [profile] = useLocalProfile();
 	return (
 		<div className="flex h-[var(--sidebar-row-height)] items-center gap-1">
-			<a
-				href="/settings#profile"
-				className="flex min-w-0 flex-1 items-center gap-2.5 rounded-[var(--sidebar-row-radius)] px-2 py-1 text-left transition-colors hover:bg-(--hover)"
-			>
+			<div className="flex min-w-0 flex-1 items-center gap-2.5 px-2 py-1 text-left">
 				<ProfileAvatar profile={profile} />
 				<span className="truncate text-[length:var(--fs-md)] text-(--fg)">
 					{profile.name}
 				</span>
-			</a>
-			<a
-				href="/settings#profile"
-				className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--sidebar-row-radius)] text-(--fg)/60 transition-colors hover:bg-(--hover) hover:text-(--fg)"
+			</div>
+			<span
+				className="flex h-7 w-7 shrink-0 items-center justify-center text-(--fg)/40"
 				title="Connect phone"
-				aria-label="Connect phone in settings"
+				aria-hidden="true"
 			>
 				<Smartphone className="h-3.5 w-3.5" strokeWidth={1.75} />
-			</a>
-			<a
-				href="/settings"
+			</span>
+			<span
 				title="Settings"
-				aria-label="Settings"
-				className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--sidebar-row-radius)] text-(--fg)/60 transition-colors hover:bg-(--hover) hover:text-(--fg)"
+				className="flex h-7 w-7 shrink-0 items-center justify-center text-(--fg)/40"
+				aria-hidden="true"
 			>
 				<Settings className="h-3.5 w-3.5" strokeWidth={1.75} />
-			</a>
+			</span>
 		</div>
 	);
 }

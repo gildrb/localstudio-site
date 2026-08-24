@@ -1,7 +1,4 @@
 import {
-  lazy,
-  startTransition,
-  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -10,7 +7,8 @@ import {
 } from "react";
 import { useSkySelection } from "../hooks/use-sky-selection";
 import { MachineContext } from "./machine-mode";
-import { pages, prefetchPages } from "./pages";
+import { pages } from "./pages";
+import { NotFoundPage } from "../pages/NotFoundPage";
 import {
   homePath,
   isMachineRoute,
@@ -27,11 +25,6 @@ import {
   subscribeToNavigation,
 } from "./browser-location";
 
-const NotFoundPage = lazy(() =>
-  import("../pages/NotFoundPage").then(({ NotFoundPage }) => ({
-    default: NotFoundPage,
-  })),
-);
 
 type NavigationSource = "load" | "push" | "pop";
 
@@ -43,15 +36,6 @@ function routeFor(pathname: string) {
 
 export default function App() {
   useSkySelection();
-  useEffect(() => {
-    const idle =
-      window.requestIdleCallback ??
-      ((cb: () => void) => window.setTimeout(cb, 200));
-    const cancel =
-      window.cancelIdleCallback ?? ((id: number) => window.clearTimeout(id));
-    const id = idle(prefetchPages);
-    return () => cancel(id);
-  }, []);
   const [location, setLocation] = useState(
     () => `${window.location.pathname}${window.location.hash}`,
   );
@@ -81,9 +65,7 @@ export default function App() {
       if (source === "push" && !window.location.hash) {
         window.scrollTo({ top: 0, behavior: "instant" });
       }
-      startTransition(() => {
-        setLocation(`${window.location.pathname}${window.location.hash}`);
-      });
+      setLocation(`${window.location.pathname}${window.location.hash}`);
     }
     function handlePopState() {
       updateLocation("pop");
@@ -134,9 +116,7 @@ export default function App() {
 
   return (
     <MachineContext.Provider value={machine}>
-      <Suspense fallback={<div className="route-pending" aria-hidden="true" />}>
-        {routeFor(pathname)}
-      </Suspense>
+      {routeFor(pathname)}
     </MachineContext.Provider>
   );
 }

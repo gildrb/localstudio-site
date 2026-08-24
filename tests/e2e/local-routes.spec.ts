@@ -34,65 +34,24 @@ for (const path of pages) {
   });
 }
 
-const deferredRoutes = [
-  { path: "/overview", chunk: "ResourcesPage" },
-] as const;
-
-for (const target of deferredRoutes) {
-  test(`navigation to ${target.path} never reveals a blank route`, async ({
-    page,
-  }) => {
-    let releaseChunk = () => {};
-    let markChunkRequested = () => {};
-    const chunkGate = new Promise<void>((resolve) => {
-      releaseChunk = resolve;
-    });
-    const chunkRequested = new Promise<void>((resolve) => {
-      markChunkRequested = resolve;
-    });
-    await page.addInitScript(() => {
-      window.requestIdleCallback = () => 0;
-    });
-    await page.route(`**/assets/${target.chunk}-*.js`, async (route) => {
-      markChunkRequested();
-      await chunkGate;
-      await route.continue();
-    });
-
-    try {
-      await page.goto("/");
-      const homeHeading = page.getByRole("heading", {
+test("client navigation renders routes immediately", async ({ page }) => {
+  const targets = ["/overview", "/machine", "/docs", "/setup", "/download"] as const;
+  for (const target of targets) {
+    await page.goto("/");
+    await page
+      .locator(`a[href="${target}"]`)
+      .first()
+      .evaluate((link: HTMLAnchorElement) => link.click());
+    await expect(page).toHaveURL(new RegExp(`${target}$`));
+    await expect(
+      page.getByRole("heading", {
         level: 1,
-        name: routes["/"].heading,
-      });
-      await expect(homeHeading).toBeVisible();
-      await page
-        .locator(`footer a[href="${target.path}"]`)
-        .evaluate((link: HTMLAnchorElement) => link.click());
-      await chunkRequested;
-      await page.evaluate(
-        () =>
-          new Promise<void>((resolve) =>
-            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-          ),
-      );
-
-      await expect(page).toHaveURL(new RegExp(`${target.path}$`));
-      await expect(homeHeading).toBeVisible();
-      await expect(page.locator(".route-pending")).toHaveCount(0);
-
-      releaseChunk();
-      await expect(
-        page.getByRole("heading", {
-          level: 1,
-          name: routes[target.path].heading,
-        }),
-      ).toBeVisible();
-    } finally {
-      releaseChunk();
-    }
-  });
-}
+        name: routes[target].heading,
+      }),
+    ).toBeVisible();
+    await expect(page.locator(".route-pending")).toHaveCount(0);
+  }
+});
 
 test("unknown routes render not-found", async ({ page }) => {
   await page.goto("/does-not-exist");

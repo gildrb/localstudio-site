@@ -16,7 +16,6 @@ export function PromptPage() {
 		<PageShell>
 			<PageIntro
 				id="prompt-title"
-				layout="left"
 				title="Give this to any coding model"
 				description={`It will inspect the machine, choose the right runtime, install ${site.products.localStudio.name}, and prove a real inference request works.`}
 				actions={

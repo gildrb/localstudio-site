@@ -50,7 +50,7 @@ type ToolBlock = {
 	name: string;
 	status: "done" | "running";
 	text: string;
-	args: unknown;
+	args: Record<string, unknown>;
 	resultText?: string | undefined;
 };
 type AgentModel = {
@@ -277,11 +277,19 @@ function useHeroDemoModel(clock: DemoClock) {
 	useLayoutEffect(() => {
 		const scroller = scrollerRef.current;
 		if (!active || !scroller || !submitted) return;
+		if (state.resultVisible && extras.length === 0) {
+			const toolCalls =
+				scroller.querySelectorAll<HTMLElement>("[data-tool-call]");
+			const anchor = toolCalls.item(Math.max(0, toolCalls.length - 2));
+			if (anchor) {
+				scroller.scrollTo({ top: Math.max(0, anchor.offsetTop - 12) });
+				return;
+			}
+		}
 		const followLive = state.phase === "stream" || state.phase === "tool";
 		scroller.scrollTo({
 			top: scroller.scrollHeight,
-			behavior:
-				reduceMotion || followLive || state.resultVisible ? "auto" : "smooth",
+			behavior: reduceMotion || followLive ? "auto" : "smooth",
 		});
 	}, [
 		active,

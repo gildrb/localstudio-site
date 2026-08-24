@@ -326,7 +326,6 @@ export function ResourcesPage() {
 		<PageShell>
 			<PageIntro
 				id="resources-title"
-				layout="left"
 				title={routes[overviewPath].heading}
 				description="Documentation, setup paths, downloads, and the surrounding ecosystem in one place."
 				actions={
