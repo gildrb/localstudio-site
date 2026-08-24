@@ -1101,6 +1101,15 @@ button {
   margin-top: 64px;
 }
 
+.kitty__actions {
+  justify-content: flex-start;
+  margin-top: 24px;
+}
+
+.kitty__actions > .text-link {
+  justify-content: flex-start;
+}
+
 .kitty__feature {
   min-width: 0;
 }
@@ -1530,6 +1539,10 @@ button {
 
   .kitty__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kitty__actions > .text-link {
+    justify-content: flex-start;
   }
 
   .page-cta {

@@ -84,7 +84,7 @@ export const routePaths = [
 ] as const satisfies readonly RoutePath[];
 
 export function isRoutePath(pathname: string): pathname is RoutePath {
-	return Object.hasOwn(routes, pathname);
+	return Object.prototype.hasOwnProperty.call(routes, pathname);
 }
 
 export function isMachineRoute(pathname: string): pathname is "/machine" {
@@ -179,10 +179,6 @@ export function notFoundSuggestions(): readonly {
 		{ href: "/setup", label: "Setup prompt" },
 		{ href: "/download", label: "Download" },
 	];
-}
-
-export function htmlMatcher(): readonly string[] {
-	return routePaths;
 }
 
 export function markdownPages(): ReadonlyMap<string, string> {

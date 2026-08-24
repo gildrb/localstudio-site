@@ -34,7 +34,11 @@ const headers = [
 		.map(({ path, contentType }) => headersFor(path, contentType)),
 ];
 
-const body = `${JSON.stringify({ headers }, null, "\t")}\n`;
+const body = `${JSON.stringify(
+	{ installCommand: "pnpm install --frozen-lockfile --ignore-scripts", headers },
+	null,
+	"\t",
+)}\n`;
 const dest = `${root}/vercel.json`;
 
 if (command === "write") {

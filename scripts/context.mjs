@@ -22,6 +22,7 @@ const INCLUDE_EXT = new Set([
 ]);
 const EXCLUDE_DIRS = new Set([
 	"node_modules",
+	".pnpm-store",
 	"dist",
 	".git",
 	"test-results",
