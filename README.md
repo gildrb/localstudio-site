@@ -1,11 +1,6 @@
-# [Local Studio web](https://localstudio.ai/)
+Read the [`ls-design.md` system](https://github.com/gildrb/ls-design.md/blob/main/design.md) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase.
 
-## Design
-
-The migration spec lives in [`ls-designmd/LS_WEB_REFACTOR_SPEC.md`](https://github.com/gildrb/ls-designmd/blob/sync/ls-web-canonical-routes/LS_WEB_REFACTOR_SPEC.md).
-Read the [`ls-designmd` system](https://github.com/gildrb/ls-designmd/blob/main/design.md) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase.
-
-## Run
+### Run
 
 ```sh
 corepack enable
@@ -14,7 +9,7 @@ pnpm exec playwright install chromium
 pnpm dev
 ```
 
-## Check
+### Check
 
 A clean checkout must pass:
 
