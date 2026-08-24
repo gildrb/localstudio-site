@@ -4,18 +4,16 @@ import { decodeGltfMesh } from "../mesh";
 // INVARIANT: dev no-store fetch behavior is preserved for HMR/content updates.
 // Imported only by index.tsx startup.
 
-export const MODEL_URL = "/localai/localai-logo.gltf";
-
 const DEV_FETCH_OPTIONS = { cache: "no-store" } as const;
 
 function meshFetchOptions() {
   return import.meta.env.PROD ? undefined : DEV_FETCH_OPTIONS;
 }
 
-export async function loadMesh() {
-  const response = await fetch(MODEL_URL, meshFetchOptions());
-  if (!response.ok) throw new Error(`Failed to load ${MODEL_URL}: ${response.status}`);
-  return decodeGltfMesh(await response.json(), (uri) => loadGltfBuffer(uri, MODEL_URL));
+export async function loadMesh(modelUrl: string) {
+  const response = await fetch(modelUrl, meshFetchOptions());
+  if (!response.ok) throw new Error(`Failed to load ${modelUrl}: ${response.status}`);
+  return decodeGltfMesh(await response.json(), (uri) => loadGltfBuffer(uri, modelUrl));
 }
 
 async function loadGltfBuffer(uri: string, modelUrl: string) {

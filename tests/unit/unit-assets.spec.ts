@@ -22,3 +22,19 @@ test("every inventoried public file is registered in the asset model", () => {
 		expect(registered.has(path), path).toBe(true);
 	}
 });
+
+
+test("asset manifest records media types and image dimensions", () => {
+	const manifest = JSON.parse(readFileSync("asset-manifest.json", "utf8"));
+	for (const file of manifest.files) {
+		expect(file.type, file.path).toEqual(expect.any(String));
+		if (file.role === "image" || file.role === "icon" || file.role === "sponsor") {
+			expect(file.dimensions, file.path).toEqual({
+				width: expect.any(Number),
+				height: expect.any(Number),
+			});
+		} else {
+			expect(file.dimensions, file.path).toBeNull();
+		}
+	}
+});

@@ -29,7 +29,7 @@ import {
 import { resizeCanvas, type CanvasLayout } from "./runtime/canvas-sizing";
 import type { EveTransitionDebugState } from "./runtime/debug-gui";
 import { createDrawLoop, type DrawLoop } from "./runtime/frame-loop";
-import { loadMesh, MODEL_URL } from "./runtime/load-mesh";
+import { loadMesh } from "./runtime/load-mesh";
 import {
 	createPointerController,
 	syncPointerInteractionMode,
@@ -73,8 +73,13 @@ type RuntimeOwner = {
 	drawLoopDispose?: () => void;
 };
 
-export function LocalAiLogoShader() {
-	preload(MODEL_URL, { as: "fetch", crossOrigin: "anonymous" });
+export type LogoRendererAssets = {
+	modelUrl: string;
+	fallbackUrl: string;
+};
+
+export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets) {
+	preload(modelUrl, { as: "fetch", crossOrigin: "anonymous" });
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const coarsePointer = useMediaQuery("(pointer: coarse)");
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -232,7 +237,7 @@ export function LocalAiLogoShader() {
 				return;
 			}
 
-			const mesh = await loadMesh();
+			const mesh = await loadMesh(modelUrl);
 			if (state.cancelled) return;
 			// Mesh is in: cancel the placeholder timer so only genuinely slow
 			// networks ever show it. Remaining GPU init/pipeline compile time
@@ -351,6 +356,7 @@ export function LocalAiLogoShader() {
 		};
 	}, [
 		prefersReducedMotion,
+		modelUrl,
 		coarsePointerRef,
 		handleCanvasRevealed,
 		handleFallback,
@@ -362,7 +368,7 @@ export function LocalAiLogoShader() {
 			<img
 				ref={fallbackRef}
 				className="hero-logo-renderer__fallback"
-				src="/images/localai_dark.svg"
+				src={fallbackUrl}
 				alt=""
 				draggable={false}
 			/>

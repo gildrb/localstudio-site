@@ -20,6 +20,45 @@ const ROLE_BY_EXT = {
 	".gltf": "mesh",
 };
 
+const TYPE_BY_EXT = {
+	".png": "image/png",
+	".webp": "image/webp",
+	".jpeg": "image/jpeg",
+	".jpg": "image/jpeg",
+	".svg": "image/svg+xml",
+	".ico": "image/x-icon",
+	".woff2": "font/woff2",
+	".bin": "application/octet-stream",
+	".gltf": "model/gltf+json",
+};
+
+function dimensionsFor(rel, raw) {
+	const ext = extname(rel).toLowerCase();
+	if (ext === ".png" && raw.subarray(0, 8).equals(Buffer.from("\x89PNG\r\n\x1a\n", "binary"))) {
+		return { width: raw.readUInt32BE(16), height: raw.readUInt32BE(20) };
+	}
+	if (
+		ext === ".webp" &&
+		raw.toString("ascii", 0, 4) === "RIFF" &&
+		raw.toString("ascii", 8, 12) === "WEBP" &&
+		raw.toString("ascii", 12, 16) === "VP8X"
+	) {
+		return {
+			width: 1 + raw.readUIntLE(24, 3),
+			height: 1 + raw.readUIntLE(27, 3),
+		};
+	}
+	if (ext === ".svg") {
+		const source = raw.toString("utf8", 0, 8192);
+		const viewBox = source.match(/\bviewBox\s*=\s*["']\s*([\d.+-]+)[\s,]+([\d.+-]+)[\s,]+([\d.+-]+)[\s,]+([\d.+-]+)/i);
+		if (viewBox) return { width: Number(viewBox[3]), height: Number(viewBox[4]) };
+		const width = source.match(/\bwidth\s*=\s*["']([\d.]+)/i);
+		const height = source.match(/\bheight\s*=\s*["']([\d.]+)/i);
+		if (width && height) return { width: Number(width[1]), height: Number(height[1]) };
+	}
+	return null;
+}
+
 function walk(directory) {
 	const files = [];
 	for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) =>
@@ -50,6 +89,8 @@ const files = walk(join(root, "public"))
 		return {
 			path: rel,
 			role: roleFor(rel),
+			type: TYPE_BY_EXT[extname(rel).toLowerCase()] ?? "application/octet-stream",
+			dimensions: dimensionsFor(rel, raw),
 			bytes: raw.byteLength,
 			sha256: createHash("sha256").update(raw).digest("hex"),
 		};
