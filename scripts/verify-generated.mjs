@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const forbidden = [
 	"src/styles/ls-app.css",
+	"packages/demo-ui/src/styles/ls-app.css",
 	"src/styles/ls",
 	"src/ls",
 	"src/ls-shared",
