@@ -36,9 +36,6 @@ for (const path of pages) {
 
 const deferredRoutes = [
   { path: "/overview", chunk: "ResourcesPage" },
-  { path: "/docs", chunk: "DocsPage" },
-  { path: "/setup", chunk: "PromptPage" },
-  { path: "/download", chunk: "DownloadPage" },
 ] as const;
 
 for (const target of deferredRoutes) {

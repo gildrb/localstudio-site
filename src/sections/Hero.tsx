@@ -68,7 +68,10 @@ export function Hero() {
 								</button>
 							</span>
 						</m.h1>
-						<m.div className="hero__actions" {...enter(0.24)}>
+						<m.p className="hero__thesis" {...enter(0.2)}>
+							Your private AI can work across your files, calendar, tools, and devices without handing your life to a cloud service.
+						</m.p>
+						<m.div className="hero__actions" {...enter(0.28)}>
 							<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
 						</m.div>
 					</div>
