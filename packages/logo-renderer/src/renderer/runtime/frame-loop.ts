@@ -112,9 +112,9 @@ export function createDrawLoop({
     const now = performance.now();
     if (!force && now - lastProbeDatasetWrite < PROBE_DATASET_WRITE_INTERVAL_MS) return;
     lastProbeDatasetWrite = now;
-    canvas.dataset.heroFrames = String(frameLoopProbe.frames);
-    canvas.dataset.heroRunning = String(frameLoopProbe.running);
-    canvas.dataset.heroLastFrameAt = String(Math.round(frameLoopProbe.lastFrameAt));
+    canvas.dataset["heroFrames"] = String(frameLoopProbe.frames);
+    canvas.dataset["heroRunning"] = String(frameLoopProbe.running);
+    canvas.dataset["heroLastFrameAt"] = String(Math.round(frameLoopProbe.lastFrameAt));
   };
 
   const draw = (frameTime = performance.now()) => {
@@ -221,9 +221,9 @@ export function createDrawLoop({
         state.hasRenderedBrushCell = true;
       }
 
-      canvas.dataset.eveRenderMode = mixProgress >= 0.5 ? "agents" : "humans";
-      canvas.dataset.eveAsciiProgress = mixProgress.toFixed(3);
-      canvas.dataset.eveAsciiMode = mixProgress > 0.001 ? "active" : "inactive";
+      canvas.dataset["eveRenderMode"] = mixProgress >= 0.5 ? "agents" : "humans";
+      canvas.dataset["eveAsciiProgress"] = mixProgress.toFixed(3);
+      canvas.dataset["eveAsciiMode"] = mixProgress > 0.001 ? "active" : "inactive";
     } catch {
       state.cancelled = true;
       onFallback();

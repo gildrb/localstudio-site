@@ -6,13 +6,13 @@ const DEMO_MOBILE = 900;
 
 export type DemoCrop = {
 	fit: number;
-	mobileFit?: number;
-	shiftX?: number;
-	mobileShiftX?: number;
-	shiftY?: number;
-	mobileShiftY?: number;
-	cropH?: number;
-	mobileCropH?: number;
+	mobileFit?: number | undefined;
+	shiftX?: number | undefined;
+	mobileShiftX?: number | undefined;
+	shiftY?: number | undefined;
+	mobileShiftY?: number | undefined;
+	cropH?: number | undefined;
+	mobileCropH?: number | undefined;
 };
 
 export const STORY_CROP: DemoCrop = {

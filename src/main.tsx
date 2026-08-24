@@ -19,9 +19,9 @@ setFavicon(assets.faviconDark, "(prefers-color-scheme: dark)");
 
 function syncKeyboardMode(event: Event) {
 	if (event.type === "keydown") {
-		document.documentElement.dataset.keyboard = "true";
+		document.documentElement.dataset["keyboard"] = "true";
 	} else {
-		delete document.documentElement.dataset.keyboard;
+		delete document.documentElement.dataset["keyboard"];
 	}
 }
 

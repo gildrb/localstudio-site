@@ -30,6 +30,19 @@ const EXCLUDE_DIRS = new Set([
 ]);
 const EXCLUDE_FILES = new Set(["pnpm-lock.yaml"]);
 const EXCLUDE_NAMES = new Set(["LS_WEB_REFACTOR_SPEC.md", "design-manifest.json", "asset-manifest.json"]);
+const EXCLUDED_CATEGORIES = new Set(["copied-product", "logo-renderer", "generated"]);
+const WORKSPACE_PACKAGES = [
+	{
+		root: "packages/demo-ui",
+		category: "copied-product",
+		manifest: "packages/demo-ui/package.json",
+	},
+	{
+		root: "packages/logo-renderer",
+		category: "logo-renderer",
+		manifest: "packages/logo-renderer/package.json",
+	},
+];
 
 const CATEGORY_BUDGETS = {
 	"domain/content/agent": { target: 15_000, hard: 18_000 },
@@ -48,6 +61,33 @@ const CATEGORY_BUDGETS = {
 const TOTAL_OPERATING = 90_000;
 const TOTAL_HARD = 100_000;
 const TOTAL_WARN = 80_000;
+
+function workspacePackageMetadata() {
+	return WORKSPACE_PACKAGES.map((workspacePackage) => ({
+		...workspacePackage,
+		...JSON.parse(readFileSync(join(root, workspacePackage.manifest), "utf8")),
+	}));
+}
+
+function validateWorkspacePackages() {
+	const workspace = readFileSync(join(root, "pnpm-workspace.yaml"), "utf8");
+	const failures = [];
+	if (!workspace.includes("packages/*")) {
+		failures.push("pnpm-workspace.yaml must include packages/*");
+	}
+	for (const workspacePackage of workspacePackageMetadata()) {
+		if (!workspacePackage.name) {
+			failures.push(`${workspacePackage.root} has no package name`);
+		}
+		if (!workspacePackage.version || workspacePackage.version === "0.0.0") {
+			failures.push(`${workspacePackage.root} must have an explicit package version`);
+		}
+		if (!workspacePackage.scripts?.typecheck) {
+			failures.push(`${workspacePackage.root} must expose a typecheck script`);
+		}
+	}
+	if (failures.length > 0) throw new Error(failures.join("\n"));
+}
 
 function walk(directory) {
 	const entries = readdirSync(directory, { withFileTypes: true }).sort((a, b) =>
@@ -185,12 +225,7 @@ function categoryTotals(rows) {
 }
 
 function counted(rows) {
-	return rows.filter(
-		(row) =>
-			row.category !== "copied-product" &&
-			row.category !== "logo-renderer" &&
-			row.category !== "generated",
-	);
+	return rows.filter((row) => !EXCLUDED_CATEGORIES.has(row.category));
 }
 
 function printReport(rows) {
@@ -209,7 +244,21 @@ function printReport(rows) {
 			`  ${category.padEnd(32)} ${String(stats.tokens).padStart(7)} tokens  ${stats.files} files  target ${budget.target} hard ${Number.isFinite(budget.hard) ? budget.hard : "inf"}`,
 		);
 	}
-	lines.push("", "top 50");
+	const excludedRows = rows.filter((row) => EXCLUDED_CATEGORIES.has(row.category));
+	const excludedTokens = excludedRows.reduce((sum, row) => sum + row.tokens, 0);
+	lines.push(
+		"",
+		`excluded tokens ${excludedTokens} (workspace packages, generated outputs, and copied assets)`,
+		"exclusion basis",
+		...workspacePackageMetadata().map(
+			({ root: packageRoot, name, version, category }) =>
+				`  ${name}@${version}  ${packageRoot}  (${category}; package typecheck runs in pnpm check)`,
+		),
+		`  generated names: ${[...EXCLUDE_NAMES].join(", ")}`,
+		`  excluded files: ${[...EXCLUDE_FILES].join(", ")}`,
+		"",
+		"top 50",
+	);
 	for (const row of [...rows].sort((a, b) => b.tokens - a.tokens).slice(0, 50)) {
 		lines.push(`  ${String(row.tokens).padStart(6)}  ${row.category.padEnd(28)}  ${row.path}`);
 	}
@@ -229,6 +278,19 @@ function writeBundle(rows) {
 		`${JSON.stringify(
 			{
 				tokenizer: "approx ceil(utf8_chars/4) after newline normalize",
+				exclusions: {
+					workspacePackages: workspacePackageMetadata().map(
+						({ root: packageRoot, name, version, category }) => ({
+							root: packageRoot,
+							name,
+							version,
+							category,
+						}),
+					),
+					categories: [...EXCLUDED_CATEGORIES],
+					files: [...EXCLUDE_FILES],
+					names: [...EXCLUDE_NAMES],
+				},
 				files: rows.map(({ path, bytes, tokens, category, sha256 }) => ({
 					path,
 					bytes,
@@ -270,6 +332,7 @@ function check(rows) {
 }
 
 const rows = collect();
+validateWorkspacePackages();
 if (command === "report") {
 	printReport(rows);
 } else if (command === "bundle") {

@@ -51,7 +51,7 @@ type ToolBlock = {
 	status: "done" | "running";
 	text: string;
 	args: unknown;
-	resultText?: string;
+	resultText?: string | undefined;
 };
 type AgentModel = {
 	id: string;
@@ -274,7 +274,7 @@ function useHeroDemoModel(clock: DemoClock) {
 		return () => {
 			clock.clear(id);
 		};
-	}, [active, weekendTask, reduceMotion, state]);
+	}, [active, clock, weekendTask, reduceMotion, state]);
 
 	useLayoutEffect(() => {
 		const scroller = scrollerRef.current;

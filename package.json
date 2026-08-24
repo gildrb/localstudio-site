@@ -15,7 +15,7 @@
     "context:check": "node scripts/context.mjs check",
     "graph:report": "node scripts/graph.mjs report",
     "graph:check": "node scripts/graph.mjs check",
-    "check": "pnpm lint && pnpm exec tsc -b && pnpm context:check && pnpm graph:check && pnpm generated:check && pnpm design:manifest:check && pnpm assets:check && pnpm vercel:check && pnpm index:html:check && pnpm test:unit",
+    "check": "pnpm lint && pnpm exec tsc -b && pnpm packages:check && pnpm context:check && pnpm graph:check && pnpm generated:check && pnpm design:manifest:check && pnpm assets:check && pnpm vercel:check && pnpm index:html:check && pnpm test:unit",
     "design:manifest": "node scripts/design-manifest.mjs write",
     "design:manifest:check": "node scripts/design-manifest.mjs check",
     "reproducible:check": "node scripts/reproducible.mjs",
@@ -28,15 +28,13 @@
     "vercel:manifest": "node --experimental-strip-types scripts/vercel.mjs write",
     "vercel:check": "node --experimental-strip-types scripts/vercel.mjs check",
     "index:html": "node --experimental-strip-types scripts/index-html.mjs write",
-    "index:html:check": "node --experimental-strip-types scripts/index-html.mjs check"
+    "index:html:check": "node --experimental-strip-types scripts/index-html.mjs check",
+    "packages:check": "pnpm --filter @local-studio/demo-ui typecheck && pnpm --filter @local-ai/logo-renderer typecheck"
   },
   "dependencies": {
-    "@vgpu/core": "0.0.7",
-    "@vgpu/render": "0.0.7",
     "@vgpu/wgsl": "0.0.7",
     "lucide-react": "1.31.0",
     "motion": "13.1.0",
-    "phase": "0.0.1",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
@@ -48,8 +46,6 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "@vitejs/plugin-react": "6.0.5",
-    "@webgpu/types": "0.1.69",
-    "earcut": "3.2.3",
     "eslint": "10.8.1",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.4",

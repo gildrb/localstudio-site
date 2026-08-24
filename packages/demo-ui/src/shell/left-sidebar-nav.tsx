@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "../shims/next-link";
 import { type MouseEvent } from "react";
 import type { IconComponent } from "./left-sidebar-nav-model";
 
@@ -25,9 +24,8 @@ export function NavItemMobile({
   onClick: (event: MouseEvent<HTMLAnchorElement>) => void;
 }) {
   return (
-    <Link
+    <a
       href={href}
-      prefetch={false}
       onClick={onClick}
       className={`flex h-11 items-center gap-3 rounded-lg px-3 text-[15px] transition-colors ${
         active ? "bg-(--active) font-medium text-(--fg)" : "text-(--fg)/80 active:bg-(--hover)"
@@ -35,7 +33,7 @@ export function NavItemMobile({
     >
       <Icon className="h-5 w-5 shrink-0" strokeWidth={1.6} />
       <span>{label}</span>
-    </Link>
+    </a>
   );
 }
 
@@ -51,9 +49,8 @@ export function NavItemDesktop({
   active: boolean;
 }) {
   return (
-    <Link
+    <a
       href={href}
-      prefetch={false}
       title={label}
       className={`group flex h-[var(--sidebar-row-height)] shrink-0 items-center gap-2 rounded-[var(--sidebar-row-radius)] px-2 transition-colors ${
         active ? "bg-(--active) text-(--fg)" : "text-(--fg)/85 hover:bg-(--hover) hover:text-(--fg)"
@@ -64,6 +61,6 @@ export function NavItemDesktop({
         strokeWidth={1.6}
       />
       <span className="text-[length:var(--fs-md)] whitespace-nowrap">{label}</span>
-    </Link>
+    </a>
   );
 }

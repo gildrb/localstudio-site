@@ -1,4 +1,3 @@
-/// <reference path="../../../wgsl.d.ts" />
 // Studio cubemap allocation and one-time bake pass.
 // INVARIANT: Pure move from render.ts; keep shader ABI, binding order, and pixel output unchanged.
 // Imported by render/renderer.ts and re-exported only through render.ts facade.

@@ -165,8 +165,8 @@ function DesktopMenu({
 					className="nav__mega-grid"
 					style={cssVars({ "--mega-col": `${offset}px` })}
 				>
-					{menuColumns[menu].map((column) => (
-						<section className="nav__mega-section" key={column[0].label}>
+					{(menuColumns[menu] ?? []).map((column) => (
+						<section className="nav__mega-section" key={column[0]?.label ?? menu}>
 							<MenuItems items={column} onNavigate={onNavigate} desktop />
 						</section>
 					))}

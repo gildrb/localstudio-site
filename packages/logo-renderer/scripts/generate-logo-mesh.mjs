@@ -3,13 +3,13 @@
 // quarter-circle fillet so bevel shading is analytically smooth — no faceted
 // chamfer bands. Caps are triangulated with earcut.
 //
-// Usage: node scripts/generate-logo-mesh.mjs
+// Usage: pnpm --filter @local-ai/logo-renderer generate
 
 import earcut from "earcut";
 import fs from "node:fs";
 import path from "node:path";
 
-const ROOT = path.resolve(import.meta.dirname, "..");
+const ROOT = path.resolve(import.meta.dirname, "../../..");
 const OUT_GLTF = path.join(ROOT, "public/localai/localai-logo.gltf");
 const OUT_BIN = path.join(ROOT, "public/localai/localai-logo.bin");
 

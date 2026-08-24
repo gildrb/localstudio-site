@@ -82,7 +82,7 @@ export function Hero() {
 							<div className="hero__demo-placeholder" aria-hidden="true" />
 						}
 					>
-						<HeroDemo clock={clock} />
+						{clock ? <HeroDemo clock={clock} /> : <HeroDemo />}
 					</Suspense>
 				</m.div>
 			</section>
