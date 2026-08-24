@@ -33,6 +33,14 @@ test("robots and sitemap stay deterministic", () => {
 	}
 });
 
+test("every registered agent document has deterministic markdown", () => {
+	for (const document of agentDocuments()) {
+		expect(document.path).toMatch(/^\//);
+		expect(document.contentType).toMatch(/charset=utf-8/);
+		expect(document.body.length, document.path).toBeGreaterThan(20);
+	}
+});
+
 test("every HTML route has a markdown twin", () => {
 	const twins = markdownPages();
 	for (const path of routePaths) {
@@ -120,12 +128,4 @@ test("release URLs are derived from the Local Studio repository", () => {
 	expect(release.latestAlias).toBe(
 		`${site.products.localStudio.repository}/releases/latest/download/${release.artifact}`,
 	);
-});
-
-test("store buttons read KittyLitter URLs from site facts", () => {
-	const source = readFileSync("src/components/Links.tsx", "utf8");
-	expect(source).toContain("site.products.kittyLitter.appStore");
-	expect(source).toContain("site.products.kittyLitter.playStore");
-	expect(source.includes("apps.apple.com")).toBe(false);
-	expect(source.includes("play.google.com")).toBe(false);
 });

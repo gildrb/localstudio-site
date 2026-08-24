@@ -12,7 +12,7 @@ import {
 	type LucideIcon,
 } from "..";
 import { CloseIcon } from "..";
-type ComputerTab =
+export type ComputerTab =
 	| "status"
 	| "tools"
 	| "side-chat"

@@ -36,32 +36,41 @@ export function renderScene(
     thicknessScale: resources.thicknessScale,
     isLight: resources.isLight,
   };
-  writeParams({
-    ...paramsBase,
-    target: resources.params.outsideParams,
-    passKind: PASS_OUTSIDE,
-    imprint,
-  });
-  writeParams({ ...paramsBase, target: resources.params.wireParams, passKind: PASS_WIREFRAME });
-  writeParams({ ...paramsBase, target: resources.params.envBgParams, passKind: PASS_OUTSIDE });
-  writeParams({
-    ...paramsBase,
-    target: resources.params.opaqueOutsideParams,
-    passKind: PASS_OUTSIDE,
-  });
-
-  const outsideBindGroup = createParamsBindGroup(
-    device,
-    resources.pipelines.frontMaterialPipeline,
-    resources.studioCubemap,
-    resources.params.outsideParams.buffer,
-    backMaterial.createView(),
-    backDepth.createView(),
-    paintTexture.createView(),
-    voronoiValueTexture.createView(),
-    voronoiEdgeTexture.createView(),
-    "eve-5-outside-params-bind-group",
-  );
+  const needsBackTargets = controls.material === "glass" || controls.material === "thickness";
+  const outsideBindGroup = needsBackTargets
+    ? createParamsBindGroup(
+        device,
+        resources.pipelines.frontMaterialPipeline,
+        resources.studioCubemap,
+        resources.params.outsideParams.buffer,
+        backMaterial.createView(),
+        backDepth.createView(),
+        paintTexture.createView(),
+        voronoiValueTexture.createView(),
+        voronoiEdgeTexture.createView(),
+        "eve-5-outside-params-bind-group",
+      )
+    : undefined;
+  if (needsBackTargets) {
+    writeParams({
+      ...paramsBase,
+      target: resources.params.outsideParams,
+      passKind: PASS_OUTSIDE,
+      imprint,
+    });
+  } else {
+    writeParams({
+      ...paramsBase,
+      target: resources.params.opaqueOutsideParams,
+      passKind: PASS_OUTSIDE,
+    });
+  }
+  if (controls.wireframe) {
+    writeParams({ ...paramsBase, target: resources.params.wireParams, passKind: PASS_WIREFRAME });
+  }
+  if (controls.showEnv) {
+    writeParams({ ...paramsBase, target: resources.params.envBgParams, passKind: PASS_OUTSIDE });
+  }
 
   // Encoded against the raw WebGPU API: the @vgpu/render pass wrapper does not
   // forward `resolveTarget`, which the 4x MSAA scene attachment relies on.
@@ -89,13 +98,12 @@ export function renderScene(
 
   pass.setVertexBuffer(0, resources.gpuMesh.vertexBuffer.gpu);
 
-  const needsBackTargets = controls.material === "glass" || controls.material === "thickness";
   pass.setIndexBuffer(resources.gpuMesh.indexBuffer.gpu, "uint32");
   if (needsBackTargets) {
     // The back/inside material and camera-axis depth have already been rendered into offscreen
     // targets. The main scene draws only the front/outside material; glass and thickness debug
     // both need the real back targets rather than the opaque/debug fallback bind group.
-    if (controls.outsideRendering) {
+    if (controls.outsideRendering && outsideBindGroup) {
       pass.setPipeline(resources.pipelines.frontMaterialPipeline);
       pass.setBindGroup(0, outsideBindGroup);
       pass.drawIndexed(resources.gpuMesh.indexCount, 1, 0, 0, 0);

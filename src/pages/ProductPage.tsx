@@ -1,4 +1,4 @@
-import { docsPath } from "../domain/route";
+import { docsPath, productPath, routes } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { MediaFrame } from "../components/MediaFrame";
 import { PageIntro } from "../components/PageIntro";
@@ -13,7 +13,7 @@ export function ProductPage() {
 		<PageShell>
 			<PageIntro
 				id="product-title"
-				title="One place to run local AI"
+				title={routes[productPath].heading}
 				description={
 					<>
 						<span translate="no">{site.products.localStudio.name}</span> is a local-first

@@ -3,25 +3,22 @@ import { machineSections } from "../agent/machine";
 import { machinePath, routePaths, routes } from "../domain/route";
 import { LocalLink } from "../components/LocalLink";
 import { PageShell } from "../components/PageShell";
-import { useMachine } from "../app/machine-mode";
 import { site } from "../domain/site";
 
 const sections = machineSections();
 
 export function MachinePage() {
-	const { toggleMachine } = useMachine();
 	return (
 		<PageShell>
 			<div className="machine">
 				<div className="machine__inner">
-					<button
+					<LocalLink
 						className="machine__banner"
-						type="button"
-						onClick={() => toggleMachine(false)}
+						href="/"
 						aria-label={`Back to ${site.products.localStudio.name}`}
 					>
 						<pre>{localStudioAscii}</pre>
-					</button>
+					</LocalLink>
 					<h1
 						className="machine__title"
 						aria-label={routes[machinePath].heading}

@@ -1,13 +1,10 @@
 import type { MutableRefObject } from "react";
 import type { MeshData, RenderControls } from "../render";
 
-// Owns the mutable fields shared by pointer input and the draw loop.
-// INVARIANT: this remains one lifecycle state object owned by index.tsx's single effect.
-// Imported only by runtime modules and index.tsx.
-
+// Mutable animation state owned by index.tsx's renderer lifecycle.
 export type HeroRuntimeState = {
   cancelled: boolean;
-  animationFrame: number;
+  renderRequested: boolean;
   cleanup: (() => void) | undefined;
   mouseEnvYaw: number;
   targetMouseEnvYaw: number;
@@ -27,7 +24,6 @@ export type HeroRuntimeState = {
   paintGridScaleMultiplier: number;
   targetBrushActive: boolean;
   activeMesh: MeshData | undefined;
-  agentsEnvYawMix: number;
   previousFrameTime: number;
   autoRotateStartTime: number;
   lastBrushMoveTime: number;

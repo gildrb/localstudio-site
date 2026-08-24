@@ -35,24 +35,7 @@ import {
 	type DemoState,
 } from "../scenario/sequence";
 
-type ComputerTab =
-	| "status"
-	| "tools"
-	| "side-chat"
-	| "browser"
-	| "files"
-	| "diff"
-	| "terminal";
 type ChatMessage = { id: string; role: "user" | "assistant"; text: string };
-type ToolBlock = {
-	kind: "tool";
-	id: string;
-	name: string;
-	status: "done" | "running";
-	text: string;
-	args: unknown;
-	resultText?: string | undefined;
-};
 type AgentModel = {
 	id: string;
 	name: string;
@@ -86,11 +69,16 @@ type Session = {
 	tokenStats: { read: number; write: number; current: number };
 	contextUsage: { tokens: number; percent: number };
 };
-import { ComputerHeader, ComputerLauncherPanel } from "./computer-header";
+import {
+	ComputerHeader,
+	ComputerLauncherPanel,
+	type ComputerTab,
+} from "./computer-header";
 import { HeroDesktopSidebar } from "./desktop-sidebar";
 import { HeroFilesystemTree } from "./files-tree";
 import type { HeroTaskId } from "./projects-nav";
 import { HeroReviewPanel } from "./review-panel";
+import type { ToolBlock } from "../workbench/tool-block";
 
 const contextWindow = 202144;
 const HERO_COMPUTER_WIDTH = 320;
@@ -277,11 +265,19 @@ function useHeroDemoModel(clock: DemoClock) {
 	useLayoutEffect(() => {
 		const scroller = scrollerRef.current;
 		if (!active || !scroller || !submitted) return;
+		if (state.resultVisible && extras.length === 0) {
+			const toolCalls =
+				scroller.querySelectorAll<HTMLElement>("[data-tool-call]");
+			const anchor = toolCalls.item(Math.max(0, toolCalls.length - 2));
+			if (anchor) {
+				scroller.scrollTo({ top: Math.max(0, anchor.offsetTop - 12) });
+				return;
+			}
+		}
 		const followLive = state.phase === "stream" || state.phase === "tool";
 		scroller.scrollTo({
 			top: scroller.scrollHeight,
-			behavior:
-				reduceMotion || followLive || state.resultVisible ? "auto" : "smooth",
+			behavior: reduceMotion || followLive ? "auto" : "smooth",
 		});
 	}, [
 		active,
@@ -695,8 +691,6 @@ function HeroDemoView(
 															: null
 													}
 													focusedSession={session}
-													sessions={[session]}
-													gitSummary={gitSummary}
 												/>
 											) : null}
 											{tab === "tools" ? (
@@ -857,11 +851,9 @@ function userMessage(): ChatMessage {
 
 function toolBlocksFor(state: DemoState): ToolBlock[] {
 	return DEMO_TOOLS.slice(0, state.toolsStarted).map((tool, index) => ({
-		kind: "tool",
 		id: tool.id,
 		name: tool.name,
 		status: index < state.toolsDone ? "done" : "running",
-		text: "",
 		args: tool.args,
 		resultText: index < state.toolsDone ? tool.resultText : undefined,
 	}));

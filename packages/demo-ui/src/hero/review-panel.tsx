@@ -1,5 +1,6 @@
 import { GitBranchIcon } from "..";
 import { DEMO_DIFF } from "../scenario/sequence";
+import { DiffPreview } from "../workbench/diff-preview";
 
 export function HeroReviewPanel({ ready }: { ready: boolean }) {
 	return (
@@ -8,9 +9,9 @@ export function HeroReviewPanel({ ready }: { ready: boolean }) {
 				<GitBranchIcon className="h-3.5 w-3.5" />
 				<span>{ready ? "Review" : "No changes"}</span>
 			</div>
-			<pre className="min-h-0 flex-1 overflow-auto p-3 font-mono text-[length:var(--fs-xs)] text-(--fg)/80">
-				{ready ? DEMO_DIFF : ""}
-			</pre>
+			<div className="min-h-0 flex-1 overflow-auto p-3">
+				{ready ? <DiffPreview body={DEMO_DIFF} /> : null}
+			</div>
 		</section>
 	);
 }

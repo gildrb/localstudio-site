@@ -102,18 +102,173 @@ test("reduced motion shows the finished result immediately", async ({
 	);
 });
 
-test("hero demo chat follows new messages", async ({ page }) => {
+test("hero demo keeps completed tool calls in view", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
 	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
-	const scroller = demo.locator("[data-timeline-scroller]");
 	await expect(demo).toHaveAttribute("data-phase", "done");
-	await expect(scroller).toBeVisible();
-	const pinned = await scroller.evaluate((element) => {
-		if (!(element instanceof HTMLElement)) return false;
-		return element.scrollHeight - element.scrollTop - element.clientHeight <= 8;
+	await expect(demo.locator('[data-tool-call="itinerary"]')).toBeInViewport();
+	await expect(demo.locator('[data-tool-call="packing"]')).toBeInViewport();
+});
+
+test("hero demo has no dead sidebar destinations", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto("/?demoClock=fast");
+	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	await expect(demo.getByText("Terminals", { exact: true })).toHaveCount(0);
+	const profile = demo.getByText("Sero", { exact: true });
+	await expect(profile).toBeVisible();
+	expect(
+		await profile.evaluate((element) => element.closest("a, button") === null),
+	).toBe(true);
+	const url = page.url();
+	await demo.getByText("Models", { exact: true }).click();
+	await expect(page).toHaveURL(url);
+	await expect(page.getByRole("heading", { name: "This page is not local" })).toHaveCount(0);
+});
+
+test("KittyLitter image hover reveals context without moving images or links", async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto("/?demoClock=fast");
+	const cards = page.locator(".kitty__feature");
+	await expect(cards).toHaveCount(10);
+	await expect(cards.locator(".kitty__feature-trigger")).toHaveText([
+		"Sessions everywhere",
+		"Generative UI",
+		"Remote connections",
+		"Debug anywhere",
+		"Plans",
+		"Voice input",
+		"Explore projects",
+		"Usage insights",
+		"More tools",
+		"Codex in your pocket",
+	]);
+	await expect(page.locator(".kitty__feature-description")).toHaveCount(3);
+	const images = cards.locator(".kitty__feature-media");
+	const before = await images.evaluateAll((elements) =>
+		elements.map((element) => element.getBoundingClientRect().top + window.scrollY),
+	);
+	await expect(page.locator(".kitty__feature-link")).toHaveCount(0);
+	await images.first().hover();
+	await expect(cards.first()).toHaveAttribute("data-active", "true");
+	await expect(
+		cards.first().getByText("Pick up exactly where you left off."),
+	).toBeVisible();
+	await expect(page.locator(".kitty__feature-link")).toHaveCount(0);
+	const after = await images.evaluateAll((elements) =>
+		elements.map((element) => element.getBoundingClientRect().top + window.scrollY),
+	);
+	expect(after).toEqual(before);
+});
+
+test("KittyLitter carousel stays still without pagination chrome", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto("/?demoClock=fast");
+	const carousel = page.locator(".kitty__carousel");
+	await carousel.scrollIntoViewIfNeeded();
+	await expect(page.locator(".kitty__carousel-status")).toHaveCount(0);
+	expect(await carousel.evaluate((element) => element.scrollLeft)).toBe(0);
+	await page.waitForTimeout(750);
+	expect(await carousel.evaluate((element) => element.scrollLeft)).toBe(0);
+	await carousel.evaluate((element) => {
+		element.scrollLeft = element.scrollWidth;
 	});
-	expect(pinned).toBe(true);
+	await expect
+		.poll(async () =>
+			carousel.evaluate((element) => {
+				const last = element.querySelector<HTMLElement>(
+					".kitty__feature:last-child",
+				);
+				const intro = document.querySelector<HTMLElement>(".kitty__intro");
+				if (!last || !intro) return Number.NaN;
+				return Math.round(
+					intro.getBoundingClientRect().right -
+						last.getBoundingClientRect().right,
+				);
+			}),
+		)
+		.toBe(0);
+	await expect(page.locator(".kitty__feature-description")).toHaveCount(10);
+});
+
+
+test("KittyLitter carousel supports image jumps and pointer dragging", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.goto("/?demoClock=fast");
+	const carousel = page.locator(".kitty__carousel");
+	await carousel.scrollIntoViewIfNeeded();
+	await page
+		.locator(".kitty__feature")
+		.nth(3)
+		.locator(".kitty__feature-media")
+		.dispatchEvent("click");
+	await expect
+		.poll(() => carousel.evaluate((element) => element.scrollLeft))
+		.toBeGreaterThan(0);
+	await page.waitForTimeout(500);
+	const dragMetrics = await carousel.evaluate((element) => {
+		const card = element.querySelector<HTMLElement>(".kitty__feature");
+		const grid = element.querySelector<HTMLElement>(".kitty__item-container");
+		if (!card || !grid) throw new Error("carousel metrics");
+		const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 0;
+		return {
+			before: element.scrollLeft,
+			stride: card.getBoundingClientRect().width + gap,
+		};
+	});
+	const box = await carousel.boundingBox();
+	if (!box) throw new Error("carousel geometry");
+	const startX = box.x + box.width * 0.55;
+	const y = box.y + box.height * 0.4;
+	await page.mouse.move(startX, y);
+	await page.mouse.down();
+	await page.mouse.move(startX - 48, y, { steps: 4 });
+	await page.mouse.up();
+	await expect
+		.poll(() => carousel.evaluate((element) => element.scrollLeft))
+		.toBeGreaterThan(dragMetrics.before + dragMetrics.stride * 0.8);
+	await page.waitForTimeout(600);
+	const settled = await carousel.evaluate((element) => element.scrollLeft);
+	await page.waitForTimeout(300);
+	expect(
+		Math.abs(
+			(await carousel.evaluate((element) => element.scrollLeft)) - settled,
+		),
+	).toBeLessThan(2);
+
+	await carousel.evaluate((element) => {
+		element.scrollLeft = element.scrollWidth;
+	});
+	await expect(carousel).toHaveAttribute("data-carousel-index", "9");
+	const endScroll = await carousel.evaluate((element) => element.scrollLeft);
+	const lastTrigger = page
+		.locator(".kitty__feature")
+		.last()
+		.locator(".kitty__feature-trigger");
+	const triggerBox = await lastTrigger.boundingBox();
+	if (!triggerBox) throw new Error("carousel trigger geometry");
+	const triggerX = triggerBox.x + triggerBox.width / 2;
+	const triggerY = triggerBox.y + triggerBox.height / 2;
+	await page.mouse.move(triggerX, triggerY);
+	await page.mouse.down();
+	await page.mouse.move(triggerX + 48, triggerY, { steps: 4 });
+	await page.mouse.up();
+	await expect
+		.poll(() => carousel.evaluate((element) => element.scrollLeft))
+		.toBeLessThan(endScroll - 100);
+	await page.waitForTimeout(600);
+	const reversed = await carousel.evaluate((element) => element.scrollLeft);
+	await page.waitForTimeout(300);
+	expect(
+		Math.abs(
+			(await carousel.evaluate((element) => element.scrollLeft)) - reversed,
+		),
+	).toBeLessThan(2);
 });
 
 test("homepage stays inside the viewport at 320", async ({ page }) => {

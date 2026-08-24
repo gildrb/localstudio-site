@@ -12,7 +12,7 @@ const MAX_DEVICE_PIXEL_RATIO = DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO;
 // DPR screens); every per-pixel cost (4x MSAA scene, back targets, bloom)
 // scales with device pixels, so cap total pixels and trade a little sampling
 // density for stable frame times instead.
-const MAX_RENDER_PIXELS = 2_400_000;
+const MAX_RENDER_PIXELS = 1_500_000;
 
 export type CanvasLayout = {
   width: number;

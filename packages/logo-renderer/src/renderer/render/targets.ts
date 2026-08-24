@@ -18,22 +18,47 @@ export function createBloomTargetCache(device: Device) {
   const dispose = () => {
     targets?.scene.destroy();
     targets?.sceneMsaa.destroy();
-    targets?.backMaterial.destroy();
-    targets?.backDepth.destroy();
-    targets?.backSurfaceDepth.destroy();
+    targets?.backMaterial?.destroy();
+    targets?.backDepth?.destroy();
+    targets?.backSurfaceDepth?.destroy();
     targets?.horizontal.destroy();
     targets?.vertical.destroy();
     targets = undefined;
   };
 
   return {
-    ensure(logicalWidth: number, logicalHeight: number, paddingRadius: number) {
+    ensure(
+      logicalWidth: number,
+      logicalHeight: number,
+      paddingRadius: number,
+      includeBackSurface: boolean,
+    ) {
       const padded = getPaddedRenderSize(logicalWidth, logicalHeight, paddingRadius);
       if (
         targets?.width === padded.width &&
         targets.height === padded.height &&
         targets.paddingRadius === paddingRadius
       ) {
+        if (includeBackSurface && !targets.backMaterial) {
+          targets.backMaterial = createBloomTexture(
+            device,
+            "eve-5-back-material-linear-hdr",
+            padded.width,
+            padded.height,
+          );
+          targets.backDepth = createBloomTexture(
+            device,
+            "eve-5-back-camera-axis-depth",
+            padded.width,
+            padded.height,
+          );
+          targets.backSurfaceDepth = createBackDepthTexture(
+            device,
+            "eve-5-back-surface-depth",
+            padded.width,
+            padded.height,
+          );
+        }
         return targets;
       }
       dispose();
@@ -49,24 +74,30 @@ export function createBloomTargetCache(device: Device) {
           padded.height,
           SCENE_SAMPLE_COUNT,
         ),
-        backMaterial: createBloomTexture(
-          device,
-          "eve-5-back-material-linear-hdr",
-          padded.width,
-          padded.height,
-        ),
-        backDepth: createBloomTexture(
-          device,
-          "eve-5-back-camera-axis-depth",
-          padded.width,
-          padded.height,
-        ),
-        backSurfaceDepth: createBackDepthTexture(
-          device,
-          "eve-5-back-surface-depth",
-          padded.width,
-          padded.height,
-        ),
+        backMaterial: includeBackSurface
+          ? createBloomTexture(
+              device,
+              "eve-5-back-material-linear-hdr",
+              padded.width,
+              padded.height,
+            )
+          : undefined,
+        backDepth: includeBackSurface
+          ? createBloomTexture(
+              device,
+              "eve-5-back-camera-axis-depth",
+              padded.width,
+              padded.height,
+            )
+          : undefined,
+        backSurfaceDepth: includeBackSurface
+          ? createBackDepthTexture(
+              device,
+              "eve-5-back-surface-depth",
+              padded.width,
+              padded.height,
+            )
+          : undefined,
         // Bloom runs at half resolution: the glow is a low-frequency effect,
         // so quartering the blur pixels is visually identical and cuts the
         // dominant per-frame cost of the wide separable gaussian.

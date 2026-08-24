@@ -1,7 +1,5 @@
 export const DEMO_MODEL = "Qwen3.8-27B";
 
-export const DEMO_RUNTIME = "MLX";
-
 export const DEMO_PROMPT =
 	"Plan a relaxed Lake District weekend for Maya's birthday. Check our family calendar, the dinner confirmation, saved places, and Friday's forecast. Keep driving under two hours, make an itinerary, and set a Thursday packing reminder. Do not book or message anyone without asking me.";
 
@@ -46,11 +44,11 @@ new file mode 100644
 +No bookings or messages sent without approval
 `;
 
-type DemoToolArgs =
-	| { path: string; range?: string }
-	| { query: string; path?: never }
-	| { stops: string[]; path?: never }
-	| { schedule: string; name: string; path?: never };
+export type DemoToolArgs =
+	| { readonly kind: "path"; readonly path: string; readonly range?: string }
+	| { readonly kind: "query"; readonly query: string }
+	| { readonly kind: "stops"; readonly stops: readonly string[] }
+	| { readonly kind: "schedule"; readonly schedule: string; readonly name: string };
 
 export type DemoToolSpec = {
 	id: string;
@@ -63,7 +61,7 @@ export const DEMO_TOOLS: readonly DemoToolSpec[] = [
 	{
 		id: "calendar",
 		name: "read_calendar",
-		args: { path: "Family/calendar.ics", range: "Fri-Sun" },
+		args: { kind: "path", path: "Family/calendar.ics", range: "Fri-Sun" },
 		resultText: `Friday
 15:20 School pickup
 19:30 Birthday dinner at The Old Stamp House
@@ -74,7 +72,7 @@ Sunday
 	{
 		id: "reservation",
 		name: "read_email",
-		args: { path: "Family/dinner-confirmation.eml" },
+		args: { kind: "path", path: "Family/dinner-confirmation.eml" },
 		resultText: `The Old Stamp House
 Friday · 19:30 · 6 guests
 Reservation confirmed · no prepayment due`,
@@ -82,7 +80,7 @@ Reservation confirmed · no prepayment due`,
 	{
 		id: "saved-places",
 		name: "read_file",
-		args: { path: "Family/saved-places.md" },
+		args: { kind: "path", path: "Family/saved-places.md" },
 		resultText: `Rydal Water
 Grasmere gingerbread
 Lingholm Kitchen
@@ -91,7 +89,7 @@ Keswick market`,
 	{
 		id: "forecast",
 		name: "search_web",
-		args: { query: "Lake District Friday to Sunday forecast" },
+		args: { kind: "query", query: "Lake District Friday to Sunday forecast" },
 		resultText: `Friday: light rain, clearing 18:00
 Saturday: dry morning, showers after 16:00
 Sunday: clear, 12°C`,
@@ -99,7 +97,7 @@ Sunday: clear, 12°C`,
 	{
 		id: "route",
 		name: "plan_route",
-		args: { stops: ["Rydal Water", "Ambleside", "Grasmere"] },
+		args: { kind: "stops", stops: ["Rydal Water", "Ambleside", "Grasmere"] },
 		resultText: `Optimized Saturday route
 Total driving: 1h 42m
 Walking options stay under 90 minutes`,
@@ -107,7 +105,7 @@ Walking options stay under 90 minutes`,
 	{
 		id: "itinerary",
 		name: "write_file",
-		args: { path: "Trips/lake-district-weekend.md" },
+		args: { kind: "path", path: "Trips/lake-district-weekend.md" },
 		resultText: `Created Trips/lake-district-weekend.md
 3-day itinerary
 Wet-weather fallback included
@@ -116,7 +114,7 @@ No booking actions taken`,
 	{
 		id: "packing",
 		name: "create_automation",
-		args: { schedule: "Thursday 18:30", name: "Lake District packing reminder" },
+		args: { kind: "schedule", schedule: "Thursday 18:30", name: "Lake District packing reminder"},
 		resultText: `Automation created
 Thursday at 18:30
 Rechecks the forecast before building the packing list
@@ -197,8 +195,8 @@ export function demoOutput(state: DemoState): string {
 
 export function demoActivePath(state: DemoState): string | null {
 	for (let index = state.toolsStarted - 1; index >= 0; index -= 1) {
-		const path = DEMO_TOOLS[index]?.args.path;
-		if (path !== undefined) return path;
+		const args = DEMO_TOOLS[index]?.args;
+		if (args?.kind === "path") return args.path;
 	}
 	return null;
 }
@@ -230,13 +228,13 @@ export function demoStatus(state: DemoState): string {
 export function demoDelay(state: DemoState): number {
 	switch (state.phase) {
 		case "prompt":
-			return 32;
+			return 50;
 		case "select":
 			return 1400;
 		case "load":
 			return 80;
 		case "stream":
-			return 32;
+			return 50;
 		case "tool":
 			return state.toolsDone < state.toolsStarted ? 1000 : 320;
 		case "result":
@@ -270,7 +268,7 @@ function advanceDemo(state: DemoState): DemoState {
 			if (state.promptChars < DEMO_PROMPT.length) {
 				return {
 					...state,
-					promptChars: Math.min(DEMO_PROMPT.length, state.promptChars + 4),
+					promptChars: Math.min(DEMO_PROMPT.length, state.promptChars + 6),
 				};
 			}
 			return { ...state, phase: "load" };
@@ -288,7 +286,7 @@ function advanceDemo(state: DemoState): DemoState {
 			};
 		}
 		case "stream": {
-			const streamChars = Math.min(DEMO_STREAM.length, state.streamChars + 6);
+			const streamChars = Math.min(DEMO_STREAM.length, state.streamChars + 9);
 			const t = streamChars / DEMO_STREAM.length;
 			return {
 				...state,

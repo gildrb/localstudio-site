@@ -1,6 +1,6 @@
 import setupPromptTemplate from "../content/setup-prompt.txt?raw";
 import { PromptBlock } from "../components/PromptBlock";
-import { overviewPath } from "../domain/route";
+import { overviewPath, routes, setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -16,8 +16,7 @@ export function PromptPage() {
 		<PageShell>
 			<PageIntro
 				id="prompt-title"
-				layout="left"
-				title="Give this to any coding model"
+				title={routes[setupPath].heading}
 				description={`It will inspect the machine, choose the right runtime, install ${site.products.localStudio.name}, and prove a real inference request works.`}
 				actions={
 					<CtaPair secondary={{ href: overviewPath, label: "Go to overview" }} />

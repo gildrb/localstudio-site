@@ -2,6 +2,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
+import { DocsLayout } from "../components/DocsLayout";
 import { PageCta } from "../components/PageCta";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
@@ -12,7 +13,6 @@ import {
 	routePaths,
 	routes,
 	setupPath,
-	type RoutePath,
 } from "../domain/route";
 import { release } from "../domain/release";
 import { site } from "../domain/site";
@@ -55,16 +55,12 @@ const starts: readonly OverviewEntry[] = [
 	},
 ];
 
-function routeEntry(path: RoutePath): OverviewEntry {
-	return {
-		label: path,
-		text: routes[path].summary,
-		href: path,
-		code: true,
-	};
-}
-
-const siteRoutes = routePaths.map(routeEntry);
+const siteRoutes: readonly OverviewEntry[] = routePaths.map((path) => ({
+	label: path,
+	text: routes[path].summary,
+	href: path,
+	code: true,
+}));
 
 const studioFacts: readonly OverviewEntry[] = [
 	{
@@ -136,7 +132,7 @@ const kittyRows: readonly OverviewEntry[] = [
 	},
 	{
 		label: "Pairing",
-		text: "Local Studio 2.9.0+ and KittyLitter 1.6.0+. Settings → Profile & phone → Connect your phone, then scan. The QR and copied JSON are controller credentials; treat them as secrets.",
+		text: `Local Studio ${site.products.kittyLitter.minimumLocalStudio}+ and KittyLitter ${site.products.kittyLitter.minimumVersion}+. Settings → Profile & phone → Connect your phone, then scan. The QR and copied JSON are controller credentials; treat them as secrets.`,
 	},
 	{
 		label: "In the box",
@@ -317,43 +313,25 @@ function OverviewRow({ entry }: { entry: OverviewEntry }) {
 	);
 }
 
-const codeClass =
-	"docs-code surface-compact my-8 block max-w-full overflow-x-auto border border-white/10 px-5 py-4 font-mono text-sm/5 text-white/80";
-const sectionClass = "docs-section scroll-mt-28";
-
 export function ResourcesPage() {
 	return (
 		<PageShell>
 			<PageIntro
 				id="resources-title"
-				layout="left"
 				title={routes[overviewPath].heading}
 				description="Documentation, setup paths, downloads, and the surrounding ecosystem in one place."
 				actions={
 					<CtaPair secondary={{ href: docsPath, label: "Read the docs" }} />
 				}
 			/>
-			<div className="docs-layout section-width grid grid-cols-[240px_minmax(0,1fr)] gap-12 pb-30 max-[900px]:grid-cols-1 max-[900px]:gap-12">
-				<aside className="sticky top-24 self-start max-[900px]:static">
-					<p className="docs-toc__label text-sm/5">On this page</p>
-					<nav className="docs-toc" aria-label="Overview sections">
-						<ul className="docs-toc__list mt-4 grid gap-2 border-l p-0 pl-4 text-base/6">
-							{toc.map(([label, id]) => (
-								<li key={id}>
-									<LocalLink href={`${overviewPath}#${id}`}>{label}</LocalLink>
-								</li>
-							))}
-						</ul>
-					</nav>
-				</aside>
-				<article className="docs-prose min-w-0 text-base/6 text-(--dim) [&_li]:mb-2">
+			<DocsLayout toc={toc} path={overviewPath} label="Overview sections">
 					<p>
 						One page, everything on the map: the site, the desktop app, the
 						phone client, the shim, the machine surface, and where the source
 						lives. If it exists around <span translate="no">Local Studio</span>,
 						it is linked from here.
 					</p>
-					<section id="start-here" className={sectionClass}>
+					<section id="start-here" className="docs-section">
 						<h2>Start here</h2>
 						<p className="mt-4">
 							Three ways in, depending on what you are holding.
@@ -364,7 +342,7 @@ export function ResourcesPage() {
 							))}
 						</ul>
 					</section>
-					<section id="this-site" className={sectionClass}>
+					<section id="this-site" className="docs-section">
 						<h2>This site</h2>
 						<p className="mt-4">Every route and what it holds.</p>
 						<ul className="overview-rows">
@@ -373,7 +351,7 @@ export function ResourcesPage() {
 							))}
 						</ul>
 					</section>
-					<section id="local-studio" className={sectionClass}>
+					<section id="local-studio" className="docs-section">
 						<h2>Local Studio</h2>
 						<p className="mt-4">
 							A local-first workstation for running, managing, and using
@@ -395,7 +373,7 @@ export function ResourcesPage() {
 							))}
 						</ul>
 					</section>
-					<section id="runtimes" className={sectionClass}>
+					<section id="runtimes" className="docs-section">
 						<h2>Runtimes</h2>
 						<p className="mt-4">
 							Recipes launch through the controller runtime layer; a chat proxy
@@ -408,7 +386,7 @@ export function ResourcesPage() {
 							))}
 						</ul>
 					</section>
-					<section id="kittylitter" className={sectionClass}>
+					<section id="kittylitter" className="docs-section">
 						<h2>KittyLitter</h2>
 						<p className="mt-4">
 							The native iOS and Android client for Codex, Claude, OpenCode, Pi,
@@ -422,7 +400,7 @@ export function ResourcesPage() {
 							))}
 						</ul>
 					</section>
-					<section id="codex-shim" className={sectionClass}>
+					<section id="codex-shim" className="docs-section">
 						<h2>Codex Shim</h2>
 						<p className="mt-4">
 							A local Python/aiohttp server that exposes an OpenAI
@@ -437,7 +415,7 @@ export function ResourcesPage() {
 							))}
 						</ul>
 					</section>
-					<section id="for-machines" className={sectionClass}>
+					<section id="for-machines" className="docs-section">
 						<h2>For machines</h2>
 						<p className="mt-4">
 							Every HTML route above has a markdown twin: append{" "}
@@ -445,7 +423,7 @@ export function ResourcesPage() {
 							homepage advertises the catalog, docs, and agent card through RFC
 							8288 Link headers.
 						</p>
-						<pre className={codeClass}>
+						<pre className="docs-code surface-compact">
 							curl -H "Accept: text/markdown" {site.origin}{docsPath}
 						</pre>
 						<ul className="overview-rows">
@@ -454,7 +432,7 @@ export function ResourcesPage() {
 							))}
 						</ul>
 					</section>
-					<section id="source" className={sectionClass}>
+					<section id="source" className="docs-section">
 						<h2>Source and company</h2>
 						<ul className="overview-rows">
 							{sourceRows.map((entry) => (
@@ -462,8 +440,7 @@ export function ResourcesPage() {
 							))}
 						</ul>
 					</section>
-				</article>
-			</div>
+			</DocsLayout>
 			<PageCta id="resources-cta-title" />
 		</PageShell>
 	);

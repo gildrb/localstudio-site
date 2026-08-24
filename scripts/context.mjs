@@ -37,7 +37,11 @@ const GENERATED_FILES = new Set([
 	"middleware.js",
 	"vercel.json",
 ]);
-const EXCLUDED_CATEGORIES = new Set(["copied-product", "logo-renderer", "generated"]);
+const EXCLUDED_CATEGORIES = new Set([
+	"copied-product",
+	"logo-renderer",
+	"generated",
+]);
 const WORKSPACE_PACKAGES = [
 	{
 		root: "packages/demo-ui",
@@ -62,6 +66,7 @@ const CATEGORY_BUDGETS = {
 	"copied-product": { target: 0, hard: Number.POSITIVE_INFINITY },
 	"logo-renderer": { target: 0, hard: Number.POSITIVE_INFINITY },
 	generated: { target: 0, hard: Number.POSITIVE_INFINITY },
+	"vendored-tooling": { target: 0, hard: Number.POSITIVE_INFINITY },
 	other: { target: 0, hard: Number.POSITIVE_INFINITY },
 };
 
@@ -153,6 +158,7 @@ function classify(rel) {
 	) {
 		return "demos + scenario";
 	}
+	if (rel.startsWith("tools/oxlint/anti-slop/")) return "vendored-tooling";
 	if (rel.startsWith("src/styles/") || rel.endsWith(".css")) {
 		return "public CSS/motion";
 	}

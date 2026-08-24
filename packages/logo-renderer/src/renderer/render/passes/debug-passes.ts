@@ -10,14 +10,15 @@ import { PASS_OUTSIDE, PREVIEW_BACK_ALBEDO, PREVIEW_BACK_DEPTH } from "../consta
 import { cameraBasis, orbitEye } from "../math";
 import { writeParams } from "../params";
 import type { RendererResources } from "../resources";
-import type { BloomTargets, MeshData, RenderControls } from "../types";
+import type { MeshData, RenderControls } from "../types";
 
 export function renderTargetPreview(
   device: Device,
   resources: RendererResources,
   mesh: MeshData,
   view: GPUTextureView,
-  targets: BloomTargets,
+  backMaterial: GPUTexture,
+  backDepth: GPUTexture,
   controls: RenderControls,
 ) {
   const basis = cameraBasis(
@@ -37,8 +38,8 @@ export function renderTargetPreview(
     label: "eve-5-render-target-preview-bind-group",
     layout: resources.pipelines.previewPipeline.getBindGroupLayout(0),
     entries: [
-      { binding: 0, resource: targets.backMaterial.createView() },
-      { binding: 1, resource: targets.backDepth.createView() },
+      { binding: 0, resource: backMaterial.createView() },
+      { binding: 1, resource: backDepth.createView() },
       { binding: 2, resource: resources.samplers.previewSampler },
       { binding: 3, resource: { buffer: resources.buffers.previewMode.gpu } },
     ],

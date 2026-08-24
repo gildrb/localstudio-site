@@ -9,6 +9,7 @@ const viewports = [
 for (const viewport of viewports) {
 	for (const path of routePaths) {
 		test(`${viewport.name} ${path}`, async ({ page }) => {
+			test.skip(process.platform !== "linux", "visual baselines are recorded on Linux");
 			await page.setViewportSize(viewport);
 			await page.emulateMedia({ reducedMotion: "reduce" });
 			await page.goto(path);

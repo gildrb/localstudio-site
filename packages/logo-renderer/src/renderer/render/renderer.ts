@@ -44,24 +44,32 @@ export function createEve5Renderer(
     const safeHeight = Math.max(1, Math.round(logicalHeight));
     const paddingRadius =
       options.paddingRadius ?? bloomRadiusForDevicePixelRatio(imprint.devicePixelRatio);
-    const targets = bloomTargets.ensure(safeWidth, safeHeight, paddingRadius);
-    const currentPaintTargets = paintSystem.ensure(
-      safeWidth,
-      safeHeight,
-      imprint.gridScaleMultiplier,
-    );
     const requiresBackSurfaceTargets =
       (backRefractionEnabled && controls.material === "glass") ||
       controls.material === "back-albedo" ||
       controls.material === "back-depth" ||
       controls.material === "thickness";
-    if (requiresBackSurfaceTargets) {
-      const backSurfaceDepthView = targets.backSurfaceDepth.createView();
+    const targets = bloomTargets.ensure(
+      safeWidth,
+      safeHeight,
+      paddingRadius,
+      requiresBackSurfaceTargets,
+    );
+    const currentPaintTargets = paintSystem.ensure(
+      safeWidth,
+      safeHeight,
+      imprint.gridScaleMultiplier,
+    );
+    const backMaterial = targets.backMaterial;
+    const backDepth = targets.backDepth;
+    const backSurfaceDepth = targets.backSurfaceDepth;
+    if (requiresBackSurfaceTargets && backMaterial && backDepth && backSurfaceDepth) {
+      const backSurfaceDepthView = backSurfaceDepth.createView();
       renderBackMaterial(
         device,
         resources,
         mesh,
-        targets.backMaterial.createView(),
+        backMaterial.createView(),
         backSurfaceDepthView,
         controls,
         safeWidth,
@@ -72,7 +80,7 @@ export function createEve5Renderer(
         device,
         resources,
         mesh,
-        targets.backDepth.createView(),
+        backDepth.createView(),
         backSurfaceDepthView,
         controls,
         safeWidth,
@@ -83,18 +91,22 @@ export function createEve5Renderer(
 
     paintSystem.apply(currentPaintTargets, imprint.paint);
 
-    if (controls.material === "back-albedo" || controls.material === "back-depth") {
-      renderTargetPreview(device, resources, mesh, target, targets, controls);
+    if (
+      (controls.material === "back-albedo" || controls.material === "back-depth") &&
+      backMaterial &&
+      backDepth
+    ) {
+      renderTargetPreview(device, resources, mesh, target, backMaterial, backDepth, controls);
       return;
     }
-    if (controls.material === "thickness") {
+    if (controls.material === "thickness" && backMaterial && backDepth) {
       renderThicknessDebug(
         device,
         resources,
         mesh,
         target,
-        targets.backMaterial,
-        targets.backDepth,
+        backMaterial,
+        backDepth,
         currentPaintTargets.readIsPing ? currentPaintTargets.ping : currentPaintTargets.pong,
         controls,
         safeWidth,
@@ -122,11 +134,11 @@ export function createEve5Renderer(
       mesh,
       targets.scene.createView(),
       targets.sceneMsaa.createView(),
-      backRefractionEnabled
-        ? targets.backMaterial
+      backRefractionEnabled && backMaterial
+        ? backMaterial
         : resources.params.outsideParams.fallbackBackMaterial,
-      backRefractionEnabled
-        ? targets.backDepth
+      backRefractionEnabled && backDepth
+        ? backDepth
         : resources.params.outsideParams.fallbackBackDepth,
       currentPaintTargets.readIsPing ? currentPaintTargets.ping : currentPaintTargets.pong,
       currentPaintTargets.voronoiValue,

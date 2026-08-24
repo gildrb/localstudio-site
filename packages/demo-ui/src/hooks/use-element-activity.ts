@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 
 const MIN_VISIBLE_RATIO = 0.1;
 
@@ -32,13 +32,4 @@ export function useElementActive<T extends HTMLElement>(
 	}, [ref]);
 
 	return active;
-}
-
-export function useElementActivity<T extends HTMLElement>(): readonly [
-	RefObject<T | null>,
-	boolean,
-] {
-	const ref = useRef<T>(null);
-	const active = useElementActive(ref);
-	return [ref, active];
 }

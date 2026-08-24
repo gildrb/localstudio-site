@@ -32,7 +32,7 @@ const TONE_GROUPS: [string, string[]][] = [
 	],
 ];
 
-const FILE_TONE_BY_EXT: Record<string, string> = Object.fromEntries(
+const FILE_TONE_BY_EXT = new Map(
 	TONE_GROUPS.flatMap(([tone, extensions]) =>
 		extensions.map((extension) => [extension, tone] as const),
 	),
@@ -41,5 +41,5 @@ const FILE_TONE_BY_EXT: Record<string, string> = Object.fromEntries(
 export function fileTone(name: string): string {
 	const dot = name.lastIndexOf(".");
 	const extension = dot >= 0 ? name.slice(dot + 1).toLowerCase() : "";
-	return FILE_TONE_BY_EXT[extension] ?? "text-(--dim)";
+	return FILE_TONE_BY_EXT.get(extension) ?? "text-(--dim)";
 }

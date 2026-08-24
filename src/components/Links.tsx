@@ -1,6 +1,5 @@
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { downloadLabel, downloadPath } from "../domain/route";
-import { site } from "../domain/site";
 import { LocalLink } from "./LocalLink";
 
 interface TextLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -50,23 +49,6 @@ export function CtaPair({ primary = downloadCta, secondary }: CtaPairProps) {
 				{primary.label}
 			</LocalLink>
 			<TextLink href={secondary.href}>{secondary.label}</TextLink>
-		</div>
-	);
-}
-export function StoreButtons() {
-	return (
-		<div className="button-group">
-			<LocalLink
-				className="button"
-				href={site.products.kittyLitter.appStore}
-				target="_blank"
-				rel="noreferrer"
-			>
-				Download on App Store
-			</LocalLink>
-			<TextLink href={site.products.kittyLitter.playStore} target="_blank" rel="noreferrer">
-				Download on Google Play
-			</TextLink>
 		</div>
 	);
 }

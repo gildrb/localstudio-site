@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
-import { assets } from "../domain/asset";
 import { site } from "../domain/site";
+import { BrandLogo } from "./BrandLogo";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { LocalLink } from "./LocalLink";
@@ -24,14 +24,7 @@ export function PageShell({ backHref, children }: PageShellProps) {
 						href={backHref}
 						aria-label={site.products.localStudio.name}
 					>
-						<img
-							className="brand__logo"
-							src={assets.wordmark}
-							alt=""
-							width="3000"
-							height="566"
-							draggable={false}
-						/>
+						<BrandLogo />
 					</LocalLink>
 					<LocalLink className="back-nav__link" href={backHref}>
 						<ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" />
