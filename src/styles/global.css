@@ -1025,6 +1025,64 @@ button {
   }
 }
 
+.overview-rows {
+  display: grid;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.overview-row {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  gap: 0 32px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.overview-row__label {
+  align-self: center;
+  color: var(--foreground);
+  font: 500 16px/24px var(--font-sans);
+}
+
+.overview-row__label--code {
+  font: 400 16px/24px var(--font-mono);
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.overview-row__link {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.overview-row__arrow {
+  flex: none;
+  color: var(--quiet);
+  transition: color 130ms ease-out;
+}
+
+.overview-row__text {
+  color: var(--dim);
+}
+
+.overview-row__text a {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .overview-row__link:hover .overview-row__arrow,
+  .overview-row__text a:hover {
+    color: var(--foreground);
+  }
+}
+
 .hero {
   --hero-group-offset: 0px;
   position: relative;
@@ -1216,6 +1274,15 @@ button {
   }
 }
 
+@media (max-width: 900px) {
+  .overview-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding: 12px 0;
+  }
+}
+
+
 .story {
   padding: var(--homepage-story-gap) 0 0;
 }
@@ -1260,21 +1327,6 @@ button {
   padding: 0;
   list-style: none;
 }
-.story__options[data-active-index="0"] {
-  transform: translateY(40%);
-}
-.story__options[data-active-index="1"] {
-  transform: translateY(20%);
-}
-.story__options[data-active-index="2"] {
-  transform: translateY(0);
-}
-.story__options[data-active-index="3"] {
-  transform: translateY(-20%);
-}
-.story__options[data-active-index="4"] {
-  transform: translateY(-40%);
-}
 .story__option {
   position: relative;
   display: flex;
@@ -1296,13 +1348,9 @@ button {
   padding: 0;
   color: var(--quiet);
   text-align: left;
-  transition: color 130ms ease-out;
 }
 .story__option-title {
   font: var(--type-section-title);
-}
-.story__options .is-active .story__option-control {
-  color: var(--foreground);
 }
 .story__description {
   max-width: 440px;
@@ -1700,7 +1748,6 @@ button {
     display: block;
     height: auto;
     transform: none !important;
-    transition: none;
   }
   .story__option {
     display: none;

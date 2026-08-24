@@ -913,13 +913,17 @@ Settings switches controllers. System shows runtime. /v1/chat/completions works 
 function resourcesMarkdown(): string {
 	return markdownPage(
 		"Resources",
-		`- [Documentation](${SITE_ORIGIN}/docs)
-- [Setup prompt](${SITE_ORIGIN}/setup)
-- [Download for macOS](${SITE_ORIGIN}/download)
-- [Agent setup](${SITE_ORIGIN}/agents)
-- [KittyLitter](https://kittylitter.app)
-- [GitHub](https://github.com/sybil-solutions/local-studio)
-- [Company](https://www.sybilsolutions.ai/)
+		`- [Documentation](${SITE_ORIGIN}/docs) - install, runtimes, agent runtime, remote/LAN, validation
+- [Setup prompt](${SITE_ORIGIN}/setup) - portable prompt for any coding model
+- [Download for macOS](${SITE_ORIGIN}/download) - signed Apple Silicon DMG
+- [Product tour](${SITE_ORIGIN}/product) - Control, Serve, Work
+- [Overview](${SITE_ORIGIN}/overview) - this index
+- [Machines](${SITE_ORIGIN}/machine) - dense plain-text index
+- [Agent setup](${SITE_ORIGIN}/agents) - DLTL runbook
+- [KittyLitter](https://kittylitter.app) - iOS + Android client for coding agents
+- [Codex Shim](https://github.com/sybil-solutions/codex-shim) - BYOK Responses shim
+- [Local Studio source](https://github.com/sybil-solutions/local-studio) - Apache-2.0
+- [Company](https://www.sybilsolutions.ai/) - Sybil Solutions
 `,
 	);
 }

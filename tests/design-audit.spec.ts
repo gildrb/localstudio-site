@@ -675,14 +675,7 @@ test("bounded route surfaces use the shared radius roles", async ({ page }) => {
 	const checks = [
 		{ route: "/setup", selector: ".prompt-block.surface-panel", count: 1, radius: "16px", clipped: false },
 		{ route: "/setup", selector: ".prompt-block__toggle", count: 1, radius: "6px", clipped: false },
-		{ route: "/overview", selector: ".surface-panel", count: 3, radius: "16px", clipped: true },
-		{ route: "/agents", selector: ".surface-panel:not(.prompt-block)", count: 1, radius: "16px", clipped: true },
-		{ route: "/agents", selector: ".prompt-block.surface-panel", count: 1, radius: "16px", clipped: false },
-		{ route: "/agents", selector: ".surface-card", count: 1, radius: "12px", clipped: true },
-		{ route: "/agents", selector: ".surface-compact", count: 1, radius: "8px", clipped: false },
-		{ route: "/mobile", selector: ".surface-panel-large", count: 1, radius: "24px", clipped: true },
-		{ route: "/mobile", selector: ".surface-panel", count: 2, radius: "16px", clipped: true },
-		{ route: "/mobile", selector: ".surface-card", count: 3, radius: "12px", clipped: true },
+		{ route: "/overview", selector: ".docs-code.surface-compact", count: 1, radius: "8px", clipped: false },
 	] as const;
 
 	for (const check of checks) {

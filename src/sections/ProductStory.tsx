@@ -4,6 +4,9 @@ import { productFeatures } from "../content/product-features";
 const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
 
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
+const STORY_EASE = [0.16, 1, 0.3, 1] as const;
+const STORY_DURATION = 0.45;
+
 
 function useStoryProgress() {
 	const [activeIndex, setActiveIndex] = useState(0);
@@ -85,6 +88,7 @@ export function ProductStory() {
 	const visualRef = useRef<HTMLElement>(null);
 	const reduceMotion = useReducedMotion();
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
+	const optionsOffset = `${(2 - activeIndex) * 20}%`;
 
 	useEffect(() => {
 		const visual = visualRef.current;
@@ -103,38 +107,66 @@ export function ProductStory() {
 				<div className="story__showcase" ref={showcaseRef}>
 					<div className="story__sticky">
 						<div className="story__options-window">
-							<ol
+							<m.ol
 								className="story__options"
 								aria-label="Local Studio capabilities"
 								data-active-index={activeIndex}
+								initial={false}
+								animate={{ y: optionsOffset }}
+								transition={{
+									duration: reduceMotion ? 0 : STORY_DURATION,
+									ease: STORY_EASE,
+								}}
 							>
-							{productFeatures.map((feature, index) => {
-								const selected = activeIndex === index;
-								return (
-									<li
-										className={`story__option ${selected ? "is-active" : ""}`}
-										key={feature.storyTitle}
-										aria-current={selected ? "step" : undefined}
-									>
-										<div className="story__option-control">
-											<span className="story__option-title">{feature.storyTitle}</span>
-										</div>
-											{selected ? (
-												<m.p
-													key={feature.slug}
-													className="story__description"
-													layout="position"
-													initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-													animate={{ opacity: 1, y: 0 }}
-													transition={{ duration: 0.2, ease: "easeOut" }}
+								{productFeatures.map((feature, index) => {
+									const selected = activeIndex === index;
+									return (
+										<li
+											className={`story__option ${selected ? "is-active" : ""}`}
+											key={feature.storyTitle}
+											aria-current={selected ? "step" : undefined}
+										>
+											<div className="story__option-control">
+												<m.span
+													className="story__option-title"
+													initial={false}
+													animate={{
+														color: selected
+															? "var(--foreground)"
+															: "var(--quiet)",
+													}}
+													transition={{
+														duration: reduceMotion ? 0 : 0.13,
+														ease: "easeOut",
+													}}
 												>
-													{feature.storyDescription}
-												</m.p>
-											) : null}
-									</li>
-								);
-							})}
-							</ol>
+													{feature.storyTitle}
+												</m.span>
+											</div>
+											<m.p
+												className="story__description"
+												aria-hidden={!selected}
+												initial={
+													reduceMotion
+														? false
+														: { opacity: 0, y: 6, filter: "blur(8px)" }
+												}
+												animate={{
+													opacity: selected ? 1 : 0,
+													y: selected ? 0 : 6,
+													filter: selected ? "blur(0px)" : "blur(8px)",
+												}}
+												transition={{
+													duration: reduceMotion ? 0 : STORY_DURATION,
+													ease: STORY_EASE,
+												}}
+											>
+												{feature.storyDescription}
+											</m.p>
+										</li>
+									);
+								})}
+							</m.ol>
 						</div>
 						<div className="story__visual-home">
 							<figure

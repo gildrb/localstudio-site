@@ -501,6 +501,9 @@ test("homepage capability story keeps active copy centered and progresses quickl
 		window.scrollTo(0, top - navHeight + sceneSpan * 1.1);
 	});
 	await expect(items.nth(1)).toHaveAttribute("aria-current", "step");
+	await page.waitForTimeout(600);
+	const serveRailStyle = await page.locator(".story__options").getAttribute("style");
+	expect(serveRailStyle).toContain("translateY");
 	await expect
 		.poll(async () =>
 			items.nth(1).evaluate((element) => {
@@ -540,6 +543,22 @@ test("homepage capability story keeps active copy centered and progresses quickl
 		"data-scene",
 		"work",
 	);
+	await page.waitForTimeout(600);
+	const storyMotion = await page.evaluate(() => {
+		const activeDescription = document.querySelector<HTMLElement>(
+			'.story__description[aria-hidden="false"]',
+		);
+		const inactiveDescriptions = [
+			...document.querySelectorAll<HTMLElement>('.story__description[aria-hidden="true"]'),
+		];
+		return {
+			activeFilter: activeDescription ? getComputedStyle(activeDescription).filter : "",
+			inactiveFilters: inactiveDescriptions.map((element) => getComputedStyle(element).filter),
+		};
+	});
+	expect(storyMotion.activeFilter).toBe("blur(0px)");
+	expect(storyMotion.inactiveFilters).toHaveLength(4);
+	expect(storyMotion.inactiveFilters.every((filter) => filter === "blur(8px)")).toBe(true);
 	await expect(page).toHaveURL(/\/$/);
 });
 
