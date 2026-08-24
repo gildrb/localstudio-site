@@ -147,7 +147,7 @@ export function ProductStory() {
 												animate={{ opacity: 1, filter: "blur(0px)" }}
 												transition={motion.featureSwap}
 											>
-												<FeatureDemo scene={activeFeature.slug} />
+												<FeatureDemo scene={activeFeature.demoScene} />
 											</m.div>
 										</Suspense>
 								) : (

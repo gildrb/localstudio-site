@@ -10,6 +10,7 @@ const term = (value: string): Inline => ({ kind: "term", term: value });
 export const productFeatures = [
 	{
 		slug: "control",
+		demoScene: "control",
 		storyTitle: "Control",
 		storyDescription: [
 			text("Local and remote controllers, live status, launch state, logs, and metrics."),
@@ -23,6 +24,7 @@ export const productFeatures = [
 	},
 	{
 		slug: "serve",
+		demoScene: "serve",
 		storyTitle: "Serve",
 		storyDescription: [
 			term("vLLM"),
@@ -51,6 +53,7 @@ export const productFeatures = [
 	},
 	{
 		slug: "work",
+		demoScene: "work",
 		storyTitle: "Work",
 		storyDescription: [
 			text("Models, providers, browser, files, terminal, and agents in the same session."),
@@ -66,6 +69,7 @@ export const productFeatures = [
 	},
 	{
 		slug: "automate",
+		demoScene: "automate",
 		storyTitle: "Automate",
 		storyDescription: [
 			text("Scheduled health checks, downloads, and reports that run on this machine."),
@@ -79,6 +83,7 @@ export const productFeatures = [
 	},
 	{
 		slug: "configure",
+		demoScene: "configure",
 		storyTitle: "Configure",
 		storyDescription: [
 			text("Hardware, runtimes, and controller identity for the machine the models run on."),
