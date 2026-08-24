@@ -1,3 +1,5 @@
+# Local Studio
+
 Read the [`ls-design.md` system](https://github.com/gildrb/ls-design.md/blob/main/design.md) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase.
 
 ### Run
