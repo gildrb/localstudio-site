@@ -38,6 +38,14 @@ test("client navigation renders routes immediately", async ({ page }) => {
   const targets = ["/overview", "/machine", "/docs", "/setup", "/download"] as const;
   for (const target of targets) {
     await page.goto("/");
+    await page.evaluate(() => {
+      const root = document.querySelector("#root");
+      if (!root) return;
+      root.setAttribute("data-main-dropped", "false");
+      new MutationObserver(() => {
+        if (!root.querySelector("main")) root.setAttribute("data-main-dropped", "true");
+      }).observe(root, { childList: true, subtree: true });
+    });
     await page
       .locator(`a[href="${target}"]`)
       .first()
@@ -49,7 +57,26 @@ test("client navigation renders routes immediately", async ({ page }) => {
         name: routes[target].heading,
       }),
     ).toBeVisible();
-    await expect(page.locator(".route-pending")).toHaveCount(0);
+    await expect(page.locator("#root")).toHaveAttribute("data-main-dropped", "false");
+  }
+});
+
+test("primary information routes need no late JavaScript", async ({ page }) => {
+  const targets = ["/setup", "/docs", "/overview"] as const;
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: routes["/"].heading }),
+  ).toBeVisible();
+  await page.route(/\/assets\/.*\.js$/, (route) => route.abort());
+  for (const target of targets) {
+    await page
+      .locator(`a[href="${target}"]`)
+      .first()
+      .evaluate((link: HTMLAnchorElement) => link.click());
+    await expect(page).toHaveURL(new RegExp(`${target}$`));
+    await expect(
+      page.getByRole("heading", { level: 1, name: routes[target].heading }),
+    ).toBeVisible();
   }
 });
 

@@ -1,4 +1,5 @@
 import {
+  startTransition,
   Suspense,
   useEffect,
   useRef,
@@ -44,7 +45,9 @@ export default function App() {
       if (source === "push" && !window.location.hash) {
         window.scrollTo({ top: 0, behavior: "instant" });
       }
-      setLocation(`${window.location.pathname}${window.location.hash}`);
+      startTransition(() => {
+        setLocation(`${window.location.pathname}${window.location.hash}`);
+      });
     }
     function handlePopState() {
       updateLocation("pop");

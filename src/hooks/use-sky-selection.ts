@@ -85,14 +85,17 @@ export function useSkySelection() {
 		const schedule = () => {
 			if (!frame) frame = window.requestAnimationFrame(update);
 		};
+		const scheduleSelected = () => {
+			if (owners.size > 0) schedule();
+		};
 
 		document.addEventListener("selectionchange", schedule);
-		window.addEventListener("resize", schedule);
-		window.addEventListener("scroll", schedule, { passive: true });
+		window.addEventListener("resize", scheduleSelected);
+		window.addEventListener("scroll", scheduleSelected, { passive: true });
 		return () => {
 			document.removeEventListener("selectionchange", schedule);
-			window.removeEventListener("resize", schedule);
-			window.removeEventListener("scroll", schedule);
+			window.removeEventListener("resize", scheduleSelected);
+			window.removeEventListener("scroll", scheduleSelected);
 			window.cancelAnimationFrame(frame);
 			clear();
 		};

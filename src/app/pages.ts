@@ -1,4 +1,7 @@
-import { lazy } from "react";
+import { lazy, type ComponentType } from "react";
+import { DocsPage } from "../pages/DocsPage";
+import { PromptPage } from "../pages/PromptPage";
+import { ResourcesPage } from "../pages/ResourcesPage";
 import {
 	docsPath,
 	downloadPath,
@@ -17,20 +20,14 @@ export const pages = {
 	[productPath]: lazy(() =>
 		import("../pages/ProductPage").then(({ ProductPage }) => ({ default: ProductPage })),
 	),
-	[docsPath]: lazy(() =>
-		import("../pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),
-	),
-	[setupPath]: lazy(() =>
-		import("../pages/PromptPage").then(({ PromptPage }) => ({ default: PromptPage })),
-	),
+	[docsPath]: DocsPage,
+	[setupPath]: PromptPage,
 	[downloadPath]: lazy(() =>
 		import("../pages/DownloadPage").then(({ DownloadPage }) => ({ default: DownloadPage })),
 	),
-	[overviewPath]: lazy(() =>
-		import("../pages/ResourcesPage").then(({ ResourcesPage }) => ({ default: ResourcesPage })),
-	),
+	[overviewPath]: ResourcesPage,
 	[machinePath]: lazy(() =>
 		import("../pages/MachinePage").then(({ MachinePage }) => ({ default: MachinePage })),
 	),
-} as const satisfies Record<RoutePath, ReturnType<typeof lazy>>;
+} as const satisfies Record<RoutePath, ComponentType>;
 
