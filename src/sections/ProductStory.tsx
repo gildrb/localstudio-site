@@ -85,7 +85,7 @@ export function ProductStory() {
 	const visualRef = useRef<HTMLElement>(null);
 	const reduceMotion = useReducedMotion();
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
-	const optionsOffset = `${(2 - activeIndex) * 20}%`;
+	const optionsOffset = `${(1 - activeIndex) * 20}%`;
 
 	useEffect(() => {
 		const visual = visualRef.current;

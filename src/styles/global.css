@@ -725,12 +725,13 @@ button {
   display: grid;
   grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
   gap: 0 32px;
-  padding: 10px 0;
+  align-items: center;
+  min-height: 56px;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border);
 }
 
 .overview-row__label {
-  align-self: center;
   color: var(--foreground);
   font: 500 16px/24px var(--font-sans);
 }
@@ -756,6 +757,7 @@ button {
 }
 
 .overview-row__text {
+  margin: 0;
   color: var(--dim);
 }
 
@@ -964,8 +966,10 @@ button {
 @media (max-width: 900px) {
   .overview-row {
     grid-template-columns: minmax(0, 1fr);
-    gap: 4px;
-    padding: 12px 0;
+    justify-items: start;
+    gap: 6px;
+    min-height: 0;
+    padding: 14px 0;
   }
 }
 
