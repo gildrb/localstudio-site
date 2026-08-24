@@ -30,7 +30,13 @@ const EXCLUDE_DIRS = new Set([
 	".context",
 ]);
 const EXCLUDE_FILES = new Set(["pnpm-lock.yaml"]);
-const EXCLUDE_NAMES = new Set(["LS_WEB_REFACTOR_SPEC.md", "design-manifest.json", "asset-manifest.json"]);
+const GENERATED_FILES = new Set([
+	"asset-manifest.json",
+	"design-manifest.json",
+	"index.html",
+	"middleware.js",
+	"vercel.json",
+]);
 const EXCLUDED_CATEGORIES = new Set(["copied-product", "logo-renderer", "generated"]);
 const WORKSPACE_PACKAGES = [
 	{
@@ -102,7 +108,7 @@ function walk(directory) {
 			continue;
 		}
 		const rel = relative(root, path).split("\\").join("/");
-		if (EXCLUDE_FILES.has(entry.name) || EXCLUDE_NAMES.has(entry.name)) continue;
+		if (EXCLUDE_FILES.has(entry.name)) continue;
 		const ext = entry.name.includes(".")
 			? `.${entry.name.split(".").pop().toLowerCase()}`
 			: "";
@@ -113,6 +119,7 @@ function walk(directory) {
 }
 
 function classify(rel) {
+	if (GENERATED_FILES.has(rel)) return "generated";
 	if (
 		rel.startsWith("src/ls/") ||
 		rel.startsWith("src/ls-shared/") ||
@@ -255,7 +262,7 @@ function printReport(rows) {
 			({ root: packageRoot, name, version, category }) =>
 				`  ${name}@${version}  ${packageRoot}  (${category}; package typecheck runs in pnpm check)`,
 		),
-		`  generated names: ${[...EXCLUDE_NAMES].join(", ")}`,
+		`  generated files: ${[...GENERATED_FILES].join(", ")}`,
 		`  excluded files: ${[...EXCLUDE_FILES].join(", ")}`,
 		"",
 		"top 50",
@@ -290,7 +297,7 @@ function writeBundle(rows) {
 					),
 					categories: [...EXCLUDED_CATEGORIES],
 					files: [...EXCLUDE_FILES],
-					names: [...EXCLUDE_NAMES],
+					generatedFiles: [...GENERATED_FILES],
 				},
 				files: rows.map(({ path, bytes, tokens, category, sha256 }) => ({
 					path,
