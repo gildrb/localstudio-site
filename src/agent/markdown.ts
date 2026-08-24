@@ -37,6 +37,21 @@ export function llmsTxt(): string {
 
 **Sybil Solutions** builds local-first AI software. **Local Studio** is its macOS workstation for running, managing, and using self-hosted LLM backends (vLLM, SGLang, llama.cpp, MLX) on local or remote controllers, with a Pi-powered Workbench. **KittyLitter** is the native iOS + Android companion for Codex, Claude, OpenCode, Pi, and Droid. **Codex Shim** is a local Responses-API shim that exposes BYOK models to Codex Desktop.
 
+## When to use Local Studio
+
+Use Local Studio when an agent needs to help a person install or operate self-hosted language models, switch between local and remote inference controllers, configure vLLM / SGLang / llama.cpp / MLX, expose one OpenAI-compatible model surface, or work with browser, files, terminals, and coding agents in one local-first session. Use KittyLitter when that person needs to monitor or continue the same coding-agent sessions from iOS or Android. Use Codex Shim when Codex Desktop must call bring-your-own-key models through a local Responses API.
+
+Do not use this public website as a hosted inference provider: it exposes read-only product metadata only. For product discovery, call \`GET /api/v1/products\` or the \`list_products\` MCP tool at \`/.well-known/mcp\`. For installation, open \`/setup\`. For controller operations, use the controller running on the user's machine and follow \`/docs\`; never send controller or provider keys to this site.
+
+## Developer resources
+
+- Developer portal: ${SITE_ORIGIN}/developers
+- OpenAPI 3.1: ${SITE_ORIGIN}/openapi.json
+- Public API status: ${SITE_ORIGIN}/api/v1/status
+- Public product catalog: ${SITE_ORIGIN}/api/v1/products
+- MCP Streamable HTTP: ${SITE_ORIGIN}/.well-known/mcp
+- Authentication and errors: ${SITE_ORIGIN}/developers#authentication
+
 ## Products
 
 ### Local Studio
@@ -83,6 +98,9 @@ Local Python/aiohttp Responses-API endpoint on loopback. Codex Desktop keeps nat
 
 - [robots.txt](${SITE_ORIGIN}/robots.txt)
 - [sitemap.xml](${SITE_ORIGIN}/sitemap.xml)
+- [Developer portal](${SITE_ORIGIN}/developers)
+- [OpenAPI](${SITE_ORIGIN}/openapi.json)
+- [MCP endpoint](${SITE_ORIGIN}/.well-known/mcp)
 - [api-catalog](${SITE_ORIGIN}/.well-known/api-catalog)
 - [agent-card](${SITE_ORIGIN}/.well-known/agent-card.json)
 - Markdown: append \`.md\` to any page, or \`Accept: text/markdown\`
@@ -441,11 +459,19 @@ export function apiCatalog(): string {
 					],
 					"service-desc": [
 						{
+							href: `${SITE_ORIGIN}/openapi.json`,
+							type: "application/vnd.oai.openapi+json;version=3.1",
+						},
+						{
 							href: `${SITE_ORIGIN}/.well-known/agent-card.json`,
 							type: "application/json",
 						},
 					],
 					"service-doc": [
+						{
+							href: `${SITE_ORIGIN}/developers`,
+							type: "text/html",
+						},
 						{
 							href: `${SITE_ORIGIN}/docs`,
 							type: "text/html",

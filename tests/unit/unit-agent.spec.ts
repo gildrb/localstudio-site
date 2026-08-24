@@ -64,6 +64,9 @@ test("discovery documents and Accept negotiation are shared", () => {
 	const llms = agentDocument("/llms.txt");
 	expect(llms?.body).toContain("Local Studio");
 	expect(llms?.body).toContain("KittyLitter");
+	expect(llms?.body).toContain("## When to use Local Studio");
+	expect(llms?.body).toContain("/developers");
+	expect(llms?.body).toContain("/openapi.json");
 	expect(agentDocument("/.well-known/api-catalog")?.contentType).toMatch(
 		/linkset\+json/,
 	);
@@ -110,6 +113,20 @@ test("vercel headers match agent document content types", () => {
 	expect(body).toContain(
 		`"value": "${agentDocument("/.well-known/agent-card.json")?.contentType}"`,
 	);
+});
+
+test("Vercel routes expose HTML pages and the MCP function", () => {
+	const manifest = JSON.parse(readFileSync("vercel.json", "utf8"));
+	expect(manifest.rewrites).toContainEqual({
+		source: "/.well-known/mcp",
+		destination: "/api/mcp",
+	});
+	for (const path of ["/developers", "/about", "/contact", "/privacy"]) {
+		expect(manifest.rewrites).toContainEqual({
+			source: path,
+			destination: `${path}.html`,
+		});
+	}
 });
 
 test("agent documents use canonical site facts", () => {

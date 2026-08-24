@@ -11,14 +11,14 @@ import {
 import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { useDemoTabBoundary } from "../hooks/demo-tab-boundary";
 import { useElementActive } from "../hooks/use-element-activity";
-import { ArrowUp, ChevronDown, Plus } from "..";
-import { AgentChatPaneHeader } from "..";
-import { AgentComposerStatusBar } from "..";
-import { AgentComposerTextArea } from "..";
-import { ComputerStatusPanel } from "..";
-import { AssistantMessageActions } from "..";
-import { ToolBlockView } from "..";
-import { UserMessage } from "..";
+import { ArrowUp, ChevronDown, Plus } from "../ui/icon-registry";
+import { AgentChatPaneHeader } from "../workbench/agent-chat-pane-header";
+import { AgentComposerStatusBar } from "../workbench/agent-composer-status-bar";
+import { AgentComposerTextArea } from "../workbench/agent-composer-textarea";
+import { ComputerStatusPanel } from "../workbench/computer-status-panel";
+import { AssistantMessageActions } from "../workbench/assistant-message-actions";
+import { ToolBlockView, type ToolBlock } from "../workbench/tool-block";
+import { UserMessage } from "../workbench/user-message";
 import {
 	DEMO_MODEL,
 	DEMO_PROMPT,
@@ -78,7 +78,6 @@ import { HeroDesktopSidebar } from "./desktop-sidebar";
 import { HeroFilesystemTree } from "./files-tree";
 import type { HeroTaskId } from "./projects-nav";
 import { HeroReviewPanel } from "./review-panel";
-import type { ToolBlock } from "../workbench/tool-block";
 
 const contextWindow = 202144;
 const HERO_COMPUTER_WIDTH = 320;
@@ -444,9 +443,11 @@ export function HeroDemo({ clock = browserDemoClock, repositoryUrl }: HeroDemoPr
 
 export default HeroDemo;
 
-function HeroDemoView(
-	model: ReturnType<typeof useHeroDemoModel> & { repositoryUrl: string },
-) {
+type HeroDemoViewModel = ReturnType<typeof useHeroDemoModel> & {
+	repositoryUrl: string;
+};
+
+function HeroDemoView(model: HeroDemoViewModel) {
 	const {
 		hostRef,
 		active,
@@ -456,11 +457,9 @@ function HeroDemoView(
 		clipRight,
 		clipBottom,
 		state,
-		setPickedTab,
 		panelOpen,
 		setPanelOpen,
 		activeTask,
-		setUserFile,
 		titles,
 		inputRef,
 		scrollerRef,
@@ -472,14 +471,9 @@ function HeroDemoView(
 		title,
 		extras,
 		messages,
-		session,
 		autoPrompt,
 		composerValue,
-		openFile,
-		tab,
-		openTabs,
 		selectTab,
-		closeTab,
 		selectModel,
 		selectTask,
 		renameTask,
@@ -665,79 +659,7 @@ function HeroDemoView(
 											/>
 										</form>
 									</section>
-									{panelOpen ? (
-										<aside
-											className="agent-computer-panel relative flex min-h-0 shrink-0 flex-col border-l border-(--border) bg-(--color-panel)"
-											style={{ width: HERO_COMPUTER_WIDTH }}
-										>
-											<ComputerHeader
-												tab={tab}
-												openTabs={openTabs}
-												terminalState={emptyTerminals}
-												onSelectTab={selectTab}
-												onOpenCurrentTerminal={() => selectTab("terminal")}
-												onSelectTerminalOwner={ignore}
-												onCloseTerminalOwner={ignore}
-												onCloseTab={closeTab}
-												onShowLauncher={() => selectTab("tools")}
-												onClosePanel={() => setPanelOpen(false)}
-											/>
-											{tab === "status" ? (
-												<ComputerStatusPanel
-													activeProject={demoProject}
-													activeModel={
-														state.modelSelected || !weekendTask
-															? demoModel
-															: null
-													}
-													focusedSession={session}
-												/>
-											) : null}
-											{tab === "tools" ? (
-												<ComputerLauncherPanel
-													activeTab={tab}
-													onOpenSideChat={() => selectTab("side-chat")}
-													onOpenTerminal={() => selectTab("terminal")}
-													onSelectTab={selectTab}
-												/>
-											) : null}
-											{tab === "files" ? (
-												<HeroFilesystemTree
-													openFile={openFile}
-													onOpenFile={(rel) => {
-														setPickedTab("files");
-														setUserFile(rel);
-													}}
-												/>
-											) : null}
-											{tab === "diff" ? (
-												<HeroReviewPanel ready={state.reviewReady} />
-											) : null}
-											{tab === "browser" ? (
-												<div className="size-full overflow-y-auto bg-(--bg) px-5 py-8 text-(--fg)">
-													<div className="mx-auto max-w-3xl">
-														<div className="text-[length:var(--fs-lg)] font-medium text-(--dim)">
-															Trip research
-														</div>
-														<div className="mt-1 text-[length:var(--fs-sm)] text-(--dim)">
-															Saturday stays dry until 16:00. Rydal Water to
-															Grasmere keeps the route under two hours.
-														</div>
-													</div>
-												</div>
-											) : null}
-											{tab === "terminal" ? (
-												<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
-													Home shell
-												</section>
-											) : null}
-											{tab === "side-chat" ? (
-												<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
-													Side chat
-												</section>
-											) : null}
-										</aside>
-									) : null}
+									<HeroComputerPanel model={model} />
 								</div>
 							</div>
 						</div>
@@ -745,6 +667,97 @@ function HeroDemoView(
 				) : null}
 			</div>
 		</section>
+	);
+}
+
+function HeroComputerPanel({ model }: { model: HeroDemoViewModel }) {
+	const {
+		closeTab,
+		openFile,
+		openTabs,
+		panelOpen,
+		selectTab,
+		session,
+		setPanelOpen,
+		setPickedTab,
+		setUserFile,
+		state,
+		tab,
+		weekendTask,
+	} = model;
+	if (!panelOpen) return null;
+	return (
+			<aside
+				className="agent-computer-panel relative flex min-h-0 shrink-0 flex-col border-l border-(--border) bg-(--color-panel)"
+				style={{ width: HERO_COMPUTER_WIDTH }}
+			>
+				<ComputerHeader
+					tab={tab}
+					openTabs={openTabs}
+					terminalState={emptyTerminals}
+					onSelectTab={selectTab}
+					onOpenCurrentTerminal={() => selectTab("terminal")}
+					onSelectTerminalOwner={ignore}
+					onCloseTerminalOwner={ignore}
+					onCloseTab={closeTab}
+					onShowLauncher={() => selectTab("tools")}
+					onClosePanel={() => setPanelOpen(false)}
+				/>
+				{tab === "status" ? (
+					<ComputerStatusPanel
+						activeProject={demoProject}
+						activeModel={
+							state.modelSelected || !weekendTask
+								? demoModel
+								: null
+						}
+						focusedSession={session}
+					/>
+				) : null}
+				{tab === "tools" ? (
+					<ComputerLauncherPanel
+						activeTab={tab}
+						onOpenSideChat={() => selectTab("side-chat")}
+						onOpenTerminal={() => selectTab("terminal")}
+						onSelectTab={selectTab}
+					/>
+				) : null}
+				{tab === "files" ? (
+					<HeroFilesystemTree
+						openFile={openFile}
+						onOpenFile={(rel) => {
+							setPickedTab("files");
+							setUserFile(rel);
+						}}
+					/>
+				) : null}
+				{tab === "diff" ? (
+					<HeroReviewPanel ready={state.reviewReady} />
+				) : null}
+				{tab === "browser" ? (
+					<div className="size-full overflow-y-auto bg-(--bg) px-5 py-8 text-(--fg)">
+						<div className="mx-auto max-w-3xl">
+							<div className="text-[length:var(--fs-lg)] font-medium text-(--dim)">
+								Trip research
+							</div>
+							<div className="mt-1 text-[length:var(--fs-sm)] text-(--dim)">
+								Saturday stays dry until 16:00. Rydal Water to
+								Grasmere keeps the route under two hours.
+							</div>
+						</div>
+					</div>
+				) : null}
+				{tab === "terminal" ? (
+					<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
+						Home shell
+					</section>
+				) : null}
+				{tab === "side-chat" ? (
+					<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
+						Side chat
+					</section>
+				) : null}
+			</aside>
 	);
 }
 

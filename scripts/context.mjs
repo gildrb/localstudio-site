@@ -41,6 +41,7 @@ const EXCLUDED_CATEGORIES = new Set([
 	"copied-product",
 	"logo-renderer",
 	"generated",
+	"vendored-tooling",
 ]);
 const WORKSPACE_PACKAGES = [
 	{

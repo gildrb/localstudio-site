@@ -1,6 +1,8 @@
 import { robotsTxt } from "./robots.ts";
 import { sitemapXml } from "./sitemap.ts";
 import { machineText } from "./machine.ts";
+import { openApiSpec } from "./openapi.ts";
+import { aboutHtml, contactHtml, developerHtml, notFoundHtml, privacyHtml } from "./pages.ts";
 import { site } from "../domain/site.ts";
 import { documentPaths, docsPath, machinePath, markdownPathFor, routes } from "../domain/route.ts";
 import {
@@ -32,6 +34,9 @@ export const HOMEPAGE_LINK_HEADER = [
 	`</index.md>; rel="alternate"; type="text/markdown"`,
 	`<${docsPath}>; rel="service-doc"; type="text/html"`,
 	`<${docsPath}.md>; rel="service-doc"; type="text/markdown"`,
+	`</openapi.json>; rel="service-desc"; type="application/vnd.oai.openapi+json;version=3.1"`,
+	`</.well-known/mcp>; rel="service"; type="application/json"`,
+	`</developers>; rel="service-doc"; type="text/html"`,
 	`</.well-known/agent-card.json>; rel="service-desc"; type="application/json"`,
 	`</sitemap.xml>; rel="describedby"; type="application/xml"`,
 	`<${site.origin}/>; rel="canonical"; type="text/html"`,
@@ -52,6 +57,16 @@ export function agentDocuments(): readonly AgentDocument[] {
 			contentType: "application/xml; charset=utf-8",
 		},
 		{ path: "/sitemap.md", body: sitemapMarkdown(), contentType: markdown },
+		{ path: "/openapi.json", body: openApiSpec(), contentType: "application/json; charset=utf-8" },
+		{ path: "/developers", body: developerHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/developers.html", body: developerHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/about", body: aboutHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/about.html", body: aboutHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/contact", body: contactHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/contact.html", body: contactHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/privacy", body: privacyHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/privacy.html", body: privacyHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/404.html", body: notFoundHtml, contentType: "text/html; charset=utf-8" },
 		{ path: "/llms.txt", body: llms, contentType: markdown },
 		{ path: "/llms-full.txt", body: llmsFull(), contentType: markdown },
 		{ path: "/index.md", body: indexMarkdown(), contentType: markdown },

@@ -118,6 +118,14 @@ function FeatureCard({
 		>
 			<div
 				className="kitty__feature-media"
+				role="region"
+				tabIndex={0}
+				aria-label={`Show ${feature.title}`}
+				onKeyDown={(event) => {
+					if (event.key !== "Enter" && event.key !== " ") return;
+					event.preventDefault();
+					onRequestVisible(index);
+				}}
 				onClick={() => onRequestVisible(index)}
 			>
 				<img
@@ -126,39 +134,34 @@ function FeatureCard({
 					sizes="(max-width: 620px) calc(100vw - 48px), (max-width: 900px) 50vw, 33vw"
 					alt={feature.alt}
 					width="1320"
-					loading={index < 4 ? "eager" : "lazy"}
-					fetchPriority={index < 4 ? "high" : "auto"}
+					loading="lazy"
+					fetchPriority="low"
 					decoding="async"
 					draggable={false}
 				/>
 			</div>
 			<div
 				className="kitty__feature-body"
+				role="button"
+				tabIndex={0}
+				aria-expanded={descriptionVisible}
 				onMouseEnter={() => onActivate(index)}
 				onMouseLeave={() => onActivate(null)}
 				onFocusCapture={() => onActivate(index)}
+				onKeyDown={(event) => {
+					if (event.key !== "Enter" && event.key !== " ") return;
+					event.preventDefault();
+					onActivate(active ? null : index);
+				}}
+				onClick={() => onActivate(active ? null : index)}
 				onBlurCapture={(event) => {
 					const next = event.relatedTarget;
 					if (!(next instanceof Node) || !event.currentTarget.contains(next)) {
 						onActivate(null);
 					}
 				}}
-				onClick={(event) => {
-					const target = event.target;
-					if (target instanceof Element && target.closest("a, button")) return;
-					onActivate(active ? null : index);
-				}}
 			>
-				<button
-					type="button"
-					className="kitty__feature-trigger"
-					aria-expanded={descriptionVisible}
-					onClick={(event) =>
-						onActivate(event.detail === 0 && active ? null : index)
-					}
-				>
-					{feature.title}
-				</button>
+				<span className="kitty__feature-trigger">{feature.title}</span>
 				{descriptionVisible ? (
 					<m.div
 						className="kitty__feature-description"
@@ -303,6 +306,14 @@ export function KittyLitter() {
 					ref={carouselRef}
 					className="kitty__carousel"
 					data-carousel-index={carouselIndex}
+					role="region"
+					aria-label="KittyLitter features"
+					tabIndex={0}
+					onKeyDown={(event) => {
+						if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+						event.preventDefault();
+						jumpToCarousel(carouselIndex + (event.key === "ArrowRight" ? 1 : -1));
+					}}
 					onScroll={(event) => syncFromScroll(event.currentTarget)}
 					onClickCapture={(event) => {
 						if (!dragState.current.moved) return;

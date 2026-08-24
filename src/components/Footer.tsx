@@ -11,6 +11,8 @@ export function Footer() {
 						{label}
 					</LocalLink>
 				))}
+				<a href="/developers">Developers</a>
+				<a href="/openapi.json">API</a>
 			</nav>
 			<span className="footer__copyright">
 				© {site.copyrightYear}{" "}

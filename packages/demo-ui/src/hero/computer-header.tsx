@@ -10,8 +10,8 @@ import {
 	Plus,
 	TerminalSquare,
 	type LucideIcon,
-} from "..";
-import { CloseIcon } from "..";
+} from "../ui/icon-registry";
+import { CloseIcon } from "../ui/icons";
 export type ComputerTab =
 	| "status"
 	| "tools"

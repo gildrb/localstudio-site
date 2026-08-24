@@ -7,7 +7,7 @@ import {
 	Server,
 	Sparkles,
 	Zap,
-} from "..";
+} from "../ui/icon-registry";
 import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 

@@ -50,6 +50,7 @@
 		"scripts/bundle.mjs",
 		"scripts/vercel.mjs",
 		"scripts/index-html.mjs",
+		"scripts/prerender.mjs",
 		"src/agent/markdown.ts",
 		"src/demo-ui-modules.d.ts",
 		"src/logo-renderer.d.ts",

@@ -26,7 +26,9 @@ const fastClock = {
 };
 
 function useHeroClock() {
-	return new URLSearchParams(window.location.search).has("demoClock")
+	const location = globalThis.window?.location;
+	if (!location) return undefined;
+	return new URLSearchParams(location.search).has("demoClock")
 		? fastClock
 		: undefined;
 }

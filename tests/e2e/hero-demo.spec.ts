@@ -368,3 +368,15 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 	expect(layout.pointer).toBe("none");
 	expect(layout.mobile).toBe("true");
 });
+
+test("full hero entrance animates copy and render surface", async ({ page, request }) => {
+	const html = await (await request.get("/")).text();
+	const stage = html.match(/<div class="hero__stage section-width"[^>]*>/)?.[0] ?? "";
+	const title = html.match(/<h1 id="landing-title"[^>]*>/)?.[0] ?? "";
+	expect(stage).toContain('id="product"');
+	expect(stage).toContain("opacity:0");
+	expect(title).toContain("opacity:0");
+	await page.goto("/");
+	await expect(page.locator("#landing-title")).toHaveCSS("opacity", "1");
+	await expect(page.locator("#product")).toHaveCSS("opacity", "1");
+});
