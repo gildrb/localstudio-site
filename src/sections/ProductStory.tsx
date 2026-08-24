@@ -9,12 +9,10 @@ const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
 const STORY_EASE = [0.16, 1, 0.3, 1] as const;
 const STORY_DURATION = 0.45;
-const storySteps = productFeatures.flatMap((feature, featureIndex) =>
-	feature.demoScenes.map((scene) => ({ featureIndex, scene })),
-);
+
 
 function useStoryProgress() {
-	const [activeStepIndex, setActiveStepIndex] = useState(0);
+	const [activeIndex, setActiveIndex] = useState(0);
 	const showcaseRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -34,9 +32,9 @@ function useStoryProgress() {
 				Math.max(window.scrollY + navHeight - showcaseTop, 0),
 				scrollRange,
 			);
-			const scenePosition = (traveled / scrollRange) * storySteps.length;
-			const nextIndex = Math.min(storySteps.length - 1, Math.floor(scenePosition));
-			setActiveStepIndex((current) => (current === nextIndex ? current : nextIndex));
+			const scenePosition = (traveled / scrollRange) * productFeatures.length;
+			const nextIndex = Math.min(productFeatures.length - 1, Math.floor(scenePosition));
+			setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
 		};
 
 		const measure = () => {
@@ -78,19 +76,16 @@ function useStoryProgress() {
 		};
 	}, []);
 
-	return { activeStepIndex, showcaseRef };
+	return { activeIndex, showcaseRef };
 }
 
 export function ProductStory() {
-	const { activeStepIndex, showcaseRef } = useStoryProgress();
+	const { activeIndex, showcaseRef } = useStoryProgress();
 	const [demoInRange, setDemoInRange] = useState(false);
 	const visualRef = useRef<HTMLElement>(null);
 	const reduceMotion = useReducedMotion();
-	const activeStep = storySteps[activeStepIndex] ?? storySteps[0];
-	const activeFeatureIndex = activeStep?.featureIndex ?? 0;
-	const activeFeature = productFeatures[activeFeatureIndex] ?? productFeatures[0];
-	const activeScene = activeStep?.scene ?? productFeatures[0].demoScenes[0];
-	const optionsOffset = `${(0.5 - activeFeatureIndex) * (100 / productFeatures.length)}%`;
+	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
+	const optionsOffset = `${(1 - activeIndex) * 20}%`;
 
 	useEffect(() => {
 		const visual = visualRef.current;
@@ -105,20 +100,14 @@ export function ProductStory() {
 
 	return (
 		<LazyMotion features={domMax} strict>
-			<section id="media" className="story section-width" aria-labelledby="story-title">
-				<header className="story__intro">
-					<h2 id="story-title">Run it. Work in it. Own it.</h2>
-					<p>
-						From the model runtime to the agent session to the data and access around it, Local Studio keeps the whole system under your control.
-					</p>
-				</header>
+			<section id="media" className="story section-width" aria-label={`${site.products.localStudio.name} product story`}>
 				<div className="story__showcase" ref={showcaseRef}>
 					<div className="story__sticky">
 						<div className="story__options-window">
 							<m.ol
 								className="story__options"
 								aria-label={`${site.products.localStudio.name} capabilities`}
-								data-active-index={activeFeatureIndex}
+								data-active-index={activeIndex}
 								initial={false}
 								animate={{ y: optionsOffset }}
 								transition={{
@@ -127,7 +116,7 @@ export function ProductStory() {
 								}}
 							>
 								{productFeatures.map((feature, index) => {
-									const selected = activeFeatureIndex === index;
+									const selected = activeIndex === index;
 									return (
 										<li
 											className={`story__option ${selected ? "is-active" : ""}`}
@@ -135,7 +124,7 @@ export function ProductStory() {
 											aria-current={selected ? "step" : undefined}
 										>
 											<div className="story__option-control">
-												<m.h3
+												<m.span
 													className="story__option-title"
 													initial={false}
 													animate={{
@@ -149,7 +138,7 @@ export function ProductStory() {
 													}}
 												>
 													{feature.storyTitle}
-												</m.h3>
+												</m.span>
 											</div>
 											<m.p
 												className="story__description"
@@ -185,12 +174,12 @@ export function ProductStory() {
 									{demoInRange ? (
 										<Suspense fallback={DEMO_PLACEHOLDER}>
 											<m.div
-												key={activeScene}
+												key={activeFeature.slug}
 												initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
 												animate={{ opacity: 1, filter: "blur(0px)" }}
 												transition={motion.featureSwap}
 											>
-												<FeatureDemo scene={activeScene} repositoryUrl={site.products.localStudio.repository} />
+												<FeatureDemo scene={activeFeature.demoScene} />
 											</m.div>
 										</Suspense>
 								) : (
@@ -203,8 +192,8 @@ export function ProductStory() {
 						</div>
 					</div>
 					<div className="story__scroll-track" aria-hidden="true">
-						{storySteps.map((step) => (
-							<div className="story__scroll-step" key={`${step.featureIndex}-${step.scene}`} />
+						{productFeatures.map((feature) => (
+							<div className="story__scroll-step" key={feature.slug} />
 						))}
 						<div className="story__scroll-step" />
 					</div>

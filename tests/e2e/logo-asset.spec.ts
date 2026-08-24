@@ -69,7 +69,6 @@ test("navbar uses compact text and an accessible GitHub icon", async ({ page }) 
 test("site images cannot be copied, dragged, or saved", async ({ page }) => {
 	for (const route of ["/", "/product"]) {
 		await page.goto(route);
-		await page.locator("img").first().waitFor();
 		const result = await page.evaluate(() => {
 			const images = [...document.images];
 			if (images.length === 0) throw new Error("img");

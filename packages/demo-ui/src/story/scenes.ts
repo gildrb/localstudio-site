@@ -12,4 +12,4 @@ export const scenes = {
 	configure: ConfigureDemo,
 } as const;
 
-export type FeatureScene = keyof typeof scenes | "workbench";
+export type FeatureScene = keyof typeof scenes;

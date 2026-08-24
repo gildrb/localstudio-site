@@ -16,7 +16,6 @@ import {
 } from "../domain/route";
 import { release } from "../domain/release";
 import { site } from "../domain/site";
-import { productFeatures, renderInlineMarkdown } from "../content/product";
 
 const toc = [
 	["Start here", "start-here"],
@@ -96,10 +95,20 @@ const studioFacts: readonly OverviewEntry[] = [
 	},
 ];
 
-const studioSurfaces: readonly OverviewEntry[] = productFeatures.map((feature) => ({
-	label: feature.storyTitle,
-	text: renderInlineMarkdown(feature.storyDescription),
-}));
+const studioSurfaces: readonly OverviewEntry[] = [
+	{
+		label: "Control",
+		text: "Launch and evict models, manage recipes and downloads, and watch GPU, process, log, and usage state across local and remote controllers.",
+	},
+	{
+		label: "Serve",
+		text: "vLLM, SGLang, MLX, and llama.cpp behind one OpenAI-compatible proxy: chat, models, tokenization, audio.",
+	},
+	{
+		label: "Work",
+		text: "Models, providers, browser, files, terminal, and agents in one session through the Pi-powered Workbench.",
+	},
+];
 
 const runtimes: readonly OverviewEntry[] = [
 	{

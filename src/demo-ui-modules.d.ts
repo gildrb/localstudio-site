@@ -11,7 +11,7 @@ declare module "@local-studio/demo-ui/hero" {
 }
 declare module "@local-studio/demo-ui/story" {
 	import type { ComponentType } from "react";
-	const FeatureDemo: ComponentType<{ scene: string; repositoryUrl: string }>;
+	const FeatureDemo: ComponentType<{ scene: string }>;
 	export default FeatureDemo;
 }
 declare module "@local-studio/demo-ui/styles.css";

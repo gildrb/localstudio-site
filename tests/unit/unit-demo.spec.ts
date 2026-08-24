@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 import {
 	DEMO_PROMPT,
-	DEMO_RESULT,
 	DEMO_TOOLS,
 	browserDemoClock,
 	immediateDemoClock,
@@ -58,23 +57,4 @@ test("immediate demo clock ignores delay", () => {
 	}, 10_000);
 	immediateDemoClock.clear(id);
 	expect(fired).toBe(false);
-});
-
-
-test("guided scenario makes local, public-web, and device boundaries explicit", () => {
-	const toolNames = DEMO_TOOLS.map((tool) => tool.name);
-	expect(toolNames).toEqual([
-		"read_calendar",
-		"read_email",
-		"read_file",
-		"search_web",
-		"plan_route",
-		"write_file",
-		"create_device_reminder",
-	]);
-	const publicRequest = DEMO_TOOLS.find((tool) => tool.name === "search_web");
-	expect(JSON.stringify(publicRequest?.args)).not.toContain("Maya");
-	expect(publicRequest?.resultText).toContain("no private context sent");
-	expect(DEMO_RESULT).toContain("stayed local");
-	expect(DEMO_RESULT).toContain("paired phone");
 });

@@ -3,12 +3,12 @@ export const DEMO_MODEL = "Qwen3.8-27B";
 export const DEMO_RUNTIME = "MLX";
 
 export const DEMO_PROMPT =
-	"Using the sample data on this Mac, plan Maya's birthday weekend. Read the family calendar, dinner email, and saved places. Look up the Lake District forecast without sending private details. Keep driving under two hours, save the itinerary locally, and add a Thursday 18:30 packing reminder to my phone. Do not book or message anyone.";
+	"Plan a relaxed Lake District weekend for Maya's birthday. Check our family calendar, the dinner confirmation, saved places, and Friday's forecast. Keep driving under two hours, make an itinerary, and set a Thursday packing reminder. Do not book or message anyone without asking me.";
 
 export const DEMO_STREAM =
-	"I'll combine the calendar, email, and files on this Mac. For weather, I'll send only a public destination-and-date query. Then I'll save the plan locally and use the already-approved phone reminder action.";
+	"I'll bring the private details together, resolve the timing and travel constraints, then leave every booking and message for your approval.";
 
-export const DEMO_RESULT = `Done on this Mac. The calendar, email, and saved places stayed local. The weather lookup sent only “Lake District Friday to Sunday forecast.”
+export const DEMO_RESULT = `Your Lake District weekend is laid out without booking or messaging anyone.
 
 Friday
 - Leave after school pickup and check in before dinner at 19:30
@@ -21,11 +21,10 @@ Saturday
 Sunday
 - Brunch near Keswick and home by 17:00
 
-Saved and synced
-- Trips/lake-district-weekend.md was saved locally
-- Thursday 18:30 packing reminder was added to the paired phone
-- No booking or message was sent
-- Boat hire and the group message still require approval`;
+Ready for you
+- Trips/lake-district-weekend.md has the full plan and wet-weather fallback
+- Thursday 18:30 packing reminder is on
+- Boat hire and the group message still need your approval`;
 
 export const DEMO_DIFF = `diff --git a/Trips/lake-district-weekend.md b/Trips/lake-district-weekend.md
 new file mode 100644
@@ -44,15 +43,14 @@ new file mode 100644
 +## Sunday
 +- Keswick brunch and home by 17:00
 +
-+Private inputs stayed on this Mac
-+No booking or message sent
++No bookings or messages sent without approval
 `;
 
 type DemoToolArgs =
 	| { path: string; range?: string }
 	| { query: string; path?: never }
 	| { stops: string[]; path?: never }
-	| { device: string; schedule: string; name: string; path?: never };
+	| { schedule: string; name: string; path?: never };
 
 export type DemoToolSpec = {
 	id: string;
@@ -94,8 +92,7 @@ Keswick market`,
 		id: "forecast",
 		name: "search_web",
 		args: { query: "Lake District Friday to Sunday forecast" },
-		resultText: `Public query only · no private context sent
-Friday: light rain, clearing 18:00
+		resultText: `Friday: light rain, clearing 18:00
 Saturday: dry morning, showers after 16:00
 Sunday: clear, 12°C`,
 	},
@@ -111,23 +108,19 @@ Walking options stay under 90 minutes`,
 		id: "itinerary",
 		name: "write_file",
 		args: { path: "Trips/lake-district-weekend.md" },
-		resultText: `Created Trips/lake-district-weekend.md locally
+		resultText: `Created Trips/lake-district-weekend.md
 3-day itinerary
 Wet-weather fallback included
 No booking actions taken`,
 	},
 	{
-		id: "phone-reminder",
-		name: "create_device_reminder",
-		args: {
-			device: "Paired phone",
-			schedule: "Thursday 18:30",
-			name: "Lake District packing reminder",
-		},
-		resultText: `Reminder added to paired phone
+		id: "packing",
+		name: "create_automation",
+		args: { schedule: "Thursday 18:30", name: "Lake District packing reminder" },
+		resultText: `Automation created
 Thursday at 18:30
-Direct device connection
-No message sent`,
+Rechecks the forecast before building the packing list
+Messaging disabled`,
 	},
 ];
 
@@ -237,17 +230,17 @@ export function demoStatus(state: DemoState): string {
 export function demoDelay(state: DemoState): number {
 	switch (state.phase) {
 		case "prompt":
-			return 18;
+			return 32;
 		case "select":
-			return 700;
+			return 1400;
 		case "load":
-			return 45;
+			return 80;
 		case "stream":
-			return 18;
+			return 32;
 		case "tool":
-			return state.toolsDone < state.toolsStarted ? 450 : 130;
+			return state.toolsDone < state.toolsStarted ? 1000 : 320;
 		case "result":
-			return 300;
+			return 500;
 		case "done":
 			return 0;
 	}
@@ -277,7 +270,7 @@ function advanceDemo(state: DemoState): DemoState {
 			if (state.promptChars < DEMO_PROMPT.length) {
 				return {
 					...state,
-					promptChars: Math.min(DEMO_PROMPT.length, state.promptChars + 8),
+					promptChars: Math.min(DEMO_PROMPT.length, state.promptChars + 4),
 				};
 			}
 			return { ...state, phase: "load" };
@@ -295,7 +288,7 @@ function advanceDemo(state: DemoState): DemoState {
 			};
 		}
 		case "stream": {
-			const streamChars = Math.min(DEMO_STREAM.length, state.streamChars + 10);
+			const streamChars = Math.min(DEMO_STREAM.length, state.streamChars + 6);
 			const t = streamChars / DEMO_STREAM.length;
 			return {
 				...state,

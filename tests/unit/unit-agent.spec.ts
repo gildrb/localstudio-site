@@ -13,7 +13,6 @@ import { release } from "../../src/domain/release";
 import { productFeatures, renderInlineMarkdown } from "../../src/content/product";
 import { productMarkdown } from "../../src/agent/markdown";
 import { machineText } from "../../src/agent/machine";
-import { scenes } from "../../packages/demo-ui/src/story/scenes";
 
 test("robots and sitemap stay deterministic", () => {
 	const robots = agentDocument("/robots.txt");
@@ -82,21 +81,6 @@ test("product markdown is generated from canonical feature prose", () => {
 		expect(body).toContain(feature.productTitle);
 		expect(body).toContain(renderInlineMarkdown(feature.productText));
 	}
-});
-
-test("product story has three canonical promises backed by every demo scene", () => {
-	expect(productFeatures.map((feature) => feature.slug)).toEqual([
-		"run",
-		"work",
-		"own",
-	]);
-	expect(productFeatures.map((feature) => feature.storyTitle)).toEqual([
-		"Run",
-		"Work",
-		"Own",
-	]);
-	const usedScenes = productFeatures.flatMap((feature) => feature.demoScenes);
-	expect(new Set(usedScenes)).toEqual(new Set([...Object.keys(scenes), "workbench"]));
 });
 
 test("Vercel Edge middleware is generated and self-contained", () => {

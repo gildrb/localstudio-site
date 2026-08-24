@@ -13,9 +13,6 @@ for (const viewport of viewports) {
 			await page.emulateMedia({ reducedMotion: "reduce" });
 			await page.goto(path);
 			await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-			if (path === "/") {
-				await expect(page.locator(".hero .demo:not(.hero__demo-placeholder)")).toBeVisible();
-			}
 			await expect(page).toHaveScreenshot(`${viewport.name}${path === "/" ? "-home" : path.replaceAll("/", "-")}.png`, {
 				fullPage: true,
 				animations: "disabled",
