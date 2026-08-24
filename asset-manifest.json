@@ -164,11 +164,11 @@
 			"role": "image",
 			"type": "image/svg+xml",
 			"dimensions": {
-				"width": 4667,
-				"height": 525
+				"width": 3000,
+				"height": 566
 			},
-			"bytes": 11897,
-			"sha256": "bd557b5019673946aea18c080cb7ea9f5d6039527dabae3bb2379c46ec7aeef9"
+			"bytes": 11615,
+			"sha256": "55e0397d92f54666715816efa8160d8a0881199e767a741d431a347fb654bdfa"
 		},
 		{
 			"path": "public/images/optimized.svg",

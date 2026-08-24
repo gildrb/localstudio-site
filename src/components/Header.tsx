@@ -350,8 +350,8 @@ export function Header() {
 						className="brand__logo"
 						src={assets.wordmark}
 						alt=""
-						width="4667"
-						height="525"
+						width="3000"
+						height="566"
 						draggable={false}
 					/>
 				</LocalLink>

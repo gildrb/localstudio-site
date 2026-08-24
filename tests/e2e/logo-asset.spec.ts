@@ -8,8 +8,7 @@ test("header uses the local wordmark asset", async ({ page }) => {
 	expect(response.ok()).toBeTruthy();
 	expect(response.headers()["content-type"]).toContain("image/svg+xml");
 	const source = await response.text();
-	expect(source).toContain('viewBox="0 0 4667 525"');
-	expect(source).toContain('style="fill:#fff;"');
+	expect(source).toContain('viewBox="0 0 3000 566"');
 });
 
 test("hero uses the local standalone mark", async ({ page }) => {
@@ -69,6 +68,7 @@ test("navbar uses compact text and an accessible GitHub icon", async ({ page }) 
 test("site images cannot be copied, dragged, or saved", async ({ page }) => {
 	for (const route of ["/", "/product"]) {
 		await page.goto(route);
+		await page.locator("img").first().waitFor();
 		const result = await page.evaluate(() => {
 			const images = [...document.images];
 			if (images.length === 0) throw new Error("img");

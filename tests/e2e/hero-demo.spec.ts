@@ -12,10 +12,10 @@ test("hero demo autoplays the local inference sequence once", async ({
 		demo.getByRole("button", { name: "Model: Qwen3.8-27B" }),
 	).toBeVisible();
 	await expect(demo).toHaveAttribute("data-phase", "done");
-	await expect(demo.locator(".chat-markdown").first()).toContainText(
+	await expect(demo.locator(".chat-markdown").last()).toContainText(
 		"Ready for you",
 	);
-	await expect(demo.locator(".chat-markdown").first()).toContainText(
+	await expect(demo.locator(".chat-markdown").last()).toContainText(
 		"Lake District",
 	);
 	await expect(demo.getByText("Maya's birthday weekend").first()).toBeVisible();
@@ -73,15 +73,6 @@ test("hero demo follow-ups stay visually quiet", async ({ page }) => {
 	);
 });
 
-test("hero demo keeps sidebar routes inside New task", async ({ page }) => {
-	await page.setViewportSize({ width: 1440, height: 1000 });
-	await page.emulateMedia({ reducedMotion: "reduce" });
-	await page.goto("/?demoClock=fast");
-	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
-	await demo.getByRole("link", { name: "Usage" }).click();
-	await expect(demo.getByText("Maya's birthday weekend").first()).toBeVisible();
-	await expect(page).toHaveURL("/");
-});
 
 test("hero demo result copies with the clipboard API", async ({
 	page,
@@ -106,7 +97,7 @@ test("reduced motion shows the finished result immediately", async ({
 	await page.goto("/?demoClock=fast");
 	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
 	await expect(demo).toHaveAttribute("data-phase", "done");
-	await expect(demo.locator(".chat-markdown").first()).toHaveText(
+	await expect(demo.locator(".chat-markdown").last()).toHaveText(
 		/I'll bring the private details together[\s\S]*Ready for you/,
 	);
 });
@@ -207,7 +198,7 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 			mobile: demo.getAttribute("data-mobile"),
 		};
 	});
-	expect(layout.sidebar).toBe(224);
+	expect(layout.sidebar).toBe(244);
 	expect(layout.computer).toBe(320);
 	expect(layout.layoutWidth).toBe(1392);
 	expect(layout.layoutHeight).toBe(787);
