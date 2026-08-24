@@ -15,7 +15,6 @@ function sourceFiles(directory) {
 test("page colors use reusable tokens instead of loose hex literals", () => {
 	const violations = sourceFiles("src").flatMap((path) => {
 		const projectPath = relative(".", path);
-		if (projectPath.startsWith("src/ls/")) return [];
 		const source = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 		return source.split("\n").flatMap((line, index) => {
 			const code = line.replace(/\/\/.*$/, "");
