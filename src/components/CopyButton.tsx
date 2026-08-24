@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
-import { motion } from "../domain/motion";
 
 interface CopyButtonProps {
 	text: string;
@@ -12,19 +10,8 @@ const checkPath =
 	"m15.56 4-.53.53-8.8 8.8c-.68.68-1.78.68-2.47 0l.53-.54-.53.53-2.79-2.79L.44 10 1.5 8.94l.53.53 2.8 2.8c.1.09.25.09.35 0l8.79-8.8.53-.53z";
 
 
-function glyphState(active: boolean, reduceMotion: boolean) {
-	if (reduceMotion) return { opacity: active ? 1 : 0 };
-	return {
-		opacity: active ? 1 : 0,
-		scale: active ? 1 : 0.55,
-		filter: active ? "blur(0px)" : "blur(4px)",
-	};
-}
-
 export function CopyButton({ text }: CopyButtonProps) {
 	const [copied, setCopied] = useState(false);
-	const reduceMotion = useReducedMotion();
-	const transition = { duration: reduceMotion ? 0 : 0.18, ease: motion.ease };
 
 	async function copy() {
 		if (copied) return;
@@ -45,41 +32,26 @@ export function CopyButton({ text }: CopyButtonProps) {
 	}
 
 	return (
-		<LazyMotion features={domAnimation} strict>
-			<button
-				className={copied ? "copy-icon copied" : "copy-icon"}
-				type="button"
-				onClick={copy}
-				aria-label="Copy to clipboard"
-			>
-				<span className="sr-only" role="status" aria-live="polite">
-					{copied ? "Copied to clipboard" : ""}
-				</span>
-				<span className="copy-icon__glyph" aria-hidden="true">
-					<m.svg
-						className="copy-icon__symbol"
-						viewBox="0 0 16 16"
-						width="16"
-						height="16"
-						initial={false}
-					>
-						<m.path
-							fill="currentColor"
-							d={copyPath}
-							style={{ originX: "50%", originY: "50%" }}
-							animate={glyphState(!copied, Boolean(reduceMotion))}
-							transition={transition}
-						/>
-						<m.path
-							fill="currentColor"
-							d={checkPath}
-							style={{ originX: "50%", originY: "50%" }}
-							animate={glyphState(copied, Boolean(reduceMotion))}
-							transition={transition}
-						/>
-					</m.svg>
-				</span>
-			</button>
-		</LazyMotion>
+		<button
+			className={copied ? "copy-icon copied" : "copy-icon"}
+			type="button"
+			onClick={copy}
+			aria-label="Copy to clipboard"
+		>
+			<span className="sr-only" role="status" aria-live="polite">
+				{copied ? "Copied to clipboard" : ""}
+			</span>
+			<span className="copy-icon__glyph" aria-hidden="true">
+				<svg
+					className="copy-icon__symbol"
+					viewBox="0 0 16 16"
+					width="16"
+					height="16"
+				>
+					<path className="copy-icon__copy" fill="currentColor" d={copyPath} />
+					<path className="copy-icon__check" fill="currentColor" d={checkPath} />
+				</svg>
+			</span>
+		</button>
 	);
 }

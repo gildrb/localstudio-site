@@ -1,4 +1,5 @@
-import { lazy } from "react";
+import { lazy, type ComponentType } from "react";
+import { PromptPage } from "../pages/PromptPage";
 import {
 	docsPath,
 	downloadPath,
@@ -20,9 +21,7 @@ export const pages = {
 	[docsPath]: lazy(() =>
 		import("../pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),
 	),
-	[setupPath]: lazy(() =>
-		import("../pages/PromptPage").then(({ PromptPage }) => ({ default: PromptPage })),
-	),
+	[setupPath]: PromptPage,
 	[downloadPath]: lazy(() =>
 		import("../pages/DownloadPage").then(({ DownloadPage }) => ({ default: DownloadPage })),
 	),
@@ -32,5 +31,5 @@ export const pages = {
 	[machinePath]: lazy(() =>
 		import("../pages/MachinePage").then(({ MachinePage }) => ({ default: MachinePage })),
 	),
-} as const satisfies Record<RoutePath, ReturnType<typeof lazy>>;
+} as const satisfies Record<RoutePath, ComponentType>;
 

@@ -1891,11 +1891,28 @@ button {
   transform-origin: center;
 }
 
-.route-pending {
-  min-height: 100svh;
-  background: var(--background);
+.copy-icon__copy,
+.copy-icon__check {
+  transform-origin: center;
+  transition:
+    opacity 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.copy-icon__check,
+.copy-icon.copied .copy-icon__copy {
+  opacity: 0;
+  transform: scale(0.55);
+  filter: blur(4px);
+}
+
+.copy-icon__copy,
+.copy-icon.copied .copy-icon__check {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
 
 .machine__banner {
   display: flex;
