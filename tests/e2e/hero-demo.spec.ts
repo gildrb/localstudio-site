@@ -179,18 +179,14 @@ test("KittyLitter carousel stays still without pagination chrome", async ({
 	await expect
 		.poll(async () =>
 			carousel.evaluate((element) => {
-				const cards = element.querySelectorAll<HTMLElement>(".kitty__feature");
-				const grid = element.querySelector<HTMLElement>(
-					".kitty__item-container",
+				const last = element.querySelector<HTMLElement>(
+					".kitty__feature:last-child",
 				);
-				const last = cards.item(cards.length - 1);
-				if (!last || !grid) return Number.NaN;
-				const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 0;
-				const stride = last.getBoundingClientRect().width + gap;
+				const intro = document.querySelector<HTMLElement>(".kitty__intro");
+				if (!last || !intro) return Number.NaN;
 				return Math.round(
-					element.getBoundingClientRect().right -
-						last.getBoundingClientRect().right -
-						2 * stride,
+					intro.getBoundingClientRect().right -
+						last.getBoundingClientRect().right,
 				);
 			}),
 		)

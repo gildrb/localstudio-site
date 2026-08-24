@@ -1149,9 +1149,6 @@ button {
       (min(var(--page-width), calc(100vw - var(--page-gutter))) - 48px) / 3
     )
   );
-  --kitty-carousel-end-space: calc(
-    2 * (var(--kitty-card-width) + 24px)
-  );
   width: 100%;
   overflow-x: auto;
   margin-top: 32px;
@@ -1173,14 +1170,8 @@ button {
   width: max-content;
   align-items: flex-start;
   gap: 24px;
-  padding-left: var(--kitty-carousel-gutter);
+  padding-inline: var(--kitty-carousel-gutter);
 }
-
-.kitty__carousel-spacer {
-  flex: 0 0 var(--kitty-carousel-end-space);
-  margin-left: -24px;
-}
-
 
 .kitty__feature-trigger {
   display: block;
@@ -1513,7 +1504,6 @@ button {
   }
   .kitty__carousel {
     --kitty-card-width: calc((100vw - var(--page-gutter) - 24px) / 2);
-    --kitty-carousel-end-space: calc(var(--kitty-card-width) + 24px);
   }
 }
 
@@ -1642,7 +1632,6 @@ button {
 
   .kitty__carousel {
     --kitty-card-width: calc(100vw - var(--page-gutter));
-    --kitty-carousel-end-space: 0px;
   }
 
   .page-cta {

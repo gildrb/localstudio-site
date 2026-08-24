@@ -206,7 +206,7 @@ function nearestTargetIndex(targets: readonly number[], position: number) {
 	let nearestIndex = 0;
 	for (let index = 1; index < targets.length; index += 1) {
 		if (
-			Math.abs((targets[index] ?? 0) - position) <
+			Math.abs((targets[index] ?? 0) - position) <=
 			Math.abs((targets[nearestIndex] ?? 0) - position)
 		) {
 			nearestIndex = index;
@@ -389,7 +389,6 @@ export function KittyLitter() {
 								key={feature.title}
 							/>
 						))}
-						<div className="kitty__carousel-spacer" aria-hidden="true" />
 					</div>
 				</div>
 			</section>
