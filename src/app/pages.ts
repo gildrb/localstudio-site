@@ -1,5 +1,7 @@
 import { lazy, type ComponentType } from "react";
+import { DocsPage } from "../pages/DocsPage";
 import { PromptPage } from "../pages/PromptPage";
+import { ResourcesPage } from "../pages/ResourcesPage";
 import {
 	docsPath,
 	downloadPath,
@@ -18,16 +20,12 @@ export const pages = {
 	[productPath]: lazy(() =>
 		import("../pages/ProductPage").then(({ ProductPage }) => ({ default: ProductPage })),
 	),
-	[docsPath]: lazy(() =>
-		import("../pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),
-	),
+	[docsPath]: DocsPage,
 	[setupPath]: PromptPage,
 	[downloadPath]: lazy(() =>
 		import("../pages/DownloadPage").then(({ DownloadPage }) => ({ default: DownloadPage })),
 	),
-	[overviewPath]: lazy(() =>
-		import("../pages/ResourcesPage").then(({ ResourcesPage }) => ({ default: ResourcesPage })),
-	),
+	[overviewPath]: ResourcesPage,
 	[machinePath]: lazy(() =>
 		import("../pages/MachinePage").then(({ MachinePage }) => ({ default: MachinePage })),
 	),

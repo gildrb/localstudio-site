@@ -61,6 +61,25 @@ test("client navigation renders routes immediately", async ({ page }) => {
   }
 });
 
+test("primary information routes need no late JavaScript", async ({ page }) => {
+  const targets = ["/setup", "/docs", "/overview"] as const;
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: routes["/"].heading }),
+  ).toBeVisible();
+  await page.route(/\/assets\/.*\.js$/, (route) => route.abort());
+  for (const target of targets) {
+    await page
+      .locator(`a[href="${target}"]`)
+      .first()
+      .evaluate((link: HTMLAnchorElement) => link.click());
+    await expect(page).toHaveURL(new RegExp(`${target}$`));
+    await expect(
+      page.getByRole("heading", { level: 1, name: routes[target].heading }),
+    ).toBeVisible();
+  }
+});
+
 test("unknown routes render not-found", async ({ page }) => {
   await page.goto("/does-not-exist");
   await expect(page).toHaveTitle("Page not found - Local Studio");
