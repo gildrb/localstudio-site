@@ -7,7 +7,7 @@ const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const command = process.argv[2] ?? "report";
 const architecture = JSON.parse(readFileSync(join(root, "architecture.json"), "utf8"));
 
-const SOURCE_EXT = new Set([".ts", ".tsx", ".js", ".mjs", ".css", ".txt"]);
+const SOURCE_EXT = new Set([".ts", ".tsx", ".js", ".mjs", ".css", ".wgsl", ".txt"]);
 const EXCLUDE_DIRS = new Set([
 	"node_modules",
 	"dist",
@@ -19,7 +19,6 @@ const EXCLUDE_DIRS = new Set([
 	"src/ls-shared",
 	"src/ls-contracts",
 	"src/sections/localai-logo-shader",
-	"packages",
 ]);
 
 function walk(directory) {
@@ -54,6 +53,7 @@ function resolveImport(fromRel, spec) {
 		`${raw}.js`,
 		`${raw}.mjs`,
 		`${raw}.css`,
+		`${raw}.wgsl`,
 		join(raw, "index.ts"),
 		join(raw, "index.tsx"),
 	];
@@ -76,6 +76,7 @@ function importsOf(rel) {
 		/\b(?:import|export)\b[\s\S]*?\bfrom\s+["']([^"']+)["']/g,
 		/^import\s+["']([^"']+)["']/gm,
 		/import\(\s*["']([^"']+)["']\s*\)/g,
+		/@import\s+(?:url\(\s*)?["']([^"']+)["']\s*\)?/g,
 	];
 	for (const pattern of patterns) {
 		let match;
@@ -200,6 +201,33 @@ for (const name of [
 	if (name in declared) usedDeps.add(name);
 }
 const unusedDeps = Object.keys(declared).filter((name) => !usedDeps.has(name));
+const workspaceManifests = [
+	{ root: "packages/demo-ui", manifest: "packages/demo-ui/package.json" },
+	{ root: "packages/logo-renderer", manifest: "packages/logo-renderer/package.json" },
+];
+
+function packageName(spec) {
+	if (spec.startsWith("node:") || spec.startsWith(".") || spec.startsWith("/")) return null;
+	return spec.startsWith("@") ? spec.split("/").slice(0, 2).join("/") : spec.split("/")[0];
+}
+
+const packageDependencyGaps = [];
+for (const workspacePackage of workspaceManifests) {
+	const manifest = JSON.parse(readFileSync(join(root, workspacePackage.manifest), "utf8"));
+	const declaredPackageDeps = new Set([
+		...Object.keys(manifest.dependencies ?? {}),
+		...Object.keys(manifest.devDependencies ?? {}),
+		...Object.keys(manifest.peerDependencies ?? {}),
+	]);
+	for (const file of files.filter((item) => item.startsWith(`${workspacePackage.root}/`))) {
+		for (const spec of importsOf(file)) {
+			const name = packageName(spec);
+			if (name && !declaredPackageDeps.has(name)) {
+				packageDependencyGaps.push(`${file} imports ${name} without a package declaration`);
+			}
+		}
+	}
+}
 
 function printReport() {
 	console.log(`files ${files.length}`);
@@ -212,6 +240,8 @@ function printReport() {
 	for (const item of singleConsumer) console.log(`  ${item.file} <- ${item.consumer}`);
 	console.log(`unused-deps ${unusedDeps.length}`);
 	for (const name of unusedDeps) console.log(`  unused-dep ${name}`);
+	console.log(`package-dependency-gaps ${packageDependencyGaps.length}`);
+	for (const gap of packageDependencyGaps) console.log(`  ${gap}`);
 	console.log("component fan-in");
 	const components = files.filter((file) => componentName(file));
 	for (const file of components.sort((a, b) => (fanIn.get(b)?.size ?? 0) - (fanIn.get(a)?.size ?? 0))) {
@@ -230,6 +260,7 @@ if (command === "check") {
 		);
 	}
 	if (unusedDeps.length) failures.push(`unused dependencies: ${unusedDeps.join(", ")}`);
+	if (packageDependencyGaps.length) failures.push(`workspace package dependency gaps: ${packageDependencyGaps.join(", ")}`);
 	if (failures.length) {
 		console.error(failures.join("\n"));
 		process.exitCode = 1;
