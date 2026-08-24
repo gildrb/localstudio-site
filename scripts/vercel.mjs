@@ -5,7 +5,7 @@ import {
 	HOMEPAGE_LINK_HEADER,
 	agentDocuments,
 } from "../src/agent/documents.ts";
-import { markdownPages, redirects } from "../src/domain/route.ts";
+import { markdownPages, redirects, routePaths } from "../src/domain/route.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const command = process.argv[2] ?? "write";
@@ -26,6 +26,7 @@ const headers = [
 		source: "/",
 		headers: [
 			{ key: "Vary", value: "Accept" },
+			{ key: "Link", value: HOMEPAGE_LINK_HEADER },
 			{
 				key: "Content-Signal",
 				value: "search=yes, ai-input=yes, ai-train=yes",
@@ -38,8 +39,21 @@ const headers = [
 		.map(({ path, contentType }) => headersFor(path, contentType)),
 ];
 
+const redirectRules = Object.entries(redirects).map(([source, destination]) => ({
+	source,
+	destination,
+	permanent: true,
+}));
+const rewrites = [
+	{ source: "/.well-known/mcp", destination: "/api/mcp" },
+	...routePaths
+		.filter((source) => source !== "/")
+		.map((source) => ({ source, destination: "/index.html" })),
+	...(["developers", "about", "contact", "privacy"].map((name) => ({ source: `/${name}`, destination: `/${name}.html` }))),
+];
+
 const vercelBody = `${JSON.stringify(
-	{ installCommand: "pnpm install --frozen-lockfile --ignore-scripts", headers },
+	{ installCommand: "pnpm install --frozen-lockfile --ignore-scripts", headers, redirects: redirectRules, rewrites },
 	null,
 	"\t",
 )}\n`;

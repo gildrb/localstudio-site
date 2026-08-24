@@ -40,6 +40,7 @@ export const jsonNotFound = {
 	error: {
 		code: "not_found",
 		message: "The requested API endpoint does not exist.",
+		resolution: "Read /openapi.json or /developers for supported endpoints.",
 		hint: "Read /openapi.json or /developers for supported endpoints.",
 		documentation: `${site.origin}/developers`,
 	},
@@ -49,6 +50,7 @@ export const jsonMethodNotAllowed = {
 	error: {
 		code: "method_not_allowed",
 		message: "This endpoint does not support the requested HTTP method.",
+		resolution: "Use the method declared for this operation in /openapi.json.",
 		hint: "Use the method declared for this operation in /openapi.json.",
 		documentation: `${site.origin}/developers`,
 	},
@@ -66,7 +68,10 @@ export function openApiSpec(): string {
 				contact: { name: site.company.name, email: site.company.contact, url: site.company.url },
 				license: { name: "Apache-2.0", identifier: "Apache-2.0" },
 			},
-			servers: [{ url: site.origin, description: "Canonical production service" }],
+			servers: [
+				{ url: "/", description: "Current origin" },
+				{ url: site.origin, description: "Canonical production service" },
+			],
 			externalDocs: { description: "Local Studio developer portal", url: `${site.origin}/developers` },
 			paths: {
 				"/api/v1/status": {
@@ -132,9 +137,9 @@ export function openApiSpec(): string {
 						properties: {
 							error: {
 								type: "object",
-								required: ["code", "message", "hint", "documentation"],
+								required: ["code", "message", "resolution", "documentation"],
 								properties: {
-									code: { type: "string" }, message: { type: "string" }, hint: { type: "string" }, documentation: { type: "string", format: "uri" },
+									code: { type: "string" }, message: { type: "string" }, resolution: { type: "string" }, hint: { type: "string" }, documentation: { type: "string", format: "uri" },
 								},
 							},
 						},

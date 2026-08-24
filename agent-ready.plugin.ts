@@ -10,6 +10,13 @@ import {
 	markdownTokenCount,
 	wantsMarkdown,
 } from "./src/agent/documents.ts";
+import {
+	apiProducts,
+	apiStatus,
+	jsonMethodNotAllowed,
+	jsonNotFound,
+} from "./src/agent/openapi.ts";
+import { notFoundMarkdown } from "./src/agent/pages.ts";
 
 function requestPath(url: string): string {
 	try {
@@ -56,6 +63,19 @@ const handleAgentRequest: Connect.NextHandleFunction = (
 	const accept = Array.isArray(acceptHeader)
 		? acceptHeader.join(",")
 		: (acceptHeader ?? "");
+	if (pathname.startsWith("/api/")) {
+		const body = pathname === "/api/v1/status"
+			? apiStatus
+			: pathname === "/api/v1/products"
+				? apiProducts
+				: jsonNotFound;
+		const allowed = pathname === "/api/v1/status" || pathname === "/api/v1/products";
+		const responseBody = allowed && request.method !== "GET" ? jsonMethodNotAllowed : body;
+		response.statusCode = allowed ? (request.method === "GET" ? 200 : 405) : 404;
+		response.setHeader("Content-Type", "application/json; charset=utf-8");
+		response.end(JSON.stringify(responseBody));
+		return;
+	}
 	const documentPath = wantsMarkdown(accept)
 		? markdownPathFor(pathname)
 		: pathname;
@@ -67,6 +87,12 @@ const handleAgentRequest: Connect.NextHandleFunction = (
 			document.contentType,
 			pathname === "/" || documentPath === "/index.md",
 		);
+		return;
+	}
+	if (wantsMarkdown(accept)) {
+		response.statusCode = 404;
+		response.setHeader("Content-Type", "text/markdown; charset=utf-8");
+		response.end(notFoundMarkdown);
 		return;
 	}
 	if (pathname === "/") {

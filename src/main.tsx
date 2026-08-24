@@ -1,5 +1,5 @@
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import App from "./app/App";
 import { assets, heroSizes, responsiveSrcSet } from "./domain/asset";
 import { isHeroImageRoute } from "./domain/route";
@@ -59,8 +59,14 @@ const root = document.getElementById("root");
 if (root === null) {
 	throw new Error("root");
 }
-createRoot(root).render(
+const app = (
 	<StrictMode>
 		<App />
-	</StrictMode>,
+	</StrictMode>
 );
+if (window.location.pathname === "/" && root.hasChildNodes()) {
+	hydrateRoot(root, app);
+} else {
+	root.replaceChildren();
+	createRoot(root).render(app);
+}

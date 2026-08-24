@@ -109,3 +109,59 @@ test("machine page names the company and both featured products", async ({
 	expect(text).toContain("Alleycat");
 	expect(text).toContain("vLLM");
 });
+
+
+test("raw homepage is useful without JavaScript and links developer resources", async ({
+	request,
+}) => {
+	const response = await request.get("/");
+	const html = await response.text();
+	const body = html.match(/<body>([\s\S]+?)<\/body>/)?.[1] ?? "";
+	const text = body
+		.replace(/<(script|style|template)[^>]*>[\s\S]*?<\/\1>/g, " ")
+		.replace(/<[^>]+>/g, " ")
+		.replace(/\s+/g, " ")
+		.trim();
+	expect(body).toContain("<h1");
+	expect(text.length).toBeGreaterThan(500);
+	expect(body).toContain('href="/developers"');
+	expect(body).toContain('href="/openapi.json"');
+});
+
+test("developer and trust pages are server-visible", async ({ request }) => {
+	for (const path of ["/developers", "/about", "/contact", "/privacy"]) {
+		const response = await request.get(path);
+		expect(response.status(), path).toBe(200);
+		expect(response.headers()["content-type"], path).toContain("text/html");
+		const body = await response.text();
+		expect(body, path).toContain("<h1>");
+		expect(body.replace(/<[^>]+>/g, " ").length, path).toBeGreaterThan(500);
+	}
+});
+
+test("OpenAPI and public REST endpoints are reachable", async ({ request }) => {
+	const schema = await request.get("/openapi.json");
+	expect(schema.status()).toBe(200);
+	expect(schema.headers()["content-type"]).toContain("application/json");
+	expect((await schema.json()).openapi).toBe("3.1.0");
+	const status = await request.get("/api/v1/status");
+	expect(status.status()).toBe(200);
+	expect((await status.json()).status).toBe("ok");
+	const products = await request.get("/api/v1/products");
+	expect((await products.json()).products).toHaveLength(3);
+	const missing = await request.get("/api/v1/missing");
+	expect(missing.status()).toBe(404);
+	expect((await missing.json()).error.resolution).toBeTruthy();
+});
+
+test("markdown 404 gives agents recovery links", async ({ request }) => {
+	const response = await request.get("/path-that-does-not-exist", {
+		headers: { Accept: "text/markdown" },
+	});
+	expect(response.status()).toBe(404);
+	expect(response.headers()["content-type"]).toContain("text/markdown");
+	const body = await response.text();
+	expect(body).toContain("/sitemap.xml");
+	expect(body).toContain("/llms.txt");
+	expect(body).toContain("/developers");
+});

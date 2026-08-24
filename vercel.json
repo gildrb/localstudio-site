@@ -9,6 +9,10 @@
 					"value": "Accept"
 				},
 				{
+					"key": "Link",
+					"value": "</.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", <https://localstudio.ai/.well-known/api-catalog>; rel=\"api-catalog\"; type=\"application/linkset+json\", </llms.txt>; rel=\"describedby\"; type=\"text/markdown\", </index.md>; rel=\"alternate\"; type=\"text/markdown\", </docs>; rel=\"service-doc\"; type=\"text/html\", </docs.md>; rel=\"service-doc\"; type=\"text/markdown\", </openapi.json>; rel=\"service-desc\"; type=\"application/vnd.oai.openapi+json;version=3.1\", </.well-known/mcp>; rel=\"service\"; type=\"application/json\", </developers>; rel=\"service-doc\"; type=\"text/html\", </.well-known/agent-card.json>; rel=\"service-desc\"; type=\"application/json\", </sitemap.xml>; rel=\"describedby\"; type=\"application/xml\", <https://localstudio.ai/>; rel=\"canonical\"; type=\"text/html\""
+				},
+				{
 					"key": "Content-Signal",
 					"value": "search=yes, ai-input=yes, ai-train=yes"
 				}
@@ -42,6 +46,96 @@
 				{
 					"key": "Content-Type",
 					"value": "application/xml; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/openapi.json",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "application/json; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/developers",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/developers.html",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/about",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/about.html",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/contact",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/contact.html",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/privacy",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/privacy.html",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
+				}
+			]
+		},
+		{
+			"source": "/404.html",
+			"headers": [
+				{
+					"key": "Content-Type",
+					"value": "text/html; charset=utf-8"
 				}
 			]
 		},
@@ -89,6 +183,64 @@
 					"value": "application/json; charset=utf-8"
 				}
 			]
+		}
+	],
+	"redirects": [
+		{
+			"source": "/mobile",
+			"destination": "/#mobile",
+			"permanent": true
+		},
+		{
+			"source": "/agents",
+			"destination": "/setup",
+			"permanent": true
+		}
+	],
+	"rewrites": [
+		{
+			"source": "/.well-known/mcp",
+			"destination": "/api/mcp"
+		},
+		{
+			"source": "/product",
+			"destination": "/index.html"
+		},
+		{
+			"source": "/docs",
+			"destination": "/index.html"
+		},
+		{
+			"source": "/setup",
+			"destination": "/index.html"
+		},
+		{
+			"source": "/download",
+			"destination": "/index.html"
+		},
+		{
+			"source": "/overview",
+			"destination": "/index.html"
+		},
+		{
+			"source": "/machine",
+			"destination": "/index.html"
+		},
+		{
+			"source": "/developers",
+			"destination": "/developers.html"
+		},
+		{
+			"source": "/about",
+			"destination": "/about.html"
+		},
+		{
+			"source": "/contact",
+			"destination": "/contact.html"
+		},
+		{
+			"source": "/privacy",
+			"destination": "/privacy.html"
 		}
 	]
 }
