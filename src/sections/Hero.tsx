@@ -6,6 +6,7 @@ import { CtaPair } from "../components/Links";
 import { motion } from "../domain/motion";
 import { useMachine } from "../app/machine-mode";
 import { LocalAiLogo } from "../logo/LocalAiLogo";
+import { site } from "../domain/site";
 
 const HeroDemo = lazy(() =>
 	import("@local-studio/demo-ui/hero").then(({ HeroDemo }) => ({ default: HeroDemo })),
@@ -82,7 +83,14 @@ export function Hero() {
 							<div className="hero__demo-placeholder" aria-hidden="true" />
 						}
 					>
-						{clock ? <HeroDemo clock={clock} /> : <HeroDemo />}
+						{clock ? (
+							<HeroDemo
+								clock={clock}
+								repositoryUrl={site.products.localStudio.repository}
+							/>
+						) : (
+							<HeroDemo repositoryUrl={site.products.localStudio.repository} />
+						)}
 					</Suspense>
 				</m.div>
 			</section>

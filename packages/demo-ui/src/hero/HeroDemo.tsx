@@ -98,8 +98,6 @@ const DEMO_WIDTH = 1392;
 const DEMO_HEIGHT = 787;
 const DEMO_FIT = 950;
 const DEMO_MOBILE = 900;
-const LOCAL_STUDIO_REPOSITORY =
-	"https://github.com/sybil-solutions/local-studio";
 const FOLLOW_UP_REPLY =
 	"This is an interactive preview. Run Local Studio with your own files, tools, and local models.";
 
@@ -438,14 +436,21 @@ function useHeroDemoModel(clock: DemoClock) {
 	};
 }
 
-export function HeroDemo({ clock = browserDemoClock }: { clock?: DemoClock } = {}) {
+export type HeroDemoProps = {
+	clock?: DemoClock;
+	repositoryUrl: string;
+};
+
+export function HeroDemo({ clock = browserDemoClock, repositoryUrl }: HeroDemoProps) {
 	const model = useHeroDemoModel(clock);
-	return <HeroDemoView {...model} />;
+	return <HeroDemoView {...model} repositoryUrl={repositoryUrl} />;
 }
 
 export default HeroDemo;
 
-function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
+function HeroDemoView(
+	model: ReturnType<typeof useHeroDemoModel> & { repositoryUrl: string },
+) {
 	const {
 		hostRef,
 		active,
@@ -545,7 +550,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 														className="agent-thread-shell mx-auto flex flex-col"
 													>
 														{messages ? (
-															<StaticThread messages={messages} />
+															<StaticThread messages={messages} repositoryUrl={model.repositoryUrl} />
 														) : (
 															<>
 																<ScenarioThread
@@ -558,6 +563,7 @@ function HeroDemoView(model: ReturnType<typeof useHeroDemoModel>) {
 																	<StaticThread
 																		lead={false}
 																		messages={extras}
+																		repositoryUrl={model.repositoryUrl}
 																	/>
 																) : null}
 															</>
@@ -802,9 +808,11 @@ function ScenarioThread({
 function StaticThread({
 	messages,
 	lead = true,
+	repositoryUrl,
 }: {
 	messages: ChatMessage[];
 	lead?: boolean;
+	repositoryUrl: string;
 }) {
 	return (
 		<>
@@ -823,7 +831,7 @@ function StaticThread({
 							</div>
 							{message.id.startsWith("assistant-extra-") ? (
 								<a
-									href={LOCAL_STUDIO_REPOSITORY}
+									href={repositoryUrl}
 									target="_blank"
 									rel="noreferrer"
 									className="mt-3 flex w-full items-center justify-between rounded-lg border border-(--border) bg-(--color-panel) px-3 py-2.5 text-[length:var(--fs-sm)] font-medium text-(--fg) transition-colors hover:bg-(--hover)"

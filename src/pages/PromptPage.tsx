@@ -1,10 +1,15 @@
-import setupPrompt from "../content/setup-prompt.txt?raw";
+import setupPromptTemplate from "../content/setup-prompt.txt?raw";
 import { PromptBlock } from "../components/PromptBlock";
 import { overviewPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 import { site } from "../domain/site";
+
+const setupPrompt = setupPromptTemplate.replace(
+	"{{LOCAL_STUDIO_REPOSITORY}}",
+	site.products.localStudio.repository,
+);
 
 export function PromptPage() {
 	return (

@@ -8,7 +8,8 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "generate": "node scripts/generate-logo-mesh.mjs"
+    "generate": "node scripts/generate-logo-mesh.mjs",
+    "check": "node scripts/generate-logo-mesh.mjs --check"
   },
   "peerDependencies": {
     "react": "19.2.8",
