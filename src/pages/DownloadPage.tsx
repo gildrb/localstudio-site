@@ -1,9 +1,7 @@
-import { docsPath, downloadLabel } from "../domain/route";
-import { assets } from "../domain/asset";
 import { CtaPair } from "../components/Links";
-import { LocalAiLogo } from "../logo/LocalAiLogo";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
+import { docsPath, downloadLabel } from "../domain/route";
 import { release } from "../domain/release";
 
 export function DownloadPage() {
@@ -12,14 +10,16 @@ export function DownloadPage() {
       <div className="download-page">
         <PageIntro
           id="download-page-title"
-          layout="split"
           title={downloadLabel()}
           description={
             <>
               The desktop app for running local controllers, models, providers,
               and coding agents on Apple Silicon.
-              <small className="mt-4 block text-sm/5 text-white/50">
-                {`${release.label.replace(" ", "\u00A0")} · ${release.arch} · macOS · hosted on GitHub Releases`}
+              <small className="download-page__meta">
+                <span>{release.label.replace(" ", "\u00A0")}</span>
+                <span>{release.arch}</span>
+                <span>macOS</span>
+                <span>hosted on GitHub Releases</span>
               </small>
             </>
           }
@@ -31,17 +31,6 @@ export function DownloadPage() {
                 label: "Read prerequisites",
               }}
             />
-          }
-          aside={
-            <div className="download-page__logo" aria-hidden="true">
-              <img
-                className="download-page__logo-fallback"
-                src={assets.localaiDark}
-                alt=""
-                draggable={false}
-              />
-              <LocalAiLogo />
-            </div>
           }
         />
       </div>
