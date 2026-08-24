@@ -1,7 +1,9 @@
 import { assets } from "../domain/asset";
 import { lazy, Suspense } from "react";
+import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { machinePath, setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
+import { motion } from "../domain/motion";
 import { LocalLink } from "../components/LocalLink";
 import { LocalAiLogo } from "../logo/LocalAiLogo";
 import { site } from "../domain/site";
@@ -9,6 +11,8 @@ import { site } from "../domain/site";
 const HeroDemo = lazy(() =>
 	import("@local-studio/demo-ui/hero").then(({ HeroDemo }) => ({ default: HeroDemo })),
 );
+
+const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
 
 const fastClock = {
 	now: () => Date.now(),
@@ -22,19 +26,28 @@ const fastClock = {
 };
 
 function useHeroClock() {
-	return new URLSearchParams(window.location.search).has("demoClock")
+	const location = globalThis.window?.location;
+	if (!location) return undefined;
+	return new URLSearchParams(location.search).has("demoClock")
 		? fastClock
 		: undefined;
 }
 
 export function Hero() {
 	const clock = useHeroClock();
+	const reduceMotion = useReducedMotion();
+	const enter = (delay: number) => ({
+		initial: reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
+		animate: settle,
+		transition: { ...motion.heroEnter, delay },
+	});
 	return (
-		<section className="hero" id="top" aria-labelledby="landing-title">
+		<LazyMotion features={domAnimation} strict>
+			<section className="hero" id="top" aria-labelledby="landing-title">
 				<LocalAiLogo />
 				<div className="hero__inner">
 					<div className="hero__copy">
-						<h1 id="landing-title" tabIndex={-1}>
+						<m.h1 id="landing-title" tabIndex={-1} {...enter(0.12)}>
 							Intelligence should be{" "}
 							<span className="hero__title-end">
 								owned
@@ -54,16 +67,20 @@ export function Hero() {
 									/>
 								</LocalLink>
 							</span>
-						</h1>
-						<p className="hero__thesis">
+						</m.h1>
+						<m.p className="hero__thesis" {...enter(0.2)}>
 							Private AI that works for you, not the cloud.
-						</p>
-						<div className="hero__actions">
+						</m.p>
+						<m.div className="hero__actions" {...enter(0.28)}>
 							<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
-						</div>
+						</m.div>
 					</div>
 				</div>
-			<div className="hero__stage section-width" id="product">
+				<m.div
+					className="hero__stage section-width"
+					id="product"
+					{...enter(0.75)}
+				>
 					<Suspense
 						fallback={
 							<div className="hero__demo-placeholder" aria-hidden="true" />
@@ -78,7 +95,8 @@ export function Hero() {
 							<HeroDemo repositoryUrl={site.products.localStudio.repository} />
 						)}
 					</Suspense>
-			</div>
-		</section>
+				</m.div>
+			</section>
+		</LazyMotion>
 	);
 }
