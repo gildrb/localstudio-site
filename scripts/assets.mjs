@@ -118,6 +118,10 @@ if (command === "write") {
 		console.error("asset-manifest.json is stale; run pnpm assets:manifest");
 		process.exit(1);
 	}
+	if (duplicateGroups.length) {
+		console.error(`duplicate asset content is not allowlisted:\n${duplicateGroups.map((group) => group.join(" = ")).join("\n")}`);
+		process.exit(1);
+	}
 	console.log(`asset-manifest.json ok (${files.length} files)`);
 } else {
 	console.error(`unknown command: ${command}`);
