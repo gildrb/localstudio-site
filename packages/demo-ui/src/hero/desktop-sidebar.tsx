@@ -9,12 +9,12 @@ import {
 } from "..";
 import { NavItemDesktop } from "..";
 import { isRouteActive, tabs } from "..";
-const DEFAULT_SIDEBAR_WIDTH = 244;
+const DEFAULT_SIDEBAR_WIDTH = 224;
 function ProfileAvatar({ profile }: { profile: { name: string } }) {
 	return <span className="inline-block h-6 w-6 rounded-full bg-(--hover)" aria-hidden="true" title={profile.name} />;
 }
 function useLocalProfile(): [{ name: string }] {
-	return [{ name: "Sero" }];
+	return [{ name: "Local" }];
 }
 import { HeroProjectsNav, type HeroTaskId } from "./projects-nav";
 
@@ -38,6 +38,11 @@ export function HeroDesktopSidebar({
 		<aside
 			className="relative flex sticky top-0 h-full border-r border-(--border) bg-(--sidebar-bg) flex-col shrink-0 z-40 overflow-hidden"
 			style={{ width: DEFAULT_SIDEBAR_WIDTH }}
+			onClick={(event) => {
+				if (event.target instanceof Element && event.target.closest("a")) {
+					event.preventDefault();
+				}
+			}}
 		>
 			<div className="flex min-h-0 flex-1 flex-col overflow-hidden opacity-100">
 				<div className="sticky top-0 z-50 flex h-[var(--h-toolbar)] shrink-0 items-center gap-1 bg-(--sidebar-bg) px-2">

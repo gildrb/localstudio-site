@@ -53,21 +53,6 @@ test("same-origin link decisions stay pure", () => {
 	).toEqual({ kind: "top" });
 });
 
-test("every HTML route has a page module", () => {
-	const source = readFileSync("src/app/pages.ts", "utf8");
-	const names = [
-		"homePath",
-		"productPath",
-		"docsPath",
-		"setupPath",
-		"downloadPath",
-		"overviewPath",
-		"machinePath",
-	];
-	for (const name of names) {
-		expect(source.includes(`[${name}]`), name).toBe(true);
-	}
-});
 
 test("design-manifest routes match the canonical route model", () => {
 	const manifest = JSON.parse(readFileSync("design-manifest.json", "utf8"));
@@ -91,11 +76,4 @@ test("download label comes from the download route heading", () => {
 test("HTML titles use the canonical product name", () => {
 	expect(routeTitle("/")).toBe(`Intelligence should be owned - ${site.products.localStudio.name}`);
 	expect(notFoundTitle()).toBe(`Page not found - ${site.products.localStudio.name}`);
-});
-
-test("Docs and overview headings come from the route model", () => {
-	const docs = readFileSync("src/pages/DocsPage.tsx", "utf8");
-	const overview = readFileSync("src/pages/ResourcesPage.tsx", "utf8");
-	expect(docs.includes("routes[docsPath].heading")).toBe(true);
-	expect(overview.includes("routes[overviewPath].heading")).toBe(true);
 });

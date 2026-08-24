@@ -38,9 +38,9 @@ Local-first workstation. Electron + Next.js frontend. Bun/Hono controller. Apach
 - Docs: ${SITE_ORIGIN}/docs
 - Agents: ${SITE_ORIGIN}/agents
 
-Control: local/remote controllers, status, launch, logs, metrics.
-Serve: one OpenAI-compatible proxy in front of vLLM / SGLang / MLX / llama.cpp.
-Work: models, providers, browser, files, terminal, agents in one Workbench session.
+${productFeatures
+	.map((feature) => `${feature.storyTitle}: ${renderInlineMarkdown(feature.storyDescription)}`)
+	.join("\n")}
 
 Controller default: \`127.0.0.1:8080\`. Non-loopback bind requires \`LOCAL_STUDIO_API_KEY\`.
 
@@ -100,17 +100,9 @@ Local intelligence. Local Studio is a local-first workstation for running, manag
 - [Product](${SITE_ORIGIN}/product)
 - [KittyLitter](${SITE_ORIGIN}/mobile)
 
-## Control
-
-Local and remote controllers, live status, launch state, logs, and metrics.
-
-## Serve
-
-vLLM, SGLang, MLX, and llama.cpp behind one OpenAI-compatible surface.
-
-## Work
-
-Models, providers, browser, files, terminal, and agents in the same session.
+${productFeatures
+	.map((feature) => `## ${feature.storyTitle}\n\n${renderInlineMarkdown(feature.storyDescription)}`)
+	.join("\n\n")}
 
 ## KittyLitter
 
@@ -343,9 +335,9 @@ export function showcaseMarkdown(): string {
 		"Showcase",
 		`## Local Studio
 
-- Control local and remote controllers from one surface
-- Serve vLLM / SGLang / MLX / llama.cpp behind one OpenAI-compatible proxy
-- Work in a Pi Workbench with browser, files, terminal, and agents
+${productFeatures
+	.map((feature) => `- ${feature.storyTitle}: ${renderInlineMarkdown(feature.storyDescription)}`)
+	.join("\n")}
 - Pair the same sessions to KittyLitter on iOS and Android
 
 ## KittyLitter

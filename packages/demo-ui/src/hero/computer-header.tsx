@@ -4,35 +4,20 @@ import {
 	FolderTree,
 	GitBranch,
 	Globe2,
-	MessageSquarePlus,
 	PanelRight,
 	PanelRightFilled,
 	Plus,
-	TerminalSquare,
 	type LucideIcon,
 } from "..";
 import { CloseIcon } from "..";
-type ComputerTab =
-	| "status"
-	| "tools"
-	| "side-chat"
-	| "browser"
-	| "files"
-	| "diff"
-	| "terminal";
-type TerminalOwnersSnapshot = { owners: { mountKey?: string }[]; activeOwnerKey: string | null };
-function terminalOwnerLabel(owner: { mountKey?: string }, index: number) {
-	return owner.mountKey ?? `Terminal ${index + 1}`;
-}
+type ComputerTab = "status" | "tools" | "browser" | "files" | "diff";
 
 const TAB_LABELS = {
 	status: "Status",
 	tools: "Tools",
-	"side-chat": "Side chat",
 	browser: "Browser",
 	files: "Filesystem",
 	diff: "Review",
-	terminal: "Terminal",
 } as const satisfies Record<ComputerTab, string>;
 
 const TAB_OPTIONS: Array<{
@@ -41,12 +26,6 @@ const TAB_OPTIONS: Array<{
 	description: string;
 	icon?: LucideIcon;
 }> = [
-	{
-		tab: "side-chat",
-		label: "Side chat",
-		description: "Focused side conversation",
-		icon: MessageSquarePlus,
-	},
 	{
 		tab: "browser",
 		label: "Browser",
@@ -64,12 +43,6 @@ const TAB_OPTIONS: Array<{
 		label: "Filesystem",
 		description: "Project files and rendered previews",
 		icon: FolderTree,
-	},
-	{
-		tab: "terminal",
-		label: "Terminal",
-		description: "Project shell",
-		icon: TerminalSquare,
 	},
 ];
 
@@ -176,31 +149,19 @@ function HeaderIconButton({
 export function ComputerHeader({
 	tab,
 	openTabs,
-	terminalState,
 	onSelectTab,
-	onOpenCurrentTerminal,
-	onSelectTerminalOwner,
-	onCloseTerminalOwner,
 	onCloseTab,
 	onShowLauncher,
 	onClosePanel,
 }: {
 	tab: ComputerTab;
 	openTabs: ComputerTab[];
-	terminalState: TerminalOwnersSnapshot;
 	onSelectTab: (tab: ComputerTab) => void;
-	onOpenCurrentTerminal: () => void;
-	onSelectTerminalOwner: (ownerKey: string) => void;
-	onCloseTerminalOwner: (ownerKey: string) => void;
 	onCloseTab: (tab: ComputerTab) => void;
 	onShowLauncher: () => void;
 	onClosePanel: () => void;
 }) {
-	const visibleTabs = openTabs.filter(
-		(openTab) =>
-			openTab !== "tools" &&
-			(openTab !== "terminal" || terminalState.owners.length === 0),
-	);
+	const visibleTabs = openTabs.filter((openTab) => openTab !== "tools");
 	return (
 		<div className="relative flex h-[var(--h-toolbar-pane)] shrink-0 items-center gap-1 border-b border-(--border) bg-(--color-header) px-1.5 text-[length:var(--fs-sm)]">
 			<div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto overflow-y-hidden px-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -213,33 +174,10 @@ export function ComputerHeader({
 							label={meta.label}
 							title={meta.label}
 							selected={tab === openTab}
-							onSelect={() =>
-								openTab === "terminal"
-									? onOpenCurrentTerminal()
-									: onSelectTab(openTab)
-							}
+							onSelect={() => onSelectTab(openTab)}
 							onClose={
 								openTab === "status" ? undefined : () => onCloseTab(openTab)
 							}
-						/>
-					);
-				})}
-				{terminalState.owners.map((owner, index) => {
-					const label = terminalOwnerLabel(owner, index);
-					const selected =
-						tab === "terminal" &&
-						terminalState.activeOwnerKey === owner.mountKey;
-					const shortcut = index < 9 ? `⌘⌥${index + 1}` : undefined;
-					return (
-						<TabPill
-							key={owner.mountKey}
-							icon={TerminalSquare}
-							label={label}
-							title={shortcut ? `${label} (${shortcut})` : label}
-							shortcut={shortcut}
-							selected={selected}
-							onSelect={() => onSelectTerminalOwner(owner.mountKey ?? "")}
-							onClose={() => onCloseTerminalOwner(owner.mountKey ?? "")}
 						/>
 					);
 				})}
@@ -263,13 +201,9 @@ export function ComputerHeader({
 
 export function ComputerLauncherPanel({
 	activeTab,
-	onOpenSideChat,
-	onOpenTerminal,
 	onSelectTab,
 }: {
 	activeTab: ComputerTab;
-	onOpenSideChat: () => void;
-	onOpenTerminal: () => void;
 	onSelectTab: (tab: ComputerTab) => void;
 }) {
 	const cards = [
@@ -279,13 +213,6 @@ export function ComputerLauncherPanel({
 			description: "Browse project files",
 			icon: FolderTree,
 			onClick: () => onSelectTab("files"),
-		},
-		{
-			key: "side-chat",
-			title: "Side chat",
-			description: "Start a side conversation",
-			icon: MessageSquarePlus,
-			onClick: onOpenSideChat,
 		},
 		{
 			key: "browser",
@@ -301,20 +228,13 @@ export function ComputerLauncherPanel({
 			icon: GitBranch,
 			onClick: () => onSelectTab("diff"),
 		},
-		{
-			key: "terminal",
-			title: "Terminal",
-			description: "Start an interactive shell",
-			icon: TerminalSquare,
-			onClick: onOpenTerminal,
-		},
 	] as const;
 	return (
 		<section className="min-h-0 flex-1 overflow-y-auto bg-(--color-panel) px-3 py-3">
 			<div className="flex flex-col gap-1">
 				{cards.map((card) => {
 					const Icon = card.icon;
-					const selected = card.key !== "side-chat" && activeTab === card.key;
+					const selected = activeTab === card.key;
 					return (
 						<button
 							key={card.key}

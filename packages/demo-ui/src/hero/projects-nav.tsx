@@ -40,7 +40,7 @@ export function HeroProjectsNav({
 				<div className="group relative flex h-[var(--sidebar-row-height)] items-center rounded-[var(--sidebar-row-radius)] pl-2 pr-1.5 text-(--fg) transition-[color,background-color,opacity] hover:bg-(--hover)">
 					<button
 						type="button"
-						title="/Users/sero/Home"
+						title="/Users/local/Home"
 						className="flex min-w-0 flex-1 items-center gap-2 px-0 pr-8 text-left"
 					>
 						<span className="relative h-3.5 w-3.5 shrink-0 opacity-70">
