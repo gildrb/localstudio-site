@@ -29,9 +29,9 @@ const generated = [
 	},
 	{ label: "asset-manifest", args: ["scripts/assets.mjs", "write"], files: ["asset-manifest.json"] },
 	{
-		label: "vercel headers",
+		label: "Vercel outputs",
 		args: ["--experimental-strip-types", "scripts/vercel.mjs", "write"],
-		files: ["vercel.json"],
+		files: ["vercel.json", "middleware.js"],
 	},
 	{
 		label: "index.html",
