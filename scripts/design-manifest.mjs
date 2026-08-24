@@ -9,12 +9,29 @@ import { motion } from "../src/domain/motion.ts";
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const command = process.argv[2] ?? "write";
 const architecture = JSON.parse(readFileSync(`${root}/architecture.json`, "utf8"));
+const tokenSources = {
+	public: "src/styles/global.css",
+	demo: "packages/demo-ui/src/styles/workbench-demo.css",
+};
+
+function cssTokenIds(rel) {
+	const source = readFileSync(`${root}/${rel}`, "utf8");
+	return [
+		...new Set(
+			[...source.matchAll(/^\s*(--[-\w]+)\s*:/gm)].map((match) => match[1]),
+		),
+	];
+}
+
 const manifest = {
 	routes: [...routePaths],
 	documents: Object.keys(documents),
 	redirects: Object.keys(redirects),
 	assets: Object.keys(assets),
 	motion: Object.keys(motion),
+	tokens: Object.fromEntries(
+		Object.entries(tokenSources).map(([name, rel]) => [name, cssTokenIds(rel)]),
+	),
 	components: architecture.singleConsumerComponents,
 };
 
