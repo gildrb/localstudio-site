@@ -20,7 +20,6 @@ import { AssistantMessageActions } from "..";
 import { ToolBlockView } from "..";
 import { UserMessage } from "..";
 import {
-	browserDemoClock,
 	DEMO_MODEL,
 	DEMO_PROMPT,
 	DEMO_TOOLS,
