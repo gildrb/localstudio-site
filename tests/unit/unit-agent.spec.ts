@@ -12,6 +12,7 @@ import { site } from "../../src/domain/site";
 import { release } from "../../src/domain/release";
 import { productFeatures, renderInlineMarkdown } from "../../src/content/product";
 import { productMarkdown } from "../../src/agent/markdown";
+import { machineText } from "../../src/agent/machine";
 
 test("robots and sitemap stay deterministic", () => {
 	const robots = agentDocument("/robots.txt");
@@ -64,6 +65,14 @@ test("discovery documents and Accept negotiation are shared", () => {
 	expect(agentDocuments().map((document) => document.path)).toContain(
 		"/machine.md",
 	);
+});
+
+test("machine routes derive from the canonical HTML route model", () => {
+	const body = machineText();
+	const routesSection = body.split("── ROUTES\n")[1]?.split("\n── DISCOVERY")[0] ?? "";
+	for (const path of routePaths) expect(routesSection).toContain(path);
+	expect(routesSection).not.toContain("/mobile");
+	expect(routesSection).not.toContain("/agents");
 });
 
 test("product markdown is generated from canonical feature prose", () => {
