@@ -1,6 +1,5 @@
 import { ChevronDown, Equal, X } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import { assets } from "../domain/asset";
 import { site } from "../domain/site";
 import { cssVars } from "../system/css-vars";
 import { downloadLabel, downloadPath, homePath, productNav, resourceNav } from "../domain/route";
@@ -13,6 +12,7 @@ import {
 	type NavSurface,
 } from "../domain/nav";
 import { DownloadButton } from "./Links";
+import { BrandLogo } from "./BrandLogo";
 import { LocalLink } from "./LocalLink";
 
 type NavLink = {
@@ -346,14 +346,7 @@ export function Header() {
 					onClick={closeMobile}
 					onPointerEnter={close}
 				>
-					<img
-						className="brand__logo"
-						src={assets.wordmark}
-						alt=""
-						width="3000"
-						height="566"
-						draggable={false}
-					/>
+					<BrandLogo />
 				</LocalLink>
 				<nav className="nav__links" aria-label="Landing navigation">
 					{menu("products", "Products")}

@@ -1,7 +1,17 @@
 import { site } from "../domain/site.ts";
 import { release } from "../domain/release.ts";
-import { downloadLabel, downloadPath } from "../domain/route.ts";
-import { routePaths, routes } from "../domain/route.ts";
+import {
+	docsPath,
+	downloadLabel,
+	downloadPath,
+	homePath,
+	overviewPath,
+	productPath,
+	routePaths,
+	routes,
+	setupPath,
+	type DocumentPath,
+} from "../domain/route.ts";
 import { machineText } from "./machine.ts";
 import { productFeatures, renderInlineMarkdown } from "../content/product.ts";
 
@@ -46,7 +56,7 @@ Controller default: \`127.0.0.1:8080\`. Non-loopback bind requires \`LOCAL_STUDI
 
 ### KittyLitter
 
-Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. Connect from LAN, SSH, or Alleycat P2P QR pairing. Open source, always free. Pairs to Local Studio 2.9.0+ (KittyLitter 1.6.0+). Shared Rust core via UniFFI. Work stays on the Mac/server.
+Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. Connect from LAN, SSH, or Alleycat P2P QR pairing. Open source, always free. Pairs to Local Studio ${site.products.kittyLitter.minimumLocalStudio}+ (KittyLitter ${site.products.kittyLitter.minimumVersion}+). Shared Rust core via UniFFI. Work stays on the Mac/server.
 
 - Site: ${site.products.kittyLitter.url}
 - Source: ${site.products.kittyLitter.source}
@@ -90,7 +100,7 @@ Local Python/aiohttp Responses-API endpoint on loopback. Codex Desktop keeps nat
 
 export function indexMarkdown(): string {
 	return markdownPage(
-		"Local Studio",
+		routes[homePath].title,
 		`Company: [Sybil Solutions](${site.company.url}).
 
 Local intelligence. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
@@ -124,7 +134,7 @@ export function productMarkdown(): string {
 		.map((feature) => `## ${feature.productTitle}\n\n${renderInlineMarkdown(feature.productText)}`)
 		.join("\n\n");
 	return markdownPage(
-		"Product - Local Studio",
+		routes[productPath].title,
 		`One place to run local AI. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
 
 ${sections}
@@ -137,7 +147,7 @@ export function mobileMarkdown(): string {
 		"Mobile - KittyLitter + Local Studio",
 		`Pair KittyLitter once, then read and continue the same Local Studio sessions from your phone. The work still runs on your Mac.
 
-Requirements: Local Studio 2.9.0+, KittyLitter 1.6.0+, Mac reachable.
+Requirements: Local Studio ${site.products.kittyLitter.minimumLocalStudio}+, KittyLitter ${site.products.kittyLitter.minimumVersion}+, Mac reachable.
 
 ## Pair
 
@@ -161,7 +171,7 @@ Download on Google Play: ${site.products.kittyLitter.playStore}
 
 export function docsMarkdown(): string {
 	return markdownPage(
-		"Docs - Get Local Studio running",
+		routes[docsPath].title,
 		`Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference.
 
 Two modules share one controller API: Bun/Hono backend + Next.js/React/Electron frontend.
@@ -214,7 +224,7 @@ Non-loopback bind requires \`LOCAL_STUDIO_API_KEY\` (or \`LOCAL_STUDIO_ALLOW_UNA
 
 export function promptMarkdown(): string {
 	return markdownPage(
-		"Setup prompt",
+		routes[setupPath].title,
 		`Give the portable prompt on ${SITE_ORIGIN}/setup to a coding model that can operate a terminal on the target machine.
 
 Repository: ${site.products.localStudio.repository}
@@ -269,7 +279,7 @@ Settings switches controllers. System shows runtime. /v1/chat/completions works 
 
 export function resourcesMarkdown(): string {
 	return markdownPage(
-		"Resources",
+		routes[overviewPath].title,
 		`- [Documentation](${SITE_ORIGIN}/docs)
 - [Setup prompt](${SITE_ORIGIN}/setup)
 - [${downloadLabel()}](${SITE_ORIGIN}${downloadPath})
@@ -283,7 +293,7 @@ export function resourcesMarkdown(): string {
 
 export function downloadMarkdown(): string {
 	return markdownPage(
-		"Download Local Studio for macOS",
+		routes[downloadPath].title,
 		`Desktop app for Apple Silicon.
 
 - Version: ${DOWNLOAD.version}
@@ -390,6 +400,23 @@ Send \`Accept: text/markdown\` or append \`.md\` to the path.
 Yes. \`Content-Signal: search=yes, ai-input=yes, ai-train=yes\`. Explicit allow rules for GPTBot, Claude-Web, Google-Extended, and other AI crawlers are in \`/robots.txt\`.
 `,
 	);
+}
+
+export function markdownDocument(path: DocumentPath): string {
+	switch (path) {
+		case "/mobile.md":
+			return mobileMarkdown();
+		case "/agents.md":
+			return agentsMarkdown();
+		case "/services.md":
+			return servicesMarkdown();
+		case "/people.md":
+			return peopleMarkdown();
+		case "/showcase.md":
+			return showcaseMarkdown();
+		case "/faq.md":
+			return faqMarkdown();
+	}
 }
 
 export function sitemapMarkdown(): string {

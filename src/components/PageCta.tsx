@@ -23,13 +23,11 @@ export function PageCta({
 			className={className}
 			aria-labelledby={id}
 		>
-			<div>
-				<h2 id={id}>{title}</h2>
-				<div className="hero__actions">
-					{actions ?? (
-						<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
-					)}
-				</div>
+			<h2 id={id}>{title}</h2>
+			<div className="hero__actions">
+				{actions ?? (
+					<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
+				)}
 			</div>
 		</section>
 	);

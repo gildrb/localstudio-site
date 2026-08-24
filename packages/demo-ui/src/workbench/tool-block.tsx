@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { DemoToolArgs } from "../scenario/sequence";
 import {
 	ChevronRight,
 	File,
@@ -11,52 +12,51 @@ import {
 
 type ToolStatus = "done" | "running";
 type ToolKind = "edit" | "search" | "read" | "exec" | "browser" | "generic";
-
-type ToolBlock = {
+export type ToolBlock = {
 	id: string;
 	name: string;
 	status: ToolStatus;
-	args: Record<string, unknown>;
+	args: DemoToolArgs;
 	resultText?: string | undefined;
 };
 
-const writeTools: Record<string, true> = {
-	write_file: true,
-	write: true,
-	create_file: true,
-	createfile: true,
-	edit_file: true,
-	editfile: true,
-	edit: true,
-	apply_patch: true,
-	replace_file: true,
-};
+const writeTools = new Set([
+	"write_file",
+	"write",
+	"create_file",
+	"createfile",
+	"edit_file",
+	"editfile",
+	"edit",
+	"apply_patch",
+	"replace_file",
+]);
 
-const toolIcons: Record<ToolKind, LucideIcon> = {
+const toolIcons = {
 	edit: SquarePen,
 	search: Search,
 	read: File,
 	exec: TerminalSquare,
 	browser: Globe2,
 	generic: TerminalSquare,
-};
+} satisfies Record<ToolKind, LucideIcon>;
 
-const toolColors: Record<ToolKind, string> = {
+const toolColors = {
 	edit: "text-(--color-file-node-foreground)",
 	search: "text-(--color-file-node-foreground)",
 	read: "text-(--color-file-node-foreground)",
 	exec: "text-(--color-command-node-foreground)",
 	browser: "text-(--color-session-node-foreground)",
 	generic: "text-(--color-skill-node-foreground)",
-};
+} satisfies Record<ToolKind, string>;
 
-function includesAny(value: string, needles: string[]): boolean {
+function includesAny(value: string, needles: readonly string[]): boolean {
 	return needles.some((needle) => value.includes(needle));
 }
 function classifyTool(name: string): ToolKind {
 	const normalized = name.toLowerCase();
 	if (
-		writeTools[normalized] ||
+		writeTools.has(normalized) ||
 		includesAny(normalized, ["edit", "write", "patch"])
 	) {
 		return "edit";
@@ -70,10 +70,28 @@ function classifyTool(name: string): ToolKind {
 	return "generic";
 }
 
-function toolArg(block: ToolBlock, keys: string[]): string | null {
+type ToolStringKey = "path" | "range" | "query" | "schedule" | "name";
+
+function toolArg(block: ToolBlock, keys: readonly ToolStringKey[]): string | null {
 	for (const key of keys) {
-		const value = block.args[key];
-		if (typeof value === "string") return value;
+		const value = block.args;
+		switch (key) {
+			case "path":
+				if (value.kind === "path") return value.path;
+				break;
+			case "range":
+				if (value.kind === "path") return value.range ?? null;
+				break;
+			case "query":
+				if (value.kind === "query") return value.query;
+				break;
+			case "schedule":
+				if (value.kind === "schedule") return value.schedule;
+				break;
+			case "name":
+				if (value.kind === "schedule") return value.name;
+				break;
+		}
 	}
 	return null;
 }
@@ -93,13 +111,14 @@ function compact(value: string | null, limit = 88): string | null {
 	return `${oneLine.slice(0, limit - 1).trimEnd()}…`;
 }
 
-function toolMeta(block: ToolBlock): { verb: string; detail: string | null } {
+type ToolMeta = { verb: string; detail: string | null };
+
+function toolMeta(block: ToolBlock): ToolMeta {
 	const name = block.name.toLowerCase();
 	const running = block.status === "running";
 	const kind = classifyTool(name);
-	const path = toolArg(block, ["path", "file_path", "file", "filename"]);
-	const query = toolArg(block, ["query", "q", "pattern", "search"]);
-	const command = toolArg(block, ["cmd", "command", "script", "shell"]);
+	const path = toolArg(block, ["path"]);
+	const query = toolArg(block, ["query"]);
 	switch (kind) {
 		case "edit":
 			return {
@@ -120,7 +139,7 @@ function toolMeta(block: ToolBlock): { verb: string; detail: string | null } {
 				detail: compact(query) ? `for ${compact(query)}` : path,
 			};
 		case "exec":
-			return { verb: running ? "Running" : "Ran", detail: compact(command) };
+			return { verb: running ? "Running" : "Ran", detail: null };
 		case "browser":
 			return { verb: running ? "Browsing" : "Browsed", detail: compact(query) };
 		case "generic":

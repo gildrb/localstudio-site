@@ -365,6 +365,30 @@ img {
   justify-content: flex-start;
 }
 
+.docs-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 48px;
+  padding-bottom: 120px;
+}
+
+.docs-layout__toc {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+}
+
+.docs-prose {
+  min-width: 0;
+  color: var(--dim);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.docs-prose li {
+  margin-bottom: 8px;
+}
+
 .docs-prose strong {
   color: var(--foreground);
   font-weight: 500;
@@ -376,6 +400,7 @@ img {
 
 .docs-section {
   margin-top: 80px;
+  scroll-margin-top: 112px;
 }
 
 .docs-section > h2 {
@@ -390,6 +415,14 @@ img {
 }
 
 .docs-code {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 32px 0;
+  padding: 16px 20px;
+  border: 1px solid var(--border-soft);
+  color: color-mix(in srgb, var(--foreground) 80%, transparent);
+  font-family: var(--font-mono);
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
@@ -713,10 +746,18 @@ button {
 
 .docs-toc__label {
   color: var(--dim);
+  font-size: 14px;
+  line-height: 20px;
 }
 
 .docs-toc__list {
-  border-color: var(--border-soft);
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 0 0 0 16px;
+  border-left: 1px solid var(--border-soft);
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .docs-toc a {
@@ -1082,9 +1123,6 @@ button {
   margin-top: calc(var(--story-sticky-top) - 100svh);
   pointer-events: none;
 }
-.story__scroll-step {
-  height: clamp(300px, 42svh, 420px);
-}
 .story__visual-home,
 .story__visual {
   min-width: 0;
@@ -1250,9 +1288,11 @@ button {
 }
 
 .page-cta {
-  display: grid;
+  display: flex;
   min-width: 0;
-  place-items: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 150px 0;
   text-align: center;
 }
@@ -1453,12 +1493,12 @@ button {
     overflow: clip;
   }
 
-  .story {
-    padding: var(--homepage-story-gap) 0 0;
+  .docs-layout {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .kitty {
-    padding: var(--homepage-story-gap) 0 0;
+  .docs-layout__toc {
+    position: static;
   }
 
   .story {
@@ -1856,19 +1896,6 @@ button {
   background: var(--background);
 }
 
-.hero__mark-button {
-  display: inline-flex;
-  width: 0.78em;
-  height: 0.78em;
-  min-width: 0;
-  min-height: 0;
-  margin: 0 0 0 0.14em;
-  padding: 0;
-  border: 0;
-  vertical-align: -0.06em;
-  background: transparent;
-  cursor: pointer;
-}
 
 .machine__banner {
   display: flex;

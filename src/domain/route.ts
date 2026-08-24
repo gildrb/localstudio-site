@@ -87,9 +87,6 @@ export function isRoutePath(pathname: string): pathname is RoutePath {
 	return Object.prototype.hasOwnProperty.call(routes, pathname);
 }
 
-export function isMachineRoute(pathname: string): pathname is "/machine" {
-	return pathname === "/machine";
-}
 
 export const homePath = "/" satisfies RoutePath;
 export const productPath = "/product" satisfies RoutePath;
@@ -121,17 +118,29 @@ export const documents = {
 	"/faq.md": "markdown-only",
 } as const;
 
+export type DocumentPath = keyof typeof documents;
+
+function isDocumentPath(pathname: string): pathname is DocumentPath {
+	return Object.prototype.hasOwnProperty.call(documents, pathname);
+}
+
+export function documentPaths(): readonly DocumentPath[] {
+	return Object.keys(documents).filter(isDocumentPath);
+}
+
 export const redirects = {
 	"/mobile": "/#mobile",
 	"/agents": "/setup",
 } as const;
 
+type RedirectPath = keyof typeof redirects;
+
+function isRedirectPath(pathname: string): pathname is RedirectPath {
+	return Object.prototype.hasOwnProperty.call(redirects, pathname);
+}
 
 export function redirectFor(pathname: string): string | null {
-	if (pathname === "/mobile" || pathname === "/agents") {
-		return redirects[pathname];
-	}
-	return null;
+	return isRedirectPath(pathname) ? redirects[pathname] : null;
 }
 
 export function footerRoutes(): readonly { path: RoutePath; label: string }[] {
@@ -186,7 +195,7 @@ export function markdownPages(): ReadonlyMap<string, string> {
 		path,
 		routes[path].markdown,
 	]);
-	for (const path of Object.keys(documents)) {
+	for (const path of documentPaths()) {
 		entries.push([path.replace(/\.md$/, ""), path]);
 	}
 	return new Map(entries);

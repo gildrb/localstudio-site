@@ -35,24 +35,7 @@ import {
 	type DemoState,
 } from "../scenario/sequence";
 
-type ComputerTab =
-	| "status"
-	| "tools"
-	| "side-chat"
-	| "browser"
-	| "files"
-	| "diff"
-	| "terminal";
 type ChatMessage = { id: string; role: "user" | "assistant"; text: string };
-type ToolBlock = {
-	kind: "tool";
-	id: string;
-	name: string;
-	status: "done" | "running";
-	text: string;
-	args: Record<string, unknown>;
-	resultText?: string | undefined;
-};
 type AgentModel = {
 	id: string;
 	name: string;
@@ -86,11 +69,16 @@ type Session = {
 	tokenStats: { read: number; write: number; current: number };
 	contextUsage: { tokens: number; percent: number };
 };
-import { ComputerHeader, ComputerLauncherPanel } from "./computer-header";
+import {
+	ComputerHeader,
+	ComputerLauncherPanel,
+	type ComputerTab,
+} from "./computer-header";
 import { HeroDesktopSidebar } from "./desktop-sidebar";
 import { HeroFilesystemTree } from "./files-tree";
 import type { HeroTaskId } from "./projects-nav";
 import { HeroReviewPanel } from "./review-panel";
+import type { ToolBlock } from "../workbench/tool-block";
 
 const contextWindow = 202144;
 const HERO_COMPUTER_WIDTH = 320;
@@ -703,8 +691,6 @@ function HeroDemoView(
 															: null
 													}
 													focusedSession={session}
-													sessions={[session]}
-													gitSummary={gitSummary}
 												/>
 											) : null}
 											{tab === "tools" ? (
@@ -865,11 +851,9 @@ function userMessage(): ChatMessage {
 
 function toolBlocksFor(state: DemoState): ToolBlock[] {
 	return DEMO_TOOLS.slice(0, state.toolsStarted).map((tool, index) => ({
-		kind: "tool",
 		id: tool.id,
 		name: tool.name,
 		status: index < state.toolsDone ? "done" : "running",
-		text: "",
 		args: tool.args,
 		resultText: index < state.toolsDone ? tool.resultText : undefined,
 	}));

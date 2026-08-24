@@ -145,9 +145,9 @@ export type BloomTargets = {
   height: number;
   scene: GPUTexture;
   sceneMsaa: GPUTexture;
-  backMaterial: GPUTexture;
-  backDepth: GPUTexture;
-  backSurfaceDepth: GPUTexture;
+  backMaterial: GPUTexture | undefined;
+  backDepth: GPUTexture | undefined;
+  backSurfaceDepth: GPUTexture | undefined;
   horizontal: GPUTexture;
   vertical: GPUTexture;
 };

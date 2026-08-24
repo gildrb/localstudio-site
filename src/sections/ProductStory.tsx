@@ -7,9 +7,6 @@ import { site } from "../domain/site";
 const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
 
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
-const STORY_EASE = [0.16, 1, 0.3, 1] as const;
-const STORY_DURATION = 0.45;
-
 
 function useStoryProgress() {
 	const [activeIndex, setActiveIndex] = useState(0);
@@ -111,8 +108,8 @@ export function ProductStory() {
 								initial={false}
 								animate={{ y: optionsOffset }}
 								transition={{
-									duration: reduceMotion ? 0 : STORY_DURATION,
-									ease: STORY_EASE,
+									...motion.featureSwap,
+									duration: reduceMotion ? 0 : motion.featureSwap.duration,
 								}}
 							>
 								{productFeatures.map((feature, index) => {
@@ -154,8 +151,8 @@ export function ProductStory() {
 													filter: selected ? "blur(0px)" : "blur(8px)",
 												}}
 												transition={{
-													duration: reduceMotion ? 0 : STORY_DURATION,
-													ease: STORY_EASE,
+													...motion.featureSwap,
+													duration: reduceMotion ? 0 : motion.featureSwap.duration,
 												}}
 											>
 												{renderInlineReact(feature.storyDescription)}
@@ -191,12 +188,13 @@ export function ProductStory() {
 							</figure>
 						</div>
 					</div>
-					<div className="story__scroll-track" aria-hidden="true">
-						{productFeatures.map((feature) => (
-							<div className="story__scroll-step" key={feature.slug} />
-						))}
-						<div className="story__scroll-step" />
-					</div>
+					<div
+						className="story__scroll-track"
+						style={{
+							height: `calc(${productFeatures.length + 1} * clamp(300px, 42svh, 420px))`,
+						}}
+						aria-hidden="true"
+					/>
 				</div>
 			</section>
 		</LazyMotion>

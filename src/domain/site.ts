@@ -18,6 +18,8 @@ export const site = {
 		},
 		kittyLitter: {
 			name: "KittyLitter",
+			minimumLocalStudio: "2.9.0",
+			minimumVersion: "1.6.0",
 			url: "https://kittylitter.app",
 			appStore: "https://apps.apple.com/us/app/kittylitter/id6759521788",
 			playStore: "https://play.google.com/store/apps/details?id=com.sigkitten.litter.android",

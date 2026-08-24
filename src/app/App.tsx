@@ -1,18 +1,13 @@
 import {
-  useCallback,
+  Suspense,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { useSkySelection } from "../hooks/use-sky-selection";
-import { MachineContext } from "./machine-mode";
 import { pages } from "./pages";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import {
-  homePath,
-  isMachineRoute,
-  machinePath,
   notFoundTitle,
   redirectFor,
   routeTitle,
@@ -28,12 +23,6 @@ import {
 
 type NavigationSource = "load" | "push" | "pop";
 
-function routeFor(pathname: string) {
-  if (!isRoutePath(pathname)) return <NotFoundPage />;
-  const Page = pages[pathname];
-  return <Page />;
-}
-
 export default function App() {
   useSkySelection();
   const [location, setLocation] = useState(
@@ -42,17 +31,7 @@ export default function App() {
   const navigationSource = useRef<NavigationSource>("load");
   const pathname = normalizePath(location.split("#")[0] ?? "");
   const redirect = redirectFor(pathname);
-  const machineMode = isMachineRoute(pathname);
-
-  const toggleMachine = useCallback((next: boolean) => {
-    window.history.pushState({}, "", next ? machinePath : homePath);
-    emitNavigation();
-  }, []);
-  const machine = useMemo(
-    () => ({ machineMode, toggleMachine }),
-    [machineMode, toggleMachine],
-  );
-
+  const Page = isRoutePath(pathname) ? pages[pathname] : null;
   useEffect(() => {
     if (!redirect) return;
     window.history.replaceState({}, "", redirect);
@@ -114,9 +93,10 @@ export default function App() {
     };
   }, [location, pathname]);
 
+  if (!Page) return <NotFoundPage />;
   return (
-    <MachineContext.Provider value={machine}>
-      {routeFor(pathname)}
-    </MachineContext.Provider>
+    <Suspense fallback={null}>
+      <Page />
+    </Suspense>
   );
 }

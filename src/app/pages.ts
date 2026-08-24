@@ -1,11 +1,4 @@
-import type { ComponentType } from "react";
-import { DocsPage } from "../pages/DocsPage";
-import { DownloadPage } from "../pages/DownloadPage";
-import { HomePage } from "../pages/HomePage";
-import { MachinePage } from "../pages/MachinePage";
-import { ProductPage } from "../pages/ProductPage";
-import { PromptPage } from "../pages/PromptPage";
-import { ResourcesPage } from "../pages/ResourcesPage";
+import { lazy } from "react";
 import {
 	docsPath,
 	downloadPath,
@@ -17,14 +10,27 @@ import {
 	type RoutePath,
 } from "../domain/route";
 
-
 export const pages = {
-	[homePath]: HomePage,
-	[productPath]: ProductPage,
-	[docsPath]: DocsPage,
-	[setupPath]: PromptPage,
-	[downloadPath]: DownloadPage,
-	[overviewPath]: ResourcesPage,
-	[machinePath]: MachinePage,
-} as const satisfies Record<RoutePath, ComponentType>;
+	[homePath]: lazy(() =>
+		import("../pages/HomePage").then(({ HomePage }) => ({ default: HomePage })),
+	),
+	[productPath]: lazy(() =>
+		import("../pages/ProductPage").then(({ ProductPage }) => ({ default: ProductPage })),
+	),
+	[docsPath]: lazy(() =>
+		import("../pages/DocsPage").then(({ DocsPage }) => ({ default: DocsPage })),
+	),
+	[setupPath]: lazy(() =>
+		import("../pages/PromptPage").then(({ PromptPage }) => ({ default: PromptPage })),
+	),
+	[downloadPath]: lazy(() =>
+		import("../pages/DownloadPage").then(({ DownloadPage }) => ({ default: DownloadPage })),
+	),
+	[overviewPath]: lazy(() =>
+		import("../pages/ResourcesPage").then(({ ResourcesPage }) => ({ default: ResourcesPage })),
+	),
+	[machinePath]: lazy(() =>
+		import("../pages/MachinePage").then(({ MachinePage }) => ({ default: MachinePage })),
+	),
+} as const satisfies Record<RoutePath, ReturnType<typeof lazy>>;
 

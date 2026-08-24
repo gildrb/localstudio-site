@@ -1,41 +1,7 @@
 "use client";
 
-import { type MouseEvent } from "react";
 import type { IconComponent } from "./left-sidebar-nav-model";
 
-
-export function ProjectsNavPlaceholder() {
-  return (
-    <div className="px-2 py-1 text-[length:var(--fs-md)] text-(--dim)">Loading projects...</div>
-  );
-}
-
-export function NavItemMobile({
-  href,
-  label,
-  Icon,
-  active,
-  onClick,
-}: {
-  href: string;
-  label: string;
-  Icon: IconComponent;
-  active: boolean;
-  onClick: (event: MouseEvent<HTMLAnchorElement>) => void;
-}) {
-  return (
-    <a
-      href={href}
-      onClick={onClick}
-      className={`flex h-11 items-center gap-3 rounded-lg px-3 text-[15px] transition-colors ${
-        active ? "bg-(--active) font-medium text-(--fg)" : "text-(--fg)/80 active:bg-(--hover)"
-      }`}
-    >
-      <Icon className="h-5 w-5 shrink-0" strokeWidth={1.6} />
-      <span>{label}</span>
-    </a>
-  );
-}
 
 export function NavItemDesktop({
   href,

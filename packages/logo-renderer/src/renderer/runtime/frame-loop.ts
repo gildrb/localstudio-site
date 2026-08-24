@@ -1,30 +1,32 @@
-import { clamp, clamp01, easeInOutCubic, lerp } from "phase/ease";
-import type { MutableRefObject } from "react";
+import { clamp01, lerp } from "phase/ease";
 import { evePointerInteractionMode, mobileAutoEnvYaw } from "../mobile-motion";
-import type { ImprintRenderOptions, RenderControls } from "../render";
+import {
+  DEFAULT_PAINT_BRUSH_RADIUS,
+  DEFAULT_PAINT_BRUSH_STRENGTH,
+  DEFAULT_PAINT_DECAY_PER_FRAME_120,
+  DEFAULT_PAINT_DIFFUSION_JITTER,
+  DEFAULT_PAINT_DIFFUSION_RATE,
+  type ImprintRenderOptions,
+  type RenderControls,
+} from "../render";
 import {
   getCanvasLogicalSize,
   resizeCanvas,
   type CanvasLayoutRef,
   type DevicePixelRatioRef,
 } from "./canvas-sizing";
-import type { EveTransitionDebugState } from "./debug-gui";
 import type { ControlsRef, HeroRuntimeState } from "./state";
 
-// Owns the Eve hero draw step and canvas reveal sequencing.
-// INVARIANT: dataset markers, paint movement gating, and fallback-on-error behavior are preserved.
-// Imported only by index.tsx's single effect and driven by phase's useLoop.
-
 const ENV_YAW_LERP_SPEED = 3;
-export const AGENTS_ENV_YAW_LERP_SPEED = 3;
-const AGENTS_ENV_YAW_OFFSET = -Math.PI * 0.1;
 const ASCII_MOUSE_LERP_SPEED = 6;
 const PAINT_MOVEMENT_GRACE_MS = 72;
+const PAINT_SETTLE_DURATION_MS = 750;
+const IMPRINT_GRID_SCALE_MULTIPLIER = 0.9;
+const IMPRINT_GLYPH_SCALE = 1.27;
 const CANVAS_REVEAL_RENDER_COUNT = 3;
 const MAX_FRAME_DELTA_SECONDS = 0.05;
-export const AGENTS_MAX_FRAME_DELTA_SECONDS = MAX_FRAME_DELTA_SECONDS;
-
-const PROBE_DATASET_WRITE_INTERVAL_MS = 250;
+const MOBILE_AUTO_ROTATE_DURATION_MS = 2000;
+const SETTLE_EPSILON = 0.0005;
 
 type Renderer = {
   render: (
@@ -36,36 +38,10 @@ type Renderer = {
   ) => void;
 };
 
-const IS_PRODUCTION = import.meta.env.PROD;
-
-type EveHeroFrameLoopProbe = {
-  frames: number;
-  running: boolean;
-  lastFrameAt: number;
-};
-
-declare global {
-  interface Window {
-    __eveHeroFrameLoop?: EveHeroFrameLoopProbe;
-  }
-}
-
-function getHeroFrameLoopProbe(): EveHeroFrameLoopProbe | undefined {
-  if (IS_PRODUCTION) return undefined;
-  if (!window.__eveHeroFrameLoop) {
-    window.__eveHeroFrameLoop = {
-      frames: 0,
-      running: false,
-      lastFrameAt: 0,
-    };
-  }
-  return window.__eveHeroFrameLoop;
-}
-
 export type DrawLoop = {
   start: () => void;
   stop: () => void;
-  step: (frameTime?: number) => void;
+  step: (frameTime?: number) => boolean;
   dispose: () => void;
 };
 
@@ -75,11 +51,6 @@ export function createDrawLoop({
   context,
   renderer,
   controlsRef,
-  transitionDebug,
-  modeTransitionProgressRef,
-  targetLogoModeProgressRef,
-  targetAgentsEnvYawMixRef,
-  defaultMaterial,
   canvasLayoutRef,
   devicePixelRatioRef,
   onCanvasRevealed,
@@ -91,11 +62,6 @@ export function createDrawLoop({
   context: GPUCanvasContext;
   renderer: Renderer;
   controlsRef: ControlsRef;
-  transitionDebug: EveTransitionDebugState;
-  modeTransitionProgressRef: MutableRefObject<number>;
-  targetLogoModeProgressRef: MutableRefObject<number>;
-  targetAgentsEnvYawMixRef: MutableRefObject<number>;
-  defaultMaterial: RenderControls["material"];
   canvasLayoutRef: CanvasLayoutRef;
   devicePixelRatioRef: DevicePixelRatioRef;
   onCanvasRevealed: () => void;
@@ -104,21 +70,30 @@ export function createDrawLoop({
 }) {
   let successfulRenderCount = 0;
   let running = false;
-  const frameLoopProbe = getHeroFrameLoopProbe();
-  let lastProbeDatasetWrite = 0;
-
-  const updateFrameLoopProbeDataset = (force = false) => {
-    if (!frameLoopProbe) return;
-    const now = performance.now();
-    if (!force && now - lastProbeDatasetWrite < PROBE_DATASET_WRITE_INTERVAL_MS) return;
-    lastProbeDatasetWrite = now;
-    canvas.dataset["heroFrames"] = String(frameLoopProbe.frames);
-    canvas.dataset["heroRunning"] = String(frameLoopProbe.running);
-    canvas.dataset["heroLastFrameAt"] = String(Math.round(frameLoopProbe.lastFrameAt));
-  };
 
   const draw = (frameTime = performance.now()) => {
-    if (!running || state.cancelled) return;
+    if (!running || state.cancelled) return false;
+
+    const pointerSettling =
+      Math.abs(state.mouseEnvYaw - state.targetMouseEnvYaw) > SETTLE_EPSILON ||
+      Math.abs(state.mouseEnvPitch - state.targetMouseEnvPitch) > SETTLE_EPSILON ||
+      Math.abs(state.asciiMouseX - state.targetAsciiMouseX) > SETTLE_EPSILON ||
+      Math.abs(state.asciiMouseY - state.targetAsciiMouseY) > SETTLE_EPSILON;
+    const autoRotating =
+      evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw &&
+      frameTime - state.autoRotateStartTime < MOBILE_AUTO_ROTATE_DURATION_MS;
+    const paintSettling = frameTime - state.lastBrushMoveTime < PAINT_SETTLE_DURATION_MS;
+    if (
+      successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT &&
+      !state.renderRequested &&
+      !pointerSettling &&
+      !autoRotating &&
+      !paintSettling
+    ) {
+      state.previousFrameTime = frameTime;
+      return false;
+    }
+    state.renderRequested = false;
 
     const deltaSeconds = Math.min(
       MAX_FRAME_DELTA_SECONDS,
@@ -151,111 +126,70 @@ export function createDrawLoop({
       clamp01(deltaSeconds * ASCII_MOUSE_LERP_SPEED),
     );
     state.brushActive = state.targetBrushActive && state.hasBrushCell;
-    const targetAgentsEnvYawMix = targetAgentsEnvYawMixRef.current;
-    state.agentsEnvYawMix = lerp(
-      state.agentsEnvYawMix,
-      targetAgentsEnvYawMix,
-      clamp01(deltaSeconds * AGENTS_ENV_YAW_LERP_SPEED),
-    );
-    controlsRef.current.envYaw = state.mouseEnvYaw + state.agentsEnvYawMix * AGENTS_ENV_YAW_OFFSET;
+    controlsRef.current.envYaw = state.mouseEnvYaw;
     controlsRef.current.envPitch = state.mouseEnvPitch;
 
     const devicePixelRatio = resizeCanvas(canvas, canvasLayoutRef, devicePixelRatioRef);
     const { logicalWidth, logicalHeight } = getCanvasLogicalSize(canvas, devicePixelRatio);
 
     try {
-      const transitionDurationSeconds = clamp(transitionDebug.durationSeconds, 0.05, 2);
-      modeTransitionProgressRef.current = stepLogoModeProgress(
-        modeTransitionProgressRef.current,
-        targetLogoModeProgressRef.current,
-        deltaSeconds,
-        transitionDurationSeconds,
-      );
-      const animatedMixProgress = easeInOutCubic(clamp01(modeTransitionProgressRef.current));
-      const mixProgress = transitionDebug.overrideEnabled
-        ? clamp01(transitionDebug.progress)
-        : animatedMixProgress;
-      const timeSeconds = frameTime / 1000;
-      const gridScaleMultiplier = clamp(transitionDebug.gridScaleMultiplier, 0.5, 2);
-      state.paintGridScaleMultiplier = gridScaleMultiplier;
-      controlsRef.current.material = transitionDebug.visualizePaintBuffer
-        ? "paint-debug"
-        : defaultMaterial;
       const brushPreviousCell: readonly [number, number] = state.hasRenderedBrushCell
         ? [state.previousRenderedBrushCellX, state.previousRenderedBrushCellY]
         : [state.brushCellX, state.brushCellY];
       const brushCanWrite =
         state.brushActive && frameTime - state.lastBrushMoveTime <= PAINT_MOVEMENT_GRACE_MS;
+      state.paintGridScaleMultiplier = IMPRINT_GRID_SCALE_MULTIPLIER;
       renderer.render(
         context.getCurrentTexture().createView(),
         controlsRef.current,
         logicalWidth,
         logicalHeight,
         {
-          progress: mixProgress,
-          gridScaleMultiplier,
-          glyphScale: clamp(transitionDebug.glyphScale, 0.5, 2.5),
-          time: timeSeconds,
+          progress: 0,
+          gridScaleMultiplier: IMPRINT_GRID_SCALE_MULTIPLIER,
+          glyphScale: IMPRINT_GLYPH_SCALE,
+          time: frameTime / 1000,
           mouse: [state.asciiMouseX, state.asciiMouseY],
           devicePixelRatio,
           paint: {
-            // rAF timestamps are ms; deltaSeconds is converted once above and all paint
-            // decay/diffusion/brush math expects seconds. Brush cells are raw pointer cells
-            // (no lerp); the shader stamps the segment from previous rendered cell to current.
             dt: deltaSeconds,
             brushCell: [state.brushCellX, state.brushCellY],
             brushPreviousCell,
-            brushRadius: clamp(transitionDebug.brushRadius, 1, 8),
-            brushStrength: clamp(transitionDebug.brushStrength, 4, 32),
+            brushRadius: DEFAULT_PAINT_BRUSH_RADIUS * 1.5,
+            brushStrength: DEFAULT_PAINT_BRUSH_STRENGTH,
             brushActive: brushCanWrite,
-            decayRate: clamp(transitionDebug.paintDecayPerFrame120, 0.002, 0.08) * 120,
-            diffusionRate: clamp(transitionDebug.diffusionAmount, 0, 24),
-            diffusionJitter: clamp(transitionDebug.diffusionJitter, 0, 4),
+            decayRate: DEFAULT_PAINT_DECAY_PER_FRAME_120 * 120,
+            diffusionRate: DEFAULT_PAINT_DIFFUSION_RATE,
+            diffusionJitter: DEFAULT_PAINT_DIFFUSION_JITTER,
           },
         },
       );
-
       if (state.hasBrushCell) {
         state.previousRenderedBrushCellX = state.brushCellX;
         state.previousRenderedBrushCellY = state.brushCellY;
         state.hasRenderedBrushCell = true;
       }
-
-      canvas.dataset["eveRenderMode"] = mixProgress >= 0.5 ? "agents" : "humans";
-      canvas.dataset["eveAsciiProgress"] = mixProgress.toFixed(3);
-      canvas.dataset["eveAsciiMode"] = mixProgress > 0.001 ? "active" : "inactive";
     } catch {
       state.cancelled = true;
       onFallback();
       onFatalError();
-      return;
+      return false;
     }
 
     successfulRenderCount += 1;
     if (successfulRenderCount === CANVAS_REVEAL_RENDER_COUNT) {
-      // Reveal the canvas and retire the placeholder in the same frame so the
-      // two 240ms fades crossfade cleanly — waiting for transitionend leaves a
-      // window where the placeholder timer can re-show the flat SVG (flicker).
       canvas.style.opacity = "1";
       onCanvasRevealed();
     }
-
-    if (frameLoopProbe) {
-      frameLoopProbe.frames += 1;
-      frameLoopProbe.lastFrameAt = frameTime;
-      updateFrameLoopProbeDataset();
-    }
+    return true;
   };
 
   const start = () => {
     if (running) return;
     running = true;
-    if (frameLoopProbe) {
-      frameLoopProbe.running = true;
-      updateFrameLoopProbeDataset(true);
-    }
     const frameTime = performance.now();
     state.previousFrameTime = frameTime;
+    state.renderRequested = true;
     if (evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw) {
       state.autoRotateStartTime = frameTime;
     }
@@ -263,32 +197,12 @@ export function createDrawLoop({
 
   const stop = () => {
     running = false;
-    state.animationFrame = 0;
-    if (frameLoopProbe) {
-      frameLoopProbe.running = false;
-      updateFrameLoopProbeDataset(true);
-    }
   };
 
   return {
     start,
     stop,
     step: draw,
-    dispose() {
-      stop();
-    },
+    dispose: stop,
   };
-}
-
-function stepLogoModeProgress(
-  current: number,
-  target: number,
-  deltaSeconds: number,
-  durationSeconds: number,
-) {
-  const safeTarget = target >= 0.5 ? 1 : 0;
-  const safeDuration = clamp(durationSeconds, 0.05, 2);
-  const step = Math.max(0, deltaSeconds) / safeDuration;
-  if (Math.abs(safeTarget - current) <= step) return safeTarget;
-  return current + Math.sign(safeTarget - current) * step;
 }

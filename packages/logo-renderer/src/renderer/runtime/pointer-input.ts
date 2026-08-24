@@ -18,6 +18,7 @@ const PAINT_POINTER_MOVE_EPSILON_PX = 0.5;
 
 export function syncPointerInteractionMode(state: HeroRuntimeState, isCoarsePointer: boolean) {
   state.isCoarsePointer = isCoarsePointer;
+  state.renderRequested = true;
   if (evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw) {
     state.targetBrushActive = false;
     state.targetMouseEnvPitch = 0;
@@ -34,6 +35,7 @@ export function createPointerController({
   coarsePointerRef,
   canvasLayoutRef,
   devicePixelRatioRef,
+  requestRender,
 }: {
   state: HeroRuntimeState;
   controlsRef: ControlsRef;
@@ -41,6 +43,7 @@ export function createPointerController({
   coarsePointerRef: RefObject<boolean>;
   canvasLayoutRef: CanvasLayoutRef;
   devicePixelRatioRef: DevicePixelRatioRef;
+  requestRender: () => void;
 }) {
   let cachedCanvasRect: DOMRectReadOnly | undefined;
   let rectInvalidated = true;
@@ -83,10 +86,12 @@ export function createPointerController({
     state.targetMouseEnvPitch = normalizedY * MAX_ENV_PITCH;
     state.targetAsciiMouseX = normalizedX;
     state.targetAsciiMouseY = normalizedY;
+    requestRender();
   };
 
   const deactivateBrush = () => {
     state.targetBrushActive = false;
+    requestRender();
     state.hasBrushCell = false;
     state.hasRenderedBrushCell = false;
     state.lastPointerClientX = undefined;
@@ -156,6 +161,7 @@ export function createPointerController({
     state.lastPointerClientX = event.clientX;
     state.lastPointerClientY = event.clientY;
     state.targetBrushActive = true;
+    requestRender();
   };
 
   const onPointerMove = (event: PointerEvent) => {

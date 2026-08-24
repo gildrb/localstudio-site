@@ -49,11 +49,6 @@ export function PanelLeftFilled(props: PanelToggleProps) {
   return <PanelToggle side="left" filled {...props} />;
 }
 
-/** Left panel is collapsed — clicking opens it. */
-export function PanelLeftHollow(props: PanelToggleProps) {
-  return <PanelToggle side="left" filled={false} {...props} />;
-}
-
 /** Right panel is open — clicking hides it. */
 export function PanelRightFilled(props: PanelToggleProps) {
   return <PanelToggle side="right" filled {...props} />;

@@ -4,7 +4,7 @@ import {
 	prefersReducedMotion as prefersReducedMotionSync,
 } from "phase";
 import {
-	useLoop,
+	useLifecycle,
 	useMediaQuery,
 	usePrefersReducedMotion,
 	useSize,
@@ -16,18 +16,12 @@ import { preload } from "react-dom";
 import {
 	DEFAULT_CAMERA_FOV,
 	DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
-	DEFAULT_PAINT_BRUSH_RADIUS,
-	DEFAULT_PAINT_BRUSH_STRENGTH,
-	DEFAULT_PAINT_DECAY_PER_FRAME_120,
-	DEFAULT_PAINT_DIFFUSION_JITTER,
-	DEFAULT_PAINT_DIFFUSION_RATE,
 	cameraRadiusForBounds,
 	cameraRadiusForFov,
 	createEve5Renderer,
 	type RenderControls,
 } from "./render";
 import { resizeCanvas, type CanvasLayout } from "./runtime/canvas-sizing";
-import type { EveTransitionDebugState } from "./runtime/debug-gui";
 import { createDrawLoop, type DrawLoop } from "./runtime/frame-loop";
 import { loadMesh } from "./runtime/load-mesh";
 import {
@@ -63,8 +57,6 @@ const DEFAULT_CONTROLS: RenderControls = {
 };
 
 const INITIAL_CANVAS_LAYOUT: CanvasLayout = { width: 1, height: 1 };
-const LOGO_MODE_TRANSITION_DURATION_SECONDS = 0.45;
-const IMPRINT_GLYPH_SCALE = 1.27;
 // The flat SVG only appears when the render takes noticeably long; a quick
 // first frame goes straight to the 3D mark with no placeholder flash.
 const FALLBACK_PLACEHOLDER_DELAY_MS = 700;
@@ -91,12 +83,14 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 	const coarsePointerRef = useSyncedRef(coarsePointer);
 	const stateRef = useRef<HeroRuntimeState | null>(null);
 	const drawLoopRef = useRef<DrawLoop | null>(null);
-	const loopPhaseRef = useRef("idle");
-	const invalidatePointerCanvasRectRef = useRef(() => {});
 	const fallbackRef = useRef<HTMLImageElement>(null);
 	const fallbackPlaceholderTimerRef = useRef(0);
-	const targetLogoModeProgressRef = useRef(0);
-	const targetAgentsEnvYawMixRef = useRef(0);
+	const runLoopRef = useRef(() => {});
+	const invalidatePointerCanvasRectRef = useRef(() => {});
+	const requestRender = useStableCallback(() => {
+		if (stateRef.current) stateRef.current.renderRequested = true;
+		runLoopRef.current();
+	});
 	const handleCanvasRevealed = useStableCallback(() => {
 		window.clearTimeout(fallbackPlaceholderTimerRef.current);
 		if (!stateRef.current?.cancelled) {
@@ -114,34 +108,53 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 	const fatalErrorRef = useRef<(() => void) | null>(null);
 	const handleFatalError = useStableCallback(() => fatalErrorRef.current?.());
 
-	const { phase: loopPhase } = useLoop({
+	const { isActive } = useLifecycle({
 		ref: containerRef,
 		reducedMotion: "pause",
 		intersectionOptions: { threshold: 0 },
-		onTick: (frame) => drawLoopRef.current?.step(frame.time),
 	});
 
 	useEffect(() => {
-		loopPhaseRef.current = loopPhase;
-		if (loopPhase === "running") drawLoopRef.current?.start();
-		else drawLoopRef.current?.stop();
-	}, [loopPhase]);
+		let frame = 0;
+		const tick = (time: number) => {
+			frame = 0;
+			const drawLoop = drawLoopRef.current;
+			if (drawLoop?.step(time)) frame = requestAnimationFrame(tick);
+			else drawLoop?.stop();
+		};
+		const run = () => {
+			const drawLoop = drawLoopRef.current;
+			if (!isActive || frame || !drawLoop) return;
+			drawLoop.start();
+			frame = requestAnimationFrame(tick);
+		};
+		runLoopRef.current = run;
+		run();
+		return () => {
+			runLoopRef.current = () => {};
+			cancelAnimationFrame(frame);
+			drawLoopRef.current?.stop();
+		};
+	}, [isActive]);
 
 	useEffect(() => {
 		if (!containerSize) return;
 		canvasLayoutRef.current = containerSize;
+		requestRender();
 		invalidatePointerCanvasRectRef.current();
-	}, [containerSize]);
+	}, [containerSize, requestRender]);
 
 	useEffect(() => {
 		const state = stateRef.current;
-		if (state) syncPointerInteractionMode(state, coarsePointer);
-	}, [coarsePointer]);
+		if (!state) return;
+		syncPointerInteractionMode(state, coarsePointer);
+		requestRender();
+	}, [coarsePointer, requestRender]);
 
 	useEffect(() => {
 		const state: HeroRuntimeState = {
 			cancelled: false,
-			animationFrame: 0,
+			renderRequested: true,
 			cleanup: undefined,
 			mouseEnvYaw: controlsRef.current.envYaw,
 			targetMouseEnvYaw: controlsRef.current.envYaw,
@@ -161,7 +174,6 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 			paintGridScaleMultiplier: DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
 			targetBrushActive: false,
 			activeMesh: undefined,
-			agentsEnvYawMix: 0,
 			previousFrameTime: performance.now(),
 			autoRotateStartTime: performance.now(),
 			lastBrushMoveTime: Number.NEGATIVE_INFINITY,
@@ -190,6 +202,7 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 		const dprWatcher = createDevicePixelRatio({
 			onChange: (dpr) => {
 				devicePixelRatioRef.current = dpr;
+				requestRender();
 				invalidatePointerCanvasRectRef.current();
 			},
 		});
@@ -202,9 +215,9 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 			coarsePointerRef,
 			canvasLayoutRef,
 			devicePixelRatioRef,
+			requestRender,
 		});
-		invalidatePointerCanvasRectRef.current =
-			pointerController.invalidateCanvasRect;
+		invalidatePointerCanvasRectRef.current = pointerController.invalidateCanvasRect;
 
 		const cleanupSetup = () => {
 			state.cancelled = true;
@@ -239,11 +252,11 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 
 			const mesh = await loadMesh(modelUrl);
 			if (state.cancelled) return;
+			state.activeMesh = mesh;
 			// Mesh is in: cancel the placeholder timer so only genuinely slow
 			// networks ever show it. Remaining GPU init/pipeline compile time
 			// stays calmly blank instead of flashing SVG -> render.
 			window.clearTimeout(fallbackPlaceholderTimerRef.current);
-			state.activeMesh = mesh;
 			// Frame the real mark: it is wider than tall, so a height-only fit
 			// would clip the silhouette at both canvas edges.
 			controlsRef.current.radius = cameraRadiusForBounds(
@@ -275,24 +288,10 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 			const renderer = createEve5Renderer(app.device, format, mesh, {
 				theme: "dark",
 				bloom: true,
-				backRefraction: true,
+				backRefraction: false,
 			});
 			let disposed = false;
 			const runtime: RuntimeOwner = {};
-			const modeTransitionProgressRef = { current: 0 };
-			const transitionDebug: EveTransitionDebugState = {
-				overrideEnabled: false,
-				progress: 0,
-				gridScaleMultiplier: 0.9,
-				glyphScale: IMPRINT_GLYPH_SCALE,
-				durationSeconds: LOGO_MODE_TRANSITION_DURATION_SECONDS,
-				paintDecayPerFrame120: DEFAULT_PAINT_DECAY_PER_FRAME_120,
-				diffusionAmount: DEFAULT_PAINT_DIFFUSION_RATE,
-				diffusionJitter: DEFAULT_PAINT_DIFFUSION_JITTER,
-				brushRadius: DEFAULT_PAINT_BRUSH_RADIUS * 1.5,
-				brushStrength: DEFAULT_PAINT_BRUSH_STRENGTH,
-				visualizePaintBuffer: false,
-			};
 			state.previousFrameTime = performance.now();
 			state.autoRotateStartTime = state.previousFrameTime;
 
@@ -325,11 +324,6 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 				context,
 				renderer,
 				controlsRef,
-				transitionDebug,
-				modeTransitionProgressRef,
-				targetLogoModeProgressRef,
-				targetAgentsEnvYawMixRef,
-				defaultMaterial: DEFAULT_CONTROLS.material,
 				canvasLayoutRef,
 				devicePixelRatioRef,
 				onCanvasRevealed: handleCanvasRevealed,
@@ -339,7 +333,7 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 			runtime.drawLoopDispose = drawLoop.dispose;
 			drawLoopRef.current = drawLoop;
 			fatalErrorRef.current = dispose;
-			if (loopPhaseRef.current === "running") drawLoop.start();
+			requestRender();
 			return dispose;
 		}
 
@@ -361,6 +355,7 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 		handleCanvasRevealed,
 		handleFallback,
 		handleFatalError,
+		requestRender,
 	]);
 
 	return (

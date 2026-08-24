@@ -1,10 +1,10 @@
 import { assets } from "../domain/asset";
 import { lazy, Suspense } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
-import { setupPath } from "../domain/route";
+import { machinePath, setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { motion } from "../domain/motion";
-import { useMachine } from "../app/machine-mode";
+import { LocalLink } from "../components/LocalLink";
 import { LocalAiLogo } from "../logo/LocalAiLogo";
 import { site } from "../domain/site";
 
@@ -33,7 +33,6 @@ function useHeroClock() {
 
 export function Hero() {
 	const clock = useHeroClock();
-	const { toggleMachine } = useMachine();
 	const reduceMotion = useReducedMotion();
 	const enter = (delay: number) => ({
 		initial: reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
@@ -50,10 +49,9 @@ export function Hero() {
 							Intelligence should be{" "}
 							<span className="hero__title-end">
 								owned
-								<button
+								<LocalLink
 									className="hero__mark-button"
-									type="button"
-									onClick={() => toggleMachine(true)}
+									href={machinePath}
 									aria-label="Machine-readable page"
 								>
 									<img
@@ -65,7 +63,7 @@ export function Hero() {
 										aria-hidden="true"
 										draggable={false}
 									/>
-								</button>
+								</LocalLink>
 							</span>
 						</m.h1>
 						<m.p className="hero__thesis" {...enter(0.2)}>

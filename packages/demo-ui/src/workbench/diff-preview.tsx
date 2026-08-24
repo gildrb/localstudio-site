@@ -11,21 +11,21 @@ type DiffPreviewLine = {
 	marker: string;
 };
 
-const rowStyles: Record<DiffPreviewLineKind, string> = {
+const rowStyles = {
 	addition: "bg-(--ok)/[0.07]",
 	context: "bg-transparent",
 	deletion: "bg-(--err)/[0.065]",
 	hunk: "border-y border-(--separator)/70 bg-(--fg)/[0.035] text-(--dim)",
 	meta: "bg-(--fg)/[0.025] text-(--dim)/80",
-};
+} satisfies Record<DiffPreviewLineKind, string>;
 
-const markerStyles: Record<DiffPreviewLineKind, string> = {
+const markerStyles = {
 	addition: "bg-(--ok)/[0.055] text-(--ok)",
 	context: "text-(--dim)/35",
 	deletion: "bg-(--err)/[0.05] text-(--err)",
 	hunk: "text-(--dim)/45",
 	meta: "text-(--dim)/45",
-};
+} satisfies Record<DiffPreviewLineKind, string>;
 
 function parseLine(line: string): DiffPreviewLine {
 	if (line.startsWith("diff --git") || line.startsWith("index ")) {

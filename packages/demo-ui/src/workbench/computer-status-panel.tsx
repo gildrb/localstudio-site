@@ -3,11 +3,9 @@ export function ComputerStatusPanel({
 	activeModel,
 	focusedSession,
 }: {
-	activeProject?: { name: string; path: string } | null;
+	activeProject?: { name: string } | null;
 	activeModel?: { name: string } | null;
 	focusedSession?: { title: string; status: string } | null;
-	sessions?: unknown;
-	gitSummary?: unknown;
 }) {
 	return (
 		<section className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-4 text-[length:var(--fs-sm)] text-(--fg)/80">

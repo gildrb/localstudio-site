@@ -2,25 +2,20 @@ import { robotsTxt } from "./robots.ts";
 import { sitemapXml } from "./sitemap.ts";
 import { machineText } from "./machine.ts";
 import { site } from "../domain/site.ts";
-import { docsPath, markdownPathFor } from "../domain/route.ts";
+import { documentPaths, docsPath, machinePath, markdownPathFor, routes } from "../domain/route.ts";
 import {
 	agentCard,
-	agentsMarkdown,
 	apiCatalog,
 	docsMarkdown,
 	downloadMarkdown,
-	faqMarkdown,
 	indexMarkdown,
 	llmsFull,
 	llmsTxt,
+	markdownDocument,
 	markdownPage,
-	mobileMarkdown,
-	peopleMarkdown,
 	productMarkdown,
 	promptMarkdown,
 	resourcesMarkdown,
-	servicesMarkdown,
-	showcaseMarkdown,
 	sitemapMarkdown,
 } from "./markdown.ts";
 
@@ -61,21 +56,20 @@ export function agentDocuments(): readonly AgentDocument[] {
 		{ path: "/llms-full.txt", body: llmsFull(), contentType: markdown },
 		{ path: "/index.md", body: indexMarkdown(), contentType: markdown },
 		{ path: "/product.md", body: productMarkdown(), contentType: markdown },
-		{ path: "/mobile.md", body: mobileMarkdown(), contentType: markdown },
 		{ path: "/docs.md", body: docsMarkdown(), contentType: markdown },
 		{ path: "/setup.md", body: promptMarkdown(), contentType: markdown },
-		{ path: "/agents.md", body: agentsMarkdown(), contentType: markdown },
 		{ path: "/overview.md", body: resourcesMarkdown(), contentType: markdown },
 		{ path: "/download.md", body: downloadMarkdown(), contentType: markdown },
+		...documentPaths().map((path) => ({
+			path,
+			body: markdownDocument(path),
+			contentType: markdown,
+		})),
 		{
 			path: "/machine.md",
-			body: markdownPage("Machine-readable index", machineText()),
+			body: markdownPage(routes[machinePath].title, machineText()),
 			contentType: markdown,
 		},
-		{ path: "/services.md", body: servicesMarkdown(), contentType: markdown },
-		{ path: "/people.md", body: peopleMarkdown(), contentType: markdown },
-		{ path: "/showcase.md", body: showcaseMarkdown(), contentType: markdown },
-		{ path: "/faq.md", body: faqMarkdown(), contentType: markdown },
 		{ path: "/.well-known/llms.txt", body: llms, contentType: markdown },
 		{
 			path: "/.well-known/api-catalog",

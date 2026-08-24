@@ -83,38 +83,6 @@
 			"sha256": "8de45cde7dccd23487c1159336bd4a10477f75b3c81da5064e790f2ff5185edf"
 		},
 		{
-			"path": "public/images/kittylitter-appstore-ipad-01-660.avif",
-			"role": "binary",
-			"type": "application/octet-stream",
-			"dimensions": null,
-			"bytes": 10086,
-			"sha256": "569649c180994d48cc9a08f2adb9d6cbf63f8ae5dbf9b690b8fc274e6353d096"
-		},
-		{
-			"path": "public/images/kittylitter-appstore-ipad-01.avif",
-			"role": "binary",
-			"type": "application/octet-stream",
-			"dimensions": null,
-			"bytes": 19607,
-			"sha256": "d2c0aeea9685be0d8ebee1b15a4c4b55af4c06de44457ceded561e9528dc67ac"
-		},
-		{
-			"path": "public/images/kittylitter-appstore-ipad-06-660.avif",
-			"role": "binary",
-			"type": "application/octet-stream",
-			"dimensions": null,
-			"bytes": 7639,
-			"sha256": "5d92f797759a54509e62b6459d8cb038e265c77009a8189dbe9a0a469d0118c5"
-		},
-		{
-			"path": "public/images/kittylitter-appstore-ipad-06.avif",
-			"role": "binary",
-			"type": "application/octet-stream",
-			"dimensions": null,
-			"bytes": 13383,
-			"sha256": "4630b2abbd52149b8a3da35edd26aab7d5f749f262b9e454a55db08c0c060edc"
-		},
-		{
 			"path": "public/images/kittylitter-appstore-iphone-01-660.avif",
 			"role": "binary",
 			"type": "application/octet-stream",
