@@ -12,7 +12,6 @@ import {
 	useSyncedRef,
 } from "phase/react";
 import { useEffect, useRef } from "react";
-import { preload } from "react-dom";
 import {
 	DEFAULT_CAMERA_FOV,
 	DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
@@ -71,7 +70,6 @@ export type LogoRendererAssets = {
 };
 
 export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets) {
-	preload(modelUrl, { as: "fetch", crossOrigin: "anonymous" });
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const coarsePointer = useMediaQuery("(pointer: coarse)");
 	const containerRef = useRef<HTMLDivElement>(null);

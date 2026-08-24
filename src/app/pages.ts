@@ -1,5 +1,6 @@
 import { lazy, type ComponentType } from "react";
 import { DocsPage } from "../pages/DocsPage";
+import { HomePage } from "../pages/HomePage";
 import { PromptPage } from "../pages/PromptPage";
 import { ResourcesPage } from "../pages/ResourcesPage";
 import {
@@ -14,9 +15,7 @@ import {
 } from "../domain/route";
 
 export const pages = {
-	[homePath]: lazy(() =>
-		import("../pages/HomePage").then(({ HomePage }) => ({ default: HomePage })),
-	),
+	[homePath]: HomePage,
 	[productPath]: lazy(() =>
 		import("../pages/ProductPage").then(({ ProductPage }) => ({ default: ProductPage })),
 	),

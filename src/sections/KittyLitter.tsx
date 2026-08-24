@@ -126,8 +126,8 @@ function FeatureCard({
 					sizes="(max-width: 620px) calc(100vw - 48px), (max-width: 900px) 50vw, 33vw"
 					alt={feature.alt}
 					width="1320"
-					loading={index < 4 ? "eager" : "lazy"}
-					fetchPriority={index < 4 ? "high" : "auto"}
+					loading="lazy"
+					fetchPriority="low"
 					decoding="async"
 					draggable={false}
 				/>
