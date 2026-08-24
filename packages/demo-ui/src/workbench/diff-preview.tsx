@@ -7,6 +7,7 @@ export type DiffPreviewLineKind =
 
 type DiffPreviewLine = {
 	content: string;
+	id: string;
 	kind: DiffPreviewLineKind;
 	marker: string;
 };
@@ -27,7 +28,7 @@ const markerStyles = {
 	meta: "text-(--dim)/45",
 } satisfies Record<DiffPreviewLineKind, string>;
 
-function parseLine(line: string): DiffPreviewLine {
+function parseLine(line: string): Omit<DiffPreviewLine, "id"> {
 	if (line.startsWith("diff --git") || line.startsWith("index ")) {
 		return { content: line, kind: "meta", marker: "" };
 	}
@@ -50,7 +51,11 @@ function parseLine(line: string): DiffPreviewLine {
 }
 
 export function DiffPreview({ body }: { body: string }) {
-	const lines = body.replace(/\r\n?/g, "\n").split("\n").map(parseLine);
+	const sources = body.replace(/\r\n?/g, "\n").split("\n");
+	const lines = sources.map((source, position) => ({
+		...parseLine(source),
+		id: `${source}:${sources.slice(0, position).filter((candidate) => candidate === source).length}`,
+	}));
 	const additions = lines.filter((line) => line.kind === "addition").length;
 	const deletions = lines.filter((line) => line.kind === "deletion").length;
 	return (
@@ -63,9 +68,9 @@ export function DiffPreview({ body }: { body: string }) {
 				</span>
 			</div>
 			<div className="max-h-[360px] overflow-y-auto overscroll-contain">
-				{lines.map((line, index) => (
+				{lines.map((line) => (
 					<div
-						key={`${index}:${line.kind}:${line.content}`}
+						key={line.id}
 						className={`grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] font-mono text-[length:var(--fs-sm)] leading-5 ${rowStyles[line.kind]} ${line.content ? "min-h-5" : "h-3"}`}
 					>
 						<span

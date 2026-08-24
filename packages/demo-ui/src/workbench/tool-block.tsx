@@ -8,7 +8,7 @@ import {
 	SquarePen,
 	TerminalSquare,
 	type LucideIcon,
-} from "..";
+} from "../ui/icon-registry";
 
 type ToolStatus = "done" | "running";
 type ToolKind = "edit" | "search" | "read" | "exec" | "browser" | "generic";

@@ -1,4 +1,4 @@
-import { GitBranchIcon } from "..";
+import { GitBranchIcon } from "../ui/icons";
 import { DEMO_DIFF } from "../scenario/sequence";
 import { DiffPreview } from "../workbench/diff-preview";
 

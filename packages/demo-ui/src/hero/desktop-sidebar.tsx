@@ -6,9 +6,9 @@ import {
 	PanelLeftFilled,
 	Settings,
 	Smartphone,
-} from "..";
-import { NavItemDesktop } from "..";
-import { isRouteActive, tabs } from "..";
+} from "../ui/icon-registry";
+import { NavItemDesktop } from "../shell/left-sidebar-nav";
+import { isRouteActive, tabs } from "../shell/left-sidebar-nav-model";
 const DEFAULT_SIDEBAR_WIDTH = 244;
 function ProfileAvatar({ profile }: { profile: { name: string } }) {
 	return <span className="inline-block h-6 w-6 rounded-full bg-(--hover)" aria-hidden="true" title={profile.name} />;
@@ -75,9 +75,8 @@ export function HeroDesktopSidebar({
 					</button>
 				</div>
 				<nav className="sidebar-scroller flex min-h-0 flex-1 flex-col gap-[var(--sidebar-row-gap)] overflow-x-hidden overflow-y-auto px-[var(--sidebar-padding-x)] py-0.5 [contain:layout_paint]">
-					<a
-						href="/agent?new=1&replace=1"
-						onClick={(event) => event.preventDefault()}
+					<button
+						type="button"
 						className="flex h-[var(--sidebar-row-height)] shrink-0 items-center gap-2 rounded-[var(--sidebar-row-radius)] px-2 text-(--fg)/85 transition-colors hover:bg-(--hover) hover:text-(--fg)"
 						title="New task"
 					>
@@ -88,7 +87,7 @@ export function HeroDesktopSidebar({
 						<span className="flex-1 truncate text-left text-[length:var(--fs-md)] font-normal">
 							New task
 						</span>
-					</a>
+					</button>
 					{tabs.map((tab) => (
 						<NavItemDesktop
 							key={tab.href}
