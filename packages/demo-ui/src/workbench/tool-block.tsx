@@ -5,7 +5,7 @@ export function ToolBlockView({
 		id: string;
 		name: string;
 		status: "done" | "running";
-		resultText?: string;
+		resultText?: string | undefined;
 	};
 }) {
 	return (

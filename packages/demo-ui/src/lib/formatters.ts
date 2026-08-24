@@ -5,7 +5,7 @@
 /**
  * Safely convert a value to a valid number, returning default if invalid
  */
-function safeNumber(value: unknown, defaultValue = 0): number {
+function safeNumber(value: number | null | undefined, defaultValue = 0): number {
   if (value === null || value === undefined) return defaultValue;
   const num = Number(value);
   if (!Number.isFinite(num) || Number.isNaN(num) || num < 0) return defaultValue;

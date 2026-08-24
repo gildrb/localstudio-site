@@ -1,9 +1,30 @@
 {
   "name": "@local-ai/logo-renderer",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "exports": {
     "./react": "./src/renderer/index.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "generate": "node scripts/generate-logo-mesh.mjs",
+    "check": "node scripts/generate-logo-mesh.mjs --check"
+  },
+  "peerDependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "dependencies": {
+    "@vgpu/core": "0.0.7",
+    "@vgpu/render": "0.0.7",
+    "@vgpu/wgsl": "0.0.7",
+    "phase": "0.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "typescript": "6.0.3",
+    "earcut": "3.2.3"
   }
 }

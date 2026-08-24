@@ -14,8 +14,10 @@ function selectionColor(position: number) {
 	const start = Math.floor(scaled);
 	const end = Math.min(start + 1, sky.length - 1);
 	const progress = Math.round((scaled - start) * 1000) / 10;
-	if (start === end) return sky[start];
-	return `color-mix(in srgb, ${sky[start]}, ${sky[end]} ${progress}%)`;
+	const startColor = sky[start] ?? sky[0];
+	const endColor = sky[end] ?? startColor;
+	if (start === end) return startColor;
+	return `color-mix(in srgb, ${startColor}, ${endColor} ${progress}%)`;
 }
 
 function selectionInk(position: number) {

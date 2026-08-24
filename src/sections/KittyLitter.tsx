@@ -1,4 +1,5 @@
 import { assets } from "../domain/asset";
+import { site } from "../domain/site";
 import { useState } from "react";
 import {
 	AnimatePresence,
@@ -8,7 +9,7 @@ import {
 	useReducedMotion,
 } from "motion/react";
 import { motion } from "../domain/motion";
-import { StoreButtons } from "../components/Links";
+import { LocalLink } from "../components/LocalLink";
 
 type KittyFeature = {
 	readonly title: string;
@@ -117,9 +118,6 @@ export function KittyLitter() {
 						))}
 					</ul>
 				</div>
-				<div className="hero__actions">
-					<StoreButtons />
-				</div>
 				<div className="kitty__grid">
 					{features.map((feature) => (
 						<article className="kitty__feature" key={feature.title}>
@@ -138,6 +136,16 @@ export function KittyLitter() {
 							</div>
 						</article>
 					))}
+				</div>
+				<div className="button-group kitty__actions">
+					<LocalLink
+						className="text-link"
+						href={site.products.kittyLitter.url}
+						target="_blank"
+						rel="noreferrer"
+					>
+						Visit KittyLitter
+					</LocalLink>
 				</div>
 			</section>
 		</LazyMotion>

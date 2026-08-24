@@ -1,8 +1,4 @@
-import {
-	htmlMatcher,
-	markdownPages,
-	redirects,
-} from "./src/domain/route.ts";
+import { markdownPages, redirects } from "./src/domain/route.ts";
 import {
 	HOMEPAGE_LINK_HEADER,
 	wantsMarkdown as acceptWantsMarkdown,
@@ -11,8 +7,10 @@ import {
 
 const markdownByPath = markdownPages();
 
+// Vercel requires a statically analyzable matcher. The handler still no-ops
+// for paths that are not redirects or canonical markdown requests.
 export const config = {
-	matcher: [...htmlMatcher(), ...Object.keys(redirects)],
+	matcher: "/(.*)",
 };
 
 export default async function middleware(request) {

@@ -1,4 +1,3 @@
-import Link from "..";
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -76,9 +75,8 @@ export function HeroDesktopSidebar({
 					</button>
 				</div>
 				<nav className="sidebar-scroller flex min-h-0 flex-1 flex-col gap-[var(--sidebar-row-gap)] overflow-x-hidden overflow-y-auto px-[var(--sidebar-padding-x)] py-0.5 [contain:layout_paint]">
-					<Link
+					<a
 						href="/agent?new=1&replace=1"
-						prefetch={false}
 						onClick={(event) => event.preventDefault()}
 						className="flex h-[var(--sidebar-row-height)] shrink-0 items-center gap-2 rounded-[var(--sidebar-row-radius)] px-2 text-(--fg)/85 transition-colors hover:bg-(--hover) hover:text-(--fg)"
 						title="New task"
@@ -90,7 +88,7 @@ export function HeroDesktopSidebar({
 						<span className="flex-1 truncate text-left text-[length:var(--fs-md)] font-normal">
 							New task
 						</span>
-					</Link>
+					</a>
 					{tabs.map((tab) => (
 						<NavItemDesktop
 							key={tab.href}
@@ -121,34 +119,31 @@ function HeroProfileFooter() {
 	const [profile] = useLocalProfile();
 	return (
 		<div className="flex h-[var(--sidebar-row-height)] items-center gap-1">
-			<Link
+			<a
 				href="/settings#profile"
-				prefetch={false}
 				className="flex min-w-0 flex-1 items-center gap-2.5 rounded-[var(--sidebar-row-radius)] px-2 py-1 text-left transition-colors hover:bg-(--hover)"
 			>
 				<ProfileAvatar profile={profile} />
 				<span className="truncate text-[length:var(--fs-md)] text-(--fg)">
 					{profile.name}
 				</span>
-			</Link>
-			<Link
+			</a>
+			<a
 				href="/settings#profile"
-				prefetch={false}
 				className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--sidebar-row-radius)] text-(--fg)/60 transition-colors hover:bg-(--hover) hover:text-(--fg)"
 				title="Connect phone"
 				aria-label="Connect phone in settings"
 			>
 				<Smartphone className="h-3.5 w-3.5" strokeWidth={1.75} />
-			</Link>
-			<Link
+			</a>
+			<a
 				href="/settings"
-				prefetch={false}
 				title="Settings"
 				aria-label="Settings"
 				className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--sidebar-row-radius)] text-(--fg)/60 transition-colors hover:bg-(--hover) hover:text-(--fg)"
 			>
 				<Settings className="h-3.5 w-3.5" strokeWidth={1.75} />
-			</Link>
+			</a>
 		</div>
 	);
 }

@@ -1,12 +1,27 @@
 {
   "name": "@local-studio/demo-ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./styles.css": "./src/styles/workbench-demo.css",
     "./hero": "./src/hero/HeroDemo.tsx",
     "./story": "./src/story/FeatureDemo.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "dependencies": {
+    "lucide-react": "1.31.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "typescript": "6.0.3"
   }
 }

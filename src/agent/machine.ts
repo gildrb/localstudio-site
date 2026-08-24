@@ -1,3 +1,4 @@
+import { routePaths, routes, type RoutePath } from "../domain/route.ts";
 import { site } from "../domain/site.ts";
 import { release } from "../domain/release.ts";
 
@@ -8,7 +9,12 @@ function field(name: string, value: string): string {
 	return `${name.padEnd(14, ".")} ${value}`;
 }
 
-export type MachineSection = readonly [name: string, lines: string[]];
+function routeLine(path: RoutePath): string {
+	const dots = ".".repeat(Math.max(1, 14 - path.length));
+	return `${path} ${dots} ${routes[path].machineLabel} — ${routes[path].summary}`;
+}
+
+type MachineSection = readonly [name: string, lines: string[]];
 
 export function machineSections(): MachineSection[] {
 	return [
@@ -373,17 +379,7 @@ export function machineSections(): MachineSection[] {
 		],
 		[
 			"ROUTES",
-			[
-				"/ ............. home (Local Studio + KittyLitter)",
-				"/product ...... product tour (Control / Serve / Work)",
-				"/mobile ....... KittyLitter pairing and security",
-				"/docs ......... installation and operations guide",
-				"/setup ....... portable setup prompt for coding models",
-				"/agents ....... agent setup runbook (DLTL)",
-				"/overview .... everything around Local Studio",
-				"/download signed Apple Silicon DMG",
-				"/machine ...... this index",
-			],
+			routePaths.map(routeLine),
 		],
 		[
 			"DISCOVERY",

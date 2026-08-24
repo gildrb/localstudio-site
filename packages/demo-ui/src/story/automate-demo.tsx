@@ -19,7 +19,7 @@ const AUTOMATION_FILTERS: Array<{ id: AutomationFilter; label: string }> = [
 	{ id: "paused", label: "Paused" },
 ];
 
-const AUTOMATIONS: DemoAutomation[] = [
+const AUTOMATIONS = [
 	{
 		id: "daily-brief",
 		name: "Daily brief",
@@ -46,15 +46,17 @@ const AUTOMATIONS: DemoAutomation[] = [
 		nextRun: "Paused",
 		status: "paused",
 	},
-];
+] satisfies readonly [DemoAutomation, ...DemoAutomation[]];
+
+const DEFAULT_AUTOMATION = AUTOMATIONS[0];
 
 export function AutomateDemo() {
 	const [query, setQuery] = useState("");
 	const [filter, setFilter] = useState<AutomationFilter>("all");
-	const [selectedId, setSelectedId] = useState(AUTOMATIONS[0].id);
+	const [selectedId, setSelectedId] = useState(DEFAULT_AUTOMATION.id);
 	const selected =
 		AUTOMATIONS.find((automation) => automation.id === selectedId) ??
-		AUTOMATIONS[0];
+		DEFAULT_AUTOMATION;
 	const visible = useMemo(() => {
 		const needle = query.trim().toLowerCase();
 		return AUTOMATIONS.filter(

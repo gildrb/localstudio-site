@@ -10,7 +10,6 @@ export const routes = {
 		heading: "Intelligence should be owned",
 		summary: "Homepage: Local Studio + KittyLitter product surface.",
 		markdown: "/index.md",
-		nav: "none",
 		footerLabel: null,
 		priority: 1,
 		machineLabel: "home",
@@ -20,7 +19,6 @@ export const routes = {
 		heading: "One place to run local AI",
 		summary: "Control, serve, and work: controller, runtimes, Workbench.",
 		markdown: "/product.md",
-		nav: "none",
 		footerLabel: null,
 		priority: 0.9,
 		machineLabel: "product",
@@ -30,7 +28,6 @@ export const routes = {
 		heading: "Get Local Studio running",
 		summary: "Install, runtimes, agent runtime, remote/LAN, validation.",
 		markdown: "/docs.md",
-		nav: "resource",
 		footerLabel: "Docs",
 		priority: 0.8,
 		machineLabel: "docs",
@@ -40,7 +37,6 @@ export const routes = {
 		heading: "Give this to any coding model",
 		summary: "Portable setup prompt for a coding model on the target machine.",
 		markdown: "/setup.md",
-		nav: "resource",
 		footerLabel: "Setup",
 		priority: 0.7,
 		machineLabel: "setup",
@@ -50,7 +46,6 @@ export const routes = {
 		heading: "Download for macOS",
 		summary: "Signed Apple Silicon DMG from GitHub Releases.",
 		markdown: "/download.md",
-		nav: "none",
 		footerLabel: "Download",
 		priority: 0.8,
 		machineLabel: "download",
@@ -60,7 +55,6 @@ export const routes = {
 		heading: "Everything around Local Studio",
 		summary: "Docs, setup, download, KittyLitter, GitHub, brand.",
 		markdown: "/overview.md",
-		nav: "resource",
 		footerLabel: "Overview",
 		priority: 0.6,
 		machineLabel: "overview",
@@ -71,7 +65,6 @@ export const routes = {
 		summary:
 			"Dense machine-readable index of company, products, and discovery.",
 		markdown: "/machine.md",
-		nav: "none",
 		footerLabel: "Machines",
 		priority: 0.9,
 		machineLabel: "machine",
@@ -79,7 +72,6 @@ export const routes = {
 } as const;
 
 export type RoutePath = keyof typeof routes;
-export type RouteSpec = (typeof routes)[RoutePath];
 
 export const routePaths = [
 	"/",
@@ -92,7 +84,7 @@ export const routePaths = [
 ] as const satisfies readonly RoutePath[];
 
 export function isRoutePath(pathname: string): pathname is RoutePath {
-	return Object.hasOwn(routes, pathname);
+	return Object.prototype.hasOwnProperty.call(routes, pathname);
 }
 
 export function isMachineRoute(pathname: string): pathname is "/machine" {
@@ -134,7 +126,6 @@ export const redirects = {
 	"/agents": "/setup",
 } as const;
 
-export type RedirectPath = keyof typeof redirects;
 
 export function redirectFor(pathname: string): string | null {
 	if (pathname === "/mobile" || pathname === "/agents") {
@@ -163,7 +154,7 @@ export function resourceNav(): readonly { href: RoutePath; label: string }[] {
 	];
 }
 
-export type ProductNavItem = {
+type ProductNavItem = {
 	readonly label: string;
 	readonly href: string;
 	readonly external?: true;
@@ -190,10 +181,6 @@ export function notFoundSuggestions(): readonly {
 	];
 }
 
-export function htmlMatcher(): readonly string[] {
-	return routePaths;
-}
-
 export function markdownPages(): ReadonlyMap<string, string> {
 	const entries: [string, string][] = routePaths.map((path) => [
 		path,
@@ -212,7 +199,7 @@ export function normalizePath(pathname: string): string {
 	return pathname;
 }
 
-export type LinkDecision =
+type LinkDecision =
 	| { readonly kind: "external" }
 	| { readonly kind: "push"; readonly next: string }
 	| { readonly kind: "hash"; readonly hash: string }

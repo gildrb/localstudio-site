@@ -2,33 +2,36 @@
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { assets } from "../src/domain/asset.ts";
+import { documents, redirects, routePaths } from "../src/domain/route.ts";
+import { motion } from "../src/domain/motion.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const command = process.argv[2] ?? "write";
+const architecture = JSON.parse(readFileSync(`${root}/architecture.json`, "utf8"));
+const tokenSources = {
+	public: "src/styles/global.css",
+	demo: "packages/demo-ui/src/styles/workbench-demo.css",
+};
 
-function read(rel) {
-	return readFileSync(`${root}/${rel}`, "utf8");
+function cssTokenIds(rel) {
+	const source = readFileSync(`${root}/${rel}`, "utf8");
+	return [
+		...new Set(
+			[...source.matchAll(/^\s*(--[-\w]+)\s*:/gm)].map((match) => match[1]),
+		),
+	];
 }
 
-function objectKeys(source, name) {
-	const match = source.match(new RegExp(`export const ${name} = \\{([\\s\\S]*?)\\n\\} as const`));
-	if (!match) throw new Error(`missing ${name}`);
-	return [...match[1].matchAll(/^\t([A-Za-z][\w]*)\s*:/gm)].map((item) => item[1]);
-}
-
-function quotedKeys(source, name) {
-	const match = source.match(new RegExp(`export const ${name} = \\{([\\s\\S]*?)\\n\\} as const`));
-	if (!match) throw new Error(`missing ${name}`);
-	return [...match[1].matchAll(/^\t"([^"]+)"\s*:/gm)].map((item) => item[1]);
-}
-
-const architecture = JSON.parse(read("architecture.json"));
 const manifest = {
-	routes: quotedKeys(read("src/domain/route.ts"), "routes"),
-	documents: quotedKeys(read("src/domain/route.ts"), "documents"),
-	redirects: quotedKeys(read("src/domain/route.ts"), "redirects"),
-	assets: objectKeys(read("src/domain/asset.ts"), "assets"),
-	motion: objectKeys(read("src/domain/motion.ts"), "motion"),
+	routes: [...routePaths],
+	documents: Object.keys(documents),
+	redirects: Object.keys(redirects),
+	assets: Object.keys(assets),
+	motion: Object.keys(motion),
+	tokens: Object.fromEntries(
+		Object.entries(tokenSources).map(([name, rel]) => [name, cssTokenIds(rel)]),
+	),
 	components: architecture.singleConsumerComponents,
 };
 

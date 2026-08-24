@@ -93,10 +93,10 @@ function TabPill({
 	icon?: LucideIcon;
 	label: string;
 	selected: boolean;
-	shortcut?: string;
+	shortcut?: string | undefined;
 	title: string;
 	onSelect: () => void;
-	onClose?: () => void;
+	onClose?: (() => void) | undefined;
 }) {
 	return (
 		<div

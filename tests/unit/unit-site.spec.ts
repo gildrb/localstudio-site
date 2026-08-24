@@ -25,6 +25,7 @@ test("first-party source does not hardcode product URLs outside site.ts", () => 
 		site.products.kittyLitter.source,
 		site.products.localAi.url,
 		site.products.codexShim.repository,
+		site.source,
 	];
 	const violations: string[] = [];
 	for (const path of sourceFiles("src")) {

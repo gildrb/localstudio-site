@@ -1,5 +1,5 @@
-import { assets } from "../domain/asset";
-export type Inline =
+import { assets } from "../domain/asset.ts";
+type Inline =
 	| { readonly kind: "text"; readonly text: string }
 	| { readonly kind: "term"; readonly term: string };
 export type Prose = readonly Inline[];
@@ -10,6 +10,7 @@ const term = (value: string): Inline => ({ kind: "term", term: value });
 export const productFeatures = [
 	{
 		slug: "control",
+		demoScene: "control",
 		storyTitle: "Control",
 		storyDescription: [
 			text("Local and remote controllers, live status, launch state, logs, and metrics."),
@@ -23,6 +24,7 @@ export const productFeatures = [
 	},
 	{
 		slug: "serve",
+		demoScene: "serve",
 		storyTitle: "Serve",
 		storyDescription: [
 			term("vLLM"),
@@ -51,6 +53,7 @@ export const productFeatures = [
 	},
 	{
 		slug: "work",
+		demoScene: "work",
 		storyTitle: "Work",
 		storyDescription: [
 			text("Models, providers, browser, files, terminal, and agents in the same session."),
@@ -66,6 +69,7 @@ export const productFeatures = [
 	},
 	{
 		slug: "automate",
+		demoScene: "automate",
 		storyTitle: "Automate",
 		storyDescription: [
 			text("Scheduled health checks, downloads, and reports that run on this machine."),
@@ -79,6 +83,7 @@ export const productFeatures = [
 	},
 	{
 		slug: "configure",
+		demoScene: "configure",
 		storyTitle: "Configure",
 		storyDescription: [
 			text("Hardware, runtimes, and controller identity for the machine the models run on."),
@@ -91,9 +96,6 @@ export const productFeatures = [
 		alt: "Local Studio configure screen showing local hardware and runtime targets.",
 	},
 ] as const;
-
-export type ProductFeature = (typeof productFeatures)[number];
-export type FeatureSlug = ProductFeature["slug"];
 
 export function renderInlineMarkdown(prose: Prose): string {
 	return prose.map((part) => (part.kind === "text" ? part.text : part.term)).join("");

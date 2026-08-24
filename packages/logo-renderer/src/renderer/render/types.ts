@@ -40,9 +40,9 @@ export type PaintStroke = {
 };
 
 export type PaintRenderOptions = {
-  seed?: PaintSeed;
-  steps?: number;
-  dt?: number;
+  seed?: PaintSeed | undefined;
+  steps?: number | undefined;
+  dt?: number | undefined;
   brushCell?: readonly [number, number];
   brushPreviousCell?: readonly [number, number];
   brushRadius?: number;
@@ -51,8 +51,8 @@ export type PaintRenderOptions = {
   decayRate?: number;
   diffusionRate?: number;
   diffusionJitter?: number;
-  stroke?: PaintStroke;
-  decaySteps?: number;
+  stroke?: PaintStroke | undefined;
+  decaySteps?: number | undefined;
 };
 
 export type ImprintRenderOptions = {

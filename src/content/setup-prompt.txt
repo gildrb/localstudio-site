@@ -1,6 +1,6 @@
 Set up Local Studio completely on the machine you are operating now.
 
-Repository: https://github.com/sybil-solutions/local-studio
+Repository: {{LOCAL_STUDIO_REPOSITORY}}
 
 Work autonomously. Do not give me a tutorial or stop after listing commands. Inspect the machine, make the safest sensible choices, install and configure the software, launch it, and verify that it works. Ask only if you reach a genuine credential, destructive-action, or hardware blocker.
 

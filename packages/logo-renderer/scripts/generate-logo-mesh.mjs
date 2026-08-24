@@ -3,15 +3,17 @@
 // quarter-circle fillet so bevel shading is analytically smooth — no faceted
 // chamfer bands. Caps are triangulated with earcut.
 //
-// Usage: node scripts/generate-logo-mesh.mjs
+// Usage: pnpm --filter @local-ai/logo-renderer generate
 
 import earcut from "earcut";
 import fs from "node:fs";
 import path from "node:path";
 
-const ROOT = path.resolve(import.meta.dirname, "..");
+const ROOT = path.resolve(import.meta.dirname, "../../..");
+const SOURCE_SVG = path.join(ROOT, "public/images/localai_dark.svg");
 const OUT_GLTF = path.join(ROOT, "public/localai/localai-logo.gltf");
 const OUT_BIN = path.join(ROOT, "public/localai/localai-logo.bin");
+const CHECK = process.argv.includes("--check");
 
 // The cloud mark subpath in localai_dark.svg, extracted verbatim (relative to
 // the end of the badge subpath it follows in the file).
@@ -341,11 +343,32 @@ function writeGltf(mesh) {
     buffers: [{ byteLength: bufferLength, uri: "localai-logo.bin" }],
   };
 
+  const gltfBody = `${JSON.stringify(gltf, null, "\t")}\n`;
+  if (CHECK) {
+    const mismatches = [];
+    if (!fs.existsSync(OUT_BIN) || !Buffer.from(fs.readFileSync(OUT_BIN)).equals(Buffer.from(buffer))) {
+      mismatches.push(OUT_BIN);
+    }
+    if (!fs.existsSync(OUT_GLTF) || fs.readFileSync(OUT_GLTF, "utf8") !== gltfBody) {
+      mismatches.push(OUT_GLTF);
+    }
+    if (mismatches.length) {
+      console.error(`logo mesh outputs are stale:\n${mismatches.join("\n")}`);
+      process.exitCode = 1;
+      return;
+    }
+    console.log(`logo mesh outputs ok (${bufferLength} bytes, ${vertexCount} vertices)`);
+    return;
+  }
   fs.writeFileSync(OUT_BIN, buffer);
-  fs.writeFileSync(OUT_GLTF, `${JSON.stringify(gltf, null, "\t")}\n`);
+  fs.writeFileSync(OUT_GLTF, gltfBody);
   console.log(
     `wrote ${OUT_GLTF} (${bufferLength} bytes): ${vertexCount} vertices, ${mesh.indices.length / 3} triangles, outline ${mesh.outlineCount} points`,
   );
 }
 
+const source = fs.readFileSync(SOURCE_SVG, "utf8");
+if (!source.includes(CLOUD_PATH_DATA)) {
+  throw new Error(`logo source does not contain the expected cloud path: ${SOURCE_SVG}`);
+}
 writeGltf(buildMesh());

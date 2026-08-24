@@ -1149,6 +1149,15 @@ button {
   margin-top: 64px;
 }
 
+.kitty__actions {
+  justify-content: flex-start;
+  margin-top: 24px;
+}
+
+.kitty__actions > .text-link {
+  justify-content: flex-start;
+}
+
 .kitty__feature {
   min-width: 0;
 }
@@ -1579,6 +1588,10 @@ button {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .kitty__actions > .text-link {
+    justify-content: flex-start;
+  }
+
   .page-cta {
     padding: 100px 0;
   }
@@ -1740,6 +1753,7 @@ button {
   max-width: 100%;
   margin-top: 32px;
   color: var(--foreground);
+  font: inherit;
 }
 
 .machine__note {
