@@ -14,7 +14,7 @@ function routeLine(path: RoutePath): string {
 	return `${path} ${dots} ${routes[path].machineLabel} — ${routes[path].summary}`;
 }
 
-export type MachineSection = readonly [name: string, lines: string[]];
+type MachineSection = readonly [name: string, lines: string[]];
 
 export function machineSections(): MachineSection[] {
 	return [

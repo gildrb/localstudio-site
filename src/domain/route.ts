@@ -72,7 +72,6 @@ export const routes = {
 } as const;
 
 export type RoutePath = keyof typeof routes;
-export type RouteSpec = (typeof routes)[RoutePath];
 
 export const routePaths = [
 	"/",
@@ -127,7 +126,6 @@ export const redirects = {
 	"/agents": "/setup",
 } as const;
 
-export type RedirectPath = keyof typeof redirects;
 
 export function redirectFor(pathname: string): string | null {
 	if (pathname === "/mobile" || pathname === "/agents") {
@@ -156,7 +154,7 @@ export function resourceNav(): readonly { href: RoutePath; label: string }[] {
 	];
 }
 
-export type ProductNavItem = {
+type ProductNavItem = {
 	readonly label: string;
 	readonly href: string;
 	readonly external?: true;
@@ -205,7 +203,7 @@ export function normalizePath(pathname: string): string {
 	return pathname;
 }
 
-export type LinkDecision =
+type LinkDecision =
 	| { readonly kind: "external" }
 	| { readonly kind: "push"; readonly next: string }
 	| { readonly kind: "hash"; readonly hash: string }

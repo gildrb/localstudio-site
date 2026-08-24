@@ -1,5 +1,5 @@
 import { assets } from "../domain/asset.ts";
-export type Inline =
+type Inline =
 	| { readonly kind: "text"; readonly text: string }
 	| { readonly kind: "term"; readonly term: string };
 export type Prose = readonly Inline[];
@@ -91,9 +91,6 @@ export const productFeatures = [
 		alt: "Local Studio configure screen showing local hardware and runtime targets.",
 	},
 ] as const;
-
-export type ProductFeature = (typeof productFeatures)[number];
-export type FeatureSlug = ProductFeature["slug"];
 
 export function renderInlineMarkdown(prose: Prose): string {
 	return prose.map((part) => (part.kind === "text" ? part.text : part.term)).join("");

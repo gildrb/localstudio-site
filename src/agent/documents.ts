@@ -24,7 +24,7 @@ import {
 	sitemapMarkdown,
 } from "./markdown.ts";
 
-export type AgentDocument = {
+type AgentDocument = {
 	readonly path: string;
 	readonly body: string;
 	readonly contentType: string;

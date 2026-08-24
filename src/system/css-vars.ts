@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-export type CssVars = {
+type CssVars = {
 	readonly [key: `--${string}`]: string;
 };
 

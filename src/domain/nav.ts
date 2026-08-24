@@ -7,7 +7,7 @@ export type NavSurface =
 
 export const closedNav = { kind: "closed" } as const satisfies NavSurface;
 
-export type NavEvent =
+type NavEvent =
 	| { readonly type: "openDesktop"; readonly menu: MenuId }
 	| { readonly type: "closeDesktop" }
 	| { readonly type: "openMobile" }

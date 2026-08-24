@@ -19,5 +19,3 @@ export const release = {
 	latestAlias: `${site.products.localStudio.repository}/releases/latest/download/${artifact}`,
 	sitePath: downloadPath,
 } as const;
-
-export type Release = typeof release;
