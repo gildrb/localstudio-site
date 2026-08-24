@@ -25,8 +25,8 @@
     "bundle:report": "node scripts/bundle.mjs report",
     "test:unit": "playwright test --config playwright.unit.config.ts",
     "test:visual": "playwright test --config playwright.visual.config.ts",
-    "vercel:manifest": "node scripts/vercel.mjs write",
-    "vercel:check": "node scripts/vercel.mjs check",
+    "vercel:manifest": "node --experimental-strip-types scripts/vercel.mjs write",
+    "vercel:check": "node --experimental-strip-types scripts/vercel.mjs check",
     "index:html": "node --experimental-strip-types scripts/index-html.mjs write",
     "index:html:check": "node --experimental-strip-types scripts/index-html.mjs check"
   },

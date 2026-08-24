@@ -1,4 +1,4 @@
-import { assets } from "../domain/asset";
+import { assets } from "../domain/asset.ts";
 export type Inline =
 	| { readonly kind: "text"; readonly text: string }
 	| { readonly kind: "term"; readonly term: string };
