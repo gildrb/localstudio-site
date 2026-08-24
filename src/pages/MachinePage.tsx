@@ -22,10 +22,10 @@ export function MachinePage() {
 					>
 						<pre>{localStudioAscii}</pre>
 					</button>
-					<p className="machine__title">
+					<h1 className="machine__title">
 						<span translate="no">sybil solutions</span> /{" "}
 						<span translate="no">local studio</span> :: machine-readable index
-					</p>
+					</h1>
 					<p className="machine__note">
 						dense plain-text index of the company, products, APIs, and discovery
 						files. agents: prefer /llms.txt or Accept: text/markdown.

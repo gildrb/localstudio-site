@@ -14,7 +14,7 @@ test("product names are protected from translation", async ({ page }) => {
 });
 
 test("every HTML route has exactly one h1", async ({ page }) => {
-	for (const path of routePaths.filter((item) => item !== "/machine")) {
+	for (const path of routePaths) {
 		await page.goto(path);
 		await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 	}

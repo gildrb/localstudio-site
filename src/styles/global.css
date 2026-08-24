@@ -1693,6 +1693,7 @@ button {
   max-width: 100%;
   margin-top: 32px;
   color: var(--foreground);
+  font: inherit;
 }
 
 .machine__note {
