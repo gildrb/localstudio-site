@@ -1,7 +1,9 @@
+import { docsPath, routes, setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
+import { site } from "../domain/site";
 
 const toc = [
 	["Prerequisites", "prerequisites"],
@@ -23,11 +25,11 @@ export function DocsPage() {
 			<PageIntro
 				id="docs-title"
 				layout="left"
-				title="Get Local Studio running"
+				title={routes[docsPath].heading}
 				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
 				actions={
 					<CtaPair
-						secondary={{ href: "/setup", label: "Setup prompt" }}
+						secondary={{ href: setupPath, label: "Setup prompt" }}
 					/>
 				}
 			/>
@@ -46,7 +48,7 @@ export function DocsPage() {
 				</aside>
 				<article className="docs-prose min-w-0 text-base/6 text-(--dim) [&_li]:mb-2">
 					<p>
-						<span translate="no">Local Studio</span> is a local-first
+						<span translate="no">{site.products.localStudio.name}</span> is a local-first
 						workstation for running, managing, and using self-hosted LLM
 						backends. Two modules share one controller API: a{" "}
 						<span translate="no">Bun</span>/Hono backend and a Next.js + React

@@ -9,7 +9,7 @@
       "DOM.Iterable"
     ],
     "allowJs": false,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -25,66 +25,27 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "types": [
-      "vite/client",
-      "@webgpu/types",
-      "@vgpu/wgsl/wgsl-types"
+      "vite/client"
     ],
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@/features/agent/messages": [
-        "src/ls/stubs/messages/index.ts"
-      ],
-      "@/features/agent/models": [
-        "src/ls/stubs/models.ts"
-      ],
-      "@/features/agent/runtime/types": [
-        "src/ls/stubs/runtime-types.ts"
-      ],
-      "@/features/agent/workspace/types": [
-        "src/ls/stubs/workspace-types.ts"
-      ],
-      "@/features/agent/tools/context": [
-        "src/ls/stubs/tools-context.ts"
-      ],
-      "@/lib/types": [
-        "src/ls/stubs/lib-types.ts"
-      ],
-      "@/*": [
-        "src/ls/*"
-      ],
-      "@shared/*": [
-        "src/ls-shared/*"
-      ],
-      "@local-studio/contracts/*": [
-        "src/ls-contracts/*"
-      ],
-      "next/link": [
-        "src/ls/stubs/next-link.tsx"
-      ],
-      "next/navigation": [
-        "src/ls/stubs/next-navigation.ts"
-      ],
-      "@/store": [
-        "src/ls/stubs/store.ts"
-      ],
-      "@/features/shell/local-profile": [
-        "src/ls/stubs/local-profile.tsx"
-      ],
-      "@/features/agent/ui/terminal-panel": [
-        "src/ls/features/agent/ui/terminal-preload-stub.ts"
-      ],
-      "@/features/agent/messages/*": [
-        "src/ls/stubs/messages/*"
+      "@local-studio/demo-ui": [
+        "packages/demo-ui/src/index.ts"
       ]
-    }
+    },
+    "noImplicitReturns": true,
+    "noUncheckedSideEffectImports": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force"
   },
   "include": [
     "src"
   ],
   "exclude": [
-    "src/ls",
-    "src/ls-shared",
-    "src/ls-contracts"
+    "packages/logo-renderer",
+    "packages/demo-ui"
   ]
 }

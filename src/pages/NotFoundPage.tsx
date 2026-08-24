@@ -1,14 +1,8 @@
+import { homePath, notFoundSuggestions } from "../domain/route";
+import { site } from "../domain/site";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
-
-const suggestions = [
-	["Overview", "/"],
-	["Product", "/product"],
-	["Docs", "/docs"],
-	["Setup prompt", "/setup"],
-	["Download", "/download"],
-] as const;
 
 export function NotFoundPage() {
 	return (
@@ -19,18 +13,18 @@ export function NotFoundPage() {
 				description={
 					<>
 						The route does not exist in this{" "}
-						<span translate="no">Local Studio</span> website. Try one of the
+						<span translate="no">{site.products.localStudio.name}</span> website. Try one of the
 						routes below instead.
 					</>
 				}
 				actions={
-					<LocalLink className="button" href="/">
-						Back to <span translate="no">Local Studio</span>
+					<LocalLink className="button" href={homePath}>
+						Back to <span translate="no">{site.products.localStudio.name}</span>
 					</LocalLink>
 				}
 			>
 				<nav className="not-found__routes" aria-label="Suggested routes">
-					{suggestions.map(([label, href]) => (
+					{notFoundSuggestions().map(({ label, href }) => (
 						<LocalLink href={href} key={href}>
 							{label}
 						</LocalLink>

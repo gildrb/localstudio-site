@@ -1,26 +1,20 @@
+import { footerRoutes } from "../domain/route";
+import { site } from "../domain/site";
 import { LocalLink } from "./LocalLink";
-import type { RoutePath } from "../routing";
-
-const links = [
-	["Machines", "/machine"],
-	["Overview", "/overview"],
-	["Docs", "/docs"],
-	["Setup", "/setup"],
-	["Download", "/download"],
-] as const satisfies readonly (readonly [string, RoutePath])[];
 
 export function Footer() {
 	return (
 		<footer className="footer">
 			<nav className="footer__links" aria-label="Footer navigation">
-				{links.map(([label, href]) => (
-					<LocalLink href={href} key={href}>
+				{footerRoutes().map(({ label, path }) => (
+					<LocalLink href={path} key={path}>
 						{label}
 					</LocalLink>
 				))}
 			</nav>
 			<span className="footer__copyright">
-				© 2026 <span translate="no">Local Studio</span>
+				© {site.copyrightYear}{" "}
+				<span translate="no">{site.products.localStudio.name}</span>
 			</span>
 		</footer>
 	);

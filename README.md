@@ -1,23 +1,42 @@
-# [Local Studio web](https://localstudio-web.vercel.app/)
+# [Local Studio web](https://localstudio.ai/)
 
 ## Design
 
+The migration spec lives in [`ls-designmd/LS_WEB_REFACTOR_SPEC.md`](https://github.com/gildrb/ls-designmd/blob/sync/ls-web-canonical-routes/LS_WEB_REFACTOR_SPEC.md).
 Read the [`ls-designmd` system](https://github.com/gildrb/ls-designmd/blob/main/design.md) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase.
 
 ## Run
 
 ```sh
-pnpm install
+corepack enable
+pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 pnpm dev
 ```
 
-Production checks:
+## Check
+
+A clean checkout must pass:
 
 ```sh
-pnpm design:check
-pnpm lint
+corepack enable
+pnpm install --frozen-lockfile
+pnpm check
+pnpm context:bundle
 pnpm build
+pnpm bundle:check
+```
+
+`pnpm check` runs lint, TypeScript, context and graph gates, leftover-path checks, design-manifest, asset-manifest, vercel-header drift, generated `index.html`, and browser-free unit tests.
+
+Optional:
+
+```sh
 pnpm test
+pnpm reproducible:check
 pnpm preview
 ```
+
+`pnpm test` needs Playwright Chromium. This NixOS host cannot launch it.
+Ubuntu CI installs Chromium and runs `pnpm test` plus `pnpm test:visual`.
+Record the first visual snapshots on Ubuntu with `pnpm test:visual --update-snapshots`, then commit `tests/visual`.

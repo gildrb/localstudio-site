@@ -1,5 +1,0 @@
-curl -s "$LOCAL_STUDIO_URL/status"
-curl -s "$LOCAL_STUDIO_URL/gpus"
-curl -s "$LOCAL_STUDIO_URL/config"
-curl -s "$LOCAL_STUDIO_URL/studio/providers"
-curl -s "$LOCAL_STUDIO_URL/studio/provider-models"

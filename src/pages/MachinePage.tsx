@@ -1,30 +1,24 @@
 import localStudioAscii from "../content/local-studio-ascii.txt?raw";
-import { machineSections, type MachineSection } from "../agent/catalog";
+import { machineSections } from "../agent/machine";
+import { routePaths } from "../domain/route";
 import { LocalLink } from "../components/LocalLink";
 import { PageShell } from "../components/PageShell";
-import { useMachine } from "../machine";
-
-function routeLinesFrom(sections: readonly MachineSection[]): string[] {
-	for (const [name, lines] of sections) {
-		if (name === "ROUTES") return lines;
-	}
-	throw new Error("ROUTES");
-}
+import { useMachine } from "../app/machine-mode";
+import { site } from "../domain/site";
 
 const sections = machineSections();
-const routeLines = routeLinesFrom(sections);
 
 export function MachinePage() {
 	const { toggleMachine } = useMachine();
 	return (
 		<PageShell>
-			<main className="machine" id="content" tabIndex={-1}>
+			<div className="machine">
 				<div className="machine__inner">
 					<button
 						className="machine__banner"
 						type="button"
 						onClick={() => toggleMachine(false)}
-						aria-label="Back to Local Studio"
+						aria-label={`Back to ${site.products.localStudio.name}`}
 					>
 						<pre>{localStudioAscii}</pre>
 					</button>
@@ -37,15 +31,11 @@ export function MachinePage() {
 						files. agents: prefer /llms.txt or Accept: text/markdown.
 					</p>
 					<nav className="machine__routes" aria-label="Site routes">
-						{routeLines.map((line) => {
-							const route = line.split(" ")[0];
-							if (route === undefined) return null;
-							return (
-								<LocalLink href={route} key={route}>
-									{route}
-								</LocalLink>
-							);
-						})}
+						{routePaths.map((route) => (
+							<LocalLink href={route} key={route}>
+								{route}
+							</LocalLink>
+						))}
 					</nav>
 					{sections.map(([name, lines]) => (
 						<section className="machine__section" key={name}>
@@ -55,7 +45,7 @@ export function MachinePage() {
 					))}
 					<p className="machine__end">:: end of index ::</p>
 				</div>
-			</main>
+			</div>
 		</PageShell>
 	);
 }

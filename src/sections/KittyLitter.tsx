@@ -1,3 +1,4 @@
+import { assets } from "../domain/asset";
 import { useState } from "react";
 import {
 	AnimatePresence,
@@ -6,6 +7,8 @@ import {
 	m,
 	useReducedMotion,
 } from "motion/react";
+import { motion } from "../domain/motion";
+import { StoreButtons } from "../components/Links";
 
 type KittyFeature = {
 	readonly title: string;
@@ -19,22 +22,22 @@ const features = [
 	{
 		title: "Sessions everywhere",
 		text: "Pick up exactly where you left off. Sessions, threads, and context follow you across phone and desktop.",
-		image: "/images/kittylitter-feature-sessions-660.webp",
-		image2x: "/images/kittylitter-feature-sessions-1320.webp",
+		image: assets.kittySessions,
+		image2x: assets.kittySessions2x,
 		alt: "KittyLitter session history on a studio server, with a live session card.",
 	},
 	{
 		title: "Multi-agent",
 		text: "Codex, Claude, OpenCode, Pi, and Droid, all in one app. Switch between them per session, or run several in parallel.",
-		image: "/images/kittylitter-feature-multi-agent-660.webp",
-		image2x: "/images/kittylitter-feature-multi-agent-1320.webp",
+		image: assets.kittyMultiAgent,
+		image2x: assets.kittyMultiAgent2x,
 		alt: "KittyLitter conversation with a Codex model picker and an interactive widget.",
 	},
 	{
 		title: "Alleycat",
 		text: "Peer-to-peer pairing via QR code. Connect through NATs and corporate firewalls. No VPN, no public IP, no port forwarding.",
-		image: "/images/kittylitter-feature-alleycat-660.webp",
-		image2x: "/images/kittylitter-feature-alleycat-1320.webp",
+		image: assets.kittyAlleycat,
+		image2x: assets.kittyAlleycat2x,
 		alt: "KittyLitter remote session running over a cat wallpaper.",
 	},
 ] as const satisfies readonly KittyFeature[];
@@ -77,7 +80,7 @@ function FeatureIndexItem({
 								? { height: 0, opacity: 0, transition: { duration: 0 } }
 								: { height: 0, opacity: 0 }
 						}
-						transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+						transition={motion.quickFade}
 					>
 						<p>{feature.text}</p>
 					</m.div>
@@ -113,6 +116,9 @@ export function KittyLitter() {
 							/>
 						))}
 					</ul>
+				</div>
+				<div className="hero__actions">
+					<StoreButtons />
 				</div>
 				<div className="kitty__grid">
 					{features.map((feature) => (

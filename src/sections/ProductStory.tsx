@@ -1,7 +1,10 @@
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { LazyMotion, domMax, m, useReducedMotion } from "motion/react";
-import { productFeatures } from "../content/product-features";
-const FeatureDemo = lazy(() => import("./story/FeatureDemo"));
+import { motion } from "../domain/motion";
+import { productFeatures } from "../content/product";
+import { renderInlineReact } from "../ui/prose";
+import { site } from "../domain/site";
+const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
 
 const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
 const STORY_EASE = [0.16, 1, 0.3, 1] as const;
@@ -21,7 +24,6 @@ function useStoryProgress() {
 		let showcaseTop = 0;
 		let navHeight = 72;
 		let scrollRange = 1;
-		let renderedProgress = Number.NaN;
 		let disposed = false;
 
 		const update = () => {
@@ -32,11 +34,6 @@ function useStoryProgress() {
 			);
 			const scenePosition = (traveled / scrollRange) * productFeatures.length;
 			const nextIndex = Math.min(productFeatures.length - 1, Math.floor(scenePosition));
-			const nextProgress = Math.min(1, scenePosition - nextIndex);
-			if (nextProgress !== renderedProgress) {
-				renderedProgress = nextProgress;
-				showcase.style.setProperty("--story-progress", String(nextProgress));
-			}
 			setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
 		};
 
@@ -103,13 +100,13 @@ export function ProductStory() {
 
 	return (
 		<LazyMotion features={domMax} strict>
-			<section id="media" className="story section-width" aria-label="Local Studio product story">
+			<section id="media" className="story section-width" aria-label={`${site.products.localStudio.name} product story`}>
 				<div className="story__showcase" ref={showcaseRef}>
 					<div className="story__sticky">
 						<div className="story__options-window">
 							<m.ol
 								className="story__options"
-								aria-label="Local Studio capabilities"
+								aria-label={`${site.products.localStudio.name} capabilities`}
 								data-active-index={activeIndex}
 								initial={false}
 								animate={{ y: optionsOffset }}
@@ -161,7 +158,7 @@ export function ProductStory() {
 													ease: STORY_EASE,
 												}}
 											>
-												{feature.storyDescription}
+												{renderInlineReact(feature.storyDescription)}
 											</m.p>
 										</li>
 									);
@@ -180,7 +177,7 @@ export function ProductStory() {
 												key={activeFeature.slug}
 												initial={reduceMotion ? false : { opacity: 0, filter: "blur(8px)" }}
 												animate={{ opacity: 1, filter: "blur(0px)" }}
-												transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+												transition={motion.featureSwap}
 											>
 												<FeatureDemo scene={activeFeature.slug} />
 											</m.div>
@@ -189,7 +186,7 @@ export function ProductStory() {
 									DEMO_PLACEHOLDER
 								)}
 								<p className="sr-only" role="status">
-									{activeFeature.storyTitle}. {activeFeature.storyDescription}
+									{activeFeature.storyTitle}. {renderInlineReact(activeFeature.storyDescription)}
 								</p>
 							</figure>
 						</div>

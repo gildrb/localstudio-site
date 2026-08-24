@@ -1,16 +1,18 @@
+import { assets } from "../domain/asset";
+import { site } from "../domain/site";
 const SPONSORS = [
-	{ name: "NVIDIA", src: "/images/sponsors/nvidia.svg", width: 112, height: 21 },
-	{ name: "Factory", src: "/images/sponsors/factory.svg", width: 140, height: 21 },
-	{ name: "Lambda", src: "/images/sponsors/lambda.svg", width: 98, height: 21 },
+	{ name: "NVIDIA", src: assets.sponsorNvidia, width: 112, height: 21 },
+	{ name: "Factory", src: assets.sponsorFactory, width: 140, height: 21 },
+	{ name: "Lambda", src: assets.sponsorLambda, width: 98, height: 21 },
 	{
 		name: "Prime Intellect",
-		src: "/images/sponsors/prime-intellect.svg",
+		src: assets.sponsorPrime,
 		width: 162,
 		height: 27,
 	},
 	{
 		name: "TNG Technology Consulting",
-		src: "/images/sponsors/tng.svg",
+		src: assets.sponsorTng,
 		width: 143,
 		height: 21,
 	},
@@ -23,7 +25,7 @@ export function Sponsors() {
 			aria-labelledby="sponsors-title"
 		>
 			<p id="sponsors-title" className="sponsors__title">
-				Supporters of Sybil Solutions
+				Supporters of {site.company.name}
 			</p>
 			<ul className="sponsors__list">
 				{SPONSORS.map(({ name, src, width, height }) => (
