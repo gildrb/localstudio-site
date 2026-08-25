@@ -130,6 +130,12 @@ export const styles = stylex.create({
     paddingLeft: "calc(0.25rem * 2.5)",
     paddingRight: "calc(0.25rem * 2.5)",
     fontSize: constants.fsXs,
+    backgroundColor: {
+      default: null,
+      ":hover": tokens.uiHover,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
   },
   search128: {
     height: "calc(0.25rem * 3)",
@@ -316,6 +322,12 @@ export const styles = stylex.create({
     paddingLeft: "calc(0.25rem * 4)",
     paddingRight: "calc(0.25rem * 4)",
     fontSize: constants.fsXs,
+    backgroundColor: {
+      default: null,
+      ":hover": tokens.uiHover,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
   },
   tabActive: {
     borderTopColor: tokens.uiFg,

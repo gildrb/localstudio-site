@@ -94,7 +94,7 @@ export function WorkDemo() {
 				<section {...stylex.props(demoStyles.reset, styles.section91)}>
 					<div {...stylex.props(demoStyles.reset, styles.div92)}>
 						<h4 {...stylex.props(demoStyles.reset, styles.h493)}>
-							Controller logs
+							Controller Logs
 						</h4>
 						<div {...stylex.props(demoStyles.reset, styles.div96)}>
 							<span {...stylex.props(demoStyles.reset, styles.span97)}>Filter</span>

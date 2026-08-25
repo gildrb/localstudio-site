@@ -85,7 +85,12 @@ export const styles = stylex.create({
     borderTopRightRadius: "calc(infinity * 1px)",
     borderBottomRightRadius: "calc(infinity * 1px)",
     borderBottomLeftRadius: "calc(infinity * 1px)",
-    backgroundColor: tokens.fg05,
+    backgroundColor: {
+      default: tokens.fg05,
+      ":hover": tokens.fg10,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
     paddingLeft: "calc(0.25rem * 3)",
     paddingRight: "calc(0.25rem * 3)",
     fontSize: constants.fsSm,

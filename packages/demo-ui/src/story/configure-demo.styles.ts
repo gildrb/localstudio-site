@@ -57,6 +57,12 @@ export const styles = stylex.create({
     paddingLeft: "calc(0.25rem * 4)",
     paddingRight: "calc(0.25rem * 4)",
     fontSize: constants.fsSm,
+    backgroundColor: {
+      default: null,
+      ":hover": tokens.uiHover,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
   },
   monitor37: {
     height: "calc(0.25rem * 3.5)",
@@ -79,6 +85,12 @@ export const styles = stylex.create({
     paddingRight: "calc(0.25rem * 4)",
     fontSize: constants.fsSm,
     color: tokens.uiMuted,
+    backgroundColor: {
+      default: null,
+      ":hover": tokens.uiHover,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
   },
   section48: {
     marginTop: "calc(0.25rem * 6)",
@@ -158,7 +170,12 @@ export const styles = stylex.create({
     borderTopRightRadius: "0.375rem",
     borderBottomRightRadius: "0.375rem",
     borderBottomLeftRadius: "0.375rem",
-    backgroundColor: tokens.uiFg,
+    backgroundColor: {
+      default: tokens.uiFg,
+      ":hover": tokens.uiAccent,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
     paddingLeft: "calc(0.25rem * 2.5)",
     paddingRight: "calc(0.25rem * 2.5)",
     fontSize: constants.fsXs,

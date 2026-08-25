@@ -52,7 +52,7 @@ export function ConfigureDemo() {
 					<header {...stylex.props(demoStyles.reset, styles.header49)}>
 						<div {...stylex.props(demoStyles.reset)}>
 							<h4 {...stylex.props(demoStyles.reset, styles.h451)}>
-								Your machines
+								Your Machines
 							</h4>
 							<p {...stylex.props(demoStyles.reset, styles.p54)}>
 								Hardware available to this controller for local and distributed
@@ -121,7 +121,7 @@ export function ConfigureDemo() {
 					<header {...stylex.props(demoStyles.reset, styles.header118)}>
 						<div {...stylex.props(demoStyles.reset)}>
 							<h4 {...stylex.props(demoStyles.reset, styles.h451)}>
-								Distributed serve pool
+								Distributed Serve Pool
 							</h4>
 							<p {...stylex.props(demoStyles.reset, styles.p54)}>
 								Both machines can cooperate on models that exceed a single node.

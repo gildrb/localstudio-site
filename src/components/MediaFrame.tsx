@@ -29,9 +29,9 @@ const styles = stylex.create({
 		paddingInline: '14px',
 		color: colors.subtlest,
 		fontFamily: constants.fontSans,
-		fontSize: "14px",
+		fontSize: "16px",
 		fontWeight: 400,
-		lineHeight: "20px",
+		lineHeight: "24px",
 	},
 	image: {
 		display: "block",

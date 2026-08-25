@@ -414,6 +414,8 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 				{...stylex.props(rendererStyles.element, rendererStyles.layer, rendererStyles.fallback, fallbackVisible && rendererStyles.fallbackVisible)}
 				src={fallbackUrl}
 				alt=""
+				width="525"
+				height="525"
 				draggable={false}
 			/>
 			<canvas

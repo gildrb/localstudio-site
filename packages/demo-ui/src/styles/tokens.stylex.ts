@@ -71,6 +71,7 @@ export const tokens = stylex.defineVars({
   hl2: stylex.types.color({ default: "#ffffff80" }),
   hl3: stylex.types.color({ default: "oklch(55.6% 0 0)" }),
   fg05: stylex.types.color({ default: "color-mix(in oklab, #fff 5%, transparent)" }),
+  fg10: stylex.types.color({ default: "color-mix(in oklab, #fff 10%, transparent)" }),
   fg035: stylex.types.color({ default: "color-mix(in oklab, #fff 3.5%, transparent)" }),
   fg025: stylex.types.color({ default: "color-mix(in oklab, #fff 2.5%, transparent)" }),
   dim15: stylex.types.color({ default: "color-mix(in oklab, #ffffffb3 15%, transparent)" }),

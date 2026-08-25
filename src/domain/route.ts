@@ -6,8 +6,8 @@ function brandedTitle(label: string): string {
 
 export const routes = {
 	"/": {
-		title: brandedTitle("Intelligence should be owned"),
-		heading: "Intelligence should be owned",
+		title: brandedTitle("Intelligence Should Be Owned"),
+		heading: "Intelligence Should Be Owned",
 		summary: "Homepage: Local Studio + KittyLitter product surface.",
 		markdown: "/index.md",
 		footerLabel: null,
@@ -16,7 +16,7 @@ export const routes = {
 	},
 	"/product": {
 		title: brandedTitle("Product"),
-		heading: "One place to run local AI",
+		heading: "One Place to Run Local AI",
 		summary: "Control, serve, and work: controller, runtimes, Workbench.",
 		markdown: "/product.md",
 		footerLabel: null,
@@ -25,7 +25,7 @@ export const routes = {
 	},
 	"/docs": {
 		title: brandedTitle("Documentation"),
-		heading: "Get Local Studio running",
+		heading: "Get Local Studio Running",
 		summary: "Install, runtimes, agent runtime, remote/LAN, validation.",
 		markdown: "/docs.md",
 		footerLabel: "Docs",
@@ -34,7 +34,7 @@ export const routes = {
 	},
 	"/setup": {
 		title: brandedTitle("Setup"),
-		heading: "Give this to any coding model",
+		heading: "Give This to Any Coding Model",
 		summary: "Portable setup prompt for a coding model on the target machine.",
 		markdown: "/setup.md",
 		footerLabel: "Setup",
@@ -52,7 +52,7 @@ export const routes = {
 	},
 	"/overview": {
 		title: brandedTitle("Overview"),
-		heading: "Everything around Local Studio",
+		heading: "Everything Around Local Studio",
 		summary: "Docs, setup, download, KittyLitter, GitHub, brand.",
 		markdown: "/overview.md",
 		footerLabel: "Overview",
@@ -185,7 +185,7 @@ export function notFoundSuggestions(): readonly {
 		{ href: "/", label: "Overview" },
 		{ href: "/product", label: "Product" },
 		{ href: "/docs", label: "Docs" },
-		{ href: "/setup", label: "Setup prompt" },
+		{ href: "/setup", label: "Setup Prompt" },
 		{ href: "/download", label: "Download" },
 	];
 }

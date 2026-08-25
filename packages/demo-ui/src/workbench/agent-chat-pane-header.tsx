@@ -36,6 +36,8 @@ export function AgentChatPaneHeader({
 				{renaming ? (
 					<input
 						autoFocus
+						name="session-title"
+						autoComplete="off"
 						value={draftTitle}
 						onFocus={(event) => event.currentTarget.select()}
 						onChange={(event) => setDraftTitle(event.target.value)}

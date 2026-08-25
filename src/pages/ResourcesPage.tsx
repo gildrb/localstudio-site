@@ -20,15 +20,23 @@ import { release } from "../domain/release";
 import { site } from "../domain/site";
 import { styles } from "../styles/pages-styles";
 
+const releaseDateFormatter = new Intl.DateTimeFormat("en-US", {
+	dateStyle: "long",
+	timeZone: "UTC",
+});
+const publishedLabel = releaseDateFormatter.format(
+	new Date(`${release.published}T00:00:00Z`),
+);
+
 const toc = [
-	["Start here", "start-here"],
-	["This site", "this-site"],
+	["Start Here", "start-here"],
+	["This Site", "this-site"],
 	["Local Studio", "local-studio"],
 	["Runtimes", "runtimes"],
 	["KittyLitter", "kittylitter"],
 	["Codex Shim", "codex-shim"],
-	["For machines", "for-machines"],
-	["Source and company", "source"],
+	["For Machines", "for-machines"],
+	["Source and Company", "source"],
 ] as const;
 
 interface OverviewEntry {
@@ -47,7 +55,7 @@ const starts: readonly OverviewEntry[] = [
 		href: docsPath,
 	},
 	{
-		label: "Setup prompt",
+		label: "Setup Prompt",
 		text: "One portable prompt. Give it to any coding model and it installs Local Studio on the machine it runs on, then proves a real inference request.",
 		href: setupPath,
 	},
@@ -68,7 +76,7 @@ const siteRoutes: readonly OverviewEntry[] = routePaths.map((path) => ({
 const studioFacts: readonly OverviewEntry[] = [
 	{
 		label: "Current",
-		text: `v${release.version}, published ${release.published}. Signed, notarized, and self-updating from GitHub Releases.`,
+		text: `v${release.version}, published ${publishedLabel}. Signed, notarized, and self-updating from GitHub Releases.`,
 	},
 	{
 		label: "Platform",
@@ -355,7 +363,7 @@ export function ResourcesPage() {
 						it is linked from here.
 					</p>
 					<section id="start-here" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Start here</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Start Here</h2>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							Three ways in, depending on what you are holding.
 						</p>
@@ -366,7 +374,7 @@ export function ResourcesPage() {
 						</ul>
 					</section>
 					<section id="this-site" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>This site</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>This Site</h2>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>Every route and what it holds.</p>
 						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{siteRoutes.map((entry) => (
@@ -439,7 +447,7 @@ export function ResourcesPage() {
 						</ul>
 					</section>
 					<section id="for-machines" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>For machines</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>For Machines</h2>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							Every HTML route above has a markdown twin: append{" "}
 							<code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>.md</code> or send <code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>Accept: text/markdown</code>. The
@@ -456,7 +464,7 @@ export function ResourcesPage() {
 						</ul>
 					</section>
 					<section id="source" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Source and company</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Source and Company</h2>
 						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{sourceRows.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />

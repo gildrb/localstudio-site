@@ -33,8 +33,8 @@ const styles = stylex.create({
 		},
 		color: "rgba(255, 255, 255, 0.8)",
 		fontFamily: constants.fontMono,
-		fontSize: "14px",
-		lineHeight: "20px",
+		fontSize: "16px",
+		lineHeight: "24px",
 		whiteSpace: "pre-wrap",
 		overflowWrap: "anywhere",
 		wordBreak: "break-word",
@@ -100,7 +100,7 @@ export function PromptBlock({ label, sx, text }: PromptBlockProps) {
 			<CopyButton text={text} />
 			<pre
 				id={contentId}
-				{...stylex.props(baseStyles.element, baseStyles.monospace, styles.pre, !expanded && styles.collapsed)}
+			{...stylex.props(baseStyles.element, baseStyles.monospace, styles.pre, !expanded && styles.collapsed)}
 			>
 				<code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.code)}>{text}</code>
 			</pre>
@@ -111,7 +111,7 @@ export function PromptBlock({ label, sx, text }: PromptBlockProps) {
 				aria-controls={contentId}
 				onClick={() => setExpanded((value) => !value)}
 			>
-				{expanded ? "Show less" : "Show more"}
+				{expanded ? "Show Less" : "Show More"}
 			</button>
 		</section>
 	);

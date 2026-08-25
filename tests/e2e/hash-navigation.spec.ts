@@ -6,7 +6,7 @@ test("malformed URL hashes do not raise browser errors", async ({ page }) => {
 
 	await page.goto("/#%5B");
 	await expect(
-		page.getByRole("heading", { level: 1, name: /Intelligence should be owned/ }),
+		page.getByRole("heading", { level: 1, name: /Intelligence Should Be Owned/ }),
 	).toBeVisible();
 	await page.waitForTimeout(50);
 

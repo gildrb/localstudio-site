@@ -86,14 +86,14 @@ export const lightTheme = stylex.createTheme(tokens, {
 });
 
 const gradientPan = stylex.keyframes({
-  "0%": { backgroundPosition: "0% 50%" },
-  "50%": { backgroundPosition: "100% 50%" },
-  "100%": { backgroundPosition: "0% 50%" },
+  "0%": { opacity: 0.72 },
+  "50%": { opacity: 1 },
+  "100%": { opacity: 0.72 },
 });
 
 const shimmerSweep = stylex.keyframes({
-  from: { backgroundPosition: "100% 0" },
-  to: { backgroundPosition: "0% 0" },
+  from: { opacity: 0.55 },
+  to: { opacity: 1 },
 });
 
 

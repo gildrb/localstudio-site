@@ -32,7 +32,7 @@ export function DownloadPage() {
               primary={{ href: release.url, label: "Download DMG" }}
               secondary={{
                 href: `${docsPath}#prerequisites`,
-                label: "Read prerequisites",
+                label: "Read Prerequisites",
               }}
             />
           }

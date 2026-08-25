@@ -15,7 +15,7 @@ export const productFeatures = [
 		storyDescription: [
 			text("Local and remote controllers, live status, launch state, logs, and metrics."),
 		],
-		productTitle: "Control the runtime",
+		productTitle: "Control the Runtime",
 		productText: [
 			text("Launch and evict models, manage recipes and downloads, and watch GPU, process, log, and usage state from one controller."),
 		],
@@ -36,7 +36,7 @@ export const productFeatures = [
 			term("llama.cpp"),
 			text(" behind one OpenAI-compatible surface."),
 		],
-		productTitle: "Run the backend that fits",
+		productTitle: "Run the Backend That Fits",
 		productText: [
 			text("Configure "),
 			term("vLLM"),
@@ -58,7 +58,7 @@ export const productFeatures = [
 		storyDescription: [
 			text("Models, providers, browser, files, terminal, and agents in the same session."),
 		],
-		productTitle: "Work where models run",
+		productTitle: "Work Where Models Run",
 		productText: [
 			text("Use the "),
 			term("Pi"),
@@ -74,7 +74,7 @@ export const productFeatures = [
 		storyDescription: [
 			text("Scheduled health checks, downloads, and reports that run on this machine."),
 		],
-		productTitle: "Keep the machine working",
+		productTitle: "Keep the Machine Working",
 		productText: [
 			text("Automations run on the controller. Proxy checks, model pulls, and recap jobs stay on your hardware."),
 		],
@@ -88,7 +88,7 @@ export const productFeatures = [
 		storyDescription: [
 			text("Hardware, runtimes, and controller identity for the machine the models run on."),
 		],
-		productTitle: "Name the hardware",
+		productTitle: "Name the Hardware",
 		productText: [
 			text("Runtimes, devices, and controller settings stay with the machine. Nothing important is hidden in a cloud console."),
 		],

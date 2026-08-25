@@ -47,7 +47,7 @@ export function ControlDemo() {
 				</dl>
 				<section {...stylex.props(demoStyles.reset, styles.section45)}>
 					<h4 {...stylex.props(demoStyles.reset, styles.h446)}>
-						Token activity
+						Token Activity
 					</h4>
 					<TokenActivityHeatmap daily={DAYS} period="daily" />
 				</section>

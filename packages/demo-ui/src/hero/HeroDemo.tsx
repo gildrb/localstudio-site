@@ -249,7 +249,7 @@ function useHeroDemoModel(clock: DemoClock) {
 
 	useEffect(() => {
 		if (reduceMotion) {
-			dispatch({ type: "finish" });
+			if (state.phase !== "done") dispatch({ type: "finish" });
 			return;
 		}
 		if (!active || !weekendTask || !state.playing || state.phase === "done")
@@ -577,12 +577,6 @@ function HeroDemoView(model: HeroDemoViewModel) {
 												<AgentComposerTextArea
 													inputRef={inputRef}
 													value={composerValue}
-													onPaste={(event) => {
-														const text = event.clipboardData.getData("text");
-														if (!text) return;
-														event.preventDefault();
-														takeComposer(`${composerValue}${text}`);
-													}}
 													onChange={(event) => takeComposer(event.target.value)}
 													onKeyDown={(event) => {
 														if (event.key !== "Enter" || event.shiftKey) return;
@@ -591,8 +585,8 @@ function HeroDemoView(model: HeroDemoViewModel) {
 													}}
 													placeholder={
 														submitted
-															? "Ask for follow-up changes"
-															: "Do anything"
+															? "Ask for follow-up changes, e.g. add tests…"
+															: "Describe a task, e.g. plan a weekend…"
 													}
 												/>
 												<div {...stylex.props(demoStyles.reset, styles.div611)}>
@@ -780,7 +774,12 @@ function ScenarioThread({
 				</div>
 			))}
 			{output.length > 0 || resultVisible ? (
-				<div data-timeline-message-id="assistant-1" {...stylex.props(demoStyles.reset, styles.div796)}>
+				<div
+					data-timeline-message-id="assistant-1"
+					aria-live="polite"
+					aria-atomic="false"
+					{...stylex.props(demoStyles.reset, styles.div796)}
+				>
 					<article {...stylex.props(demoStyles.reset, styles.article797)}>
 						<div data-chat-markdown {...stylex.props(demoStyles.reset, styles.chatMarkdown, demoStyles.chatMarkdown)}>{output}</div>
 						{resultVisible ? (
@@ -789,7 +788,7 @@ function ScenarioThread({
 					</article>
 				</div>
 			) : running ? (
-				<div {...stylex.props(demoStyles.reset, styles.div805)}>
+				<div {...stylex.props(demoStyles.reset, styles.div805)} role="status" aria-live="polite">
 					<span {...stylex.props(demoStyles.reset, styles.codexShimmerText, demoStyles.shimmerText)}>
 						Thinking
 					</span>

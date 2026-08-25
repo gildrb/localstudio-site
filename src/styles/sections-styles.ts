@@ -9,11 +9,11 @@ const mobileNavHeight =
 const storyDemoEnter = stylex.keyframes({
 	from: {
 		opacity: 0,
-		filter: "blur(8px)",
+		transform: "translateY(6px)",
 	},
 	to: {
 		opacity: 1,
-		filter: "blur(0)",
+		transform: "translateY(0)",
 	},
 });
 
@@ -185,9 +185,9 @@ export const styles = stylex.create({
 		marginBottom: "36px",
 		marginLeft: 0,
 		fontFamily: constants.fontSans,
-		fontSize: "14px",
+		fontSize: "16px",
 		fontWeight: 400,
-		lineHeight: "20px",
+		lineHeight: "24px",
 		color: colors.quiet,
 		textAlign: "left",
 	},
@@ -398,7 +398,7 @@ export const styles = stylex.create({
 	},
 	storyDemoTransition: {
 		contain: "paint",
-		willChange: "opacity, filter",
+		willChange: "opacity, transform",
 		animationName: {
 			default: storyDemoEnter,
 			[reducedMotion]: "none",

@@ -69,7 +69,12 @@ export const styles = stylex.create({
     borderTopRightRadius: "0.375rem",
     borderBottomRightRadius: "0.375rem",
     borderBottomLeftRadius: "0.375rem",
-    backgroundColor: tokens.uiFg,
+    backgroundColor: {
+      default: tokens.uiFg,
+      ":hover": tokens.uiAccent,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
     paddingLeft: "calc(0.25rem * 2.5)",
     paddingRight: "calc(0.25rem * 2.5)",
     fontSize: constants.fsXs,
@@ -304,6 +309,12 @@ export const styles = stylex.create({
     paddingLeft: "calc(0.25rem * 2.5)",
     paddingRight: "calc(0.25rem * 2.5)",
     fontSize: constants.fsXs,
+    backgroundColor: {
+      default: null,
+      ":hover": tokens.uiHover,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
   },
   button171: {
     lineHeight: 1.5,
@@ -316,7 +327,12 @@ export const styles = stylex.create({
     borderTopRightRadius: "0.375rem",
     borderBottomRightRadius: "0.375rem",
     borderBottomLeftRadius: "0.375rem",
-    backgroundColor: tokens.uiFg,
+    backgroundColor: {
+      default: tokens.uiFg,
+      ":hover": tokens.uiAccent,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
     paddingLeft: "calc(0.25rem * 2.5)",
     paddingRight: "calc(0.25rem * 2.5)",
     fontSize: constants.fsXs,
@@ -624,6 +640,12 @@ export const styles = stylex.create({
   },
   filterIdle: {
     color: tokens.uiMuted,
+    backgroundColor: {
+      default: null,
+      ":hover": tokens.uiHover,
+    },
+    transitionProperty: "background-color",
+    transitionDuration: "130ms",
   },
   automationRow: {
     fontSize: constants.fsSm,
