@@ -69,9 +69,15 @@ const rendererStyles = stylex.create({
 	container: {
 		position: "absolute",
 		zIndex: 1,
-		top: { default: "clamp(72px, 11svh, 120px)", "@media (max-width: 900px)": "24px" },
+		top: {
+			default: "clamp(72px, 11svh, 120px)",
+			"@media (max-width: 900px)": "24px",
+		},
 		left: "50%",
-		width: { default: "clamp(720px, 58vw, 940px)", "@media (max-width: 900px)": "min(96vw, 620px)" },
+		width: {
+			default: "clamp(720px, 58vw, 940px)",
+			"@media (max-width: 900px)": "min(96vw, 620px)",
+		},
 		aspectRatio: "1.52",
 		transform: "translateX(-50%)",
 		pointerEvents: "none",
@@ -120,7 +126,10 @@ export type LogoRendererAssets = {
 	fallbackUrl: string;
 };
 
-export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets) {
+export function LocalAiLogoShader({
+	modelUrl,
+	fallbackUrl,
+}: LogoRendererAssets) {
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const coarsePointer = useMediaQuery("(pointer: coarse)");
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -263,7 +272,8 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 			devicePixelRatioRef,
 			requestRender,
 		});
-		invalidatePointerCanvasRectRef.current = pointerController.invalidateCanvasRect;
+		invalidatePointerCanvasRectRef.current =
+			pointerController.invalidateCanvasRect;
 
 		const cleanupSetup = () => {
 			state.cancelled = true;
@@ -411,9 +421,16 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 			aria-hidden="true"
 		>
 			<img
-				{...stylex.props(rendererStyles.element, rendererStyles.layer, rendererStyles.fallback, fallbackVisible && rendererStyles.fallbackVisible)}
+				{...stylex.props(
+					rendererStyles.element,
+					rendererStyles.layer,
+					rendererStyles.fallback,
+					fallbackVisible && rendererStyles.fallbackVisible,
+				)}
 				src={fallbackUrl}
 				alt=""
+				width="525"
+				height="525"
 				draggable={false}
 			/>
 			<canvas

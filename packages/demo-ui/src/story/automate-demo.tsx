@@ -75,9 +75,9 @@ export function AutomateDemo() {
 				<section {...stylex.props(demoStyles.reset, styles.section72)}>
 					<header {...stylex.props(demoStyles.reset, styles.header73)}>
 						<div {...stylex.props(demoStyles.reset, styles.div74)}>
-							<h1 {...stylex.props(demoStyles.reset, styles.h175)}>
+							<h2 {...stylex.props(demoStyles.reset, styles.h175)}>
 								Automations
-							</h1>
+							</h2>
 							<p {...stylex.props(demoStyles.reset, styles.p78)}>
 								3 scheduled tasks
 							</p>
@@ -95,9 +95,12 @@ export function AutomateDemo() {
 							<span {...stylex.props(demoStyles.reset, styles.span92)}>Search automations</span>
 							<Search {...stylex.props(demoStyles.reset, styles.search93, styles.lucideScale)} />
 							<input
+								type="search"
+								name="automation-search"
+								autoComplete="off"
 								value={query}
 								onChange={(event) => setQuery(event.target.value)}
-								placeholder="Search automations"
+								placeholder="Search automations, e.g. health checks…"
 								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element98)}
 							/>
 						</label>
@@ -155,9 +158,9 @@ export function AutomateDemo() {
 				<section {...stylex.props(demoStyles.reset, styles.section152)}>
 					<header {...stylex.props(demoStyles.reset, styles.header153)}>
 						<div {...stylex.props(demoStyles.reset, styles.div74)}>
-							<h2 {...stylex.props(demoStyles.reset, styles.h2155)}>
+							<h3 {...stylex.props(demoStyles.reset, styles.h2155)}>
 								{selected.name}
-							</h2>
+							</h3>
 							<p {...stylex.props(demoStyles.reset, styles.p78)}>
 								{selected.status === "active" ? selected.schedule : "Paused"}
 							</p>
@@ -173,7 +176,7 @@ export function AutomateDemo() {
 								type="button"
 								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button171)}
 							>
-								<Play {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> Run now
+								<Play {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> Run Now
 							</button>
 						</div>
 					</header>
@@ -205,9 +208,9 @@ export function AutomateDemo() {
 								<div {...stylex.props(demoStyles.reset, styles.div202)}>
 									<Clock {...stylex.props(demoStyles.reset, styles.clock203, styles.lucideScale)} />
 									<div {...stylex.props(demoStyles.reset)}>
-										<h3 {...stylex.props(demoStyles.reset, styles.h3205)}>
+										<h4 {...stylex.props(demoStyles.reset, styles.h3205)}>
 											Schedule
-										</h3>
+										</h4>
 										<p {...stylex.props(demoStyles.reset, styles.p78)}>
 											{selected.schedule}
 										</p>
@@ -240,9 +243,9 @@ export function AutomateDemo() {
 								</div>
 							</div>
 							<section {...stylex.props(demoStyles.reset, styles.section239)}>
-								<h3 {...stylex.props(demoStyles.reset, styles.h3205)}>
-									Recent runs
-								</h3>
+								<h4 {...stylex.props(demoStyles.reset, styles.h3205)}>
+									Recent Runs
+								</h4>
 								<div {...stylex.props(demoStyles.reset, styles.div243)}>
 									<span {...stylex.props(demoStyles.reset, styles.div202)}>
 										<Check {...stylex.props(demoStyles.reset, styles.check245, styles.lucideScale)} />

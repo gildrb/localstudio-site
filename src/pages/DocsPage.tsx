@@ -10,10 +10,10 @@ import { styles } from "../styles/pages-styles";
 
 const toc = [
 	["Prerequisites", "prerequisites"],
-	["Quick start", "quick-start"],
-	["Setup wizard", "setup-wizard"],
-	["Runtime backends", "runtime-backends"],
-	["Agent runtime", "agent-runtime"],
+	["Quick Start", "quick-start"],
+	["Setup Wizard", "setup-wizard"],
+	["Runtime Backends", "runtime-backends"],
+	["Agent Runtime", "agent-runtime"],
 	["Remote / LAN", "remote-lan"],
 	["Validation", "validation"],
 ] as const;
@@ -27,7 +27,7 @@ export function DocsPage() {
 				description="Install the controller and desktop workspace, choose a runtime, launch a model, and verify local inference."
 				actions={
 					<CtaPair
-						secondary={{ href: setupPath, label: "Setup prompt" }}
+						secondary={{ href: setupPath, label: "Setup Prompt" }}
 					/>
 				}
 			/>
@@ -69,7 +69,7 @@ export function DocsPage() {
 					</section>
 
 					<section id="quick-start" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Quick start</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Quick Start</h2>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							Run the preflight check first. It verifies toolchain, ports,
 							directories, and network:
@@ -100,7 +100,7 @@ export function DocsPage() {
 					</section>
 
 					<section id="setup-wizard" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Setup wizard</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Setup Wizard</h2>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							The first-run <code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>/setup</code> wizard walks through choosing a
 							models directory, installing an engine, downloading a model,
@@ -112,7 +112,7 @@ export function DocsPage() {
 					</section>
 
 					<section id="runtime-backends" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Runtime backends</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Runtime Backends</h2>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							Recipes launch through the controller runtime layer. Wired backend
 							families:
@@ -154,7 +154,7 @@ export function DocsPage() {
 					</section>
 
 					<section id="agent-runtime" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Agent runtime</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Agent Runtime</h2>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							The agent surface lives at <code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>/agent</code> in the frontend. It
 							uses <code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>@earendil-works/pi-coding-agent</code> through the
@@ -169,7 +169,7 @@ export function DocsPage() {
 					</section>
 
 					<section id="remote-lan" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Remote / LAN deployment</h2>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Remote / LAN Deployment</h2>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							The controller binds <code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>127.0.0.1</code> by default. Binding a
 							non-loopback host (e.g. <code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>LOCAL_STUDIO_HOST=0.0.0.0</code>)

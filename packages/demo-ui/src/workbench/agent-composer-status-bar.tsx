@@ -3,6 +3,8 @@ import * as stylex from "@stylexjs/stylex";
 import { styles } from "./agent-composer-status-bar.styles.ts";
 import { GitBranchIcon } from "../ui/icons";
 
+const numberFormatter = new Intl.NumberFormat("en-US");
+
 export function AgentComposerStatusBar({
 	cwd,
 	gitBranch,
@@ -46,8 +48,8 @@ export function AgentComposerStatusBar({
 						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button43)}
 						title="View changes"
 					>
-						<span {...stylex.props(demoStyles.reset, styles.span46)}>+{gitSummary.additions}</span>
-						<span {...stylex.props(demoStyles.reset, styles.span47)}>-{gitSummary.deletions}</span>
+						<span {...stylex.props(demoStyles.reset, styles.span46)}>+{numberFormatter.format(gitSummary.additions)}</span>
+						<span {...stylex.props(demoStyles.reset, styles.span47)}>-{numberFormatter.format(gitSummary.deletions)}</span>
 					</button>
 				) : null}
 			</div>
@@ -58,7 +60,7 @@ export function AgentComposerStatusBar({
 				title="Open status"
 			>
 				<span {...stylex.props(demoStyles.reset, styles.span57)}>
-					{currentContextTokens}/{contextWindow}
+					{numberFormatter.format(currentContextTokens)}/{numberFormatter.format(contextWindow)}
 				</span>
 			</button>
 		</div>

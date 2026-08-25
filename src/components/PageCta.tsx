@@ -97,7 +97,7 @@ export function PageCta({
 			</h2>
 			<div {...stylex.props(baseStyles.element, styles.child, styles.actions)}>
 				{actions ?? (
-					<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
+					<CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />
 				)}
 			</div>
 		</section>

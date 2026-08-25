@@ -5,7 +5,6 @@ import { styles } from "./agent-composer-textarea.styles.ts";
 
 import type {
   ChangeEventHandler,
-  ClipboardEventHandler,
   KeyboardEventHandler,
   RefObject,
 } from "react";
@@ -13,14 +12,12 @@ import type {
 export function AgentComposerTextArea({
   inputRef,
   value,
-  onPaste,
   onChange,
   onKeyDown,
   placeholder = "Ask for follow-up changes",
 }: {
   inputRef: RefObject<HTMLTextAreaElement | null>;
   value: string;
-  onPaste: ClipboardEventHandler<HTMLTextAreaElement>;
   onChange: ChangeEventHandler<HTMLTextAreaElement>;
   onKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;
   placeholder?: string;
@@ -33,7 +30,6 @@ export function AgentComposerTextArea({
       rows={1}
       autoComplete="off"
       value={value}
-      onPaste={onPaste}
       onChange={onChange}
       onKeyDown={onKeyDown}
       placeholder={placeholder}

@@ -118,7 +118,7 @@ export function ServeDemo() {
 					<div {...stylex.props(demoStyles.reset, styles.div115)}>
 						<div {...stylex.props(demoStyles.reset)}>
 							<h4 {...stylex.props(demoStyles.reset, styles.h4117)}>
-								Fits this machine
+								Fits This Machine
 							</h4>
 							<p {...stylex.props(demoStyles.reset, styles.p120)}>
 								Ready-to-run weights selected from the bundled model index.
@@ -128,7 +128,7 @@ export function ServeDemo() {
 							type="button"
 							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button126)}
 						>
-							<Search {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} /> Browse all
+							<Search {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} /> Browse All
 						</button>
 					</div>
 

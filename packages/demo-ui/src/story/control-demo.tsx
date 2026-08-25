@@ -1,7 +1,7 @@
-import { demoStyles } from "../styles/demo-root.styles.ts";
 import * as stylex from "@stylexjs/stylex";
-import { styles } from "./control-demo.styles.ts";
+import { demoStyles } from "../styles/demo-root.styles.ts";
 import { TokenActivityHeatmap } from "../usage/token-activity-heatmap";
+import { styles } from "./control-demo.styles.ts";
 import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 
@@ -37,9 +37,7 @@ export function ControlDemo() {
 				<p {...stylex.props(demoStyles.reset, styles.p34)}>
 					Proxied through this controller
 				</p>
-				<p {...stylex.props(demoStyles.reset, styles.p37)}>
-					1.28M
-				</p>
+				<p {...stylex.props(demoStyles.reset, styles.p37)}>1.28M</p>
 				<dl {...stylex.props(demoStyles.reset, styles.dl40)}>
 					<Stat label="Requests" value="2.3K" />
 					<Stat label="Sessions" value="94" />
@@ -47,7 +45,7 @@ export function ControlDemo() {
 				</dl>
 				<section {...stylex.props(demoStyles.reset, styles.section45)}>
 					<h4 {...stylex.props(demoStyles.reset, styles.h446)}>
-						Token activity
+						Token Activity
 					</h4>
 					<TokenActivityHeatmap daily={DAYS} period="daily" />
 				</section>
@@ -59,12 +57,8 @@ export function ControlDemo() {
 function Stat({ label, value }: { label: string; value: string }) {
 	return (
 		<div {...stylex.props(demoStyles.reset, styles.div58)}>
-			<dd {...stylex.props(demoStyles.reset, styles.dd59)}>
-				{value}
-			</dd>
-			<dt {...stylex.props(demoStyles.reset, styles.dt62)}>
-				{label}
-			</dt>
+			<dd {...stylex.props(demoStyles.reset, styles.dd59)}>{value}</dd>
+			<dt {...stylex.props(demoStyles.reset, styles.dt62)}>{label}</dt>
 		</div>
 	);
 }

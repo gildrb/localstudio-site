@@ -32,8 +32,8 @@ const styles = stylex.create({
 	},
 	label: {
 		color: colors.dim,
-		fontSize: "14px",
-		lineHeight: "20px",
+		fontSize: "16px",
+		lineHeight: "24px",
 	},
 	list: {
 		display: "grid",

@@ -139,6 +139,7 @@ function FeatureCard({
 					sizes="(max-width: 620px) calc(100vw - 48px), (max-width: 900px) 50vw, 33vw"
 					alt={feature.alt}
 					width="1320"
+					height="1320"
 					loading="lazy"
 					fetchPriority="low"
 					decoding="async"
@@ -174,9 +175,9 @@ function FeatureCard({
 						initial={
 							reducedMotion
 								? false
-								: { opacity: 0, y: 6, filter: "blur(8px)" }
+								: { opacity: 0, y: 6 }
 						}
-						animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+						animate={{ opacity: 1, y: 0 }}
 						transition={reducedMotion ? { duration: 0 } : motion.featureSwap}
 					>
 						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.kittyFeatureDescriptionText)}>{feature.text}</p>
@@ -305,7 +306,7 @@ export function KittyLitter() {
 			>
 				<div data-kitty-intro {...stylex.props(baseStyles.element, styles.sectionWidth, styles.kittyIntro)}>
 					<h2 id="kittylitter-title" {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.kittyHeading)}>
-						Keep the session when you leave your desk
+						Keep the Session When You Leave Your Desk
 					</h2>
 				</div>
 				<div

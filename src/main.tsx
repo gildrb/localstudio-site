@@ -21,7 +21,6 @@ for (const face of fontFaces) {
 document.documentElement.className =
 	stylex.props(
 		baseStyles.element,
-		stylex.defaultMarker(),
 		baseStyles.html,
 	).className ?? "";
 document.body.className =

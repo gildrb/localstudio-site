@@ -52,3 +52,4 @@ try {
 } finally {
 	await server.close();
 }
+process.exit(0);

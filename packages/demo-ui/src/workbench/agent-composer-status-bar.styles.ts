@@ -83,7 +83,7 @@ export const styles = stylex.create({
     paddingLeft: "0.25rem",
     paddingRight: "0.25rem",
     backgroundColor: {
-      default: null,
+      default: "transparent",
       ":hover": tokens.fg05,
     },
   },

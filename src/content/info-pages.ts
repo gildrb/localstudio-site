@@ -43,7 +43,7 @@ export const infoPages = {
 					{ kind: "text", text: "." },
 				],
 			},
-			{ kind: "heading", text: "Quickstart and sandbox" },
+			{ kind: "heading", text: "Quickstart and Sandbox" },
 			{
 				kind: "paragraph",
 				content: [
@@ -67,14 +67,14 @@ curl -s ${site.origin}/openapi.json`,
 					{ kind: "text", text: ". Keep controller keys out of prompts, URLs, source control, and logs." },
 				],
 			},
-			{ kind: "heading", text: "Errors and limits" },
+			{ kind: "heading", text: "Errors and Limits" },
 			{
 				kind: "paragraph",
 				content: [
 					{ kind: "text", text: "API errors use JSON with a stable error code, a human-readable message, a resolution hint, and a documentation link. The public metadata surface is intentionally small and read-only. Use normal conditional requests and avoid repeated polling. No webhooks are offered by this marketing site." },
 				],
 			},
-			{ kind: "heading", text: "Agent protocols" },
+			{ kind: "heading", text: "Agent Protocols" },
 			{
 				kind: "paragraph",
 				content: [

@@ -89,7 +89,7 @@ test("download label comes from the download route heading", () => {
 });
 
 test("HTML titles use the canonical product name", () => {
-	expect(routeTitle("/")).toBe(`Intelligence should be owned - ${site.products.localStudio.name}`);
+	expect(routeTitle("/")).toBe(`Intelligence Should Be Owned - ${site.products.localStudio.name}`);
 	expect(notFoundTitle()).toBe(`Page not found - ${site.products.localStudio.name}`);
 });
 

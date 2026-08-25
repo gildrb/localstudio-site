@@ -60,9 +60,9 @@ export function Hero() {
 						{...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.focusable, styles.heroHeading)}
 						{...enter(0.12)}
 					>
-							Intelligence should be{" "}
+							Intelligence Should Be{" "}
 							<span {...stylex.props(baseStyles.element, styles.heroTitleEnd)}>
-								owned
+								Owned
 								<LocalLink
 									sx={styles.heroMarkButton}
 									href={machinePath}
@@ -84,7 +84,7 @@ export function Hero() {
 							Private AI that works for you, not the cloud.
 						</m.p>
 						<m.div {...stylex.props(baseStyles.element, styles.heroActions)} {...enter(0.28)}>
-							<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
+							<CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />
 						</m.div>
 					</div>
 				</div>
