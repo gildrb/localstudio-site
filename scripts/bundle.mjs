@@ -51,7 +51,7 @@ const files = walk(join(dist, "assets"))
 
 const css = files.filter((file) => file.name.endsWith(".css"));
 const js = files.filter((file) => file.name.endsWith(".js"));
-const sharedCss = css.find((file) => file.name.startsWith("index-"));
+const sharedCss = css.length === 1 ? css[0] : undefined;
 const criticalJs = js.find((file) => file.name.startsWith("index-"));
 const lazyHints = ["HeroDemo", "FeatureDemo", "shader"];
 const routeChunks = js.filter(
@@ -79,7 +79,8 @@ for (const file of report.lazy) {
 if (command !== "check") process.exit(0);
 
 const failures = [];
-if (!sharedCss) failures.push("missing shared CSS chunk");
+if (css.length !== 1) failures.push(`expected one extracted StyleX CSS asset, found ${css.length}`);
+if (!sharedCss) failures.push("missing shared StyleX CSS chunk");
 else if (sharedCss.gzip > budgets.sharedCssGzip) {
 	failures.push(`shared CSS ${sharedCss.gzip} exceeds ${budgets.sharedCssGzip}`);
 }

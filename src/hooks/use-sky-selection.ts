@@ -1,27 +1,58 @@
+import * as stylex from "@stylexjs/stylex";
 import { useEffect } from "react";
+import { selectionStyles } from "../styles/base-styles";
 
-const sky = [
-	"var(--selection-sky-bright)",
-	"var(--selection-sky-day)",
-	"var(--selection-sky-blue)",
-	"var(--selection-sky-dusk)",
-	"var(--selection-sky-night)",
+const selectionStops = [
+	selectionStyles.brightToDay,
+	selectionStyles.dayToBlue,
+	selectionStyles.blueToDusk,
+	selectionStyles.duskToNight,
+	selectionStyles.night,
 ] as const;
-const ownerClass = "sky-selection-owner";
 
-function selectionColor(position: number) {
-	const scaled = Math.min(1, Math.max(0, position)) * (sky.length - 1);
+function selectionPosition(position: number) {
+	const normalized = Math.min(1, Math.max(0, position));
+	const scaled = normalized * (selectionStops.length - 1);
 	const start = Math.floor(scaled);
-	const end = Math.min(start + 1, sky.length - 1);
-	const progress = Math.round((scaled - start) * 1000) / 10;
-	const startColor = sky[start] ?? sky[0];
-	const endColor = sky[end] ?? startColor;
-	if (start === end) return startColor;
-	return `color-mix(in srgb, ${startColor}, ${endColor} ${progress}%)`;
+	const end = Math.min(start + 1, selectionStops.length - 1);
+	return {
+		segment: start,
+		mix: Math.round((scaled - start) * 1000) / 10,
+		lightInk: normalized >= 0.58,
+		terminal: start === end,
+	};
 }
 
-function selectionInk(position: number) {
-	return position < 0.58 ? "var(--button-ink)" : "var(--foreground)";
+const segmentClassNames = selectionStops.map(
+	(style) => stylex.props(style).className ?? "",
+);
+const darkInkClassName = stylex.props(selectionStyles.darkInk).className ?? "";
+const lightInkClassName = stylex.props(selectionStyles.lightInk).className ?? "";
+const selectionClasses = new Set(
+	[...segmentClassNames, darkInkClassName, lightInkClassName].flatMap(
+		(className) => className.split(" "),
+	),
+);
+
+function clearSelectionClass(owner: HTMLElement) {
+	const className = (owner.getAttribute("class") ?? "")
+		.split(" ")
+		.filter((name) => name && !selectionClasses.has(name))
+		.join(" ");
+	delete owner.dataset["selectionMix"];
+	if (className) owner.setAttribute("class", className);
+	else owner.removeAttribute("class");
+}
+
+function applySelectionClass(owner: HTMLElement, position: number) {
+	clearSelectionClass(owner);
+	const { segment, mix, lightInk, terminal } = selectionPosition(position);
+	const current = owner.getAttribute("class");
+	const segmentClassName = segmentClassNames[segment] ?? segmentClassNames[0];
+	const inkClassName = lightInk ? lightInkClassName : darkInkClassName;
+	const className = `${segmentClassName} ${inkClassName}`;
+	if (!terminal) owner.dataset["selectionMix"] = `${mix}%`;
+	owner.setAttribute("class", current ? `${current} ${className}` : className);
 }
 
 function selectedTextOwners(selection: Selection) {
@@ -60,11 +91,7 @@ export function useSkySelection() {
 		let frame = 0;
 
 		const clear = () => {
-			for (const owner of owners) {
-				owner.classList.remove(ownerClass);
-				owner.style.removeProperty("--selection");
-				owner.style.removeProperty("--selection-ink");
-			}
+			for (const owner of owners) clearSelectionClass(owner);
 			owners.clear();
 		};
 		const update = () => {
@@ -77,9 +104,7 @@ export function useSkySelection() {
 			for (const owner of owners) {
 				const bounds = owner.getBoundingClientRect();
 				const position = (bounds.top + bounds.height / 2) / window.innerHeight;
-				owner.classList.add(ownerClass);
-				owner.style.setProperty("--selection", selectionColor(position));
-				owner.style.setProperty("--selection-ink", selectionInk(position));
+				applySelectionClass(owner, position);
 			}
 		};
 		const schedule = () => {

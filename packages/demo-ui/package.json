@@ -5,7 +5,6 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./styles.css": "./src/styles/workbench-demo.css",
     "./hero": "./src/hero/HeroDemo.tsx",
     "./story": "./src/story/FeatureDemo.tsx"
   },
@@ -17,7 +16,8 @@
     "react-dom": "19.2.8"
   },
   "dependencies": {
-    "lucide-react": "1.31.0"
+    "lucide-react": "1.31.0",
+    "@stylexjs/stylex": "0.19.0"
   },
   "devDependencies": {
     "@types/react": "19.2.18",

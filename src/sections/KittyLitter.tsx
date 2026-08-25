@@ -1,3 +1,5 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { assets } from "../domain/asset";
 import {
 	useCallback,
@@ -9,6 +11,7 @@ import {
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { animate } from "motion";
 import { motion } from "../domain/motion";
+import { styles } from "../styles/sections-styles";
 
 type KittyFeature = {
 	readonly title: string;
@@ -111,13 +114,14 @@ function FeatureCard({
 	const descriptionVisible = revealed || active;
 	return (
 		<article
-			className="kitty__feature"
+			{...stylex.props(baseStyles.element, styles.kittyFeature)}
+			data-kitty-feature=""
 			data-active={active ? "true" : "false"}
 			onMouseEnter={() => onActivate(index)}
 			onMouseLeave={() => onActivate(null)}
 		>
 			<div
-				className="kitty__feature-media"
+				{...stylex.props(baseStyles.element, baseStyles.focusable, styles.kittyFeatureMedia)}
 				role="region"
 				tabIndex={0}
 				aria-label={`Show ${feature.title}`}
@@ -129,6 +133,7 @@ function FeatureCard({
 				onClick={() => onRequestVisible(index)}
 			>
 				<img
+					{...stylex.props(baseStyles.element, baseStyles.image, styles.kittyFeatureImage)}
 					src={feature.image}
 					srcSet={`${feature.image} 660w, ${feature.image2x} 1320w`}
 					sizes="(max-width: 620px) calc(100vw - 48px), (max-width: 900px) 50vw, 33vw"
@@ -141,7 +146,7 @@ function FeatureCard({
 				/>
 			</div>
 			<div
-				className="kitty__feature-body"
+				{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.kittyFeatureBody)}
 				role="button"
 				tabIndex={0}
 				aria-expanded={descriptionVisible}
@@ -161,10 +166,11 @@ function FeatureCard({
 					}
 				}}
 			>
-				<span className="kitty__feature-trigger">{feature.title}</span>
+				<span data-kitty-feature-trigger {...stylex.props(baseStyles.element, styles.kittyFeatureTrigger)}>{feature.title}</span>
 				{descriptionVisible ? (
 					<m.div
-						className="kitty__feature-description"
+						data-kitty-feature-description
+						{...stylex.props(baseStyles.element, styles.kittyFeatureDescription)}
 						initial={
 							reducedMotion
 								? false
@@ -173,7 +179,7 @@ function FeatureCard({
 						animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
 						transition={reducedMotion ? { duration: 0 } : motion.featureSwap}
 					>
-						<p>{feature.text}</p>
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.kittyFeatureDescriptionText)}>{feature.text}</p>
 					</m.div>
 				) : null}
 			</div>
@@ -182,8 +188,8 @@ function FeatureCard({
 }
 
 function measureCarousel(carousel: HTMLDivElement) {
-	const card = carousel.querySelector<HTMLElement>(".kitty__feature");
-	const grid = carousel.querySelector<HTMLElement>(".kitty__item-container");
+	const card = carousel.querySelector<HTMLElement>("[data-kitty-feature]");
+	const grid = carousel.querySelector<HTMLElement>("[data-kitty-items]");
 	if (!card || !grid) return null;
 	const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 0;
 	const stride = card.getBoundingClientRect().width + gap;
@@ -191,7 +197,7 @@ function measureCarousel(carousel: HTMLDivElement) {
 		1,
 		Math.floor((carousel.clientWidth + gap) / stride),
 	);
-	const cardCount = grid.querySelectorAll(".kitty__feature").length;
+	const cardCount = grid.querySelectorAll("[data-kitty-feature]").length;
 	const maxScroll = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
 	const targets = Array.from({ length: cardCount }, (_, index) =>
 		index === cardCount - 1
@@ -269,7 +275,7 @@ export function KittyLitter() {
 		syncCarousel();
 		const observer = new ResizeObserver(syncCarousel);
 		observer.observe(carousel);
-		const card = carousel.querySelector<HTMLElement>(".kitty__feature");
+		const card = carousel.querySelector<HTMLElement>("[data-kitty-feature]");
 		if (card) observer.observe(card);
 		return () => observer.disconnect();
 	}, [syncFromScroll]);
@@ -294,17 +300,17 @@ export function KittyLitter() {
 		<LazyMotion features={domAnimation} strict>
 			<section
 				id="mobile"
-				className="kitty"
+				{...stylex.props(baseStyles.element, baseStyles.sectionAnchor, styles.kitty)}
 				aria-labelledby="kittylitter-title"
 			>
-				<div className="kitty__intro section-width">
-					<h2 id="kittylitter-title">
+				<div data-kitty-intro {...stylex.props(baseStyles.element, styles.sectionWidth, styles.kittyIntro)}>
+					<h2 id="kittylitter-title" {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.kittyHeading)}>
 						Keep the session when you leave your desk
 					</h2>
 				</div>
 				<div
 					ref={carouselRef}
-					className="kitty__carousel"
+					{...stylex.props(baseStyles.element, baseStyles.focusable, styles.kittyCarousel)}
 					data-carousel-index={carouselIndex}
 					role="region"
 					aria-label="KittyLitter features"
@@ -380,7 +386,7 @@ export function KittyLitter() {
 						);
 					}}
 				>
-					<div className="kitty__item-container">
+					<div {...stylex.props(baseStyles.element, styles.kittyItems)} data-kitty-items="">
 						{features.map((feature, index) => (
 							<FeatureCard
 								feature={feature}

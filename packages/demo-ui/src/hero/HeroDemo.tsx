@@ -1,11 +1,12 @@
-import "../styles/workbench-demo.css";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./HeroDemo.styles.ts";
+import { demoStyles } from "../styles/demo-root.styles.ts";
 import {
 	useEffect,
 	useLayoutEffect,
 	useReducer,
 	useRef,
 	useState,
-	type CSSProperties,
 	type FormEvent,
 } from "react";
 import { useReducedMotion } from "../hooks/use-reduced-motion";
@@ -294,16 +295,6 @@ function useHeroDemoModel(clock: DemoClock) {
 	const autoPrompt = weekendTask && !submitted && !userEditing;
 	const composerValue = autoPrompt ? prompt : drafts[activeTask];
 
-	useLayoutEffect(() => {
-		const node = inputRef.current;
-		if (!active || !node) return;
-		if (!composerValue) {
-			node.style.height = "";
-			return;
-		}
-		node.style.height = "auto";
-		node.style.height = `${node.scrollHeight}px`;
-	}, [active, composerValue]);
 	const openFile = userFile ?? demoActivePath(state);
 	const tab =
 		pickedTab ??
@@ -482,15 +473,10 @@ function HeroDemoView(model: HeroDemoViewModel) {
 		gitSummary,
 	} = model;
 	const sendDisabled = !composerValue.trim() || autoPrompt;
-	const appStyle: CSSProperties = { width: DEMO_WIDTH, height: DEMO_HEIGHT };
-	if (mobile) {
-		appStyle.transform = `scale(${scale})`;
-		appStyle.transformOrigin = "top left";
-	}
 	return (
 		<section
 			ref={hostRef}
-			className="demo ls-app"
+			{...stylex.props(demoStyles.reset, demoStyles.root, mobile && demoStyles.mobile, clipRight && demoStyles.clipRight, clipBottom && demoStyles.clipBottom)}
 			data-theme="zai-dark"
 			data-phase={state.phase}
 			data-active={active ? "true" : "false"}
@@ -501,27 +487,28 @@ function HeroDemoView(model: HeroDemoViewModel) {
 			aria-label="Local Studio workbench"
 			inert={mobile}
 		>
-			<p className="sr-only" role="status">
+			<p {...stylex.props(demoStyles.reset, styles.p504)} role="status">
 				{demoStatus(state)}
 			</p>
 			<div
-				className="demo__viewport"
-				style={{ height: mobile ? DEMO_HEIGHT * scale : DEMO_HEIGHT }}
+				data-demo-viewport
+				{...stylex.props(demoStyles.reset, styles.demoViewport, demoStyles.viewport, demoStyles.mobileViewport, demoStyles.viewportHeight(mobile ? DEMO_HEIGHT * scale : DEMO_HEIGHT))}
 			>
 				{renderContents ? (
-					<div className="demo__app" style={appStyle}>
+					<div data-demo-app {...stylex.props(demoStyles.reset, styles.demoApp, demoStyles.app, demoStyles.heroAppTransform(mobile, scale))}>
 						<HeroDesktopSidebar
+							mobile={mobile}
 							activeTask={activeTask}
 							onSelectTask={selectTask}
 							titles={titles}
 						/>
 						<div
 							data-no-topbar="true"
-							className="flex min-h-0 min-w-0 flex-1 overflow-hidden bg-(--agent-bg)"
+							{...stylex.props(demoStyles.reset, styles.div520)}
 						>
-							<div className="agent-workspace flex h-full min-h-0 w-full flex-col text-(--fg)">
-								<div className="agent-workspace-panel-row relative flex min-h-0 flex-1">
-									<section className="relative flex min-h-0 min-w-0 flex-1 flex-col bg-(--agent-bg) shadow-[inset_1px_0_rgba(255,255,255,0.015)]">
+							<div {...stylex.props(demoStyles.reset, styles.div522)}>
+								<div {...stylex.props(demoStyles.reset, styles.div523)}>
+									<section {...stylex.props(demoStyles.reset, styles.section524)}>
 										<AgentChatPaneHeader
 											title={title}
 											rightPanelOpen={panelOpen}
@@ -529,15 +516,15 @@ function HeroDemoView(model: HeroDemoViewModel) {
 											onToggleRightPanel={() => setPanelOpen((open) => !open)}
 										/>
 										{submitted ? (
-											<div className="agent-timeline-frame relative flex min-h-0 min-w-0 flex-1">
+											<div {...stylex.props(demoStyles.reset, styles.div532)}>
 												<div
 													ref={scrollerRef}
 													data-timeline-scroller
-													className="agent-chat-scroller min-h-0 min-w-0 flex-1 overflow-y-auto bg-(--agent-bg) px-4 pb-0 pt-2 [overflow-anchor:none] [overscroll-behavior:contain] [scrollbar-gutter:stable] sm:px-5"
+													{...stylex.props(demoStyles.reset, styles.agentChatScroller, demoStyles.chatScroller, mobile && demoStyles.hiddenOverflow)}
 												>
 													<div
 														data-timeline-list
-														className="agent-thread-shell mx-auto flex flex-col"
+														{...stylex.props(demoStyles.reset, styles.agentThreadShell, demoStyles.threadShell)}
 													>
 														{messages ? (
 															<StaticThread messages={messages} repositoryUrl={model.repositoryUrl} />
@@ -558,18 +545,18 @@ function HeroDemoView(model: HeroDemoViewModel) {
 																) : null}
 															</>
 														)}
-														<div aria-hidden="true" className="h-2" />
+														<div aria-hidden="true" {...stylex.props(demoStyles.reset, styles.div561)} />
 													</div>
 												</div>
 											</div>
 										) : (
-											<div className="flex min-h-0 flex-1 overflow-y-auto bg-(--agent-bg) px-6 pb-10 pt-2">
-												<div className="agent-thread-shell mx-auto flex flex-1">
-													<div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-														<p className="max-w-[24ch] text-[clamp(1.45rem,2.6vw,2.1rem)] font-semibold leading-[1.22] tracking-[-0.02em] text-(--fg)/90">
+											<div {...stylex.props(demoStyles.reset, styles.div566)}>
+												<div {...stylex.props(demoStyles.reset, styles.agentThreadShell2)}>
+													<div {...stylex.props(demoStyles.reset, styles.div568)}>
+														<p {...stylex.props(demoStyles.reset, styles.p569)}>
 															A dream is something you build for yourself.
 														</p>
-														<p className="text-[length:var(--fs-xl)] text-(--dim)">
+														<p {...stylex.props(demoStyles.reset, styles.p572)}>
 															Just talk to it.
 														</p>
 													</div>
@@ -581,10 +568,10 @@ function HeroDemoView(model: HeroDemoViewModel) {
 												event.preventDefault();
 												sendFollowUp();
 											}}
-											className="relative z-[100] shrink-0 bg-transparent px-3 pb-2 pt-0 sm:px-5"
+											{...stylex.props(demoStyles.reset, styles.element584)}
 										>
-											<div className="agent-composer-box relative z-10 mx-auto w-full max-w-[calc(var(--composer-w)*0.9)] overflow-visible rounded-[var(--composer-radius)] border border-(--border) bg-(--composer) shadow-[var(--composer-elevation)] [corner-shape:superellipse(1.5)] sm:w-[90%]">
-												<label className="sr-only" htmlFor="hero-demo-composer">
+											<div {...stylex.props(demoStyles.reset, styles.agentComposerBox, demoStyles.composer)}>
+												<label {...stylex.props(demoStyles.reset, styles.p504)} htmlFor="hero-demo-composer">
 													Message
 												</label>
 												<AgentComposerTextArea
@@ -608,40 +595,40 @@ function HeroDemoView(model: HeroDemoViewModel) {
 															: "Do anything"
 													}
 												/>
-												<div className="agent-composer-actions-row flex min-h-9 items-center gap-0.5 bg-transparent px-2 pb-2 pt-0 text-xs">
+												<div {...stylex.props(demoStyles.reset, styles.div611)}>
 													<button
 														type="button"
-														className="inline-flex !h-7 !min-h-7 !w-7 !min-w-7 shrink-0 items-center justify-center rounded-full text-(--hl2) hover:bg-(--hover) hover:text-(--fg)"
+														{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button614)}
 														aria-label="Attach files"
 														title="Attach files (or paste/drop into composer)"
 													>
-														<Plus className="h-4 w-4" strokeWidth={1.75} />
+														<Plus {...stylex.props(demoStyles.reset, styles.plus618, styles.lucideScale)} strokeWidth={1.75} />
 													</button>
-													<div className="ml-auto flex min-w-0 shrink items-center gap-0.5">
+													<div {...stylex.props(demoStyles.reset, styles.div620)}>
 														<button
 															type="button"
 															onClick={selectModel}
-															className="group/model inline-flex !h-[30px] !min-h-[30px] !min-w-0 max-w-full items-center justify-between gap-1 rounded-lg bg-transparent pl-2 pr-1.5 text-[length:var(--fs-base)] whitespace-nowrap text-(--fg)/85 transition-colors hover:bg-(--hover) hover:text-(--fg)"
+															{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button624)}
 															aria-label={`Model: ${state.modelSelected || !weekendTask ? DEMO_MODEL : "Select model"}`}
 														>
 															<span
-																className="min-w-0 max-w-[180px] truncate text-left"
+																{...stylex.props(demoStyles.reset, styles.span628)}
 																translate="no"
 															>
 																{state.modelSelected || !weekendTask
 																	? DEMO_MODEL
 																	: "Select model"}
 															</span>
-															<ChevronDown className="pointer-events-none h-3.5 w-3.5 shrink-0 text-(--dim)" />
+															<ChevronDown {...stylex.props(demoStyles.reset, styles.chevrondown635, styles.lucideScale)} />
 														</button>
 														<button
 															type="submit"
 															disabled={sendDisabled}
-															className="inline-flex !h-[30px] !min-h-[30px] !w-[30px] !min-w-[30px] shrink-0 items-center justify-center rounded-full bg-(--fg) text-(--bg) transition-opacity hover:opacity-85 disabled:bg-(--hl3) disabled:opacity-100"
+															{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button640)}
 															aria-label="Send"
 															title={sendDisabled ? undefined : "Send (Enter)"}
 														>
-															<ArrowUp className="h-4 w-4 stroke-[2.25]" />
+															<ArrowUp {...stylex.props(demoStyles.reset, styles.arrowup644, styles.lucideScale)} />
 														</button>
 													</div>
 												</div>
@@ -688,8 +675,8 @@ function HeroComputerPanel({ model }: { model: HeroDemoViewModel }) {
 	if (!panelOpen) return null;
 	return (
 			<aside
-				className="agent-computer-panel relative flex min-h-0 shrink-0 flex-col border-l border-(--border) bg-(--color-panel)"
-				style={{ width: HERO_COMPUTER_WIDTH }}
+				data-computer-panel
+				{...stylex.props(demoStyles.reset, styles.agentComputerPanel, demoStyles.fixedWidth(HERO_COMPUTER_WIDTH))}
 			>
 				<ComputerHeader
 					tab={tab}
@@ -735,12 +722,12 @@ function HeroComputerPanel({ model }: { model: HeroDemoViewModel }) {
 					<HeroReviewPanel ready={state.reviewReady} />
 				) : null}
 				{tab === "browser" ? (
-					<div className="size-full overflow-y-auto bg-(--bg) px-5 py-8 text-(--fg)">
-						<div className="mx-auto max-w-3xl">
-							<div className="text-[length:var(--fs-lg)] font-medium text-(--dim)">
+					<div {...stylex.props(demoStyles.reset, styles.div738)}>
+						<div {...stylex.props(demoStyles.reset, styles.div739)}>
+							<div {...stylex.props(demoStyles.reset, styles.div740)}>
 								Trip research
 							</div>
-							<div className="mt-1 text-[length:var(--fs-sm)] text-(--dim)">
+							<div {...stylex.props(demoStyles.reset, styles.div743)}>
 								Saturday stays dry until 16:00. Rydal Water to
 								Grasmere keeps the route under two hours.
 							</div>
@@ -748,12 +735,12 @@ function HeroComputerPanel({ model }: { model: HeroDemoViewModel }) {
 					</div>
 				) : null}
 				{tab === "terminal" ? (
-					<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
+					<section {...stylex.props(demoStyles.reset, styles.section751)}>
 						Home shell
 					</section>
 				) : null}
 				{tab === "side-chat" ? (
-					<section className="flex min-h-0 flex-1 items-center justify-center bg-(--color-panel) text-xs text-(--dim)">
+					<section {...stylex.props(demoStyles.reset, styles.section751)}>
 						Side chat
 					</section>
 				) : null}
@@ -784,26 +771,26 @@ function ScenarioThread({
 }) {
 	return (
 		<>
-			<div data-timeline-message-id="user-1" className="pt-4 pb-0 sm:pt-6">
+			<div data-timeline-message-id="user-1" {...stylex.props(demoStyles.reset, styles.div787)}>
 				<UserMessage message={userMessage()} />
 			</div>
 			{tools.map((tool) => (
-				<div className="pt-2" key={tool.id}>
+				<div {...stylex.props(demoStyles.reset, styles.div791)} key={tool.id}>
 					<ToolBlockView block={tool} />
 				</div>
 			))}
 			{output.length > 0 || resultVisible ? (
-				<div data-timeline-message-id="assistant-1" className="pt-2 pb-4">
-					<article className="min-w-0">
-						<div className="chat-markdown whitespace-pre-wrap">{output}</div>
+				<div data-timeline-message-id="assistant-1" {...stylex.props(demoStyles.reset, styles.div796)}>
+					<article {...stylex.props(demoStyles.reset, styles.article797)}>
+						<div data-chat-markdown {...stylex.props(demoStyles.reset, styles.chatMarkdown, demoStyles.chatMarkdown)}>{output}</div>
 						{resultVisible ? (
 							<AssistantMessageActions copyText={output} />
 						) : null}
 					</article>
 				</div>
 			) : running ? (
-				<div className="pt-4 pb-4 sm:pt-6">
-					<span className="codex-shimmer-text text-[length:var(--fs-base)] font-normal leading-5">
+				<div {...stylex.props(demoStyles.reset, styles.div805)}>
+					<span {...stylex.props(demoStyles.reset, styles.codexShimmerText, demoStyles.shimmerText)}>
 						Thinking
 					</span>
 				</div>
@@ -825,15 +812,15 @@ function StaticThread({
 		<>
 			{messages.map((message, index) => (
 				<div
-					className={lead && index === 0 ? "pt-4 pb-0 sm:pt-6" : "pt-2 pb-4"}
+					{...stylex.props(demoStyles.reset, lead && index === 0 ? styles.leadMessage : styles.timelineMessage)}
 					data-timeline-message-id={message.id}
 					key={message.id}
 				>
 					{message.role === "user" ? (
 						<UserMessage message={message} />
 					) : (
-						<article className="min-w-0">
-							<div className="chat-markdown whitespace-pre-wrap">
+						<article {...stylex.props(demoStyles.reset, styles.article797)}>
+							<div data-chat-markdown {...stylex.props(demoStyles.reset, styles.chatMarkdown, demoStyles.chatMarkdown)}>
 								{message.text}
 							</div>
 							{message.id.startsWith("assistant-extra-") ? (
@@ -841,10 +828,10 @@ function StaticThread({
 									href={repositoryUrl}
 									target="_blank"
 									rel="noreferrer"
-									className="mt-3 flex w-full items-center justify-between rounded-lg border border-(--border) bg-(--color-panel) px-3 py-2.5 text-[length:var(--fs-sm)] font-medium text-(--fg) transition-colors hover:bg-(--hover)"
+									{...stylex.props(demoStyles.reset, styles.a844)}
 								>
-									<span>Open Local Studio on GitHub</span>
-									<span aria-hidden="true" className="text-(--dim)">
+									<span {...stylex.props(demoStyles.reset)}>Open Local Studio on GitHub</span>
+									<span aria-hidden="true" {...stylex.props(demoStyles.reset, styles.span847)}>
 										↗
 									</span>
 								</a>

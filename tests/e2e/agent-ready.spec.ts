@@ -98,7 +98,7 @@ test("machine page names the company and both featured products", async ({
 	page,
 }) => {
 	await page.goto("/machine");
-	const text = await page.locator(".machine").innerText();
+	const text = await page.locator("[data-page-focus]").innerText();
 	expect(text).toContain("Sybil Solutions");
 	expect(text).toContain("Local Studio");
 	expect(text).toContain("KittyLitter");

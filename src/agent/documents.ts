@@ -1,3 +1,4 @@
+import { infoPaths } from "../content/info-pages.ts";
 import { robotsTxt } from "./robots.ts";
 import { sitemapXml } from "./sitemap.ts";
 import { machineText } from "./machine.ts";
@@ -9,6 +10,7 @@ import {
 	agentCard,
 	apiCatalog,
 	docsMarkdown,
+	infoPageMarkdown,
 	downloadMarkdown,
 	indexMarkdown,
 	llmsFull,
@@ -75,6 +77,11 @@ export function agentDocuments(): readonly AgentDocument[] {
 		{ path: "/setup.md", body: promptMarkdown(), contentType: markdown },
 		{ path: "/overview.md", body: resourcesMarkdown(), contentType: markdown },
 		{ path: "/download.md", body: downloadMarkdown(), contentType: markdown },
+		...infoPaths.map((path) => ({
+			path: `${path}.md`,
+			body: infoPageMarkdown(path),
+			contentType: markdown,
+		})),
 		...documentPaths().map((path) => ({
 			path,
 			body: markdownDocument(path),

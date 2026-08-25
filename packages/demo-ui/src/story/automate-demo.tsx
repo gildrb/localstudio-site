@@ -1,3 +1,6 @@
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./automate-demo.styles.ts";
 import { useMemo, useState } from "react";
 import { Check, Clock, Pause, Play, Plus, Search } from "../ui/icon-registry";
 import { STORY_CROP } from "./demo-frame";
@@ -68,44 +71,44 @@ export function AutomateDemo() {
 
 	return (
 		<DemoShell scene="automate" label="Automations" crop={STORY_CROP}>
-			<div className="flex min-h-0 w-[820px] max-md:w-[680px]">
-				<section className="flex min-h-0 w-[320px] shrink-0 flex-col border-r border-(--ui-border) bg-(--ui-bg) max-md:w-[280px]">
-					<header className="flex h-14 shrink-0 items-center justify-between border-b border-(--ui-border) px-4">
-						<div className="min-w-0">
-							<h1 className="truncate text-[length:var(--fs-xl)] font-medium text-(--ui-fg)">
+			<div {...stylex.props(demoStyles.reset, styles.div71)}>
+				<section {...stylex.props(demoStyles.reset, styles.section72)}>
+					<header {...stylex.props(demoStyles.reset, styles.header73)}>
+						<div {...stylex.props(demoStyles.reset, styles.div74)}>
+							<h1 {...stylex.props(demoStyles.reset, styles.h175)}>
 								Automations
 							</h1>
-							<p className="text-[length:var(--fs-xs)] text-(--ui-muted)">
+							<p {...stylex.props(demoStyles.reset, styles.p78)}>
 								3 scheduled tasks
 							</p>
 						</div>
 						<button
 							type="button"
-							className="inline-flex h-7 items-center gap-1 rounded-md bg-(--ui-fg) px-2.5 text-[length:var(--fs-xs)] text-(--ui-bg)"
+							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button84)}
 						>
-							<Plus className="h-3 w-3" /> New
+							<Plus {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> New
 						</button>
 					</header>
 
-					<div className="shrink-0 space-y-2 border-b border-(--ui-separator) p-3">
-						<label className="relative block">
-							<span className="sr-only">Search automations</span>
-							<Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-(--ui-muted)" />
+					<div {...stylex.props(demoStyles.reset, styles.div90)}>
+						<label {...stylex.props(demoStyles.reset, styles.label91)}>
+							<span {...stylex.props(demoStyles.reset, styles.span92)}>Search automations</span>
+							<Search {...stylex.props(demoStyles.reset, styles.search93, styles.lucideScale)} />
 							<input
 								value={query}
 								onChange={(event) => setQuery(event.target.value)}
 								placeholder="Search automations"
-								className="h-8 w-full rounded-[var(--ui-radius)] border border-(--ui-border) bg-(--ui-surface) pl-9 pr-3 text-[length:var(--fs-sm)] outline-none"
+								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element98)}
 							/>
 						</label>
-						<div className="inline-flex rounded-[var(--ui-radius)] border border-(--ui-border) bg-(--ui-surface) p-0.5">
+						<div {...stylex.props(demoStyles.reset, styles.div101)}>
 							{AUTOMATION_FILTERS.map((item) => (
 								<button
 									key={item.id}
 									type="button"
 									onClick={() => setFilter(item.id)}
 									aria-pressed={filter === item.id}
-									className={`h-7 rounded-md px-2.5 text-[length:var(--fs-xs)] ${filter === item.id ? "bg-(--ui-active) text-(--ui-fg)" : "text-(--ui-muted)"}`}
+									{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.filter, filter === item.id ? styles.filterActive : styles.filterIdle)}
 								>
 									{item.label}
 								</button>
@@ -113,29 +116,29 @@ export function AutomateDemo() {
 						</div>
 					</div>
 
-					<ul className="min-h-0 flex-1 divide-y divide-(--ui-separator)/70 overflow-y-auto p-1.5">
-						{visible.map((automation) => {
+					<ul {...stylex.props(demoStyles.reset, styles.ul116)}>
+						{visible.map((automation, index) => {
 							const active = automation.id === selected.id;
 							return (
-								<li key={automation.id}>
+								<li key={automation.id} {...stylex.props(demoStyles.reset, index < visible.length - 1 && styles.automationDivider)}>
 									<button
 										type="button"
 										onClick={() => setSelectedId(automation.id)}
-										className={`w-full rounded-[var(--ui-radius)] px-3 py-2.5 text-left ${active ? "bg-(--ui-active)" : "hover:bg-(--ui-hover)/60"}`}
+										{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.automationRow, active ? styles.automationActive : styles.automationIdle)}
 									>
-										<span className="flex items-start gap-3">
+										<span {...stylex.props(demoStyles.reset, styles.span126)}>
 											<span
-												className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${automation.status === "active" ? "bg-(--ui-accent)" : "bg-(--ui-muted)/45"}`}
+												{...stylex.props(demoStyles.reset, styles.statusDot, automation.status === "active" ? styles.statusDotActive : styles.statusDotIdle)}
 											/>
-											<span className="min-w-0 flex-1">
-												<span className="block truncate text-[length:var(--fs-base)] font-medium">
+											<span {...stylex.props(demoStyles.reset, styles.span130)}>
+												<span {...stylex.props(demoStyles.reset, styles.span131)}>
 													{automation.name}
 												</span>
-												<span className="mt-1 flex items-center gap-1.5 truncate text-[length:var(--fs-sm)] text-(--ui-muted)">
-													<Clock className="h-3 w-3 shrink-0" />
+												<span {...stylex.props(demoStyles.reset, styles.span134)}>
+													<Clock {...stylex.props(demoStyles.reset, styles.clock135, styles.lucideScale)} />
 													{automation.schedule}
 												</span>
-												<span className="mt-1 block truncate text-[length:var(--fs-xs)] text-(--ui-muted)/75">
+												<span {...stylex.props(demoStyles.reset, styles.span138)}>
 													{automation.status === "paused"
 														? "Paused"
 														: `Next run ${automation.nextRun}`}
@@ -149,108 +152,108 @@ export function AutomateDemo() {
 					</ul>
 				</section>
 
-				<section className="flex min-h-0 flex-1 flex-col bg-(--ui-bg)">
-					<header className="flex h-14 shrink-0 items-center justify-between border-b border-(--ui-border) px-5">
-						<div className="min-w-0">
-							<h2 className="truncate text-[length:var(--fs-lg)] font-medium">
+				<section {...stylex.props(demoStyles.reset, styles.section152)}>
+					<header {...stylex.props(demoStyles.reset, styles.header153)}>
+						<div {...stylex.props(demoStyles.reset, styles.div74)}>
+							<h2 {...stylex.props(demoStyles.reset, styles.h2155)}>
 								{selected.name}
 							</h2>
-							<p className="text-[length:var(--fs-xs)] text-(--ui-muted)">
+							<p {...stylex.props(demoStyles.reset, styles.p78)}>
 								{selected.status === "active" ? selected.schedule : "Paused"}
 							</p>
 						</div>
-						<div className="flex gap-1.5">
+						<div {...stylex.props(demoStyles.reset, styles.div162)}>
 							<button
 								type="button"
-								className="inline-flex h-7 items-center gap-1.5 rounded-md border border-(--ui-border) px-2.5 text-[length:var(--fs-xs)]"
+								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button165)}
 							>
-								<Pause className="h-3 w-3" /> Pause
+								<Pause {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> Pause
 							</button>
 							<button
 								type="button"
-								className="inline-flex h-7 items-center gap-1.5 rounded-md bg-(--ui-fg) px-2.5 text-[length:var(--fs-xs)] text-(--ui-bg)"
+								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button171)}
 							>
-								<Play className="h-3 w-3" /> Run now
+								<Play {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> Run now
 							</button>
 						</div>
 					</header>
 
-					<div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-						<div className="grid gap-4">
-							<label className="grid gap-1.5 text-[length:var(--fs-xs)] font-medium">
+					<div {...stylex.props(demoStyles.reset, styles.div178)}>
+						<div {...stylex.props(demoStyles.reset, styles.div179)}>
+							<label {...stylex.props(demoStyles.reset, styles.label180)}>
 								Name
 								<input
 									readOnly
 									value={selected.name}
-									className="h-8 rounded-md border border-(--ui-border) bg-(--ui-surface) px-3 text-[length:var(--fs-sm)] font-normal"
+									{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.input185)}
 								/>
 							</label>
-							<label className="grid gap-1.5 text-[length:var(--fs-xs)] font-medium">
+							<label {...stylex.props(demoStyles.reset, styles.label180)}>
 								Task
 								<textarea
 									readOnly
 									value={selected.prompt}
 									rows={3}
-									className="resize-none rounded-md border border-(--ui-border) bg-(--ui-surface) px-3 py-2 text-[length:var(--fs-sm)] font-normal leading-5"
+									{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.textarea194)}
 								/>
-								<span className="font-normal text-(--ui-muted)">
+								<span {...stylex.props(demoStyles.reset, styles.span196)}>
 									Local Studio sends this instruction to the selected model on
 									every run.
 								</span>
 							</label>
-							<section className="border-t border-(--ui-separator) pt-4">
-								<div className="flex items-center gap-2">
-									<Clock className="h-3.5 w-3.5 text-(--ui-muted)" />
-									<div>
-										<h3 className="text-[length:var(--fs-sm)] font-medium">
+							<section {...stylex.props(demoStyles.reset, styles.section201)}>
+								<div {...stylex.props(demoStyles.reset, styles.div202)}>
+									<Clock {...stylex.props(demoStyles.reset, styles.clock203, styles.lucideScale)} />
+									<div {...stylex.props(demoStyles.reset)}>
+										<h3 {...stylex.props(demoStyles.reset, styles.h3205)}>
 											Schedule
 										</h3>
-										<p className="text-[length:var(--fs-xs)] text-(--ui-muted)">
+										<p {...stylex.props(demoStyles.reset, styles.p78)}>
 											{selected.schedule}
 										</p>
 									</div>
 								</div>
-								<div className="mt-3 flex gap-2">
-									<span className="rounded-md border border-(--ui-border) bg-(--ui-active) px-3 py-1.5 text-[length:var(--fs-xs)]">
+								<div {...stylex.props(demoStyles.reset, styles.div213)}>
+									<span {...stylex.props(demoStyles.reset, styles.span214)}>
 										Daily
 									</span>
-									<span className="rounded-md border border-(--ui-border) px-3 py-1.5 text-[length:var(--fs-xs)]">
+									<span {...stylex.props(demoStyles.reset, styles.span217)}>
 										08:00
 									</span>
-									<span className="rounded-md border border-(--ui-border) px-3 py-1.5 text-[length:var(--fs-xs)]">
+									<span {...stylex.props(demoStyles.reset, styles.span217)}>
 										Weekdays only
 									</span>
 								</div>
 							</section>
-							<div className="grid grid-cols-2 gap-4 border-t border-(--ui-separator) pt-4 text-[length:var(--fs-xs)]">
-								<div>
-									<p className="font-medium">Model</p>
-									<p className="mt-1.5 rounded-md border border-(--ui-border) bg-(--ui-surface) px-3 py-2 text-[length:var(--fs-sm)]">
+							<div {...stylex.props(demoStyles.reset, styles.div225)}>
+								<div {...stylex.props(demoStyles.reset)}>
+									<p {...stylex.props(demoStyles.reset, styles.p227)}>Model</p>
+									<p {...stylex.props(demoStyles.reset, styles.p228)}>
 										Qwen3.8-27B
 									</p>
 								</div>
-								<div>
-									<p className="font-medium">Working directory</p>
-									<p className="mt-1.5 truncate rounded-md border border-(--ui-border) bg-(--ui-surface) px-3 py-2 font-mono">
+								<div {...stylex.props(demoStyles.reset)}>
+									<p {...stylex.props(demoStyles.reset, styles.p227)}>Working directory</p>
+									<p {...stylex.props(demoStyles.reset, styles.p234)}>
 										~/Projects/local-studio
 									</p>
 								</div>
 							</div>
-							<section className="border-t border-(--ui-separator) pt-4 max-md:hidden">
-								<h3 className="text-[length:var(--fs-sm)] font-medium">
+							<section {...stylex.props(demoStyles.reset, styles.section239)}>
+								<h3 {...stylex.props(demoStyles.reset, styles.h3205)}>
 									Recent runs
 								</h3>
-								<div className="mt-2 flex items-center justify-between rounded-md border border-(--ui-border) px-3 py-2 text-[length:var(--fs-xs)]">
-									<span className="flex items-center gap-2">
-										<Check className="h-3.5 w-3.5 text-(--ui-accent)" />
-										<span>
-											<strong className="block font-medium">Completed</strong>
-											<span className="text-(--ui-muted)">
+								<div {...stylex.props(demoStyles.reset, styles.div243)}>
+									<span {...stylex.props(demoStyles.reset, styles.div202)}>
+										<Check {...stylex.props(demoStyles.reset, styles.check245, styles.lucideScale)} />
+										<span {...stylex.props(demoStyles.reset)}>
+											<strong {...stylex.props(demoStyles.reset, styles.strong247)}>Completed</strong>
+											<span {...stylex.props(demoStyles.reset, styles.span248)}>
 												Today at 08:00 · 42 seconds
 											</span>
 										</span>
 									</span>
-									<span className="font-mono text-(--ui-muted)">
+									<span {...stylex.props(demoStyles.reset, styles.span253)}>
 										8.4K tokens
 									</span>
 								</div>

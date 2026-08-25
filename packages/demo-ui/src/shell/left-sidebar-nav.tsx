@@ -1,4 +1,7 @@
 "use client";
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./left-sidebar-nav.styles.ts";
 
 import type { IconComponent } from "./left-sidebar-nav-model";
 
@@ -18,15 +21,13 @@ export function NavItemDesktop({
     <a
       href={href}
       title={label}
-      className={`group flex h-[var(--sidebar-row-height)] shrink-0 items-center gap-2 rounded-[var(--sidebar-row-radius)] px-2 transition-colors ${
-        active ? "bg-(--active) text-(--fg)" : "text-(--fg)/85 hover:bg-(--hover) hover:text-(--fg)"
-      }`}
+      {...stylex.props(demoStyles.reset, styles.link, active ? styles.active : styles.idle)}
     >
       <Icon
-        className={`h-4 w-4 shrink-0 ${active ? "opacity-90" : "opacity-70"}`}
+        {...stylex.props(demoStyles.reset, styles.icon, active ? styles.iconActive : styles.iconIdle)}
         strokeWidth={1.6}
       />
-      <span className="text-[length:var(--fs-md)] whitespace-nowrap">{label}</span>
+      <span {...stylex.props(demoStyles.reset, styles.span29)}>{label}</span>
     </a>
   );
 }

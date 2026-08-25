@@ -1,4 +1,5 @@
 import eslint from "@eslint/js";
+import stylexEslint from "@stylexjs/eslint-plugin";
 import { defineConfig, globalIgnores } from "eslint/config";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -18,6 +19,17 @@ export default defineConfig([
 		languageOptions: {
 			ecmaVersion: 2023,
 			globals: globals.browser,
+		},
+		plugins: {
+			"@stylexjs": stylexEslint,
+		},
+		rules: {
+			"@stylexjs/enforce-extension": "error",
+			"@stylexjs/no-legacy-contextual-styles": "error",
+			"@stylexjs/no-nonstandard-styles": "error",
+			"@stylexjs/no-unused": "error",
+			"@stylexjs/valid-shorthands": "error",
+			"@stylexjs/valid-styles": "error",
 		},
 	},
 	{

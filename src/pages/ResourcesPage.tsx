@@ -1,3 +1,5 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { CtaPair } from "../components/Links";
@@ -16,6 +18,7 @@ import {
 } from "../domain/route";
 import { release } from "../domain/release";
 import { site } from "../domain/site";
+import { styles } from "../styles/pages-styles";
 
 const toc = [
 	["Start here", "start-here"],
@@ -142,11 +145,16 @@ const kittyRows: readonly OverviewEntry[] = [
 		label: "Get it",
 		text: (
 			<>
-				<a href={site.products.kittyLitter.url} target="_blank" rel="noreferrer">
+				<a
+					{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewTextLink)}
+					href={site.products.kittyLitter.url}
+					target="_blank"
+					rel="noreferrer"
+				>
 					kittylitter.app
 				</a>{" "}
-				· <a href={site.products.kittyLitter.appStore} target="_blank" rel="noreferrer">App Store</a>{" "}
-				· <a href={site.products.kittyLitter.playStore} target="_blank" rel="noreferrer">Google Play</a>
+				· <a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewTextLink)} href={site.products.kittyLitter.appStore} target="_blank" rel="noreferrer">App Store</a>{" "}
+				· <a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewTextLink)} href={site.products.kittyLitter.playStore} target="_blank" rel="noreferrer">Google Play</a>
 			</>
 		),
 	},
@@ -268,47 +276,62 @@ function arrow(entry: OverviewEntry) {
 	const Icon = entry.external ? ArrowUpRight : ArrowRight;
 	return (
 		<Icon
+			{...stylex.props(styles.overviewArrow)}
 			aria-hidden="true"
-			className="overview-row__arrow"
 			size={14}
 			strokeWidth={1.25}
 		/>
 	);
 }
 
+function OverviewLabel({ entry }: { entry: OverviewEntry }) {
+	return (
+		<span
+			{...stylex.props(baseStyles.element, 
+				styles.overviewLabel,
+				entry.code && styles.overviewLabelCode,
+			)}
+		>
+			{entry.label}
+		</span>
+	);
+}
+
 function OverviewRow({ entry }: { entry: OverviewEntry }) {
-	const labelClass = `overview-row__label${entry.code ? " overview-row__label--code" : ""}`;
 	let label: ReactNode;
 	if (!entry.href) {
-		label = <span className={labelClass}>{entry.label}</span>;
-	} else {
-		const linkClass = `${labelClass} overview-row__link`;
-		label = entry.external ? (
+		label = <OverviewLabel entry={entry} />;
+	} else if (entry.external) {
+		label = (
 			<a
-				className={linkClass}
+				{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewLink)}
 				href={entry.href}
 				target="_blank"
 				rel="noreferrer"
 			>
-				{entry.label}
+				<OverviewLabel entry={entry} />
 				{arrow(entry)}
 			</a>
-		) : entry.plain ? (
-			<a className={linkClass} href={entry.href}>
-				{entry.label}
+		);
+	} else if (entry.plain) {
+		label = (
+			<a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewLink)} href={entry.href}>
+				<OverviewLabel entry={entry} />
 				{arrow(entry)}
 			</a>
-		) : (
-			<LocalLink className={linkClass} href={entry.href}>
-				{entry.label}
+		);
+	} else {
+		label = (
+			<LocalLink sx={styles.overviewLink} href={entry.href}>
+				<OverviewLabel entry={entry} />
 				{arrow(entry)}
 			</LocalLink>
 		);
 	}
 	return (
-		<li className="overview-row">
+		<li {...stylex.props(baseStyles.element, styles.overviewRow, styles.docsListItem)}>
 			{label}
-			<p className="overview-row__text">{entry.text}</p>
+			<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.overviewText)}>{entry.text}</p>
 		</li>
 	);
 }
@@ -325,116 +348,116 @@ export function ResourcesPage() {
 				}
 			/>
 			<DocsLayout toc={toc} path={overviewPath} label="Overview sections">
-					<p>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph)}>
 						One page, everything on the map: the site, the desktop app, the
 						phone client, the shim, the machine surface, and where the source
-						lives. If it exists around <span translate="no">Local Studio</span>,
+						lives. If it exists around <span translate="no" {...stylex.props(baseStyles.element)}>Local Studio</span>,
 						it is linked from here.
 					</p>
-					<section id="start-here" className="docs-section">
-						<h2>Start here</h2>
-						<p className="mt-4">
+					<section id="start-here" {...stylex.props(baseStyles.element, styles.docsSection)}>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Start here</h2>
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							Three ways in, depending on what you are holding.
 						</p>
-						<ul className="overview-rows">
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{starts.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}
 						</ul>
 					</section>
-					<section id="this-site" className="docs-section">
-						<h2>This site</h2>
-						<p className="mt-4">Every route and what it holds.</p>
-						<ul className="overview-rows">
+					<section id="this-site" {...stylex.props(baseStyles.element, styles.docsSection)}>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>This site</h2>
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>Every route and what it holds.</p>
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{siteRoutes.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}
 						</ul>
 					</section>
-					<section id="local-studio" className="docs-section">
-						<h2>Local Studio</h2>
-						<p className="mt-4">
+					<section id="local-studio" {...stylex.props(baseStyles.element, styles.docsSection)}>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Local Studio</h2>
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							A local-first workstation for running, managing, and using
 							self-hosted LLM backends. Two modules share one controller API,
 							and it keeps the model, the runtime, and the hardware together.
 							Nothing important disappears behind a provider abstraction.
 						</p>
-						<ul className="overview-rows">
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{studioFacts.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}
 						</ul>
-						<p className="mt-8">
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.marginTop32)}>
 							Day-to-day operation runs through three surfaces.
 						</p>
-						<ul className="overview-rows">
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{studioSurfaces.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}
 						</ul>
 					</section>
-					<section id="runtimes" className="docs-section">
-						<h2>Runtimes</h2>
-						<p className="mt-4">
+					<section id="runtimes" {...stylex.props(baseStyles.element, styles.docsSection)}>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Runtimes</h2>
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							Recipes launch through the controller runtime layer; a chat proxy
 							call never launches a model silently. Discovery and saved
 							selections stay with the controller and surface in Settings.
 						</p>
-						<ul className="overview-rows">
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{runtimes.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}
 						</ul>
 					</section>
-					<section id="kittylitter" className="docs-section">
-						<h2>KittyLitter</h2>
-						<p className="mt-4">
+					<section id="kittylitter" {...stylex.props(baseStyles.element, styles.docsSection)}>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>KittyLitter</h2>
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							The native iOS and Android client for Codex, Claude, OpenCode, Pi,
 							and Droid, and the mobile companion for Local Studio. Work still
 							runs on your Mac or server; sessions, streaming, reasoning, and
 							tool results follow the phone.
 						</p>
-						<ul className="overview-rows">
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{kittyRows.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}
 						</ul>
 					</section>
-					<section id="codex-shim" className="docs-section">
-						<h2>Codex Shim</h2>
-						<p className="mt-4">
+					<section id="codex-shim" {...stylex.props(baseStyles.element, styles.docsSection)}>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Codex Shim</h2>
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							A local Python/aiohttp server that exposes an OpenAI
 							Responses-compatible endpoint on loopback, so Codex Desktop can
 							run BYOK models: OpenAI, Anthropic, Z.ai, DeepSeek, Gemini,
 							OpenRouter, and local proxies. Codex keeps its native UX; routing
 							moves local.
 						</p>
-						<ul className="overview-rows">
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{shimRows.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}
 						</ul>
 					</section>
-					<section id="for-machines" className="docs-section">
-						<h2>For machines</h2>
-						<p className="mt-4">
+					<section id="for-machines" {...stylex.props(baseStyles.element, styles.docsSection)}>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>For machines</h2>
+						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
 							Every HTML route above has a markdown twin: append{" "}
-							<code>.md</code> or send <code>Accept: text/markdown</code>. The
+							<code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>.md</code> or send <code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>Accept: text/markdown</code>. The
 							homepage advertises the catalog, docs, and agent card through RFC
 							8288 Link headers.
 						</p>
-						<pre className="docs-code surface-compact">
+						<pre {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsCode)}>
 							curl -H "Accept: text/markdown" {site.origin}{docsPath}
 						</pre>
-						<ul className="overview-rows">
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{machineRows.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}
 						</ul>
 					</section>
-					<section id="source" className="docs-section">
-						<h2>Source and company</h2>
-						<ul className="overview-rows">
+					<section id="source" {...stylex.props(baseStyles.element, styles.docsSection)}>
+						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Source and company</h2>
+						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
 							{sourceRows.map((entry) => (
 								<OverviewRow entry={entry} key={entry.label} />
 							))}

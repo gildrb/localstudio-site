@@ -1,6 +1,6 @@
 # Local Studio
 
-Read the [`ls-design.md` system](https://github.com/gildrb/ls-design.md/blob/main/design.md) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase.
+Read the [`agents-localstudio` product-design system](https://github.com/gildrb/agents-localstudio/tree/main/.agents/skills/product-design) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase. All authored interface styling uses strongly typed StyleX tokens and extracted atomic CSS.
 
 ### Run
 

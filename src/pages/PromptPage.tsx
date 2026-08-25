@@ -1,3 +1,5 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import setupPromptTemplate from "../content/setup-prompt.txt?raw";
 import { PromptBlock } from "../components/PromptBlock";
 import { overviewPath, routes, setupPath } from "../domain/route";
@@ -5,6 +7,7 @@ import { CtaPair } from "../components/Links";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
 import { site } from "../domain/site";
+import { styles } from "../styles/pages-styles";
 
 const setupPrompt = setupPromptTemplate.replace(
 	"{{LOCAL_STUDIO_REPOSITORY}}",
@@ -22,7 +25,10 @@ export function PromptPage() {
 					<CtaPair secondary={{ href: overviewPath, label: "Go to overview" }} />
 				}
 			/>
-			<section className="section-width pb-30" aria-label="Setup handoff">
+			<section
+				{...stylex.props(baseStyles.element, styles.sectionWidth, styles.pageBottom)}
+				aria-label="Setup handoff"
+			>
 				<PromptBlock label="Portable setup prompt" text={setupPrompt} />
 			</section>
 		</PageShell>

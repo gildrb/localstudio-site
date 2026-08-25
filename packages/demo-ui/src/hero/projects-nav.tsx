@@ -1,6 +1,9 @@
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./projects-nav.styles.ts";
 import { Folder, FolderOpen } from "../ui/icons";
 function SidebarRail({ children }: { children: import("react").ReactNode }) {
-	return <div className="flex min-h-0 flex-1 flex-col">{children}</div>;
+	return <div {...stylex.props(demoStyles.reset, styles.div3)}>{children}</div>;
 }
 function SidebarSectionHeader({
 	label,
@@ -10,16 +13,11 @@ function SidebarSectionHeader({
 	onToggle?: () => void;
 	children?: import("react").ReactNode;
 }) {
-	return <div className="px-2 py-1 text-[length:var(--fs-xs)] text-(--dim)">{label}</div>;
+	return <div {...stylex.props(demoStyles.reset, styles.div13)}>{label}</div>;
 }
 
 export type HeroTaskId = "weekend" | "inbox";
 
-const focusedRow =
-	"group relative flex h-[var(--sidebar-row-height)] items-center rounded-[var(--sidebar-row-radius)] pl-2 pr-0 bg-(--active) text-(--fg) transition-[color,background-color,opacity]";
-
-const idleRow =
-	"group relative flex h-[var(--sidebar-row-height)] items-center rounded-[var(--sidebar-row-radius)] pl-2 pr-0 text-(--fg)/85 transition-[color,background-color,opacity] hover:bg-(--hover) hover:text-(--fg)";
 
 export function HeroProjectsNav({
 	expanded,
@@ -36,18 +34,18 @@ export function HeroProjectsNav({
 	return (
 		<>
 			<SidebarSectionHeader label="Projects" open onToggle={() => undefined} />
-			<div className="flex flex-col">
-				<div className="group relative flex h-[var(--sidebar-row-height)] items-center rounded-[var(--sidebar-row-radius)] pl-2 pr-1.5 text-(--fg) transition-[color,background-color,opacity] hover:bg-(--hover)">
+			<div {...stylex.props(demoStyles.reset, styles.div39)}>
+				<div {...stylex.props(demoStyles.reset, styles.div40)}>
 					<button
 						type="button"
 						title="/Users/sero/Home"
-						className="flex min-w-0 flex-1 items-center gap-2 px-0 pr-8 text-left"
+						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button44)}
 					>
-						<span className="relative h-3.5 w-3.5 shrink-0 opacity-70">
-							<Folder className="absolute inset-0 h-3.5 w-3.5 opacity-0" />
-							<FolderOpen className="absolute inset-0 h-3.5 w-3.5 opacity-100" />
+						<span {...stylex.props(demoStyles.reset, styles.span46)}>
+							<Folder {...stylex.props(demoStyles.reset, styles.folder47)} />
+							<FolderOpen {...stylex.props(demoStyles.reset, styles.folderopen48)} />
 						</span>
-						<span className="truncate text-[length:var(--fs-md)] font-normal">
+						<span {...stylex.props(demoStyles.reset, styles.span50)}>
 							Home
 						</span>
 					</button>
@@ -57,25 +55,25 @@ export function HeroProjectsNav({
 			<SidebarRail>
 				<button
 					type="button"
-					className={activeTask === "weekend" ? focusedRow : idleRow}
+					{...stylex.props(demoStyles.reset, demoStyles.controlReset, activeTask === "weekend" ? styles.focusedRow : styles.idleRow)}
 					onClick={() => onSelectTask("weekend")}
 				>
-					<span className="min-w-0 flex-1 truncate px-0 text-left text-[length:var(--fs-md)]">
+					<span {...stylex.props(demoStyles.reset, styles.span63)}>
 						{titles.weekend}
 					</span>
-					<span className="pr-2 text-[length:var(--fs-xs)] text-(--hl2)">
+					<span {...stylex.props(demoStyles.reset, styles.span66)}>
 						now
 					</span>
 				</button>
 				<button
 					type="button"
-					className={activeTask === "inbox" ? focusedRow : idleRow}
+					{...stylex.props(demoStyles.reset, demoStyles.controlReset, activeTask === "inbox" ? styles.focusedRow : styles.idleRow)}
 					onClick={() => onSelectTask("inbox")}
 				>
-					<span className="min-w-0 flex-1 truncate px-0 text-left text-[length:var(--fs-md)]">
+					<span {...stylex.props(demoStyles.reset, styles.span63)}>
 						{titles.inbox}
 					</span>
-					<span className="pr-2 text-[length:var(--fs-xs)] text-(--hl2)">
+					<span {...stylex.props(demoStyles.reset, styles.span66)}>
 						3h
 					</span>
 				</button>

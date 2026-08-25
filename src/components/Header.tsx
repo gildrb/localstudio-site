@@ -1,7 +1,8 @@
+import { baseStyles, type PublicStyle } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { ChevronDown, Equal, X } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { site } from "../domain/site";
-import { cssVars } from "../system/css-vars";
 import { downloadLabel, downloadPath, homePath, productNav, resourceNav } from "../domain/route";
 import {
 	closedNav,
@@ -14,6 +15,7 @@ import {
 import { DownloadButton } from "./Links";
 import { BrandLogo } from "./BrandLogo";
 import { LocalLink } from "./LocalLink";
+import { headerStyles } from "../styles/header-styles";
 
 type NavLink = {
 	readonly label: string;
@@ -28,7 +30,8 @@ type ChevronProps = {
 type MenuListProps = {
 	items: readonly NavLink[];
 	onNavigate: () => void;
-	className?: string;
+	sx?: PublicStyle;
+	itemSx?: PublicStyle;
 	desktop?: boolean;
 }
 
@@ -52,18 +55,18 @@ function Chevron({ open }: ChevronProps) {
 			size={14}
 			strokeWidth={1.25}
 			aria-hidden="true"
-			className={open ? "nav__chevron is-open" : "nav__chevron"}
+			{...stylex.props(headerStyles.chevron, open && headerStyles.chevronOpen)}
 		/>
 	);
 }
 
 function GitHubMark() {
 	return (
-		<svg viewBox="0 0 24 24" aria-hidden="true">
+		<svg {...stylex.props(baseStyles.graphic, baseStyles.element, headerStyles.githubIcon)} viewBox="0 0 24 24" aria-hidden="true">
 			<path
 				fill="currentColor"
 				d="M12 .7a11.5 11.5 0 0 0-3.64 22.4c.58.11.79-.25.79-.56v-2.23c-3.23.7-3.91-1.37-3.91-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.75.4-1.27.74-1.56-2.58-.29-5.29-1.29-5.29-5.68 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.47.11-3.05 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.75 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.58.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.4-2.72 5.38-5.31 5.67.42.36.79 1.07.79 2.16v3.2c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"
-			/>
+			 {...stylex.props(baseStyles.element)}/>
 		</svg>
 	);
 }
@@ -71,15 +74,17 @@ function GitHubMark() {
 function MenuItems({
 	items,
 	onNavigate,
-	className = "nav__menu-items",
+	sx = headerStyles.menuItems,
+	itemSx = headerStyles.menuItem,
 	desktop = false,
 }: MenuListProps) {
 	return (
-		<ul className={className} role={desktop ? "none" : undefined}>
+		<ul {...stylex.props(baseStyles.list, baseStyles.element, sx)} role={desktop ? "none" : undefined}>
 			{items.map((item) => (
-				<li key={item.label} role={desktop ? "none" : undefined}>
+				<li key={item.label} role={desktop ? "none" : undefined} {...stylex.props(baseStyles.element)}>
 					{item.external ? (
 						<a
+							{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, itemSx)}
 							href={item.href}
 							target="_blank"
 							rel="noreferrer"
@@ -90,6 +95,7 @@ function MenuItems({
 						</a>
 					) : (
 						<LocalLink
+							sx={itemSx}
 							href={item.href}
 							onClick={onNavigate}
 							role={desktop ? "menuitem" : undefined}
@@ -119,17 +125,12 @@ function DesktopMenu({
 				`[aria-controls="nav-menu-${menu}"]`,
 			);
 			const inner = innerRef.current;
-			const header = inner?.closest<HTMLElement>("header");
-			if (!trigger || !inner || !header) return;
+			if (!trigger || !inner) return;
 			const triggerText =
 				trigger.getBoundingClientRect().left -
 				inner.getBoundingClientRect().left +
 				Number.parseFloat(getComputedStyle(trigger).paddingLeft);
 			setOffset(triggerText);
-			header.style.setProperty(
-				"--nav-mega-height",
-				`${Math.ceil(inner.getBoundingClientRect().height)}px`,
-			);
 		}
 		sync();
 		window.addEventListener("resize", sync);
@@ -138,7 +139,7 @@ function DesktopMenu({
 
 	return (
 		<div
-			className="nav__mega nav__menu-panel"
+			{...stylex.props(baseStyles.element, headerStyles.mega, menu === "resources" && headerStyles.megaResources)}
 			id={`nav-menu-${menu}`}
 			aria-label={`${label} menu`}
 			role="menu"
@@ -160,19 +161,51 @@ function DesktopMenu({
 				items[next]?.focus();
 			}}
 		>
-			<div className="nav__mega-inner" ref={innerRef}>
-				<div
-					className="nav__mega-grid"
-					style={cssVars({ "--mega-col": `${offset}px` })}
-				>
+			<div {...stylex.props(baseStyles.element, headerStyles.megaInner)} ref={innerRef}>
+				<div {...stylex.props(baseStyles.element, headerStyles.megaGrid(offset))}>
 					{(menuColumns[menu] ?? []).map((column) => (
-						<section className="nav__mega-section" key={column[0]?.label ?? menu}>
+						<section {...stylex.props(baseStyles.element, headerStyles.megaSection)} key={column[0]?.label ?? menu}>
 							<MenuItems items={column} onNavigate={onNavigate} desktop />
 						</section>
 					))}
 				</div>
 			</div>
 		</div>
+	);
+}
+
+function MobileMenuGroup({
+	label,
+	items,
+	onNavigate,
+}: {
+	label: string;
+	items: readonly NavLink[];
+	onNavigate: () => void;
+}) {
+	const [open, setOpen] = useState(false);
+	return (
+		<details
+			name="mobile-nav"
+			{...stylex.props(baseStyles.element, headerStyles.sheetGroup)}
+			onToggle={(event) => setOpen(event.currentTarget.open)}
+		>
+			<summary {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, headerStyles.sheetSummary)}>
+				{label}
+				<ChevronDown
+					{...stylex.props(headerStyles.sheetChevron, open && headerStyles.chevronOpen)}
+					size={20}
+					strokeWidth={1.25}
+					aria-hidden="true"
+				/>
+			</summary>
+			<MenuItems
+				items={items}
+				onNavigate={onNavigate}
+				sx={headerStyles.sheetItems}
+				itemSx={headerStyles.sheetItem}
+			/>
+		</details>
 	);
 }
 
@@ -242,23 +275,6 @@ export function Header() {
 		return () => media.removeEventListener("change", onChange);
 	}, []);
 
-	useEffect(() => {
-		const root = document.documentElement;
-		const header = toggleRef.current?.closest("header");
-		function syncNavHeight() {
-			if (!(header instanceof HTMLElement)) return;
-			root.style.setProperty(
-				"--nav-height",
-				`${Math.round(header.getBoundingClientRect().height)}px`,
-			);
-		}
-		syncNavHeight();
-		window.addEventListener("resize", syncNavHeight);
-		return () => {
-			window.removeEventListener("resize", syncNavHeight);
-			root.classList.remove("nav-open");
-		};
-	}, []);
 
 	useEffect(() => {
 		const main = document.getElementById("content");
@@ -288,8 +304,13 @@ export function Header() {
 	}, [mobileOpen]);
 
 	function setSheetOpen(open: boolean) {
-		document.documentElement.classList.toggle("nav-open", open);
-		setNav((current) => reduceNav(current, open ? { type: "openMobile" } : { type: "closeMobile" }));
+		for (const element of [document.documentElement, document.body]) {
+			if (open) element.dataset["navOpen"] = "true";
+			else delete element.dataset["navOpen"];
+		}
+		setNav((current) =>
+			reduceNav(current, open ? { type: "openMobile" } : { type: "closeMobile" }),
+		);
 	}
 
 	const closeMobile = () => setSheetOpen(false);
@@ -297,10 +318,18 @@ export function Header() {
 	function menu(id: MenuId, label: string) {
 		const open = openMenu === id;
 		return (
-			<div className="nav__menu">
+			<div {...stylex.props(baseStyles.element, headerStyles.menu)}>
 				<button
 					type="button"
-					className="nav__menu-trigger"
+					{...stylex.props(
+					baseStyles.element,
+					baseStyles.interactive,
+					baseStyles.focusable,
+					baseStyles.button,
+					headerStyles.menuTrigger,
+					stylex.defaultMarker(),
+					open && headerStyles.menuTriggerOpen,
+				)}
 					aria-haspopup="menu"
 					aria-expanded={open}
 					aria-controls={`nav-menu-${id}`}
@@ -324,6 +353,10 @@ export function Header() {
 						});
 					}}
 				>
+					<span
+						{...stylex.props(baseStyles.element, headerStyles.triggerSurface)}
+						aria-hidden="true"
+					/>
 					{label}
 					<Chevron open={open} />
 				</button>
@@ -332,15 +365,18 @@ export function Header() {
 	}
 
 	return (
+		<>
+			{mobileOpen ? <div {...stylex.props(baseStyles.element, headerStyles.spacer)} /> : null}
 		<header
 			ref={menusRef}
-			className={`nav${mobileOpen ? " is-open" : ""}${openMenu ? ` has-menu has-menu--${openMenu}` : ""}`}
+			{...stylex.props(baseStyles.element, headerStyles.nav, mobileOpen && headerStyles.navOpen)}
 			onPointerOver={cancelMenuClose}
 			onPointerLeave={scheduleMenuClose}
 		>
-			<div className="nav__primary">
+			<span {...stylex.props(baseStyles.element, headerStyles.navBackdrop, mobileOpen && headerStyles.navBackdropOpen, openMenu === "products" && headerStyles.navBackdropProducts, openMenu === "resources" && headerStyles.navBackdropResources)} />
+			<div {...stylex.props(baseStyles.element, headerStyles.primary)}>
 				<LocalLink
-					className="brand"
+					sx={headerStyles.brand}
 					href={homePath}
 					aria-label={site.products.localStudio.name}
 					onClick={closeMobile}
@@ -348,20 +384,31 @@ export function Header() {
 				>
 					<BrandLogo />
 				</LocalLink>
-				<nav className="nav__links" aria-label="Landing navigation">
+				<nav {...stylex.props(baseStyles.element, headerStyles.links)} aria-label="Landing navigation">
 					{menu("products", "Products")}
 					{menu("resources", "Resources")}
 					<a
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.interactive,
+							baseStyles.focusable,
+							headerStyles.topLink,
+							stylex.defaultMarker(),
+						)}
 						href={site.company.url}
 						onPointerEnter={close}
 					>
+						<span
+							{...stylex.props(baseStyles.element, headerStyles.triggerSurface)}
+							aria-hidden="true"
+						/>
 						Company
 					</a>
 				</nav>
 			</div>
-			<div className="nav__actions">
+			<div {...stylex.props(baseStyles.element, headerStyles.actions)}>
 				<LocalLink
-					className="nav__github"
+					sx={headerStyles.github}
 					href={githubUrl}
 					target="_blank"
 					rel="noreferrer"
@@ -370,7 +417,7 @@ export function Header() {
 				>
 					<GitHubMark />
 				</LocalLink>
-				<DownloadButton />
+				<DownloadButton sx={headerStyles.button} />
 			</div>
 			{openMenu ? (
 				<DesktopMenu menu={openMenu} onNavigate={close} />
@@ -378,7 +425,7 @@ export function Header() {
 			<button
 				ref={toggleRef}
 				type="button"
-				className="nav__toggle"
+				{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, baseStyles.button, headerStyles.toggle)}
 				aria-label={mobileOpen ? "Close menu" : "Open menu"}
 				aria-expanded={mobileOpen}
 				aria-controls={sheetId}
@@ -393,63 +440,37 @@ export function Header() {
 			<dialog
 				id={sheetId}
 				ref={sheetRef}
-				className="nav__sheet"
+				{...stylex.props(baseStyles.dialog, baseStyles.element, headerStyles.sheet, mobileOpen && headerStyles.sheetOpen)}
 				aria-modal={mobileOpen || undefined}
 				aria-label="Navigation menu"
 				aria-hidden={!mobileOpen}
 				inert={!mobileOpen || undefined}
 			>
-				<nav className="nav__sheet-nav" aria-label="Mobile navigation">
-					<details name="mobile-nav" className="nav__sheet-group">
-						<summary className="nav__sheet-summary">
-							Products
-							<ChevronDown
-								className="nav__sheet-chevron"
-								size={20}
-								strokeWidth={1.25}
-								aria-hidden="true"
-							/>
-						</summary>
-						<MenuItems
-							items={products}
-							onNavigate={closeMobile}
-							className="nav__sheet-items"
-						/>
-					</details>
-					<details name="mobile-nav" className="nav__sheet-group">
-						<summary className="nav__sheet-summary">
-							Resources
-							<ChevronDown
-								className="nav__sheet-chevron"
-								size={20}
-								strokeWidth={1.25}
-								aria-hidden="true"
-							/>
-						</summary>
-						<MenuItems
-							items={resources}
-							onNavigate={closeMobile}
-							className="nav__sheet-items"
-						/>
-					</details>
+				<nav {...stylex.props(baseStyles.element, headerStyles.sheetNav)} aria-label="Mobile navigation">
+					<MobileMenuGroup label="Products" items={products} onNavigate={closeMobile} />
+					<MobileMenuGroup label="Resources" items={resources} onNavigate={closeMobile} />
 					<a
-						className="nav__sheet-link"
+						{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, headerStyles.sheetItem, headerStyles.sheetLink)}
 						href={site.company.url}
 						onClick={closeMobile}
 					>
+						<span
+							{...stylex.props(baseStyles.element, headerStyles.triggerSurface)}
+							aria-hidden="true"
+						/>
 						Company
 					</a>
 				</nav>
-				<div className="nav__sheet-actions">
+				<div {...stylex.props(baseStyles.element, headerStyles.sheetActions)}>
 					<LocalLink
-						className="button"
+						sx={[headerStyles.button, headerStyles.sheetAction]}
 						href={downloadPath}
 						onClick={closeMobile}
 					>
 						{downloadLabel()}
 					</LocalLink>
 					<a
-						className="text-link"
+						{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, headerStyles.textLink, headerStyles.sheetAction)}
 						href={githubUrl}
 						target="_blank"
 						rel="noreferrer"
@@ -461,5 +482,6 @@ export function Header() {
 				</div>
 			</dialog>
 		</header>
+		</>
 	);
 }

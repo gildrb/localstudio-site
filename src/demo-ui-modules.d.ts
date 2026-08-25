@@ -14,4 +14,3 @@ declare module "@local-studio/demo-ui/story" {
 	const FeatureDemo: ComponentType<{ scene: string }>;
 	export default FeatureDemo;
 }
-declare module "@local-studio/demo-ui/styles.css";

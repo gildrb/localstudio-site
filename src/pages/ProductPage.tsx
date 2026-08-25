@@ -1,3 +1,5 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { docsPath, productPath, routes } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { MediaFrame } from "../components/MediaFrame";
@@ -7,6 +9,7 @@ import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
 import { assets, frameSizes, heroSizes, responsiveSrcSet } from "../domain/asset";
 import { site } from "../domain/site";
+import { styles } from "../styles/pages-styles";
 
 export function ProductPage() {
 	return (
@@ -16,7 +19,7 @@ export function ProductPage() {
 				title={routes[productPath].heading}
 				description={
 					<>
-						<span translate="no">{site.products.localStudio.name}</span> is a local-first
+						<span translate="no" {...stylex.props(baseStyles.element)}>{site.products.localStudio.name}</span> is a local-first
 						workstation for running, managing, and using self-hosted
 						language-model backends on local or remote controllers.
 					</>
@@ -28,11 +31,11 @@ export function ProductPage() {
 				}
 			/>
 			<section
-				className={`section-width pb-30`}
+				{...stylex.props(baseStyles.element, styles.sectionWidth, styles.pageBottom)}
 				aria-label="Product capabilities"
 			>
 				<MediaFrame
-					className="mb-30"
+					sx={styles.productHero}
 					src={assets.workbenchBrowserHero}
 					srcSet={responsiveSrcSet(assets.workbenchBrowser)}
 					sizes={heroSizes}
@@ -43,23 +46,24 @@ export function ProductPage() {
 				/>
 				{productFeatures.map((section, index) => (
 					<article
-						className={`grid min-h-[720px] items-center gap-30 py-20 max-[900px]:min-h-0 max-[900px]:grid-cols-1 max-[900px]:gap-12 ${index % 2 ? "grid-cols-[minmax(0,1.28fr)_minmax(260px,.72fr)]" : "grid-cols-[minmax(260px,.72fr)_minmax(0,1.28fr)]"}`}
+						{...stylex.props(baseStyles.element, 
+							styles.productArticle,
+							index % 2
+								? styles.productArticleOdd
+								: styles.productArticleEven,
+						)}
 						key={section.productTitle}
 					>
-						<div
-							className={
-								index % 2 ? "order-2 max-[900px]:order-none" : undefined
-							}
-						>
-							<h2>
+						<div {...stylex.props(baseStyles.element, index % 2 !== 0 && styles.productCopyOdd)}>
+							<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo)}>
 								{section.productTitle}
 							</h2>
-							<p className="mt-6 max-w-md text-base/6 text-white/70">
+							<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.productText)}>
 								{renderInlineReact(section.productText)}
 							</p>
 						</div>
 						<MediaFrame
-							className={index % 2 ? "order-1 max-[900px]:order-none" : ""}
+							sx={index % 2 !== 0 ? styles.productMediaOdd : undefined}
 							src={section.image}
 							srcSet={responsiveSrcSet(section.image)}
 							sizes={frameSizes}

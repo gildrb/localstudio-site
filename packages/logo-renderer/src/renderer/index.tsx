@@ -1,3 +1,4 @@
+import * as stylex from "@stylexjs/stylex";
 import { App, Device, type VGPUAdapter } from "@vgpu/core";
 import {
 	createDevicePixelRatio,
@@ -11,7 +12,7 @@ import {
 	useStableCallback,
 	useSyncedRef,
 } from "phase/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
 	DEFAULT_CAMERA_FOV,
 	DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
@@ -21,6 +22,7 @@ import {
 	type RenderControls,
 } from "./render";
 import { resizeCanvas, type CanvasLayout } from "./runtime/canvas-sizing";
+import { rendererTimes } from "./renderer-tokens.stylex";
 import { createDrawLoop, type DrawLoop } from "./runtime/frame-loop";
 import { loadMesh } from "./runtime/load-mesh";
 import {
@@ -37,8 +39,6 @@ class BrowserAdapter implements VGPUAdapter {
 	}
 }
 
-// Canvas aspect from .hero-logo-renderer in global.css; framing needs it to
-// keep wide marks fully inside the viewport.
 const LOGO_VIEWPORT_ASPECT = 1.52;
 
 const DEFAULT_CONTROLS: RenderControls = {
@@ -59,6 +59,57 @@ const INITIAL_CANVAS_LAYOUT: CanvasLayout = { width: 1, height: 1 };
 // The flat SVG only appears when the render takes noticeably long; a quick
 // first frame goes straight to the 3D mark with no placeholder flash.
 const FALLBACK_PLACEHOLDER_DELAY_MS = 700;
+
+const rendererStyles = stylex.create({
+	element: {
+		boxSizing: "border-box",
+		"::before": { boxSizing: "border-box" },
+		"::after": { boxSizing: "border-box" },
+	},
+	container: {
+		position: "absolute",
+		zIndex: 1,
+		top: { default: "clamp(72px, 11svh, 120px)", "@media (max-width: 900px)": "24px" },
+		left: "50%",
+		width: { default: "clamp(720px, 58vw, 940px)", "@media (max-width: 900px)": "min(96vw, 620px)" },
+		aspectRatio: "1.52",
+		transform: "translateX(-50%)",
+		pointerEvents: "none",
+		contain: "layout paint",
+	},
+	layer: {
+		position: "absolute",
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+		display: "block",
+		width: "100%",
+		height: "100%",
+	},
+	canvas: {
+		opacity: 0,
+		transitionProperty: "opacity",
+		transitionDuration: rendererTimes.fade,
+		transitionTimingFunction: "ease-out",
+	},
+	canvasReady: { opacity: 1 },
+	fallback: {
+		maxWidth: "100%",
+		userSelect: "none",
+		paddingTop: "9.5%",
+		paddingRight: "9.5%",
+		paddingBottom: "9.5%",
+		paddingLeft: "9.5%",
+		objectFit: "contain",
+		opacity: 0,
+		filter: "invert(1)",
+		transitionProperty: "opacity",
+		transitionDuration: rendererTimes.fade,
+		transitionTimingFunction: "ease-out",
+	},
+	fallbackVisible: { opacity: 0.08 },
+});
 
 type RuntimeOwner = {
 	drawLoopDispose?: () => void;
@@ -81,7 +132,8 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 	const coarsePointerRef = useSyncedRef(coarsePointer);
 	const stateRef = useRef<HeroRuntimeState | null>(null);
 	const drawLoopRef = useRef<DrawLoop | null>(null);
-	const fallbackRef = useRef<HTMLImageElement>(null);
+	const [canvasReady, setCanvasReady] = useState(false);
+	const [fallbackVisible, setFallbackVisible] = useState(false);
 	const fallbackPlaceholderTimerRef = useRef(0);
 	const runLoopRef = useRef(() => {});
 	const invalidatePointerCanvasRectRef = useRef(() => {});
@@ -92,16 +144,18 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 	const handleCanvasRevealed = useStableCallback(() => {
 		window.clearTimeout(fallbackPlaceholderTimerRef.current);
 		if (!stateRef.current?.cancelled) {
-			fallbackRef.current?.classList.remove(
-				"hero-logo-renderer__fallback--visible",
-			);
+			setCanvasReady(true);
+			setFallbackVisible(false);
 		}
 	});
 	const handleFallback = useStableCallback(() => {
 		window.clearTimeout(fallbackPlaceholderTimerRef.current);
-		fallbackRef.current?.classList.add(
-			"hero-logo-renderer__fallback--visible",
-		);
+		setCanvasReady(false);
+		setFallbackVisible(true);
+	});
+	const resetLayers = useStableCallback(() => {
+		setCanvasReady(false);
+		setFallbackVisible(false);
 	});
 	const fatalErrorRef = useRef<(() => void) | null>(null);
 	const handleFatalError = useStableCallback(() => fatalErrorRef.current?.());
@@ -181,13 +235,7 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 		};
 		stateRef.current = state;
 
-		const canvas = canvasRef.current;
-		if (canvas) canvas.style.opacity = "";
-		// Start from a clean placeholder state: remounts (HMR, StrictMode)
-		// can inherit the --visible class from a previous runtime.
-		fallbackRef.current?.classList.remove(
-			"hero-logo-renderer__fallback--visible",
-		);
+		resetLayers();
 		if (prefersReducedMotion || prefersReducedMotionSync()) {
 			// Static path: the flat SVG is the final render, show it now.
 			handleFallback();
@@ -227,7 +275,7 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 			stateRef.current = null;
 			drawLoopRef.current = null;
 			fatalErrorRef.current = null;
-			if (canvasRef.current) canvasRef.current.style.opacity = "";
+			resetLayers();
 		};
 
 		if (prefersReducedMotion || prefersReducedMotionSync()) return cleanupSetup;
@@ -299,7 +347,6 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 				drawLoopRef.current = null;
 				fatalErrorRef.current = null;
 				runtime.drawLoopDispose?.();
-				if (activeCanvas) activeCanvas.style.opacity = "";
 				// No handleFallback here: fatal paths (device lost, render throw)
 				// call it explicitly before dispose, and on remount a re-shown
 				// placeholder would flash SVG -> render again.
@@ -354,18 +401,30 @@ export function LocalAiLogoShader({ modelUrl, fallbackUrl }: LogoRendererAssets)
 		handleFallback,
 		handleFatalError,
 		requestRender,
+		resetLayers,
 	]);
 
 	return (
-		<div ref={containerRef} className="hero-logo-renderer" aria-hidden="true">
+		<div
+			ref={containerRef}
+			{...stylex.props(rendererStyles.element, rendererStyles.container)}
+			aria-hidden="true"
+		>
 			<img
-				ref={fallbackRef}
-				className="hero-logo-renderer__fallback"
+				{...stylex.props(rendererStyles.element, rendererStyles.layer, rendererStyles.fallback, fallbackVisible && rendererStyles.fallbackVisible)}
 				src={fallbackUrl}
 				alt=""
 				draggable={false}
 			/>
-			<canvas ref={canvasRef} className="hero-logo-renderer__canvas" />
+			<canvas
+				ref={canvasRef}
+				{...stylex.props(
+					rendererStyles.element,
+					rendererStyles.layer,
+					rendererStyles.canvas,
+					canvasReady && rendererStyles.canvasReady,
+				)}
+			/>
 		</div>
 	);
 }

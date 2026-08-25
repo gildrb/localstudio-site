@@ -1,10 +1,15 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { productFeatures } from "../content/product";
 import { renderInlineReact } from "../ui/prose";
 import { site } from "../domain/site";
+import { styles } from "../styles/sections-styles";
 const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
 
-const DEMO_PLACEHOLDER = <div className="story__demo-placeholder" aria-hidden="true" />;
+const DEMO_PLACEHOLDER = (
+	<div {...stylex.props(baseStyles.element, styles.storyDemoPlaceholder)} aria-hidden="true" />
+);
 
 function useStoryProgress() {
 	const [activeIndex, setActiveIndex] = useState(0);
@@ -12,7 +17,7 @@ function useStoryProgress() {
 
 	useEffect(() => {
 		const showcase = showcaseRef.current;
-		const sticky = showcase?.querySelector<HTMLElement>(".story__sticky");
+		const sticky = showcase?.querySelector<HTMLElement>("[data-story-sticky]");
 		if (!showcase || !sticky) return;
 		let updateFrame = 0;
 		let measureFrame = 0;
@@ -35,10 +40,8 @@ function useStoryProgress() {
 
 		const measure = () => {
 			measureFrame = 0;
-			navHeight =
-				Number.parseFloat(
-					getComputedStyle(document.documentElement).getPropertyValue("--nav-height"),
-				) || 72;
+			const header = document.querySelector("header");
+			navHeight = header?.getBoundingClientRect().height || 72;
 			const stageHeight = Math.max(1, sticky.offsetHeight);
 			scrollRange = Math.max(1, showcase.offsetHeight - stageHeight);
 			showcaseTop = window.scrollY + showcase.getBoundingClientRect().top;
@@ -109,33 +112,42 @@ export function ProductStory() {
 	}, []);
 
 	return (
-		<section id="media" className="story section-width" aria-label={`${site.products.localStudio.name} product story`}>
-				<div className="story__showcase" ref={showcaseRef}>
-					<div className="story__sticky">
-						<div className="story__options-window">
+		<section id="media" {...stylex.props(baseStyles.element, baseStyles.sectionAnchor, styles.sectionWidth, styles.story)} aria-label={`${site.products.localStudio.name} product story`}>
+				<div {...stylex.props(baseStyles.element, styles.storyShowcase)} ref={showcaseRef}>
+					<div {...stylex.props(baseStyles.element, styles.storySticky)} data-story-sticky="">
+						<div {...stylex.props(baseStyles.element, styles.storyOptionsWindow)}>
 							<ol
-								className="story__options"
+								{...stylex.props(baseStyles.list, baseStyles.element, styles.storyOptions, styles.storyOptionsOffset(optionsOffset))}
 								aria-label={`${site.products.localStudio.name} capabilities`}
 								data-active-index={activeIndex}
-								style={{ transform: `translateY(${optionsOffset})` }}
 							>
 								{productFeatures.map((feature, index) => {
 									const selected = activeIndex === index;
 									return (
 										<li
-											className={`story__option ${selected ? "is-active" : ""}`}
+											{...stylex.props(baseStyles.element, 
+											styles.storyOption,
+											index === 0 && styles.storyFirstOption,
+											selected && styles.storySelectedOption,
+										)}
 											key={feature.storyTitle}
 											aria-current={selected ? "step" : undefined}
 										>
-											<div className="story__option-control">
+											<div {...stylex.props(baseStyles.element, styles.storyOptionControl)}>
 												<span
-													className="story__option-title"
+													{...stylex.props(baseStyles.element, 
+													styles.storyOptionTitle,
+													selected && styles.storySelectedOptionTitle,
+												)}
 												>
 													{feature.storyTitle}
 												</span>
 											</div>
 											<p
-												className="story__description"
+												{...stylex.props(baseStyles.element, baseStyles.paragraph, 
+													styles.storyDescription,
+													selected && styles.storySelectedDescription,
+												)}
 												aria-hidden={!selected}
 											>
 												{renderInlineReact(feature.storyDescription)}
@@ -145,16 +157,16 @@ export function ProductStory() {
 								})}
 							</ol>
 						</div>
-						<div className="story__visual-home">
+						<div {...stylex.props(baseStyles.element, styles.storyVisualHome)}>
 							<figure
-								className="story__visual"
+								{...stylex.props(baseStyles.element, styles.storyVisual)}
 								ref={visualRef}
 								data-active-feature={activeFeature.storyTitle}
 							>
 									{demoInRange ? (
 										<Suspense fallback={DEMO_PLACEHOLDER}>
 											<div
-												className="story__demo-transition"
+												{...stylex.props(baseStyles.element, styles.storyDemoTransition)}
 												key={activeFeature.slug}
 											>
 												<FeatureDemo scene={activeFeature.demoScene} />
@@ -163,17 +175,18 @@ export function ProductStory() {
 								) : (
 									DEMO_PLACEHOLDER
 								)}
-								<p className="sr-only" role="status">
+								<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.screenReaderOnly)} role="status">
 									{activeFeature.storyTitle}. {renderInlineReact(activeFeature.storyDescription)}
 								</p>
 							</figure>
 						</div>
 					</div>
 					<div
-						className="story__scroll-track"
-						style={{
-							height: `calc(${productFeatures.length + 1} * clamp(300px, 42svh, 420px))`,
-						}}
+						{...stylex.props(baseStyles.element, 
+							styles.storyScrollTrack(
+								`calc(${productFeatures.length + 1} * clamp(300px, 42svh, 420px))`,
+							),
+						)}
 						aria-hidden="true"
 					/>
 				</div>

@@ -2,7 +2,10 @@ import { expect, test } from "@playwright/test";
 
 test("header uses the local wordmark asset", async ({ page }) => {
 	await page.goto("/");
-	const logo = page.locator('.brand img[src="/images/localstudio-logo.svg"]');
+	const logo = page
+		.getByRole("banner")
+		.getByRole("link", { name: "Local Studio", exact: true })
+		.locator('img[src="/images/localstudio-logo.svg"]');
 	await expect(logo).toBeVisible();
 	const response = await page.request.get("/images/localstudio-logo.svg");
 	expect(response.ok()).toBeTruthy();
@@ -13,7 +16,9 @@ test("header uses the local wordmark asset", async ({ page }) => {
 
 test("hero uses the local standalone mark", async ({ page }) => {
 	await page.goto("/");
-	const mark = page.locator('.hero__mark[src="/images/optimized.svg"]');
+	const mark = page
+		.getByRole("link", { name: "Machine-readable page" })
+		.locator('img[src="/images/optimized.svg"]');
 	await expect(mark).toBeVisible();
 	const response = await page.request.get("/images/optimized.svg");
 	expect(response.ok()).toBeTruthy();
@@ -24,7 +29,7 @@ test("hero uses the local standalone mark", async ({ page }) => {
 
 test("footer no longer renders the outline mark", async ({ page }) => {
 	await page.goto("/");
-	await expect(page.locator("footer .footer__mark")).toHaveCount(0);
+	await expect(page.getByRole("contentinfo").locator("img")).toHaveCount(0);
 	await expect(page.locator('footer img[src="/images/optimized-outline.svg"]')).toHaveCount(0);
 });
 

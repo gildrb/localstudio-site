@@ -10,15 +10,17 @@ const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const command = process.argv[2] ?? "write";
 const architecture = JSON.parse(readFileSync(`${root}/architecture.json`, "utf8"));
 const tokenSources = {
-	public: "src/styles/global.css",
-	demo: "packages/demo-ui/src/styles/workbench-demo.css",
+	public: "src/styles/public-tokens.stylex.ts",
+	demo: "packages/demo-ui/src/styles/tokens.stylex.ts",
 };
 
-function cssTokenIds(rel) {
+function stylexTokenIds(rel) {
 	const source = readFileSync(`${root}/${rel}`, "utf8");
 	return [
 		...new Set(
-			[...source.matchAll(/^\s*(--[-\w]+)\s*:/gm)].map((match) => match[1]),
+			[...source.matchAll(/^(?:\t| {2})([A-Za-z_$][\w$]*)\s*:/gm)].map(
+				(match) => match[1],
+			),
 		),
 	];
 }
@@ -30,7 +32,7 @@ const manifest = {
 	assets: Object.keys(assets),
 	motion: Object.keys(motion),
 	tokens: Object.fromEntries(
-		Object.entries(tokenSources).map(([name, rel]) => [name, cssTokenIds(rel)]),
+		Object.entries(tokenSources).map(([name, rel]) => [name, stylexTokenIds(rel)]),
 	),
 	components: architecture.singleConsumerComponents,
 };

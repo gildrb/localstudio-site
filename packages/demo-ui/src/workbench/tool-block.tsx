@@ -1,3 +1,6 @@
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./tool-block.styles.ts";
+import { demoStyles } from "../styles/demo-root.styles.ts";
 import { useState } from "react";
 import type { DemoToolArgs } from "../scenario/sequence";
 import {
@@ -42,13 +45,13 @@ const toolIcons = {
 } satisfies Record<ToolKind, LucideIcon>;
 
 const toolColors = {
-	edit: "text-(--color-file-node-foreground)",
-	search: "text-(--color-file-node-foreground)",
-	read: "text-(--color-file-node-foreground)",
-	exec: "text-(--color-command-node-foreground)",
-	browser: "text-(--color-session-node-foreground)",
-	generic: "text-(--color-skill-node-foreground)",
-} satisfies Record<ToolKind, string>;
+	edit: styles.fileTone,
+	search: styles.fileTone,
+	read: styles.fileTone,
+	exec: styles.commandTone,
+	browser: styles.sessionTone,
+	generic: styles.skillTone,
+};
 
 function includesAny(value: string, needles: readonly string[]): boolean {
 	return needles.some((needle) => value.includes(needle));
@@ -157,36 +160,34 @@ export function ToolBlockView({ block }: { block: ToolBlock }) {
 	const Icon = toolIcons[kind];
 	const meta = toolMeta(block);
 	return (
-		<details className="group min-w-0" data-tool-call={block.id} open={open}>
+		<details {...stylex.props(demoStyles.reset, styles.details160)} data-tool-call={block.id} open={open}>
 			<summary
-				className="flex min-h-6 min-w-0 cursor-pointer list-none items-center gap-2 rounded-md px-1.5 py-0.5 transition-colors hover:bg-(--hover) [&::-webkit-details-marker]:hidden"
+				{...stylex.props(demoStyles.reset, styles.summary162)}
 				onClick={(event) => {
 					event.preventDefault();
 					setUserOpen(!open);
 				}}
 			>
-				<Icon className="h-3.5 w-3.5 shrink-0 text-(--dim)/65" strokeWidth={1.7} />
+				<Icon {...stylex.props(demoStyles.reset, styles.icon168, styles.lucideScale)} strokeWidth={1.7} />
 				<span
-					className={`shrink-0 text-[length:var(--fs-base)] font-normal leading-5 ${
-						block.status === "running" ? "codex-shimmer-text" : toolColors[kind]
-					}`}
+					{...stylex.props(demoStyles.reset, styles.toolLabel, block.status === "running" ? demoStyles.shimmerText : toolColors[kind])}
 				>
 					{meta.verb}
 				</span>
 				{meta.detail ? (
-					<span className="min-w-0 flex-1 truncate font-mono text-[length:var(--codex-chat-code-font-size)] leading-5 text-(--hl2)">
+					<span {...stylex.props(demoStyles.reset, styles.span177)}>
 						{meta.detail}
 					</span>
 				) : (
-					<span className="min-w-0 flex-1" />
+					<span {...stylex.props(demoStyles.reset, styles.span181)} />
 				)}
 				<ChevronRight
-					className="h-3.5 w-3.5 shrink-0 text-(--dim)/55 transition-transform group-open:rotate-90"
+					{...stylex.props(demoStyles.reset, styles.chevronright184, open && styles.chevronOpen)}
 					strokeWidth={1.7}
 				/>
 			</summary>
 			{open && block.resultText ? (
-				<pre className="mb-1.5 ml-7 mt-1 max-h-[340px] max-w-full overflow-auto whitespace-pre-wrap break-words rounded-md border border-(--border) bg-(--color-input) px-3 py-2.5 font-mono text-[length:var(--fs-sm)] leading-[1.6] text-(--fg)/65">
+				<pre {...stylex.props(demoStyles.reset, styles.pre189)}>
 					{block.resultText}
 				</pre>
 			) : null}

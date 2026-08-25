@@ -1,3 +1,6 @@
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./files-tree.styles.ts";
 import { ChevronDown, ChevronRight, File } from "../ui/icon-registry";
 import { Folder } from "../ui/icons";
 import { fileTone } from "../files/filesystem-tree-model";
@@ -46,6 +49,15 @@ const entries: FsEntry[] = [
 		size: 2160,
 	},
 ];
+const fileToneStyles = {
+  code: styles.fileCode,
+  data: styles.fileData,
+  document: styles.fileDocument,
+  media: styles.fileMedia,
+  neutral: styles.fileNeutral,
+  script: styles.fileScript,
+};
+
 
 export function HeroFilesystemTree({
 	openFile,
@@ -55,52 +67,48 @@ export function HeroFilesystemTree({
 	onOpenFile: (rel: string) => void;
 }) {
 	return (
-		<section className="flex min-h-0 flex-1 flex-col">
-			<div className="flex h-9 shrink-0 items-center gap-0.5 overflow-x-auto px-2 text-[length:var(--fs-sm)] text-(--dim)">
-				<span className="shrink-0 rounded-md px-1.5 text-(--dim)">
+		<section {...stylex.props(demoStyles.reset, styles.section58)}>
+			<div {...stylex.props(demoStyles.reset, styles.div59)}>
+				<span {...stylex.props(demoStyles.reset, styles.span60)}>
 					Home
 				</span>
 			</div>
-			<div className="min-h-0 flex-1 overflow-y-auto">
+			<div {...stylex.props(demoStyles.reset, styles.div64)}>
 				{entries.map((entry) => {
 					const isDir = entry.kind === "directory";
 					const isActive = openFile === entry.rel;
 					return (
 						<div
 							key={entry.path}
-							className={`relative flex w-full items-center gap-1 rounded-sm py-0.5 text-left text-[length:var(--fs-sm)] hover:bg-(--hover) ${isActive ? "bg-(--color-selected) font-medium text-(--fg)" : "text-(--dim)"}`}
-							style={{
-								paddingLeft: isDir ? "8px" : "20px",
-								paddingRight: "8px",
-							}}
+							{...stylex.props(demoStyles.reset, styles.treeRow, isActive ? styles.treeRowActive : styles.treeRowIdle, styles.treeIndent(isDir))}
 						>
 							{isActive ? (
-								<span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-(--link)" />
+								<span {...stylex.props(demoStyles.reset, styles.span78)} />
 							) : null}
 							{isDir ? (
-								<span className="flex h-3 w-3 shrink-0 items-center justify-center">
-									<ChevronDown className="h-3 w-3" />
+								<span {...stylex.props(demoStyles.reset, styles.span81)}>
+									<ChevronDown {...stylex.props(demoStyles.reset, styles.chevrondown82, styles.lucideScale)} />
 								</span>
 							) : (
-								<span className="flex h-3 w-3 shrink-0 items-center justify-center">
-									<ChevronRight className="h-3 w-3 opacity-0" />
+								<span {...stylex.props(demoStyles.reset, styles.span81)}>
+									<ChevronRight {...stylex.props(demoStyles.reset, styles.chevronright86, styles.lucideScale)} />
 								</span>
 							)}
 							<button
 								type="button"
-								className="flex min-w-0 flex-1 items-center gap-1 text-left"
+								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button91)}
 								onClick={() => {
 									if (!isDir) onOpenFile(entry.rel);
 								}}
 							>
 								{isDir ? (
-									<Folder className="h-3.5 w-3.5 shrink-0 text-(--dim)" />
+									<Folder {...stylex.props(demoStyles.reset, styles.folder97)} />
 								) : (
 									<File
-										className={`h-3.5 w-3.5 shrink-0 ${fileTone(entry.name)}`}
+										{...stylex.props(demoStyles.reset, styles.fileIcon, fileToneStyles[fileTone(entry.name)])}
 									/>
 								)}
-								<span className="flex-1 truncate">{entry.name}</span>
+								<span {...stylex.props(demoStyles.reset, styles.span103)}>{entry.name}</span>
 							</button>
 						</div>
 					);

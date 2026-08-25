@@ -1,0 +1,58 @@
+import * as stylex from "@stylexjs/stylex";
+import { constants, tokens } from "../styles/tokens.stylex.ts";
+
+export const styles = stylex.create({
+  section7: {
+    display: "flex",
+    minHeight: "0px",
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: "0%",
+    flexDirection: "column",
+    backgroundColor: tokens.colorPanel,
+  },
+  div8: {
+    display: "flex",
+    height: "calc(0.25rem * 9)",
+    flexShrink: 0,
+    alignItems: "center",
+    rowGap: "calc(0.25rem * 2)",
+    columnGap: "calc(0.25rem * 2)",
+    borderBottomStyle: "solid",
+    borderBottomWidth: "1px",
+    borderTopColor: tokens.border80,
+    borderRightColor: tokens.border80,
+    borderBottomColor: tokens.border80,
+    borderLeftColor: tokens.border80,
+    backgroundColor: tokens.colorHeader,
+    paddingLeft: "calc(0.25rem * 3)",
+    paddingRight: "calc(0.25rem * 3)",
+    fontSize: "0.75rem",
+  },
+  gitbranchicon9: {
+    display: "block",
+    verticalAlign: "middle",
+    height: "calc(0.25rem * 3.5)",
+    width: "calc(0.25rem * 3.5)",
+  },
+  div12: {
+    display: { default: null, "::-webkit-scrollbar": "none" },
+    scrollbarWidth: "none",
+    minHeight: "0px",
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: "0%",
+    overflowX: "auto",
+    overflowY: "auto",
+    paddingTop: "calc(0.25rem * 3)",
+    paddingRight: "calc(0.25rem * 3)",
+    paddingBottom: "calc(0.25rem * 3)",
+    paddingLeft: "calc(0.25rem * 3)",
+  },
+  lucideScale: {
+    display: "block",
+    verticalAlign: "middle",
+    scale: constants.iconScale,
+    transformOrigin: "center",
+  },
+});

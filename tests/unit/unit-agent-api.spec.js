@@ -22,14 +22,10 @@ function call(handler, request) {
 	return response;
 }
 
-test("raw homepage has useful no-JavaScript content and complete metadata", () => {
+test("homepage shell has complete metadata and no raw style block", () => {
 	const html = readFileSync("index.html", "utf8");
-	const fallback = html.match(/<main class="prerender-home">([\s\S]+?)<\/main>/)?.[1] ?? "";
-	const text = fallback.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-	expect(fallback).toContain("<h1>Intelligence should be owned</h1>");
-	expect(text.length).toBeGreaterThan(500);
-	expect(fallback).toContain('href="/developers"');
-	expect(fallback).toContain('href="/openapi.json"');
+	expect(html).toContain('<div id="root"></div>');
+	expect(html).not.toContain("<style");
 	expect(html).toContain('property="og:image"');
 	expect(html).toContain('property="og:type" content="website"');
 	const jsonLd = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/)?.[1] ?? "null");
