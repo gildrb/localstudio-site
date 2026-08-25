@@ -1,6 +1,8 @@
-# Local Studio
+# localstudio.ai
 
-Read the [`agents-localstudio`]([https://github.com/gildrb/agents-localstudio/blob/main/design.md](https://github.com/gildrb/agents-localstudio/blob/main/README.md)) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase.
+## Mandatory
+
+Read the [`agents-localstudio` repo]([https://github.com/gildrb/agents-localstudio/blob/main/design.md](https://github.com/gildrb/agents-localstudio/blob/main/README.md)) before changing the landing page, embedded Local Studio UI, hero demo, or product showcase.
 
 ### Run
 
