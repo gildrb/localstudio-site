@@ -19,17 +19,23 @@ const stylex = createRequire(import.meta.url)("@stylexjs/unplugin/vite")
 // styled by a stale snapshot until the next file edit. This watcher polls the plugin's collected CSS
 // (falling back to module-graph growth) and broadcasts the same event, keeping dev styles complete.
 function stylexDevCssWatch(): Plugin {
+	let timer: ReturnType<typeof setInterval> | undefined;
+	const stop = () => {
+		if (timer) clearInterval(timer);
+		timer = undefined;
+	};
 	return {
 		name: "stylex-dev-css-watch",
 		apply: "serve",
 		configureServer(server) {
+			if (server.config.server.middlewareMode) return;
 			let lastCss = "";
 			let lastModules = -1;
 			const collectFrom = server.config.plugins.find(
 				(plugin): plugin is Plugin & { __stylexCollectCss?: () => string } =>
 					typeof plugin === "object" && "__stylexCollectCss" in plugin,
 			);
-			const timer = setInterval(() => {
+			timer = setInterval(() => {
 				let changed = false;
 				try {
 					const css = collectFrom?.__stylexCollectCss?.() ?? "";
@@ -54,8 +60,10 @@ function stylexDevCssWatch(): Plugin {
 					server.ws.send({ type: "custom", event: "stylex:css-update" });
 				}
 			}, 250);
-			server.httpServer?.once("close", () => clearInterval(timer));
+			timer.unref();
+			server.httpServer?.once("close", stop);
 		},
+		closeBundle: stop,
 	};
 }
 
