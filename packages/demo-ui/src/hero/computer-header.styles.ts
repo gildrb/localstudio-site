@@ -252,7 +252,7 @@ export const styles = stylex.create({
       ":hover": tokens.fg,
     },
     backgroundColor: {
-      default: null,
+      default: "transparent",
       ":hover": tokens.hover,
     },
   },

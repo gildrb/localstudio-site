@@ -118,7 +118,7 @@ export const styles = stylex.create({
     textAlign: "left",
     fontSize: constants.fsSm,
     backgroundColor: {
-      default: null,
+      default: "transparent",
       ":hover": tokens.hover,
     },
   },

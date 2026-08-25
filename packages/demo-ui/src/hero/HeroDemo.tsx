@@ -427,7 +427,10 @@ export type HeroDemoProps = {
 	repositoryUrl: string;
 };
 
-export function HeroDemo({ clock = browserDemoClock, repositoryUrl }: HeroDemoProps) {
+export function HeroDemo({
+	clock = browserDemoClock,
+	repositoryUrl,
+}: HeroDemoProps) {
 	const model = useHeroDemoModel(clock);
 	return <HeroDemoView {...model} repositoryUrl={repositoryUrl} />;
 }
@@ -476,7 +479,13 @@ function HeroDemoView(model: HeroDemoViewModel) {
 	return (
 		<section
 			ref={hostRef}
-			{...stylex.props(demoStyles.reset, demoStyles.root, mobile && demoStyles.mobile, clipRight && demoStyles.clipRight, clipBottom && demoStyles.clipBottom)}
+			{...stylex.props(
+				demoStyles.reset,
+				demoStyles.root,
+				mobile && demoStyles.mobile,
+				clipRight && demoStyles.clipRight,
+				clipBottom && demoStyles.clipBottom,
+			)}
 			data-theme="zai-dark"
 			data-phase={state.phase}
 			data-active={active ? "true" : "false"}
@@ -492,10 +501,24 @@ function HeroDemoView(model: HeroDemoViewModel) {
 			</p>
 			<div
 				data-demo-viewport
-				{...stylex.props(demoStyles.reset, styles.demoViewport, demoStyles.viewport, demoStyles.mobileViewport, demoStyles.viewportHeight(mobile ? DEMO_HEIGHT * scale : DEMO_HEIGHT))}
+				{...stylex.props(
+					demoStyles.reset,
+					styles.demoViewport,
+					demoStyles.viewport,
+					demoStyles.mobileViewport,
+					demoStyles.viewportHeight(mobile ? DEMO_HEIGHT * scale : DEMO_HEIGHT),
+				)}
 			>
 				{renderContents ? (
-					<div data-demo-app {...stylex.props(demoStyles.reset, styles.demoApp, demoStyles.app, demoStyles.heroAppTransform(mobile, scale))}>
+					<div
+						data-demo-app
+						{...stylex.props(
+							demoStyles.reset,
+							styles.demoApp,
+							demoStyles.app,
+							demoStyles.heroAppTransform(mobile, scale),
+						)}
+					>
 						<HeroDesktopSidebar
 							mobile={mobile}
 							activeTask={activeTask}
@@ -508,7 +531,9 @@ function HeroDemoView(model: HeroDemoViewModel) {
 						>
 							<div {...stylex.props(demoStyles.reset, styles.div522)}>
 								<div {...stylex.props(demoStyles.reset, styles.div523)}>
-									<section {...stylex.props(demoStyles.reset, styles.section524)}>
+									<section
+										{...stylex.props(demoStyles.reset, styles.section524)}
+									>
 										<AgentChatPaneHeader
 											title={title}
 											rightPanelOpen={panelOpen}
@@ -520,14 +545,26 @@ function HeroDemoView(model: HeroDemoViewModel) {
 												<div
 													ref={scrollerRef}
 													data-timeline-scroller
-													{...stylex.props(demoStyles.reset, styles.agentChatScroller, demoStyles.chatScroller, mobile && demoStyles.hiddenOverflow)}
+													{...stylex.props(
+														demoStyles.reset,
+														styles.agentChatScroller,
+														demoStyles.chatScroller,
+														mobile && demoStyles.hiddenOverflow,
+													)}
 												>
 													<div
 														data-timeline-list
-														{...stylex.props(demoStyles.reset, styles.agentThreadShell, demoStyles.threadShell)}
+														{...stylex.props(
+															demoStyles.reset,
+															styles.agentThreadShell,
+															demoStyles.threadShell,
+														)}
 													>
 														{messages ? (
-															<StaticThread messages={messages} repositoryUrl={model.repositoryUrl} />
+															<StaticThread
+																messages={messages}
+																repositoryUrl={model.repositoryUrl}
+															/>
 														) : (
 															<>
 																<ScenarioThread
@@ -545,14 +582,24 @@ function HeroDemoView(model: HeroDemoViewModel) {
 																) : null}
 															</>
 														)}
-														<div aria-hidden="true" {...stylex.props(demoStyles.reset, styles.div561)} />
+														<div
+															aria-hidden="true"
+															{...stylex.props(demoStyles.reset, styles.div561)}
+														/>
 													</div>
 												</div>
 											</div>
 										) : (
 											<div {...stylex.props(demoStyles.reset, styles.div566)}>
-												<div {...stylex.props(demoStyles.reset, styles.agentThreadShell2)}>
-													<div {...stylex.props(demoStyles.reset, styles.div568)}>
+												<div
+													{...stylex.props(
+														demoStyles.reset,
+														styles.agentThreadShell2,
+													)}
+												>
+													<div
+														{...stylex.props(demoStyles.reset, styles.div568)}
+													>
 														<p {...stylex.props(demoStyles.reset, styles.p569)}>
 															A dream is something you build for yourself.
 														</p>
@@ -570,8 +617,17 @@ function HeroDemoView(model: HeroDemoViewModel) {
 											}}
 											{...stylex.props(demoStyles.reset, styles.element584)}
 										>
-											<div {...stylex.props(demoStyles.reset, styles.agentComposerBox, demoStyles.composer)}>
-												<label {...stylex.props(demoStyles.reset, styles.p504)} htmlFor="hero-demo-composer">
+											<div
+												{...stylex.props(
+													demoStyles.reset,
+													styles.agentComposerBox,
+													demoStyles.composer,
+												)}
+											>
+												<label
+													{...stylex.props(demoStyles.reset, styles.p504)}
+													htmlFor="hero-demo-composer"
+												>
 													Message
 												</label>
 												<AgentComposerTextArea
@@ -592,37 +648,73 @@ function HeroDemoView(model: HeroDemoViewModel) {
 												<div {...stylex.props(demoStyles.reset, styles.div611)}>
 													<button
 														type="button"
-														{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button614)}
+														{...stylex.props(
+															demoStyles.reset,
+															demoStyles.controlReset,
+															styles.button614,
+														)}
 														aria-label="Attach files"
 														title="Attach files (or paste/drop into composer)"
 													>
-														<Plus {...stylex.props(demoStyles.reset, styles.plus618, styles.lucideScale)} strokeWidth={1.75} />
+														<Plus
+															{...stylex.props(
+																demoStyles.reset,
+																styles.plus618,
+																styles.lucideScale,
+															)}
+															strokeWidth={1.75}
+														/>
 													</button>
-													<div {...stylex.props(demoStyles.reset, styles.div620)}>
+													<div
+														{...stylex.props(demoStyles.reset, styles.div620)}
+													>
 														<button
 															type="button"
 															onClick={selectModel}
-															{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button624)}
+															{...stylex.props(
+																demoStyles.reset,
+																demoStyles.controlReset,
+																styles.button624,
+															)}
 															aria-label={`Model: ${state.modelSelected || !weekendTask ? DEMO_MODEL : "Select model"}`}
 														>
 															<span
-																{...stylex.props(demoStyles.reset, styles.span628)}
+																{...stylex.props(
+																	demoStyles.reset,
+																	styles.span628,
+																)}
 																translate="no"
 															>
 																{state.modelSelected || !weekendTask
 																	? DEMO_MODEL
 																	: "Select model"}
 															</span>
-															<ChevronDown {...stylex.props(demoStyles.reset, styles.chevrondown635, styles.lucideScale)} />
+															<ChevronDown
+																{...stylex.props(
+																	demoStyles.reset,
+																	styles.chevrondown635,
+																	styles.lucideScale,
+																)}
+															/>
 														</button>
 														<button
 															type="submit"
 															disabled={sendDisabled}
-															{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button640)}
+															{...stylex.props(
+																demoStyles.reset,
+																demoStyles.controlReset,
+																styles.button640,
+															)}
 															aria-label="Send"
 															title={sendDisabled ? undefined : "Send (Enter)"}
 														>
-															<ArrowUp {...stylex.props(demoStyles.reset, styles.arrowup644, styles.lucideScale)} />
+															<ArrowUp
+																{...stylex.props(
+																	demoStyles.reset,
+																	styles.arrowup644,
+																	styles.lucideScale,
+																)}
+															/>
 														</button>
 													</div>
 												</div>
@@ -668,77 +760,75 @@ function HeroComputerPanel({ model }: { model: HeroDemoViewModel }) {
 	} = model;
 	if (!panelOpen) return null;
 	return (
-			<aside
-				data-computer-panel
-				{...stylex.props(demoStyles.reset, styles.agentComputerPanel, demoStyles.fixedWidth(HERO_COMPUTER_WIDTH))}
-			>
-				<ComputerHeader
-					tab={tab}
-					openTabs={openTabs}
-					terminalState={emptyTerminals}
-					onSelectTab={selectTab}
-					onOpenCurrentTerminal={() => selectTab("terminal")}
-					onSelectTerminalOwner={ignore}
-					onCloseTerminalOwner={ignore}
-					onCloseTab={closeTab}
-					onShowLauncher={() => selectTab("tools")}
-					onClosePanel={() => setPanelOpen(false)}
+		<aside
+			data-computer-panel
+			{...stylex.props(
+				demoStyles.reset,
+				styles.agentComputerPanel,
+				demoStyles.fixedWidth(HERO_COMPUTER_WIDTH),
+			)}
+		>
+			<ComputerHeader
+				tab={tab}
+				openTabs={openTabs}
+				terminalState={emptyTerminals}
+				onSelectTab={selectTab}
+				onOpenCurrentTerminal={() => selectTab("terminal")}
+				onSelectTerminalOwner={ignore}
+				onCloseTerminalOwner={ignore}
+				onCloseTab={closeTab}
+				onShowLauncher={() => selectTab("tools")}
+				onClosePanel={() => setPanelOpen(false)}
+			/>
+			{tab === "status" ? (
+				<ComputerStatusPanel
+					activeProject={demoProject}
+					activeModel={state.modelSelected || !weekendTask ? demoModel : null}
+					focusedSession={session}
 				/>
-				{tab === "status" ? (
-					<ComputerStatusPanel
-						activeProject={demoProject}
-						activeModel={
-							state.modelSelected || !weekendTask
-								? demoModel
-								: null
-						}
-						focusedSession={session}
-					/>
-				) : null}
-				{tab === "tools" ? (
-					<ComputerLauncherPanel
-						activeTab={tab}
-						onOpenSideChat={() => selectTab("side-chat")}
-						onOpenTerminal={() => selectTab("terminal")}
-						onSelectTab={selectTab}
-					/>
-				) : null}
-				{tab === "files" ? (
-					<HeroFilesystemTree
-						openFile={openFile}
-						onOpenFile={(rel) => {
-							setPickedTab("files");
-							setUserFile(rel);
-						}}
-					/>
-				) : null}
-				{tab === "diff" ? (
-					<HeroReviewPanel ready={state.reviewReady} />
-				) : null}
-				{tab === "browser" ? (
-					<div {...stylex.props(demoStyles.reset, styles.div738)}>
-						<div {...stylex.props(demoStyles.reset, styles.div739)}>
-							<div {...stylex.props(demoStyles.reset, styles.div740)}>
-								Trip research
-							</div>
-							<div {...stylex.props(demoStyles.reset, styles.div743)}>
-								Saturday stays dry until 16:00. Rydal Water to
-								Grasmere keeps the route under two hours.
-							</div>
+			) : null}
+			{tab === "tools" ? (
+				<ComputerLauncherPanel
+					activeTab={tab}
+					onOpenSideChat={() => selectTab("side-chat")}
+					onOpenTerminal={() => selectTab("terminal")}
+					onSelectTab={selectTab}
+				/>
+			) : null}
+			{tab === "files" ? (
+				<HeroFilesystemTree
+					openFile={openFile}
+					onOpenFile={(rel) => {
+						setPickedTab("files");
+						setUserFile(rel);
+					}}
+				/>
+			) : null}
+			{tab === "diff" ? <HeroReviewPanel ready={state.reviewReady} /> : null}
+			{tab === "browser" ? (
+				<div {...stylex.props(demoStyles.reset, styles.div738)}>
+					<div {...stylex.props(demoStyles.reset, styles.div739)}>
+						<div {...stylex.props(demoStyles.reset, styles.div740)}>
+							Trip research
+						</div>
+						<div {...stylex.props(demoStyles.reset, styles.div743)}>
+							Saturday stays dry until 16:00. Rydal Water to Grasmere keeps the
+							route under two hours.
 						</div>
 					</div>
-				) : null}
-				{tab === "terminal" ? (
-					<section {...stylex.props(demoStyles.reset, styles.section751)}>
-						Home shell
-					</section>
-				) : null}
-				{tab === "side-chat" ? (
-					<section {...stylex.props(demoStyles.reset, styles.section751)}>
-						Side chat
-					</section>
-				) : null}
-			</aside>
+				</div>
+			) : null}
+			{tab === "terminal" ? (
+				<section {...stylex.props(demoStyles.reset, styles.section751)}>
+					Home shell
+				</section>
+			) : null}
+			{tab === "side-chat" ? (
+				<section {...stylex.props(demoStyles.reset, styles.section751)}>
+					Side chat
+				</section>
+			) : null}
+		</aside>
 	);
 }
 
@@ -765,7 +855,10 @@ function ScenarioThread({
 }) {
 	return (
 		<>
-			<div data-timeline-message-id="user-1" {...stylex.props(demoStyles.reset, styles.div787)}>
+			<div
+				data-timeline-message-id="user-1"
+				{...stylex.props(demoStyles.reset, styles.div787)}
+			>
 				<UserMessage message={userMessage()} />
 			</div>
 			{tools.map((tool) => (
@@ -781,15 +874,34 @@ function ScenarioThread({
 					{...stylex.props(demoStyles.reset, styles.div796)}
 				>
 					<article {...stylex.props(demoStyles.reset, styles.article797)}>
-						<div data-chat-markdown {...stylex.props(demoStyles.reset, styles.chatMarkdown, demoStyles.chatMarkdown)}>{output}</div>
+						<div
+							data-chat-markdown
+							{...stylex.props(
+								demoStyles.reset,
+								styles.chatMarkdown,
+								demoStyles.chatMarkdown,
+							)}
+						>
+							{output}
+						</div>
 						{resultVisible ? (
 							<AssistantMessageActions copyText={output} />
 						) : null}
 					</article>
 				</div>
 			) : running ? (
-				<div {...stylex.props(demoStyles.reset, styles.div805)} role="status" aria-live="polite">
-					<span {...stylex.props(demoStyles.reset, styles.codexShimmerText, demoStyles.shimmerText)}>
+				<div
+					{...stylex.props(demoStyles.reset, styles.div805)}
+					role="status"
+					aria-live="polite"
+				>
+					<span
+						{...stylex.props(
+							demoStyles.reset,
+							styles.codexShimmerText,
+							demoStyles.shimmerText,
+						)}
+					>
 						Thinking
 					</span>
 				</div>
@@ -811,7 +923,10 @@ function StaticThread({
 		<>
 			{messages.map((message, index) => (
 				<div
-					{...stylex.props(demoStyles.reset, lead && index === 0 ? styles.leadMessage : styles.timelineMessage)}
+					{...stylex.props(
+						demoStyles.reset,
+						lead && index === 0 ? styles.leadMessage : styles.timelineMessage,
+					)}
 					data-timeline-message-id={message.id}
 					key={message.id}
 				>
@@ -819,7 +934,14 @@ function StaticThread({
 						<UserMessage message={message} />
 					) : (
 						<article {...stylex.props(demoStyles.reset, styles.article797)}>
-							<div data-chat-markdown {...stylex.props(demoStyles.reset, styles.chatMarkdown, demoStyles.chatMarkdown)}>
+							<div
+								data-chat-markdown
+								{...stylex.props(
+									demoStyles.reset,
+									styles.chatMarkdown,
+									demoStyles.chatMarkdown,
+								)}
+							>
 								{message.text}
 							</div>
 							{message.id.startsWith("assistant-extra-") ? (
@@ -829,8 +951,13 @@ function StaticThread({
 									rel="noreferrer"
 									{...stylex.props(demoStyles.reset, styles.a844)}
 								>
-									<span {...stylex.props(demoStyles.reset)}>Open Local Studio on GitHub</span>
-									<span aria-hidden="true" {...stylex.props(demoStyles.reset, styles.span847)}>
+									<span {...stylex.props(demoStyles.reset)}>
+										Open Local Studio on GitHub
+									</span>
+									<span
+										aria-hidden="true"
+										{...stylex.props(demoStyles.reset, styles.span847)}
+									>
 										↗
 									</span>
 								</a>

@@ -2,10 +2,8 @@ import * as stylex from "@stylexjs/stylex";
 import { colors, constants, lengths, times } from "./public-tokens.stylex";
 
 const reducedMotion = "@media (prefers-reduced-motion: reduce)";
-const desktopNavHeight =
-	`max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 40px))`;
-const mobileNavHeight =
-	`max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 44px))`;
+const desktopNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 40px))`;
+const mobileNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 44px))`;
 const storyDemoEnter = stylex.keyframes({
 	from: {
 		opacity: 0,
@@ -17,14 +15,11 @@ const storyDemoEnter = stylex.keyframes({
 	},
 });
 
-const pageWidth =
-	`min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
+const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 const heroStagePadding = `calc((100% - ${pageWidth}) / 2)`;
 const heroStageClippedWidth = `calc(100% - ${heroStagePadding})`;
-const kittyCarouselGutter =
-	`max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
-const kittyCardWidth =
-	`min(400px, calc((min(${lengths.pageWidth}, calc(100vw - ${lengths.pageGutter})) - 48px) / 3))`;
+const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
+const kittyCardWidth = `min(400px, calc((min(${lengths.pageWidth}, calc(100vw - ${lengths.pageGutter})) - 48px) / 3))`;
 
 export const styles = stylex.create({
 	sectionWidth: {
@@ -142,27 +137,31 @@ export const styles = stylex.create({
 		},
 		marginRight: {
 			default: "auto",
-			[stylex.when.ancestor(':has([aria-label="Local Studio workbench"][data-clip-right])')]:
-				0,
+			[stylex.when.ancestor(
+				':has([aria-label="Local Studio workbench"][data-clip-right])',
+			)]: 0,
 			"@media (max-width: 900px)": 0,
 		},
 		marginBottom: 0,
 		marginLeft: {
 			default: "auto",
-			[stylex.when.ancestor(':has([aria-label="Local Studio workbench"][data-clip-right])')]:
-				heroStagePadding,
+			[stylex.when.ancestor(
+				':has([aria-label="Local Studio workbench"][data-clip-right])',
+			)]: heroStagePadding,
 			"@media (max-width: 900px)": "calc(48px / 2)",
 		},
 		width: {
 			default: pageWidth,
-			[stylex.when.ancestor(':has([aria-label="Local Studio workbench"][data-clip-right])')]:
-				heroStageClippedWidth,
+			[stylex.when.ancestor(
+				':has([aria-label="Local Studio workbench"][data-clip-right])',
+			)]: heroStageClippedWidth,
 			"@media (max-width: 900px)": "calc(100% - 48px / 2)",
 		},
 		overflow: {
 			default: "visible",
-			[stylex.when.ancestor(':has([aria-label="Local Studio workbench"][data-clip-right])')]:
-				"clip",
+			[stylex.when.ancestor(
+				':has([aria-label="Local Studio workbench"][data-clip-right])',
+			)]: "clip",
 			"@media (max-width: 900px)": "clip",
 		},
 	},
@@ -496,8 +495,7 @@ export const styles = stylex.create({
 		flexShrink: 0,
 		flexBasis: {
 			default: kittyCardWidth,
-			"@media (max-width: 900px)":
-				"calc((100vw - 48px - 24px) / 2)",
+			"@media (max-width: 900px)": "calc((100vw - 48px - 24px) / 2)",
 			"@media (max-width: 620px)": "calc(100vw - 48px)",
 		},
 	},
@@ -543,8 +541,7 @@ export const styles = stylex.create({
 		overflow: "hidden",
 		padding: "1px",
 		borderRadius: lengths.radiusFrame,
-		backgroundImage:
-			`linear-gradient(${colors.surfaceFaint}, ${colors.surfaceFaint}), linear-gradient(to bottom, ${colors.border}, rgb(0 0 0))`,
+		backgroundImage: `linear-gradient(${colors.surfaceFaint}, ${colors.surfaceFaint}), linear-gradient(to bottom, ${colors.border}, rgb(0 0 0))`,
 		"::before": {
 			content: '""',
 			position: "absolute",
