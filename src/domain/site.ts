@@ -1,8 +1,8 @@
 export const site = {
 	origin: "https://localstudio.ai",
-	lastmod: "2026-08-17",
+	lastmod: "2026-08-25",
 	copyrightYear: 2026,
-	source: "https://github.com/gildrb/ls-web",
+	source: "https://github.com/gildrb/web-localstudio",
 	company: {
 		name: "Sybil Solutions",
 		url: "https://www.sybilsolutions.ai/",

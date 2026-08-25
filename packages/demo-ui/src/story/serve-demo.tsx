@@ -1,3 +1,6 @@
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./serve-demo.styles.ts";
 import {
 	Brain,
 	ChevronRight,
@@ -71,17 +74,17 @@ const FEATURED_MODELS: FeaturedModel[] = [
 export function ServeDemo() {
 	return (
 		<DemoShell scene="serve" label="Models" crop={STORY_CROP}>
-			<div className="min-h-0 w-[820px] overflow-hidden px-6 py-6 max-md:w-[680px] max-md:px-5 max-md:py-5">
-				<header>
-					<h3 className="text-[length:var(--fs-2xl)] font-medium">Models</h3>
-					<p className="mt-1 text-[length:var(--fs-sm)] text-(--ui-muted)">
+			<div {...stylex.props(demoStyles.reset, styles.div74)}>
+				<header {...stylex.props(demoStyles.reset)}>
+					<h3 {...stylex.props(demoStyles.reset, styles.h376)}>Models</h3>
+					<p {...stylex.props(demoStyles.reset, styles.p77)}>
 						Hand-picked models grouped by the hardware they need, each checked
 						against this machine&apos;s memory.
 					</p>
 				</header>
 
 				<nav
-					className="mt-5 flex border-b border-(--ui-separator)"
+					{...stylex.props(demoStyles.reset, styles.nav84)}
 					aria-label="Model sections"
 				>
 					{MODEL_TABS.map(({ label, icon: Icon }, index) => (
@@ -89,47 +92,47 @@ export function ServeDemo() {
 							key={label}
 							type="button"
 							aria-current={index === 0 ? "page" : undefined}
-							className={`flex h-9 items-center gap-2 border-b px-4 text-[length:var(--fs-xs)] ${index === 0 ? "border-(--ui-fg) text-(--ui-fg)" : "border-transparent text-(--ui-muted)"}`}
+							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.tab, index === 0 ? styles.tabActive : styles.tabIdle)}
 						>
-							<Icon className="h-3.5 w-3.5" />
-							<span>{label}</span>
+							<Icon {...stylex.props(demoStyles.reset, styles.icon94, styles.lucideScale)} />
+							<span {...stylex.props(demoStyles.reset)}>{label}</span>
 						</button>
 					))}
 				</nav>
 
-				<div className="mt-5 flex items-center justify-between border-b border-(--ui-separator) pb-3">
-					<div>
-						<span className="text-[length:var(--fs-md)] font-medium">
+				<div {...stylex.props(demoStyles.reset, styles.div100)}>
+					<div {...stylex.props(demoStyles.reset)}>
+						<span {...stylex.props(demoStyles.reset, styles.span102)}>
 							64 GB unified memory
 						</span>
-						<span className="ml-2 text-[length:var(--fs-sm)] text-(--ui-muted)">
+						<span {...stylex.props(demoStyles.reset, styles.span105)}>
 							Recommended for this Mac Studio
 						</span>
 					</div>
-					<span className="rounded-full bg-(--ui-accent)/12 px-2.5 py-1 text-[length:var(--fs-xs)] text-(--ui-accent)">
+					<span {...stylex.props(demoStyles.reset, styles.span109)}>
 						Hardware matched
 					</span>
 				</div>
 
-				<section className="mt-5">
-					<div className="flex items-end justify-between gap-4">
-						<div>
-							<h4 className="text-[length:var(--fs-lg)] font-medium">
+				<section {...stylex.props(demoStyles.reset, styles.section114)}>
+					<div {...stylex.props(demoStyles.reset, styles.div115)}>
+						<div {...stylex.props(demoStyles.reset)}>
+							<h4 {...stylex.props(demoStyles.reset, styles.h4117)}>
 								Fits this machine
 							</h4>
-							<p className="mt-0.5 text-[length:var(--fs-xs)] text-(--ui-muted)">
+							<p {...stylex.props(demoStyles.reset, styles.p120)}>
 								Ready-to-run weights selected from the bundled model index.
 							</p>
 						</div>
 						<button
 							type="button"
-							className="inline-flex h-7 items-center gap-1.5 rounded-md border border-(--ui-border) px-2.5 text-[length:var(--fs-xs)]"
+							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button126)}
 						>
-							<Search className="h-3 w-3" /> Browse all
+							<Search {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} /> Browse all
 						</button>
 					</div>
 
-					<div className="mt-3 grid grid-cols-3 gap-3">
+					<div {...stylex.props(demoStyles.reset, styles.div132)}>
 						{FEATURED_MODELS.map((model) => {
 							const owner = model.owner;
 							const formats = model.formats;
@@ -138,49 +141,49 @@ export function ServeDemo() {
 									key={model.id}
 									type="button"
 									aria-label={`Open ${model.name} details`}
-									className="group relative min-h-44 overflow-hidden rounded-xl border border-(--ui-border) bg-(--ui-surface) p-4 text-left transition-colors hover:bg-(--ui-hover)"
+									{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element141)}
 								>
-									<span className="absolute inset-y-0 left-0 w-0.5 bg-(--ui-accent) opacity-80" />
-									<span className="flex items-start justify-between gap-2">
-										<span className="flex min-w-0 items-center gap-2.5">
-											<span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-(--ui-border) bg-(--ui-active) text-[length:var(--fs-xs)] font-semibold">
+									<span {...stylex.props(demoStyles.reset, styles.span143)} />
+									<span {...stylex.props(demoStyles.reset, styles.span144)}>
+										<span {...stylex.props(demoStyles.reset, styles.span145)}>
+											<span {...stylex.props(demoStyles.reset, styles.span146)}>
 												{owner.slice(0, 1).toUpperCase()}
 											</span>
-											<span className="min-w-0">
-												<span className="block text-[length:var(--fs-2xs)] font-medium uppercase tracking-[0.12em] text-(--ui-muted)">
+											<span {...stylex.props(demoStyles.reset, styles.span149)}>
+												<span {...stylex.props(demoStyles.reset, styles.span150)}>
 													{owner}
 												</span>
-												<strong className="mt-0.5 block truncate text-[length:var(--fs-base)] font-medium">
+												<strong {...stylex.props(demoStyles.reset, styles.strong153)}>
 													{model.name}
 												</strong>
 											</span>
 										</span>
-										<ChevronRight className="mt-1 h-3.5 w-3.5 shrink-0 text-(--ui-muted)" />
+										<ChevronRight {...stylex.props(demoStyles.reset, styles.chevronright158, styles.lucideScale)} />
 									</span>
-									<span className="mt-3 line-clamp-2 block text-[length:var(--fs-xs)] leading-4 text-(--ui-muted)">
+									<span {...stylex.props(demoStyles.reset, styles.span160)}>
 										{model.description}
 									</span>
-									<span className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[length:var(--fs-2xs)] text-(--ui-muted)">
-										<span>{model.params}</span>
-										<span>{Math.round(model.contextTokens / 1024)}K ctx</span>
-										<span>{formats} formats</span>
+									<span {...stylex.props(demoStyles.reset, styles.span163)}>
+										<span {...stylex.props(demoStyles.reset)}>{model.params}</span>
+										<span {...stylex.props(demoStyles.reset)}>{Math.round(model.contextTokens / 1024)}K ctx</span>
+										<span {...stylex.props(demoStyles.reset)}>{formats} formats</span>
 										{model.role ? (
-											<span className="ml-auto inline-flex items-center gap-1 font-sans font-medium">
+											<span {...stylex.props(demoStyles.reset, styles.span168)}>
 												{model.role === "fast" ? (
-													<Zap className="h-3 w-3" />
+													<Zap {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} />
 												) : (
-													<Brain className="h-3 w-3" />
+													<Brain {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} />
 												)}
 												{model.role}
 											</span>
 										) : model.multimodal ? (
-											<span className="ml-auto inline-flex items-center gap-1 font-sans font-medium">
-												<Eye className="h-3 w-3" /> vision
+											<span {...stylex.props(demoStyles.reset, styles.span168)}>
+												<Eye {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} /> vision
 											</span>
 										) : null}
 									</span>
-									<span className="mt-3 inline-flex h-7 items-center gap-1.5 rounded-md bg-(--ui-fg) px-2.5 text-[length:var(--fs-xs)] text-(--ui-bg)">
-										<Download className="h-3 w-3" /> Choose weights
+									<span {...stylex.props(demoStyles.reset, styles.span182)}>
+										<Download {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} /> Choose weights
 									</span>
 								</button>
 							);

@@ -132,13 +132,7 @@ while (queue.length > 0) {
 	for (const next of graph.get(current) ?? []) queue.push(next);
 }
 
-const generatedSources = new Set([
-	"src/styles/ls/animations.css",
-	"src/styles/ls/base.css",
-	"src/styles/ls/chat.css",
-	"src/styles/ls/tokens.css",
-	"src/wgsl.d.ts",
-]);
+const generatedSources = new Set(["src/wgsl.d.ts"]);
 const unreachable = files.filter(
 	(file) =>
 		!reachable.has(file) &&
@@ -188,8 +182,6 @@ for (const name of [
 	"eslint-plugin-react-hooks",
 	"eslint-plugin-react-refresh",
 	"@playwright/test",
-	"tailwindcss",
-	"@tailwindcss/vite",
 	"@vitejs/plugin-react",
 	"vite",
 	"@webgpu/types",

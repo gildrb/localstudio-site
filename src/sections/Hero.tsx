@@ -1,3 +1,5 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { assets } from "../domain/asset";
 import { lazy, Suspense } from "react";
 import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
@@ -7,6 +9,7 @@ import { motion } from "../domain/motion";
 import { LocalLink } from "../components/LocalLink";
 import { LocalAiLogo } from "../logo/LocalAiLogo";
 import { site } from "../domain/site";
+import { styles } from "../styles/sections-styles";
 
 const HeroDemo = lazy(() =>
 	import("@local-studio/demo-ui/hero").then(({ HeroDemo }) => ({ default: HeroDemo })),
@@ -43,21 +46,30 @@ export function Hero() {
 	});
 	return (
 		<LazyMotion features={domAnimation} strict>
-			<section className="hero" id="top" aria-labelledby="landing-title">
+			<section
+				{...stylex.props(baseStyles.element, stylex.defaultMarker(), styles.hero)}
+				id="top"
+				aria-labelledby="landing-title"
+			>
 				<LocalAiLogo />
-				<div className="hero__inner">
-					<div className="hero__copy">
-						<m.h1 id="landing-title" tabIndex={-1} {...enter(0.12)}>
+				<div {...stylex.props(baseStyles.element, styles.heroInner)}>
+					<div data-hero-copy {...stylex.props(baseStyles.element, styles.heroCopy)}>
+						<m.h1
+						id="landing-title"
+						tabIndex={-1}
+						{...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.focusable, styles.heroHeading)}
+						{...enter(0.12)}
+					>
 							Intelligence should be{" "}
-							<span className="hero__title-end">
+							<span {...stylex.props(baseStyles.element, styles.heroTitleEnd)}>
 								owned
 								<LocalLink
-									className="hero__mark-button"
+									sx={styles.heroMarkButton}
 									href={machinePath}
 									aria-label="Machine-readable page"
 								>
 									<img
-										className="hero__mark"
+										{...stylex.props(baseStyles.element, baseStyles.image, styles.heroMark)}
 										src={assets.mark}
 										alt=""
 										width="525"
@@ -68,22 +80,29 @@ export function Hero() {
 								</LocalLink>
 							</span>
 						</m.h1>
-						<m.p className="hero__thesis" {...enter(0.2)}>
+						<m.p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.heroThesis)} {...enter(0.2)}>
 							Private AI that works for you, not the cloud.
 						</m.p>
-						<m.div className="hero__actions" {...enter(0.28)}>
+						<m.div {...stylex.props(baseStyles.element, styles.heroActions)} {...enter(0.28)}>
 							<CtaPair secondary={{ href: setupPath, label: "Setup prompt" }} />
 						</m.div>
 					</div>
 				</div>
 				<m.div
-					className="hero__stage section-width"
+					{...stylex.props(baseStyles.element, 
+					baseStyles.sectionAnchor,
+					styles.sectionWidth,
+					styles.heroStage,
+				)}
 					id="product"
 					{...enter(0.75)}
 				>
 					<Suspense
 						fallback={
-							<div className="hero__demo-placeholder" aria-hidden="true" />
+							<div
+							{...stylex.props(baseStyles.element, styles.heroDemoPlaceholder)}
+							aria-hidden="true"
+						/>
 						}
 					>
 						{clock ? (

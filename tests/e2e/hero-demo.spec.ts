@@ -5,17 +5,17 @@ test("hero demo autoplays the local inference sequence once", async ({
 }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
-	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await expect(demo).toBeVisible();
 	await expect(demo.locator("canvas, video")).toHaveCount(0);
 	await expect(
 		demo.getByRole("button", { name: "Model: Qwen3.8-27B" }),
 	).toBeVisible();
 	await expect(demo).toHaveAttribute("data-phase", "done");
-	await expect(demo.locator(".chat-markdown").last()).toContainText(
+	await expect(demo.locator("[data-chat-markdown]").last()).toContainText(
 		"Ready for you",
 	);
-	await expect(demo.locator(".chat-markdown").last()).toContainText(
+	await expect(demo.locator("[data-chat-markdown]").last()).toContainText(
 		"Lake District",
 	);
 	await expect(demo.getByText("Maya's birthday weekend").first()).toBeVisible();
@@ -32,7 +32,7 @@ test("hero demo autoplays the local inference sequence once", async ({
 test("hero demo computer panel tabs are clickable", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
-	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await demo.getByRole("button", { name: "Show tools" }).click();
 	await demo
 		.getByRole("button", { name: "Files Browse project files" })
@@ -51,7 +51,7 @@ test("hero demo follow-ups stay visually quiet", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/?demoClock=fast");
-	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	const composer = demo.getByRole("textbox", { name: "Message" });
 	await composer.pressSequentially("Add a café stop");
 	expect(await composer.evaluate((element) => getComputedStyle(element).boxShadow)).toBe(
@@ -81,7 +81,7 @@ test("hero demo result copies with the clipboard API", async ({
 	await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/?demoClock=fast");
-	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await expect(demo).toHaveAttribute("data-phase", "done");
 	await demo.getByRole("button", { name: "Copy response" }).click();
 	await expect(demo.getByRole("button", { name: "Copied" })).toBeVisible();
@@ -95,9 +95,9 @@ test("reduced motion shows the finished result immediately", async ({
 }) => {
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/?demoClock=fast");
-	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await expect(demo).toHaveAttribute("data-phase", "done");
-	await expect(demo.locator(".chat-markdown").last()).toHaveText(
+	await expect(demo.locator("[data-chat-markdown]").last()).toHaveText(
 		/I'll bring the private details together[\s\S]*Ready for you/,
 	);
 });
@@ -105,7 +105,7 @@ test("reduced motion shows the finished result immediately", async ({
 test("hero demo keeps completed tool calls in view", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
-	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await expect(demo).toHaveAttribute("data-phase", "done");
 	await expect(demo.locator('[data-tool-call="itinerary"]')).toBeInViewport();
 	await expect(demo.locator('[data-tool-call="packing"]')).toBeInViewport();
@@ -114,7 +114,7 @@ test("hero demo keeps completed tool calls in view", async ({ page }) => {
 test("hero demo has no dead sidebar destinations", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
-	const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await expect(demo.getByText("Terminals", { exact: true })).toHaveCount(0);
 	const profile = demo.getByText("Sero", { exact: true });
 	await expect(profile).toBeVisible();
@@ -130,9 +130,9 @@ test("hero demo has no dead sidebar destinations", async ({ page }) => {
 test("KittyLitter image hover reveals context without moving images or links", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
-	const cards = page.locator(".kitty__feature");
+	const cards = page.locator("[data-kitty-feature]");
 	await expect(cards).toHaveCount(10);
-	await expect(cards.locator(".kitty__feature-trigger")).toHaveText([
+	await expect(cards.locator("[data-kitty-feature-trigger]")).toHaveText([
 		"Sessions everywhere",
 		"Generative UI",
 		"Remote connections",
@@ -144,18 +144,18 @@ test("KittyLitter image hover reveals context without moving images or links", a
 		"More tools",
 		"Codex in your pocket",
 	]);
-	await expect(page.locator(".kitty__feature-description")).toHaveCount(3);
-	const images = cards.locator(".kitty__feature-media");
+	await expect(page.locator("[data-kitty-feature-description]")).toHaveCount(3);
+	const images = cards.getByRole("region");
 	const before = await images.evaluateAll((elements) =>
 		elements.map((element) => element.getBoundingClientRect().top + window.scrollY),
 	);
-	await expect(page.locator(".kitty__feature-link")).toHaveCount(0);
+	await expect(cards.getByRole("link")).toHaveCount(0);
 	await images.first().hover();
 	await expect(cards.first()).toHaveAttribute("data-active", "true");
 	await expect(
 		cards.first().getByText("Pick up exactly where you left off."),
 	).toBeVisible();
-	await expect(page.locator(".kitty__feature-link")).toHaveCount(0);
+	await expect(cards.getByRole("link")).toHaveCount(0);
 	const after = await images.evaluateAll((elements) =>
 		elements.map((element) => element.getBoundingClientRect().top + window.scrollY),
 	);
@@ -167,9 +167,9 @@ test("KittyLitter carousel stays still without pagination chrome", async ({
 }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
-	const carousel = page.locator(".kitty__carousel");
+	const carousel = page.getByRole("region", { name: "KittyLitter features" });
 	await carousel.scrollIntoViewIfNeeded();
-	await expect(page.locator(".kitty__carousel-status")).toHaveCount(0);
+	await expect(carousel.getByRole("status")).toHaveCount(0);
 	expect(await carousel.evaluate((element) => element.scrollLeft)).toBe(0);
 	await page.waitForTimeout(750);
 	expect(await carousel.evaluate((element) => element.scrollLeft)).toBe(0);
@@ -180,9 +180,9 @@ test("KittyLitter carousel stays still without pagination chrome", async ({
 		.poll(async () =>
 			carousel.evaluate((element) => {
 				const last = element.querySelector<HTMLElement>(
-					".kitty__feature:last-child",
+					"[data-kitty-feature]:last-child",
 				);
-				const intro = document.querySelector<HTMLElement>(".kitty__intro");
+				const intro = document.querySelector<HTMLElement>("[data-kitty-intro]");
 				if (!last || !intro) return Number.NaN;
 				return Math.round(
 					intro.getBoundingClientRect().right -
@@ -191,7 +191,7 @@ test("KittyLitter carousel stays still without pagination chrome", async ({
 			}),
 		)
 		.toBe(0);
-	await expect(page.locator(".kitty__feature-description")).toHaveCount(10);
+	await expect(page.locator("[data-kitty-feature-description]")).toHaveCount(10);
 });
 
 
@@ -200,20 +200,20 @@ test("KittyLitter carousel supports image jumps and pointer dragging", async ({
 }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
-	const carousel = page.locator(".kitty__carousel");
+	const carousel = page.getByRole("region", { name: "KittyLitter features" });
 	await carousel.scrollIntoViewIfNeeded();
 	await page
-		.locator(".kitty__feature")
+		.locator("[data-kitty-feature]")
 		.nth(3)
-		.locator(".kitty__feature-media")
+		.getByRole("region")
 		.dispatchEvent("click");
 	await expect
 		.poll(() => carousel.evaluate((element) => element.scrollLeft))
 		.toBeGreaterThan(0);
 	await page.waitForTimeout(500);
 	const dragMetrics = await carousel.evaluate((element) => {
-		const card = element.querySelector<HTMLElement>(".kitty__feature");
-		const grid = element.querySelector<HTMLElement>(".kitty__item-container");
+		const card = element.querySelector<HTMLElement>("[data-kitty-feature]");
+		const grid = element.querySelector<HTMLElement>("[data-kitty-items]");
 		if (!card || !grid) throw new Error("carousel metrics");
 		const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 0;
 		return {
@@ -247,9 +247,9 @@ test("KittyLitter carousel supports image jumps and pointer dragging", async ({
 	await expect(carousel).toHaveAttribute("data-carousel-index", "9");
 	const endScroll = await carousel.evaluate((element) => element.scrollLeft);
 	const lastTrigger = page
-		.locator(".kitty__feature")
+		.locator("[data-kitty-feature]")
 		.last()
-		.locator(".kitty__feature-trigger");
+		.locator("[data-kitty-feature-trigger]");
 	const triggerBox = await lastTrigger.boundingBox();
 	if (!triggerBox) throw new Error("carousel trigger geometry");
 	const triggerX = triggerBox.x + triggerBox.width / 2;
@@ -285,7 +285,7 @@ test("homepage stays inside the viewport at 320", async ({ page }) => {
 test("hero demo is only rounded when the full app is visible", async ({
 	page,
 }) => {
- const demo = page.locator(".hero .demo:not(.hero__demo-placeholder)");
+ const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
 	await expect(demo).toBeVisible();
@@ -302,20 +302,21 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 	page,
 }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
- await page.goto("/?demoClock=fast");
- await expect(page.locator(".hero .demo__app")).toBeVisible();
-	const title = await page.locator(".hero h1").evaluate((element) => {
+	await page.goto("/?demoClock=fast");
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
+	await expect(demo.locator("[data-demo-app]")).toBeVisible();
+	const title = await page.locator("#landing-title").evaluate((element) => {
 		const style = getComputedStyle(element);
 		return [style.fontSize, style.lineHeight];
 	});
 	expect(title).toEqual(["40px", "44px"]);
 	const layout = await page.evaluate(() => {
-		const demo = document.querySelector(".hero .demo");
-		const viewport = document.querySelector(".hero .demo__viewport");
-		const app = document.querySelector(".hero .demo__app");
-		const sidebar = document.querySelector(".hero .demo__app > aside");
-		const computer = document.querySelector(".agent-computer-panel");
-		const copy = document.querySelector(".hero__copy");
+		const demo = document.querySelector('[aria-label="Local Studio workbench"]');
+		const viewport = document.querySelector("[data-demo-viewport]");
+		const app = document.querySelector("[data-demo-app]");
+		const sidebar = document.querySelector("[data-demo-app] > aside");
+		const computer = document.querySelector("[data-computer-panel]");
+		const copy = document.querySelector("[data-hero-copy]");
 		if (
 			!(demo instanceof HTMLElement) ||
 			!(viewport instanceof HTMLElement) ||
@@ -327,7 +328,7 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 			throw new Error("demo chrome");
 		}
 		const demoBox = demo.getBoundingClientRect();
-		const thread = document.querySelector(".agent-thread-shell");
+		const thread = document.querySelector("[data-timeline-list]");
 		const threadBox = thread instanceof HTMLElement ? thread.getBoundingClientRect() : null;
 		const scale = demo.clientWidth / 950;
 		const menu = demo.querySelector('[aria-label="Open navigation menu"]');
@@ -371,7 +372,7 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 
 test("full hero entrance animates copy and render surface", async ({ page, request }) => {
 	const html = await (await request.get("/")).text();
-	const stage = html.match(/<div class="hero__stage section-width"[^>]*>/)?.[0] ?? "";
+	const stage = html.match(/<div[^>]*id="product"[^>]*>/)?.[0] ?? "";
 	const title = html.match(/<h1 id="landing-title"[^>]*>/)?.[0] ?? "";
 	expect(stage).toContain('id="product"');
 	expect(stage).toContain("opacity:0");

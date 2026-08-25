@@ -178,7 +178,6 @@ export function createDrawLoop({
 
     successfulRenderCount += 1;
     if (successfulRenderCount === CANVAS_REVEAL_RENDER_COUNT) {
-      canvas.style.opacity = "1";
       onCanvasRevealed();
     }
     return true;

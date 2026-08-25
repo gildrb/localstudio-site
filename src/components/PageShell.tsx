@@ -1,6 +1,9 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 import { site } from "../domain/site";
+import { shellStyles } from "../styles/shell-styles";
 import { BrandLogo } from "./BrandLogo";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -13,20 +16,20 @@ interface PageShellProps {
 
 export function PageShell({ backHref, children }: PageShellProps) {
 	return (
-		<div className={`site-shell${backHref ? " site-shell--back" : ""}`}>
-			<LocalLink className="skip-link" href="#content">
+		<div {...stylex.props(baseStyles.element, shellStyles.shell, backHref !== undefined && shellStyles.backShell)}>
+			<LocalLink sx={shellStyles.skipLink} href="#content">
 				Skip to content
 			</LocalLink>
 			{backHref ? (
-				<header className="back-nav">
+				<header {...stylex.props(baseStyles.element, shellStyles.backNav)}>
 					<LocalLink
-						className="brand"
+						sx={shellStyles.brand}
 						href={backHref}
 						aria-label={site.products.localStudio.name}
 					>
 						<BrandLogo />
 					</LocalLink>
-					<LocalLink className="back-nav__link" href={backHref}>
+					<LocalLink sx={shellStyles.backLink} href={backHref}>
 						<ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" />
 						Back
 					</LocalLink>
@@ -34,10 +37,10 @@ export function PageShell({ backHref, children }: PageShellProps) {
 			) : (
 				<Header />
 			)}
-			<main className="site-main" id="content" tabIndex={-1}>
+			<main {...stylex.props(baseStyles.element, shellStyles.main, backHref !== undefined && shellStyles.backMain)} id="content" tabIndex={-1}>
 				{children}
 			</main>
-			<Footer />
+			<Footer sx={backHref ? shellStyles.backFooter : undefined} />
 		</div>
 	);
 }

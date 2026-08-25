@@ -1,3 +1,6 @@
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./diff-preview.styles.ts";
 export type DiffPreviewLineKind =
 	| "addition"
 	| "context"
@@ -13,20 +16,20 @@ type DiffPreviewLine = {
 };
 
 const rowStyles = {
-	addition: "bg-(--ok)/[0.07]",
-	context: "bg-transparent",
-	deletion: "bg-(--err)/[0.065]",
-	hunk: "border-y border-(--separator)/70 bg-(--fg)/[0.035] text-(--dim)",
-	meta: "bg-(--fg)/[0.025] text-(--dim)/80",
-} satisfies Record<DiffPreviewLineKind, string>;
+	addition: styles.rowAddition,
+	context: styles.rowContext,
+	deletion: styles.rowDeletion,
+	hunk: styles.rowHunk,
+	meta: styles.rowMeta,
+};
 
 const markerStyles = {
-	addition: "bg-(--ok)/[0.055] text-(--ok)",
-	context: "text-(--dim)/35",
-	deletion: "bg-(--err)/[0.05] text-(--err)",
-	hunk: "text-(--dim)/45",
-	meta: "text-(--dim)/45",
-} satisfies Record<DiffPreviewLineKind, string>;
+	addition: styles.markerAddition,
+	context: styles.markerContext,
+	deletion: styles.markerDeletion,
+	hunk: styles.markerHunk,
+	meta: styles.markerMeta,
+};
 
 function parseLine(line: string): Omit<DiffPreviewLine, "id"> {
 	if (line.startsWith("diff --git") || line.startsWith("index ")) {
@@ -59,26 +62,26 @@ export function DiffPreview({ body }: { body: string }) {
 	const additions = lines.filter((line) => line.kind === "addition").length;
 	const deletions = lines.filter((line) => line.kind === "deletion").length;
 	return (
-		<div className="overflow-hidden rounded-md border border-(--border) bg-(--color-input)">
-			<div className="flex h-7 items-center justify-between border-b border-(--separator) px-3 text-[length:var(--fs-xs)]">
-				<span className="text-(--dim)">Changes</span>
-				<span className="flex items-center gap-2 font-mono">
-					<span className="text-(--ok)">+{additions}</span>
-					<span className="text-(--err)">−{deletions}</span>
+		<div {...stylex.props(demoStyles.reset, styles.div62)}>
+			<div {...stylex.props(demoStyles.reset, styles.div63)}>
+				<span {...stylex.props(demoStyles.reset, styles.span64)}>Changes</span>
+				<span {...stylex.props(demoStyles.reset, styles.span65)}>
+					<span {...stylex.props(demoStyles.reset, styles.span66)}>+{additions}</span>
+					<span {...stylex.props(demoStyles.reset, styles.span67)}>−{deletions}</span>
 				</span>
 			</div>
-			<div className="max-h-[360px] overflow-y-auto overscroll-contain">
+			<div {...stylex.props(demoStyles.reset, styles.div70)}>
 				{lines.map((line) => (
 					<div
 						key={line.id}
-						className={`grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] font-mono text-[length:var(--fs-sm)] leading-5 ${rowStyles[line.kind]} ${line.content ? "min-h-5" : "h-3"}`}
+						{...stylex.props(demoStyles.reset, styles.row, rowStyles[line.kind], line.content ? styles.lineTall : styles.lineShort)}
 					>
 						<span
-							className={`flex select-none items-start justify-center border-r border-(--separator)/45 ${markerStyles[line.kind]}`}
+							{...stylex.props(demoStyles.reset, styles.marker, markerStyles[line.kind])}
 						>
 							{line.marker}
 						</span>
-						<span className="min-w-0 whitespace-pre-wrap break-words px-3 text-(--fg)/82">
+						<span {...stylex.props(demoStyles.reset, styles.span81)}>
 							{line.content || "\u00a0"}
 						</span>
 					</div>

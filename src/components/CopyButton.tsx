@@ -1,6 +1,10 @@
+import { baseStyles, type PublicStyle } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
+import { colors, lengths, times } from "../styles/public-tokens.stylex";
 import { useState } from "react";
 
 interface CopyButtonProps {
+	sx?: PublicStyle;
 	text: string;
 }
 
@@ -10,7 +14,90 @@ const checkPath =
 	"m15.56 4-.53.53-8.8 8.8c-.68.68-1.78.68-2.47 0l.53-.54-.53.53-2.79-2.79L.44 10 1.5 8.94l.53.53 2.8 2.8c.1.09.25.09.35 0l8.79-8.8.53-.53z";
 
 
-export function CopyButton({ text }: CopyButtonProps) {
+const styles = stylex.create({
+	clipboard: { position: "fixed", opacity: 0 },
+	button: {
+		position: "absolute",
+		zIndex: 3,
+		top: "14px",
+		right: "14px",
+		display: "inline-flex",
+		width: "32px",
+		height: "32px",
+		alignItems: "center",
+		justifyContent: "center",
+		padding: 0,
+		borderWidth: 0,
+		borderRadius: lengths.radiusControl,
+		color: colors.foreground,
+		backgroundColor: {
+			default: "transparent",
+			"@media (hover: hover)": {
+				default: "transparent",
+				":hover": colors.hover,
+			},
+		},
+		cursor: "pointer",
+		opacity: {
+			default: 0,
+			":focus-visible": 1,
+			"@media (hover: none)": 1,
+			"@media (hover: hover)": {
+				default: 0,
+				":focus-visible": 1,
+				[stylex.when.ancestor(":hover")]: 1,
+			},
+		},
+		transitionProperty: "opacity, background",
+		transitionDuration: times.fast,
+		transitionTimingFunction: "ease-out",
+	},
+	copied: {
+		opacity: 1,
+	},
+	screenReaderOnly: {
+		position: "absolute",
+		width: "1px",
+		height: "1px",
+		margin: "-1px",
+		padding: 0,
+		overflow: "hidden",
+		clip: "rect(0, 0, 0, 0)",
+		whiteSpace: "nowrap",
+		borderWidth: 0,
+	},
+	glyph: {
+		position: "relative",
+		display: "inline-flex",
+		width: "16px",
+		height: "16px",
+	},
+	symbol: {
+		position: "absolute",
+		inset: 0,
+		width: "100%",
+		height: "100%",
+		transformOrigin: "center",
+	},
+	path: {
+		transformOrigin: "center",
+		transitionProperty: "opacity, transform, filter",
+		transitionDuration: times.glyph,
+		transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+	},
+	visiblePath: {
+		opacity: 1,
+		transform: "scale(1)",
+		filter: "blur(0)",
+	},
+	hiddenPath: {
+		opacity: 0,
+		transform: "scale(0.55)",
+		filter: "blur(4px)",
+	},
+});
+
+export function CopyButton({ text, sx }: CopyButtonProps) {
 	const [copied, setCopied] = useState(false);
 
 	async function copy() {
@@ -20,8 +107,7 @@ export function CopyButton({ text }: CopyButtonProps) {
 		} catch {
 			const textarea = document.createElement("textarea");
 			textarea.value = text;
-			textarea.style.position = "fixed";
-			textarea.style.opacity = "0";
+			textarea.className = stylex.props(baseStyles.element, styles.clipboard).className ?? "";
 			document.body.append(textarea);
 			textarea.select();
 			document.execCommand("copy");
@@ -33,23 +119,41 @@ export function CopyButton({ text }: CopyButtonProps) {
 
 	return (
 		<button
-			className={copied ? "copy-icon copied" : "copy-icon"}
+			{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, baseStyles.button, styles.button, copied && styles.copied, sx)}
 			type="button"
 			onClick={copy}
 			aria-label="Copy to clipboard"
 		>
-			<span className="sr-only" role="status" aria-live="polite">
+			<span
+				{...stylex.props(baseStyles.element, styles.screenReaderOnly)}
+				role="status"
+				aria-live="polite"
+			>
 				{copied ? "Copied to clipboard" : ""}
 			</span>
-			<span className="copy-icon__glyph" aria-hidden="true">
+			<span {...stylex.props(baseStyles.element, styles.glyph)} aria-hidden="true">
 				<svg
-					className="copy-icon__symbol"
+					{...stylex.props(baseStyles.graphic, baseStyles.element, styles.symbol)}
 					viewBox="0 0 16 16"
 					width="16"
 					height="16"
 				>
-					<path className="copy-icon__copy" fill="currentColor" d={copyPath} />
-					<path className="copy-icon__check" fill="currentColor" d={checkPath} />
+					<path
+						{...stylex.props(baseStyles.element, 
+							styles.path,
+							copied ? styles.hiddenPath : styles.visiblePath,
+						)}
+						fill="currentColor"
+						d={copyPath}
+					/>
+					<path
+						{...stylex.props(baseStyles.element, 
+							styles.path,
+							copied ? styles.visiblePath : styles.hiddenPath,
+						)}
+						fill="currentColor"
+						d={checkPath}
+					/>
 				</svg>
 			</span>
 		</button>

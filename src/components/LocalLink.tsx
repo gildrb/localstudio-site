@@ -1,16 +1,25 @@
+import { baseStyles, type PublicStyle } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from "react";
-import { decideSameOriginNavigation } from "../domain/route";
 import { emitNavigation, scrollToHash } from "../app/browser-location";
+import { decideSameOriginNavigation } from "../domain/route";
+
+type LocalLinkProps = Omit<
+	AnchorHTMLAttributes<HTMLAnchorElement>,
+	"className" | "style"
+> & {
+	children: ReactNode;
+	href: string;
+	sx?: PublicStyle;
+};
 
 export function LocalLink({
 	children,
 	href,
 	onClick,
+	sx,
 	...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & {
-	children: ReactNode;
-	href: string;
-}) {
+}: LocalLinkProps) {
 	function handleClick(event: MouseEvent<HTMLAnchorElement>) {
 		onClick?.(event);
 		if (
@@ -45,7 +54,7 @@ export function LocalLink({
 	}
 
 	return (
-		<a href={href} onClick={handleClick} {...props}>
+		<a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, sx)} href={href} onClick={handleClick} {...props}>
 			{children}
 		</a>
 	);

@@ -1,4 +1,3 @@
-import "../styles/workbench-demo.css";
 import { memo } from "react";
 import { scenes, type FeatureScene } from "./scenes";
 

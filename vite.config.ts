@@ -1,15 +1,32 @@
+import { createRequire } from "node:module";
 import path from "node:path";
-import tailwindcss from "@tailwindcss/vite";
 import { wgslVitePlugin } from "@vgpu/wgsl/loader-vite";
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { defineConfig, type PluginOption } from "vite";
 import { agentReady } from "./agent-ready.plugin.ts";
 
 const root = import.meta.dirname;
+// SAFETY: @stylexjs/unplugin 0.19 public types leak undeclared optional bundler packages; this assertion pins the exact official Vite adapter contract.
+const stylex = createRequire(import.meta.url)("@stylexjs/unplugin/vite").default as (
+	options: {
+		runtimeInjection: false;
+		unstable_moduleResolution: { type: "commonJS"; rootDir: string };
+		useCSSLayers: true;
+	},
+) => PluginOption;
 
 export default defineConfig({
 	appType: "spa",
-	plugins: [react(), wgslVitePlugin({ minify: true }), tailwindcss(), agentReady()],
+	plugins: [
+		stylex({
+			runtimeInjection: false,
+			unstable_moduleResolution: { type: "commonJS", rootDir: root },
+			useCSSLayers: true,
+		}),
+		react(),
+		wgslVitePlugin({ minify: true }),
+		agentReady(),
+	],
 	resolve: {
 		alias: [
 			{
@@ -23,10 +40,6 @@ export default defineConfig({
 			{
 				find: "@local-studio/demo-ui/story",
 				replacement: path.resolve(root, "packages/demo-ui/src/story/FeatureDemo.tsx"),
-			},
-			{
-				find: "@local-studio/demo-ui/styles.css",
-				replacement: path.resolve(root, "packages/demo-ui/src/styles/workbench-demo.css"),
 			},
 			{
 				find: "@local-studio/demo-ui",

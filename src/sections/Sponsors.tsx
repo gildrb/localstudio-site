@@ -1,5 +1,8 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { assets } from "../domain/asset";
 import { site } from "../domain/site";
+import { styles } from "../styles/sections-styles";
 const SPONSORS = [
 	{ name: "NVIDIA", src: assets.sponsorNvidia, width: 112, height: 21 },
 	{ name: "Factory", src: assets.sponsorFactory, width: 140, height: 21 },
@@ -21,19 +24,22 @@ const SPONSORS = [
 export function Sponsors() {
 	return (
 		<section
-			className="sponsors section-width"
+			{...stylex.props(baseStyles.element, styles.sectionWidth, styles.sponsors)}
 			aria-labelledby="sponsors-title"
 		>
-			<p id="sponsors-title" className="sponsors__title">
+			<p id="sponsors-title" {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.sponsorsTitle)}>
 				Supporters of {site.company.name}
 			</p>
-			<ul className="sponsors__list">
+			<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.sponsorsList)}>
 				{SPONSORS.map(({ name, src, width, height }) => (
-					<li key={name}>
+					<li key={name} {...stylex.props(baseStyles.element)}>
 						<img
+							{...stylex.props(baseStyles.element, baseStyles.image, 
+								styles.sponsorImage,
+								styles.sponsorImageSize(width, height),
+							)}
 							src={src}
 							alt={name}
-							style={{ width, height }}
 							draggable={false}
 						/>
 					</li>

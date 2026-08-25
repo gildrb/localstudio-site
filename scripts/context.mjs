@@ -57,10 +57,10 @@ const WORKSPACE_PACKAGES = [
 ];
 
 const CATEGORY_BUDGETS = {
-	"domain/content/agent": { target: 15_000, hard: 18_000 },
-	"react pages/components/app": { target: 22_000, hard: 26_000 },
+	"domain/content/agent": { target: 16_000, hard: 19_000 },
+	"react pages/components/app": { target: 26_000, hard: 34_000 },
 	"demos + scenario": { target: 15_000, hard: 18_000 },
-	"public CSS/motion": { target: 10_000, hard: 12_000 },
+	"StyleX/motion": { target: 11_000, hard: 14_000 },
 	tests: { target: 14_000, hard: 17_000 },
 	"build/config/tooling": { target: 30_000, hard: 35_000 },
 	"package/html/misc": { target: 3_000, hard: 4_000 },
@@ -71,9 +71,9 @@ const CATEGORY_BUDGETS = {
 	other: { target: 0, hard: Number.POSITIVE_INFINITY },
 };
 
-const TOTAL_OPERATING = 90_000;
+const TOTAL_OPERATING = 96_000;
 const TOTAL_HARD = 100_000;
-const TOTAL_WARN = 80_000;
+const TOTAL_WARN = 86_000;
 
 function workspacePackageMetadata() {
 	return WORKSPACE_PACKAGES.map((workspacePackage) => ({
@@ -141,9 +141,6 @@ function classify(rel) {
 	) {
 		return "logo-renderer";
 	}
-	if (rel === "src/styles/ls-app.css" || rel.startsWith("src/styles/ls/")) {
-		return "generated";
-	}
 	if (
 		rel.startsWith("src/agent/") ||
 		rel.startsWith("src/content/") ||
@@ -161,7 +158,7 @@ function classify(rel) {
 	}
 	if (rel.startsWith("tools/oxlint/anti-slop/")) return "vendored-tooling";
 	if (rel.startsWith("src/styles/") || rel.endsWith(".css")) {
-		return "public CSS/motion";
+		return "StyleX/motion";
 	}
 	if (rel.startsWith("tests/")) return "tests";
 	if (

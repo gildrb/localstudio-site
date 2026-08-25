@@ -11,7 +11,7 @@ function Svg({ children, className, ...rest }: IconProps & { children: React.Rea
       height="1em"
       fill="currentColor"
       aria-hidden
-      className={className}
+      {...{ className }}
       {...rest}
     >
       {children}

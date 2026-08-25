@@ -1,8 +1,11 @@
+import { baseStyles } from "../styles/base-styles";
+import * as stylex from "@stylexjs/stylex";
 import { homePath, notFoundSuggestions } from "../domain/route";
 import { site } from "../domain/site";
 import { LocalLink } from "../components/LocalLink";
 import { PageIntro } from "../components/PageIntro";
 import { PageShell } from "../components/PageShell";
+import { styles } from "../styles/pages-styles";
 
 export function NotFoundPage() {
 	return (
@@ -13,19 +16,26 @@ export function NotFoundPage() {
 				description={
 					<>
 						The route does not exist in this{" "}
-						<span translate="no">{site.products.localStudio.name}</span> website. Try one of the
+						<span translate="no" {...stylex.props(baseStyles.element)}>{site.products.localStudio.name}</span> website. Try one of the
 						routes below instead.
 					</>
 				}
 				actions={
-					<LocalLink className="button" href={homePath}>
-						Back to <span translate="no">{site.products.localStudio.name}</span>
+					<LocalLink sx={styles.button} href={homePath}>
+						Back to <span translate="no" {...stylex.props(baseStyles.element)}>{site.products.localStudio.name}</span>
 					</LocalLink>
 				}
 			>
-				<nav className="not-found__routes" aria-label="Suggested routes">
+				<nav
+					{...stylex.props(baseStyles.element, styles.notFoundRoutes)}
+					aria-label="Suggested routes"
+				>
 					{notFoundSuggestions().map(({ label, href }) => (
-						<LocalLink href={href} key={href}>
+						<LocalLink
+							sx={styles.notFoundRoute}
+							href={href}
+							key={href}
+						>
 							{label}
 						</LocalLink>
 					))}

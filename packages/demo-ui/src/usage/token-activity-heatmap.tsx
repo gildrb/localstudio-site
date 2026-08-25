@@ -1,4 +1,7 @@
 "use client";
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./token-activity-heatmap.styles.ts";
 
 import { memo, useState } from "react";
 import { formatNumber } from "../lib/formatters";
@@ -6,13 +9,13 @@ import type { UsageStats } from "./types";
 
 const DAY_MS = 86_400_000;
 const WEEKS = 53;
-const LEVEL_CLASSES = [
-  "bg-(--ui-surface-2)",
-  "bg-[color:var(--color-blue-500)]/20",
-  "bg-[color:var(--color-blue-500)]/38",
-  "bg-[color:var(--color-blue-500)]/62",
-  "bg-[color:var(--color-blue-500)]/90",
-];
+const LEVEL_STYLES = [
+  styles.level0,
+  styles.level1,
+  styles.level2,
+  styles.level3,
+  styles.level4,
+] as const;
 
 const WEEK_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -127,21 +130,17 @@ export const TokenActivityHeatmap = memo(function TokenActivityHeatmap({
   }
 
   return (
-    <div className="overflow-x-auto pb-1">
-      <div className="min-w-[47rem]">
-        <div className="mb-2 grid grid-cols-[repeat(53,minmax(0,1fr))] gap-[3px]">
+    <div {...stylex.props(demoStyles.reset, styles.div130)}>
+      <div {...stylex.props(demoStyles.reset, styles.div131)}>
+        <div {...stylex.props(demoStyles.reset, styles.div132)}>
           {monthLabels(start).map(({ key, label }) => (
-            <span key={key} className="text-[length:var(--fs-2xs)] text-(--ui-muted)">
+            <span key={key} {...stylex.props(demoStyles.reset, styles.span134)}>
               {label}
             </span>
           ))}
         </div>
         <div
-          className={`${
-            period === "daily"
-              ? "grid grid-flow-col grid-cols-[repeat(53,minmax(0,1fr))] grid-rows-7 gap-[3px]"
-              : "grid grid-cols-[repeat(53,minmax(0,1fr))] gap-[3px]"
-          } rounded-[2px] outline-none ring-(--link) focus-visible:ring-2`}
+          {...stylex.props(demoStyles.reset, styles.heatmap, period === "daily" ? styles.dailyGrid : styles.weeklyGrid)}
           role="slider"
           tabIndex={0}
           aria-label={`${period === "daily" ? "Daily" : "Weekly"} token activity for the past year`}
@@ -170,21 +169,21 @@ export const TokenActivityHeatmap = memo(function TokenActivityHeatmap({
                 key={key}
                 aria-hidden="true"
                 onMouseEnter={() => setActiveDate(key)}
-                className={`aspect-square min-h-2.5 rounded-[2px] transition-[transform,box-shadow] hover:scale-125 hover:ring-1 ${key === activeDate ? "ring-1 ring-(--link)" : ""} ${LEVEL_CLASSES[level]}`}
+                {...stylex.props(demoStyles.reset, styles.cell, key === activeDate && styles.selectedCell, LEVEL_STYLES[level] ?? styles.level0)}
               />
             );
           })}
         </div>
-        <div className="mt-3 flex min-h-5 items-center justify-between gap-5 text-[length:var(--fs-2xs)] text-(--ui-muted)">
-          <span className="tabular-nums text-(--ui-fg)/85">
+        <div {...stylex.props(demoStyles.reset, styles.div178)}>
+          <span {...stylex.props(demoStyles.reset, styles.span179)}>
             {activeLabel}
           </span>
-          <div className="flex shrink-0 items-center gap-1.5">
-            <span>Less</span>
-            {LEVEL_CLASSES.map((className, index) => (
-              <span key={index} className={`h-2.5 w-2.5 rounded-[2px] ${className}`} />
+          <div {...stylex.props(demoStyles.reset, styles.div182)}>
+            <span {...stylex.props(demoStyles.reset)}>Less</span>
+            {LEVEL_STYLES.map((levelStyle, index) => (
+              <span key={index} {...stylex.props(demoStyles.reset, styles.legendCell, levelStyle)} />
             ))}
-            <span>More</span>
+            <span {...stylex.props(demoStyles.reset)}>More</span>
           </div>
         </div>
       </div>

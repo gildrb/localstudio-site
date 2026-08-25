@@ -5,7 +5,6 @@ import { site } from "../src/domain/site.ts";
 import { routes } from "../src/domain/route.ts";
 import { assets } from "../src/domain/asset.ts";
 import { release } from "../src/domain/release.ts";
-import { homepagePrerender } from "../src/agent/pages.ts";
 
 const dest = `${fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "")}/index.html`;
 const { company, products } = site;
@@ -47,12 +46,10 @@ const body = `<!doctype html>
     <link rel="api-catalog" href="/.well-known/api-catalog" type="application/linkset+json" />
     <link rel="preload" href="${assets.fontSans}" as="font" type="font/woff2" crossorigin />
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
-    <style>.prerender-home{box-sizing:border-box;max-width:1240px;min-height:100svh;margin:auto;padding:clamp(140px,18svh,208px) 24px 96px;background:#0a0a0a;color:#ededed;font:16px/1.6 system-ui,sans-serif}.prerender-home h1{max-width:900px;margin:0 0 40px;font-size:clamp(40px,7vw,112px);line-height:1.05;letter-spacing:-.05em}.prerender-home p{max-width:760px;color:#a1a1a1}.prerender-home a{color:#ededed}</style>
     <title>${routes["/"].title} by ${company.name}</title>
   </head>
   <body>
     <div id="root"></div>
-    <noscript id="static-fallback">${homepagePrerender}</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

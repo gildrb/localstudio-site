@@ -1,4 +1,7 @@
 "use client";
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./agent-composer-textarea.styles.ts";
 
 import type {
   ChangeEventHandler,
@@ -34,7 +37,7 @@ export function AgentComposerTextArea({
       onChange={onChange}
       onKeyDown={onKeyDown}
       placeholder={placeholder}
-      className="min-h-11 max-h-[36vh] w-full resize-none overflow-y-auto bg-transparent px-4 pb-0 pt-3.5 text-[length:var(--codex-chat-font-size)] leading-[1.5] tracking-normal text-(--fg)/82 outline-none placeholder:text-(--composer-placeholder)"
+      {...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element37)}
     />
   );
 }

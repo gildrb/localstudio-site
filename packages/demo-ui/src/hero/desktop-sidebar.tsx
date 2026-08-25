@@ -1,3 +1,6 @@
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./desktop-sidebar.styles.ts";
+import { demoStyles } from "../styles/demo-root.styles.ts";
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -11,23 +14,23 @@ import { NavItemDesktop } from "../shell/left-sidebar-nav";
 import { isRouteActive, tabs } from "../shell/left-sidebar-nav-model";
 const DEFAULT_SIDEBAR_WIDTH = 244;
 function ProfileAvatar({ profile }: { profile: { name: string } }) {
-	return <span className="inline-block h-6 w-6 rounded-full bg-(--hover)" aria-hidden="true" title={profile.name} />;
+	return <span {...stylex.props(demoStyles.reset, styles.span14)} aria-hidden="true" title={profile.name} />;
 }
 function useLocalProfile(): [{ name: string }] {
 	return [{ name: "Sero" }];
 }
 import { HeroProjectsNav, type HeroTaskId } from "./projects-nav";
 
-const HISTORY_STEPPER_CLASS =
-	"flex h-6 w-6 items-center justify-center rounded-md text-(--hl2) transition-colors hover:bg-(--hover) hover:text-(--fg)";
 
 export function HeroDesktopSidebar({
+	mobile = false,
 	pathname = "/agent",
 	showProjects = true,
 	activeTask,
 	onSelectTask,
 	titles,
 }: {
+	mobile?: boolean;
 	pathname?: string;
 	showProjects?: boolean;
 	activeTask?: HeroTaskId;
@@ -36,55 +39,54 @@ export function HeroDesktopSidebar({
 }) {
 	return (
 		<aside
-			className="relative flex sticky top-0 h-full border-r border-(--border) bg-(--sidebar-bg) flex-col shrink-0 z-40 overflow-hidden"
-			style={{ width: DEFAULT_SIDEBAR_WIDTH }}
+			{...stylex.props(demoStyles.reset, styles.aside39, demoStyles.fixedWidth(DEFAULT_SIDEBAR_WIDTH))}
 		>
-			<div className="flex min-h-0 flex-1 flex-col overflow-hidden opacity-100">
-				<div className="sticky top-0 z-50 flex h-[var(--h-toolbar)] shrink-0 items-center gap-1 bg-(--sidebar-bg) px-2">
+			<div {...stylex.props(demoStyles.reset, styles.div42)}>
+				<div {...stylex.props(demoStyles.reset, styles.div43)}>
 					<button
 						type="button"
-						className="flex h-7 w-7 items-center justify-center rounded-lg text-(--hl2) transition-colors hover:bg-(--hover) hover:text-(--fg)"
+						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button46)}
 						title="Collapse sidebar"
 						aria-label="Collapse sidebar"
 					>
-						<PanelLeftFilled className="h-3 w-3" strokeWidth={1.75} />
+						<PanelLeftFilled {...stylex.props(demoStyles.reset, styles.panelleftfilled50)} strokeWidth={1.75} />
 					</button>
 					<button
 						type="button"
-						className={HISTORY_STEPPER_CLASS}
+						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.historyStepper)}
 						title="Go back"
 						aria-label="Go back"
 					>
-						<ChevronLeft className="h-3 w-3" strokeWidth={1.75} />
+						<ChevronLeft {...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.lucideScale)} strokeWidth={1.75} />
 					</button>
 					<button
 						type="button"
-						className={HISTORY_STEPPER_CLASS}
+						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.historyStepper)}
 						title="Go forward"
 						aria-label="Go forward"
 					>
-						<ChevronRight className="h-3 w-3" strokeWidth={1.75} />
+						<ChevronRight {...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.lucideScale)} strokeWidth={1.75} />
 					</button>
 					<button
 						type="button"
-						className="ml-auto flex h-7 w-7 items-center justify-center rounded-md text-(--hl2) transition-colors hover:bg-(--hover) hover:text-(--fg)"
+						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button70)}
 						title="Search sessions (⌘K)"
 						aria-label="Search sessions"
 					>
-						<SearchIcon className="h-4 w-4" strokeWidth={1.75} />
+						<SearchIcon {...stylex.props(demoStyles.reset, styles.searchicon74, styles.lucideScale)} strokeWidth={1.75} />
 					</button>
 				</div>
-				<nav className="sidebar-scroller flex min-h-0 flex-1 flex-col gap-[var(--sidebar-row-gap)] overflow-x-hidden overflow-y-auto px-[var(--sidebar-padding-x)] py-0.5 [contain:layout_paint]">
+				<nav {...stylex.props(demoStyles.reset, styles.sidebarScroller, demoStyles.sidebarScroller, mobile && demoStyles.hiddenOverflow)}>
 					<button
 						type="button"
-						className="flex h-[var(--sidebar-row-height)] shrink-0 items-center gap-2 rounded-[var(--sidebar-row-radius)] px-2 text-(--fg)/85 transition-colors hover:bg-(--hover) hover:text-(--fg)"
+						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button80)}
 						title="New task"
 					>
 						<SquarePen
-							className="h-4 w-4 shrink-0 opacity-70"
+							{...stylex.props(demoStyles.reset, styles.squarepen84, styles.lucideScale)}
 							strokeWidth={1.6}
 						/>
-						<span className="flex-1 truncate text-left text-[length:var(--fs-md)] font-normal">
+						<span {...stylex.props(demoStyles.reset, styles.span87)}>
 							New task
 						</span>
 					</button>
@@ -106,7 +108,7 @@ export function HeroDesktopSidebar({
 						/>
 					) : null}
 				</nav>
-				<div className="shrink-0 bg-(--sidebar-bg) px-[var(--sidebar-padding-x)] pb-2 pt-1">
+				<div {...stylex.props(demoStyles.reset, styles.div109)}>
 					<HeroProfileFooter />
 				</div>
 			</div>
@@ -117,26 +119,26 @@ export function HeroDesktopSidebar({
 function HeroProfileFooter() {
 	const [profile] = useLocalProfile();
 	return (
-		<div className="flex h-[var(--sidebar-row-height)] items-center gap-1">
-			<div className="flex min-w-0 flex-1 items-center gap-2.5 px-2 py-1 text-left">
+		<div {...stylex.props(demoStyles.reset, styles.div120)}>
+			<div {...stylex.props(demoStyles.reset, styles.div121)}>
 				<ProfileAvatar profile={profile} />
-				<span className="truncate text-[length:var(--fs-md)] text-(--fg)">
+				<span {...stylex.props(demoStyles.reset, styles.span123)}>
 					{profile.name}
 				</span>
 			</div>
 			<span
-				className="flex h-7 w-7 shrink-0 items-center justify-center text-(--fg)/40"
+				{...stylex.props(demoStyles.reset, styles.span128)}
 				title="Connect phone"
 				aria-hidden="true"
 			>
-				<Smartphone className="h-3.5 w-3.5" strokeWidth={1.75} />
+				<Smartphone {...stylex.props(demoStyles.reset, styles.smartphone132, styles.lucideScale)} strokeWidth={1.75} />
 			</span>
 			<span
 				title="Settings"
-				className="flex h-7 w-7 shrink-0 items-center justify-center text-(--fg)/40"
+				{...stylex.props(demoStyles.reset, styles.span128)}
 				aria-hidden="true"
 			>
-				<Settings className="h-3.5 w-3.5" strokeWidth={1.75} />
+				<Settings {...stylex.props(demoStyles.reset, styles.smartphone132, styles.lucideScale)} strokeWidth={1.75} />
 			</span>
 		</div>
 	);

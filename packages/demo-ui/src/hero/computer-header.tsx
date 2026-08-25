@@ -1,4 +1,7 @@
-import { type ComponentType } from "react";
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./computer-header.styles.ts";
+import { useState, type ComponentType } from "react";
 import {
 	Activity,
 	FolderTree,
@@ -98,28 +101,27 @@ function TabPill({
 	onSelect: () => void;
 	onClose?: (() => void) | undefined;
 }) {
+	const [hovered, setHovered] = useState(false);
 	return (
 		<div
-			className={`group inline-flex h-7 min-w-0 shrink-0 items-center rounded-md transition-[background-color,color] duration-150 ${
-				selected
-					? "bg-(--color-surface-hover) text-(--fg)"
-					: "text-(--dim) hover:text-(--fg)"
-			}`}
+			onMouseEnter={() => setHovered(true)}
+			onMouseLeave={() => setHovered(false)}
+			{...stylex.props(demoStyles.reset, styles.tab, selected ? styles.selectedTab : styles.idleTab)}
 			title={title}
 		>
 			<button
 				type="button"
 				onClick={onSelect}
-				className="inline-flex h-full min-w-0 flex-1 items-center gap-1.5 rounded-md px-2.5 text-left"
+				{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button113)}
 			>
 				{Icon ? (
-					<Icon className="pointer-events-none h-3.5 w-3.5 shrink-0" />
+					<Icon {...stylex.props(demoStyles.reset, styles.icon116, styles.lucideScale)} />
 				) : null}
-				<span className="max-w-[8rem] truncate text-[length:var(--fs-sm)]">
+				<span {...stylex.props(demoStyles.reset, styles.span118)}>
 					{label}
 				</span>
 				{shortcut ? (
-					<span className="text-[length:var(--fs-2xs)] text-(--dim)/70">
+					<span {...stylex.props(demoStyles.reset, styles.span122)}>
 						{shortcut}
 					</span>
 				) : null}
@@ -131,13 +133,11 @@ function TabPill({
 						event.stopPropagation();
 						onClose();
 					}}
-					className={`-ml-1 mr-1 inline-flex h-5 w-5 items-center justify-center rounded text-(--dim)/65 opacity-0 transition-[color,opacity] duration-150 hover:text-(--fg) group-hover:opacity-100 focus-visible:opacity-100 ${
-						selected ? "opacity-100" : ""
-					}`}
+					{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.closeButton, (hovered || selected) && styles.closeHovered)}
 					aria-label={`Close ${label}`}
 					title={`Close ${label}`}
 				>
-					<CloseIcon className="pointer-events-none h-2 w-2" />
+					<CloseIcon {...stylex.props(demoStyles.reset, styles.closeicon140)} />
 				</button>
 			) : null}
 		</div>
@@ -159,16 +159,12 @@ function HeaderIconButton({
 		<button
 			type="button"
 			onClick={onClick}
-			className={`relative z-10 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-[background-color,color] duration-150 ${
-				active
-					? "bg-(--color-surface-hover) text-(--fg)"
-					: "text-(--dim) hover:text-(--fg)"
-			}`}
+			{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.headerButton, active ? styles.headerButtonActive : styles.headerButtonIdle)}
 			title={label}
 			aria-label={label}
 			aria-pressed={active}
 		>
-			<Icon className="pointer-events-none h-3.5 w-3.5" />
+			<Icon {...stylex.props(demoStyles.reset, styles.icon171, styles.lucideScale)} />
 		</button>
 	);
 }
@@ -202,8 +198,8 @@ export function ComputerHeader({
 			(openTab !== "terminal" || terminalState.owners.length === 0),
 	);
 	return (
-		<div className="relative flex h-[var(--h-toolbar-pane)] shrink-0 items-center gap-1 border-b border-(--border) bg-(--color-header) px-1.5 text-[length:var(--fs-sm)]">
-			<div className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto overflow-y-hidden px-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+		<div {...stylex.props(demoStyles.reset, styles.div205)}>
+			<div {...stylex.props(demoStyles.reset, styles.div206)}>
 				{visibleTabs.map((openTab) => {
 					const meta = computerTabMeta(openTab);
 					return (
@@ -244,7 +240,7 @@ export function ComputerHeader({
 					);
 				})}
 			</div>
-			<div className="ml-auto flex shrink-0 items-center gap-1">
+			<div {...stylex.props(demoStyles.reset, styles.div247)}>
 				<HeaderIconButton
 					icon={Plus}
 					label="Show tools"
@@ -310,8 +306,8 @@ export function ComputerLauncherPanel({
 		},
 	] as const;
 	return (
-		<section className="min-h-0 flex-1 overflow-y-auto bg-(--color-panel) px-3 py-3">
-			<div className="flex flex-col gap-1">
+		<section {...stylex.props(demoStyles.reset, styles.section313)}>
+			<div {...stylex.props(demoStyles.reset, styles.div314)}>
 				{cards.map((card) => {
 					const Icon = card.icon;
 					const selected = card.key !== "side-chat" && activeTab === card.key;
@@ -320,18 +316,14 @@ export function ComputerLauncherPanel({
 							key={card.key}
 							type="button"
 							onClick={card.onClick}
-							className={`group flex min-h-0 items-center gap-3 rounded-md px-3 py-2 text-left transition-colors ${
-								selected
-									? "bg-(--color-surface-hover) text-(--fg)"
-									: "text-(--fg)/75 hover:bg-(--hover) hover:text-(--fg)"
-							}`}
+							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.launcherCard, selected ? styles.launcherSelected : styles.launcherIdle)}
 						>
-							<Icon className="h-4 w-4 shrink-0 text-(--dim)/75 transition-colors group-hover:text-(--fg)/80" />
-							<span className="min-w-0 flex-1">
-								<span className="block truncate text-[length:var(--fs-lg)] font-medium">
+							<Icon {...stylex.props(demoStyles.reset, styles.icon329, styles.launcherIcon)} />
+							<span {...stylex.props(demoStyles.reset, styles.span330)}>
+								<span {...stylex.props(demoStyles.reset, styles.span331)}>
 									{card.title}
 								</span>
-								<span className="block truncate text-[length:var(--fs-sm)] text-(--dim)">
+								<span {...stylex.props(demoStyles.reset, styles.span334)}>
 									{card.description}
 								</span>
 							</span>

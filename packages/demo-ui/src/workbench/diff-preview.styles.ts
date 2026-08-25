@@ -1,0 +1,140 @@
+import * as stylex from "@stylexjs/stylex";
+import { constants, tokens } from "../styles/tokens.stylex.ts";
+
+export const styles = stylex.create({
+  div62: {
+    overflowX: "hidden",
+    overflowY: "hidden",
+    borderTopLeftRadius: "0.375rem",
+    borderTopRightRadius: "0.375rem",
+    borderBottomRightRadius: "0.375rem",
+    borderBottomLeftRadius: "0.375rem",
+    borderTopStyle: "solid",
+    borderRightStyle: "solid",
+    borderBottomStyle: "solid",
+    borderLeftStyle: "solid",
+    borderTopWidth: "1px",
+    borderRightWidth: "1px",
+    borderBottomWidth: "1px",
+    borderLeftWidth: "1px",
+    borderTopColor: tokens.border,
+    borderRightColor: tokens.border,
+    borderBottomColor: tokens.border,
+    borderLeftColor: tokens.border,
+    backgroundColor: tokens.colorInput,
+  },
+  div63: {
+    display: "flex",
+    height: "calc(0.25rem * 7)",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderBottomStyle: "solid",
+    borderBottomWidth: "1px",
+    borderTopColor: tokens.separator,
+    borderRightColor: tokens.separator,
+    borderBottomColor: tokens.separator,
+    borderLeftColor: tokens.separator,
+    paddingLeft: "calc(0.25rem * 3)",
+    paddingRight: "calc(0.25rem * 3)",
+    fontSize: constants.fsXs,
+  },
+  span64: {
+    color: tokens.dim,
+  },
+  span65: {
+    display: "flex",
+    alignItems: "center",
+    rowGap: "calc(0.25rem * 2)",
+    columnGap: "calc(0.25rem * 2)",
+    fontFamily: constants.fontMono,
+  },
+  span66: {
+    color: tokens.ok,
+  },
+  span67: {
+    color: tokens.err,
+  },
+  div70: {
+    display: { default: null, "::-webkit-scrollbar": "none" },
+    scrollbarWidth: "none",
+    maxHeight: "360px",
+    overflowY: "auto",
+    overscrollBehavior: "contain",
+  },
+  span81: {
+    minWidth: "0px",
+    whiteSpace: "pre-wrap",
+    overflowWrap: "break-word",
+    paddingLeft: "calc(0.25rem * 3)",
+    paddingRight: "calc(0.25rem * 3)",
+    color: tokens.fg82,
+  },
+  row: {
+    display: "grid",
+    minWidth: "0px",
+    gridTemplateColumns: "2rem minmax(0,1fr)",
+    fontFamily: constants.fontMono,
+    fontSize: constants.fsSm,
+    lineHeight: "calc(0.25rem * 5)",
+  },
+  rowAddition: {
+    backgroundColor: tokens.ok07,
+  },
+  rowContext: {
+    backgroundColor: "transparent",
+  },
+  rowDeletion: {
+    backgroundColor: tokens.err065,
+  },
+  rowHunk: {
+    borderTopStyle: "solid",
+    borderBottomStyle: "solid",
+    borderTopWidth: "1px",
+    borderBottomWidth: "1px",
+    borderTopColor: tokens.separator70,
+    borderRightColor: tokens.separator70,
+    borderBottomColor: tokens.separator70,
+    borderLeftColor: tokens.separator70,
+    backgroundColor: tokens.fg035,
+    color: tokens.dim,
+  },
+  rowMeta: {
+    backgroundColor: tokens.fg025,
+    color: tokens.dim,
+  },
+  lineTall: {
+    minHeight: "calc(0.25rem * 5)",
+  },
+  lineShort: {
+    height: "calc(0.25rem * 3)",
+  },
+  marker: {
+    display: "flex",
+    userSelect: "none",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    borderRightStyle: "solid",
+    borderRightWidth: "1px",
+    borderTopColor: tokens.separator45,
+    borderRightColor: tokens.separator45,
+    borderBottomColor: tokens.separator45,
+    borderLeftColor: tokens.separator45,
+  },
+  markerAddition: {
+    backgroundColor: tokens.ok055,
+    color: tokens.ok,
+  },
+  markerContext: {
+    color: tokens.dim35,
+  },
+  markerDeletion: {
+    backgroundColor: tokens.err05,
+    color: tokens.err,
+  },
+  markerHunk: {
+    color: tokens.dim45,
+  },
+  markerMeta: {
+    color: tokens.dim45,
+  },
+});

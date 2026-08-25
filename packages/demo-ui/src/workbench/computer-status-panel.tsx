@@ -1,3 +1,6 @@
+import { demoStyles } from "../styles/demo-root.styles.ts";
+import * as stylex from "@stylexjs/stylex";
+import { styles } from "./computer-status-panel.styles.ts";
 export function ComputerStatusPanel({
 	activeProject,
 	activeModel,
@@ -8,22 +11,22 @@ export function ComputerStatusPanel({
 	focusedSession?: { title: string; status: string } | null;
 }) {
 	return (
-		<section className="flex min-h-0 flex-1 flex-col gap-3 overflow-auto p-4 text-[length:var(--fs-sm)] text-(--fg)/80">
-			<p>
-				<span className="text-(--dim)">Session</span>
-				<span className="ml-2">{focusedSession?.title ?? "New task"}</span>
+		<section {...stylex.props(demoStyles.reset, styles.section11)}>
+			<p {...stylex.props(demoStyles.reset)}>
+				<span {...stylex.props(demoStyles.reset, styles.span13)}>Session</span>
+				<span {...stylex.props(demoStyles.reset, styles.span14)}>{focusedSession?.title ?? "New task"}</span>
 			</p>
-			<p>
-				<span className="text-(--dim)">Status</span>
-				<span className="ml-2">{focusedSession?.status ?? "idle"}</span>
+			<p {...stylex.props(demoStyles.reset)}>
+				<span {...stylex.props(demoStyles.reset, styles.span13)}>Status</span>
+				<span {...stylex.props(demoStyles.reset, styles.span14)}>{focusedSession?.status ?? "idle"}</span>
 			</p>
-			<p>
-				<span className="text-(--dim)">Model</span>
-				<span className="ml-2">{activeModel?.name ?? "None"}</span>
+			<p {...stylex.props(demoStyles.reset)}>
+				<span {...stylex.props(demoStyles.reset, styles.span13)}>Model</span>
+				<span {...stylex.props(demoStyles.reset, styles.span14)}>{activeModel?.name ?? "None"}</span>
 			</p>
-			<p>
-				<span className="text-(--dim)">Project</span>
-				<span className="ml-2">{activeProject?.name ?? "Home"}</span>
+			<p {...stylex.props(demoStyles.reset)}>
+				<span {...stylex.props(demoStyles.reset, styles.span13)}>Project</span>
+				<span {...stylex.props(demoStyles.reset, styles.span14)}>{activeProject?.name ?? "Home"}</span>
 			</p>
 		</section>
 	);

@@ -76,7 +76,7 @@ export default function App() {
     const finishNavigation = () => {
       if (hash) return scrollToHash(hash);
       if (navigationSource.current !== "push") return true;
-      const heading = document.querySelector("main h1, .machine");
+      const heading = document.querySelector("main h1, [data-page-focus]");
       if (!(heading instanceof HTMLElement)) return false;
       heading.focus({ preventScroll: true });
       return true;
