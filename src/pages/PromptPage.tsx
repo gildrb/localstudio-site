@@ -18,6 +18,7 @@ export function PromptPage() {
 	return (
 		<PageShell>
 			<PageIntro
+				layout="left"
 				id="prompt-title"
 				title={routes[setupPath].heading}
 				description={`It will inspect the machine, choose the right runtime, install ${site.products.localStudio.name}, and prove a real inference request works.`}

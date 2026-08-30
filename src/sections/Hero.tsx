@@ -54,21 +54,21 @@ export function Hero() {
 				<LocalAiLogo />
 				<div {...stylex.props(baseStyles.element, styles.heroInner)}>
 					<div data-hero-copy {...stylex.props(baseStyles.element, styles.heroCopy)}>
-						<m.h1
-						id="landing-title"
-						tabIndex={-1}
-						{...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.focusable, styles.heroHeading)}
-						{...enter(0.12)}
-					>
-							Intelligence Should Be{" "}
-							<span {...stylex.props(baseStyles.element, styles.heroTitleEnd)}>
-								Owned
-								<LocalLink
-									sx={styles.heroMarkButton}
-									href={machinePath}
-									aria-label="Machine-readable page"
-								>
-									<img
+						<m.div {...stylex.props(baseStyles.element)} {...enter(0.12)}>
+							<h1
+								id="landing-title"
+								tabIndex={-1}
+								{...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.focusable, styles.heroHeading)}
+							>
+								Intelligence Should Be{" "}
+								<span {...stylex.props(baseStyles.element, styles.heroTitleEnd)}>
+									Owned
+									<LocalLink
+										sx={styles.heroMarkButton}
+										href={machinePath}
+										aria-label="Machine-readable page"
+									>
+										<img
 										{...stylex.props(baseStyles.element, baseStyles.image, styles.heroMark)}
 										src={assets.mark}
 										alt=""
@@ -77,12 +77,15 @@ export function Hero() {
 										aria-hidden="true"
 										draggable={false}
 									/>
-								</LocalLink>
-							</span>
-						</m.h1>
-						<m.p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.heroThesis)} {...enter(0.2)}>
-							Private AI that works for you, not the cloud.
-						</m.p>
+									</LocalLink>
+								</span>
+							</h1>
+						</m.div>
+						<m.div {...stylex.props(baseStyles.element)} {...enter(0.2)}>
+							<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.heroThesis)}>
+								Private AI that works for you, not the cloud.
+							</p>
+						</m.div>
 						<m.div {...stylex.props(baseStyles.element, styles.heroActions)} {...enter(0.28)}>
 							<CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />
 						</m.div>

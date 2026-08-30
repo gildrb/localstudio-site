@@ -21,6 +21,7 @@ struct CompositeParams {
 @group(0) @binding(3) var<uniform> params: CompositeParams;
 
 const BLOOM_RADIAL_FULL_RADIUS = 0.55;
+const MAX_DARK_DISPLAY_LUMA = 0.58;
 
 @vertex
 fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
@@ -42,7 +43,12 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   // gate the glow by scene alpha to keep it hugging the mark instead of
   // floating as a faint disc behind it.
   let bloomMask = smoothstep(0.0, 0.4, scene.a);
-  let linearColor = scene.rgb + bloom * params.strength * bloomRadial * bloomMask;
+  // The MSAA scene target stores premultiplied color. Recover straight color
+  // before nonlinear tone mapping, then premultiply exactly once for canvas output.
+  let straightScene = scene.rgb / max(scene.a, 0.0001);
+  let linearColor = straightScene + bloom * params.strength * bloomRadial * bloomMask;
   let displayColor = linear_to_display(aces_tonemap(linearColor));
-  return vec4f(displayColor * scene.a, scene.a);
+  let displayLuma = dot(displayColor, vec3f(0.2126, 0.7152, 0.0722));
+  let nightSky = displayColor * min(1.0, MAX_DARK_DISPLAY_LUMA / max(displayLuma, 0.001));
+  return vec4f(nightSky * scene.a, scene.a);
 }

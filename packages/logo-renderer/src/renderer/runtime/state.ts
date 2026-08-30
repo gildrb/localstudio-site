@@ -29,7 +29,13 @@ export type HeroRuntimeState = {
   lastBrushMoveTime: number;
   lastPointerClientX: number | undefined;
   lastPointerClientY: number | undefined;
+  rippleCellX: number;
+  rippleCellY: number;
+  rippleStartTime: number;
+  lastRippleSpawnTime: number;
+  pointerInsideCanvas: boolean;
   isCoarsePointer: boolean;
+  staticPose: boolean;
 };
 
 export type ControlsRef = MutableRefObject<RenderControls>;

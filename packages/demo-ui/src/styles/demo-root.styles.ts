@@ -11,6 +11,8 @@ export const lightTheme = stylex.createTheme(tokens, {
 	separator: stylex.types.color({ default: "#1a1c1f0d" }),
 	hover: stylex.types.color({ default: "#1a1c1f0d" }),
 	active: stylex.types.color({ default: "#1a1c1f14" }),
+	frameEdge: stylex.types.color({ default: "#1a1c1f1f" }),
+	frameShade: stylex.types.color({ default: "#e8e8e8" }),
 	accent: stylex.types.color({ default: "#0d0d0d" }),
 	link: stylex.types.color({ default: "#0285ff" }),
 	ok: stylex.types.color({ default: "#00a240" }),
@@ -39,9 +41,13 @@ export const lightTheme = stylex.createTheme(tokens, {
 	uiActive: stylex.types.color({ default: "#1a1c1f14" }),
 	uiAccent: stylex.types.color({ default: "#0d0d0d" }),
 	hl1: stylex.types.color({ default: "#5f6165" }),
-	hl2: stylex.types.color({ default: "#8c8e91" }),
+	hl2: stylex.types.color({ default: "#73777d" }),
+	hl3: stylex.types.color({ default: "#73777d" }),
 	fg05: stylex.types.color({
 		default: "color-mix(in oklab, #1a1c1f 5%, transparent)",
+	}),
+	fg10: stylex.types.color({
+		default: "color-mix(in oklab, #1a1c1f 10%, transparent)",
 	}),
 	fg035: stylex.types.color({
 		default: "color-mix(in oklab, #1a1c1f 3.5%, transparent)",
@@ -139,6 +145,10 @@ export const lightTheme = stylex.createTheme(tokens, {
 	err065: stylex.types.color({
 		default: "color-mix(in oklab, #e02e2a 6.5%, transparent)",
 	}),
+	blue20: stylex.types.color({ default: "color-mix(in oklab, #0269cc 20%, transparent)" }),
+	blue38: stylex.types.color({ default: "color-mix(in oklab, #0269cc 38%, transparent)" }),
+	blue62: stylex.types.color({ default: "color-mix(in oklab, #0269cc 62%, transparent)" }),
+	blue90: stylex.types.color({ default: "color-mix(in oklab, #0269cc 90%, transparent)" }),
 	colorFileNode: stylex.types.color({ default: "#0269cc" }),
 	colorSkillNode: stylex.types.color({ default: "#8036ea" }),
 	colorCommandNode: stylex.types.color({ default: "#5d5d5d" }),
@@ -151,6 +161,8 @@ export const lightTheme = stylex.createTheme(tokens, {
 	colorSyntaxDeletion: stylex.types.color({ default: "#ba2623" }),
 	animatedGradientStrong: stylex.types.color({ default: "#0d0d0d" }),
 	animatedGradientSoft: stylex.types.color({ default: "#0d0d0d38" }),
+	selection: stylex.types.color({ default: "#b9e3ff" }),
+	selectionInk: stylex.types.color({ default: "#000" }),
 });
 
 const gradientPan = stylex.keyframes({
@@ -174,7 +186,10 @@ export const demoStyles = stylex.create({
 		borderBottomWidth: 0,
 		borderLeftWidth: 0,
 		color: tokens.fg,
-		boxShadow: "0 24px 80px rgba(0, 0, 0, 0.44)",
+		colorScheme: "dark",
+		cursor: "default",
+		boxShadow:
+			"0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 24px 80px rgba(0, 0, 0, 0.32), 0 8px 24px rgba(0, 0, 0, 0.18)",
 		fontFamily: constants.fontSans,
 		fontSize: constants.fsBase,
 		lineHeight: 1.5,
@@ -218,9 +233,9 @@ export const demoStyles = stylex.create({
 		paddingLeft: { default: null, "::before": "1px" },
 		backgroundImage: {
 			default: null,
-			"::before": "linear-gradient(180deg, #ffffff14, #000)",
+			"::before": `linear-gradient(180deg, ${tokens.frameEdge}, ${tokens.frameShade})`,
 			"::after":
-				"radial-gradient(38% 32% at 0% 0%, color-mix(in srgb, #fff 2.2%, transparent), transparent 72%), linear-gradient(180deg, color-mix(in srgb, #fff 1%, transparent), transparent 10%)",
+				`radial-gradient(38% 32% at 0% 0%, color-mix(in srgb, ${tokens.dim} 4%, transparent), transparent 72%), linear-gradient(180deg, color-mix(in srgb, ${tokens.dim} 2%, transparent), transparent 12%)`,
 		},
 		WebkitMaskImage: {
 			default: null,
@@ -234,6 +249,10 @@ export const demoStyles = stylex.create({
 		maskComposite: { default: null, "::before": "exclude" },
 		backgroundColor: { default: tokens.bg, "::selection": tokens.selection },
 		WebkitTextFillColor: { default: null, "::selection": tokens.selectionInk },
+	},
+	lightScheme: {
+		colorScheme: "light",
+		boxShadow: "0 0 0 1px rgba(26, 28, 31, 0.12), 0 24px 80px rgba(26, 28, 31, 0.12), 0 8px 24px rgba(26, 28, 31, 0.08)",
 	},
 	mobile: {
 		pointerEvents: "none",
@@ -270,14 +289,16 @@ export const demoStyles = stylex.create({
 	heroAppTransform: (mobile: boolean, scale: number) => ({
 		width: 1392,
 		height: 787,
-		transform: mobile ? `scale(${scale})` : null,
+		transform: mobile ? `translateZ(0) scale(${scale})` : null,
 		transformOrigin: mobile ? "top left" : null,
+		willChange: mobile ? "transform" : null,
 	}),
 	storyAppTransform: (scale: number, shiftX: number, shiftY: number) => ({
 		width: 1392,
 		height: 787,
-		transform: `scale(${scale}) translate(${shiftX}px, ${shiftY}px)`,
+		transform: `translateZ(0) scale(${scale}) translate(${shiftX}px, ${shiftY}px)`,
 		transformOrigin: "top left",
+		willChange: "transform",
 	}),
 	fixedWidth: (width: number) => ({ width }),
 	hiddenOverflow: {
@@ -298,7 +319,7 @@ export const demoStyles = stylex.create({
 		marginBottom: 0,
 	},
 	threadShell: {
-		width: { default: "90%", [constants.mobile]: "100%" },
+		width: { default: "90%", ["@media (max-width: 640px)"]: "100%" },
 		maxWidth: "calc(42rem * 0.9)",
 		userSelect: "text",
 	},
@@ -324,24 +345,22 @@ export const demoStyles = stylex.create({
 		containerType: "inline-size",
 	},
 	shimmerText: {
-		color: { default: "transparent", [constants.reducedMotion]: tokens.dim },
+		color: { default: "transparent", ["@media (prefers-reduced-motion: reduce)"]: tokens.dim },
 		backgroundImage: {
-			default:
-				"linear-gradient(90deg, color-mix(in srgb, #fff 38%, transparent) 0%, color-mix(in srgb, #fff 38%, transparent) 35%, color-mix(in srgb, #fff 88%, transparent) 50%, color-mix(in srgb, #fff 38%, transparent) 65%, color-mix(in srgb, #fff 38%, transparent) 100%)",
-			[constants.reducedMotion]: "none",
+			default: `linear-gradient(90deg, ${tokens.animatedGradientSoft} 0%, ${tokens.animatedGradientSoft} 35%, ${tokens.animatedGradientStrong} 50%, ${tokens.animatedGradientSoft} 65%, ${tokens.animatedGradientSoft} 100%)`,
+			["@media (prefers-reduced-motion: reduce)"]: "none",
 		},
 		backgroundSize: "250% 100%",
 		backgroundPosition: "100% 0",
 		backgroundClip: "text",
 		WebkitBackgroundClip: "text",
-		animationName: { default: shimmerSweep, [constants.reducedMotion]: "none" },
+		animationName: { default: shimmerSweep, ["@media (prefers-reduced-motion: reduce)"]: "none" },
 		animationDuration: "1.2s",
 		animationTimingFunction: "steps(48, end)",
 		animationIterationCount: "infinite",
 	},
 	gradientText: {
-		backgroundImage:
-			"linear-gradient(110deg, #fff 0%, oklch(74.6% 0.16 232.661) 30%, #ffffff38 55%, oklch(82.8% 0.111 230.318) 80%, #fff 100%)",
+		backgroundImage: `linear-gradient(110deg, ${tokens.animatedGradientStrong} 0%, ${tokens.accent} 30%, ${tokens.animatedGradientSoft} 55%, ${tokens.link} 80%, ${tokens.animatedGradientStrong} 100%)`,
 		backgroundSize: "250% 250%",
 		backgroundClip: "text",
 		WebkitBackgroundClip: "text",
@@ -375,6 +394,7 @@ export const demoStyles = stylex.create({
 		borderLeftColor: tokens.border,
 		backgroundColor: "transparent",
 		color: "inherit",
+		cursor: "default",
 		fontFamily: "inherit",
 		fontSize: "inherit",
 		fontWeight: "inherit",

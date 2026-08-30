@@ -18,8 +18,10 @@ const storyDemoEnter = stylex.keyframes({
 const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 const heroStagePadding = `calc((100% - ${pageWidth}) / 2)`;
 const heroStageClippedWidth = `calc(100% - ${heroStagePadding})`;
+const scrimAmbient = `color-mix(in oklab, ${colors.background} 48%, transparent)`;
+const scrimDirect = `color-mix(in oklab, ${colors.background} 32%, transparent)`;
 const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
-const kittyCardWidth = `min(400px, calc((min(${lengths.pageWidth}, calc(100vw - ${lengths.pageGutter})) - 48px) / 3))`;
+const kittyCardWidth = "min(620px, calc(100vw - 48px))";
 
 export const styles = stylex.create({
 	sectionWidth: {
@@ -57,16 +59,16 @@ export const styles = stylex.create({
 		textAlign: "center",
 	},
 	heroCopy: {
-		position: "relative",
-		zIndex: 2,
+		position: { default: "relative", "::before": "absolute" },
+		zIndex: { default: 2, "::before": -1 },
 		maxWidth: "790px",
-		"::before": {
-			content: '""',
-			inset: "-60% -80%",
-			backgroundImage:
-				"radial-gradient(50% 50% at 50% 50%, rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.025) 55%, transparent 100%)",
-			pointerEvents: "none",
+		content: { default: null, "::before": '""' },
+		inset: { default: null, "::before": "-18% -22%" },
+		backgroundImage: {
+			default: null,
+			"::before": `radial-gradient(ellipse 68% 62% at 50% 44%, ${scrimAmbient}, transparent 72%), radial-gradient(ellipse 44% 46% at 50% 40%, ${scrimDirect}, transparent 70%)`,
 		},
+		pointerEvents: { default: null, "::before": "none" },
 	},
 	heroHeading: {
 		marginTop: 0,
@@ -80,20 +82,16 @@ export const styles = stylex.create({
 			default: "78px",
 			"@media (max-width: 620px)": "44px",
 		},
-		letterSpacing: {
-			default: constants.headerTracking,
-			"@media (max-width: 620px)": "-0.022em",
-		},
+		letterSpacing: constants.heroTracking,
 		textWrap: "balance",
-		textShadow: "0 1px 2px rgb(0 0 0 / 0.16)",
 	},
 	heroTitleEnd: {
 		whiteSpace: "nowrap",
 	},
 	heroMarkButton: {
 		display: "inline-flex",
-		width: "0.78em",
-		height: "0.78em",
+		width: { default: "0.78em", "@media (max-width: 620px)": "44px" },
+		height: { default: "0.78em", "@media (max-width: 620px)": "44px" },
 		minWidth: 0,
 		minHeight: 0,
 		marginTop: 0,
@@ -110,15 +108,18 @@ export const styles = stylex.create({
 		display: "block",
 		width: "100%",
 		height: "100%",
+		filter: {
+			default: "none",
+			"@media (prefers-color-scheme: light)": "invert(1)",
+		},
 	},
 	heroThesis: {
 		marginTop: "12px",
 		color: colors.foreground,
 		fontFamily: constants.fontSans,
 		fontSize: "16px",
-		fontWeight: 500,
+		fontWeight: 400,
 		lineHeight: "24px",
-		textShadow: "0 1px 4px rgb(0 0 0 / 0.18)",
 	},
 	heroActions: {
 		display: "flex",
@@ -187,7 +188,7 @@ export const styles = stylex.create({
 		fontSize: "16px",
 		fontWeight: 400,
 		lineHeight: "24px",
-		color: colors.quiet,
+		color: colors.dim,
 		textAlign: "left",
 	},
 	sponsorsList: {
@@ -207,6 +208,10 @@ export const styles = stylex.create({
 	sponsorImage: {
 		display: "block",
 		width: "auto",
+		filter: {
+			default: "none",
+			"@media (prefers-color-scheme: light)": "invert(1)",
+		},
 	},
 	sponsorImageSize: (width: number, height: number) => ({
 		width,
@@ -348,17 +353,7 @@ export const styles = stylex.create({
 	storySelectedOptionTitle: {
 		color: colors.foreground,
 	},
-	storyDescription: {
-		maxWidth: "440px",
-		marginTop: "8px",
-		marginRight: 0,
-		marginBottom: 0,
-		marginLeft: 0,
-		color: colors.dim,
-		fontFamily: constants.fontSans,
-		fontSize: "16px",
-		fontWeight: 400,
-		lineHeight: "24px",
+	storyDescriptionMotion: {
 		opacity: 0,
 		transform: "translateY(6px)",
 		filter: "blur(8px)",
@@ -366,6 +361,18 @@ export const styles = stylex.create({
 		transitionDuration: times.feature,
 		transitionTimingFunction:
 			"cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1)",
+	},
+	storyDescription: {
+		maxWidth: "440px",
+		marginTop: "8px",
+		marginRight: 0,
+		marginBottom: 0,
+		marginLeft: 0,
+		color: colors.fine,
+		fontFamily: constants.fontSans,
+		fontSize: "16px",
+		fontWeight: 400,
+		lineHeight: "24px",
 	},
 	storySelectedDescription: {
 		opacity: 1,
@@ -481,6 +488,9 @@ export const styles = stylex.create({
 			display: "none",
 		},
 	},
+	kittyCarouselDragging: {
+		userSelect: "none",
+	},
 	kittyItems: {
 		display: "flex",
 		width: "max-content",
@@ -493,11 +503,7 @@ export const styles = stylex.create({
 		minWidth: 0,
 		flexGrow: 0,
 		flexShrink: 0,
-		flexBasis: {
-			default: kittyCardWidth,
-			"@media (max-width: 900px)": "calc((100vw - 48px - 24px) / 2)",
-			"@media (max-width: 620px)": "calc(100vw - 48px)",
-		},
+		flexBasis: kittyCardWidth,
 	},
 	kittyFeatureBody: {
 		minHeight: "56px",
@@ -505,7 +511,6 @@ export const styles = stylex.create({
 		paddingRight: 0,
 		paddingBottom: "16px",
 		paddingLeft: 0,
-		cursor: "pointer",
 	},
 	kittyFeatureTrigger: {
 		display: "block",
@@ -520,7 +525,6 @@ export const styles = stylex.create({
 		fontWeight: 500,
 		lineHeight: "24px",
 		textAlign: "left",
-		cursor: "pointer",
 	},
 	kittyFeatureDescription: {
 		overflow: "hidden",
@@ -528,7 +532,7 @@ export const styles = stylex.create({
 	kittyFeatureDescriptionText: {
 		maxWidth: "42ch",
 		paddingTop: "12px",
-		color: colors.dim,
+		color: colors.fine,
 		fontFamily: constants.fontSans,
 		fontSize: "16px",
 		fontWeight: 400,
@@ -541,31 +545,30 @@ export const styles = stylex.create({
 		overflow: "hidden",
 		padding: "1px",
 		borderRadius: lengths.radiusFrame,
-		backgroundImage: `linear-gradient(${colors.surfaceFaint}, ${colors.surfaceFaint}), linear-gradient(to bottom, ${colors.border}, rgb(0 0 0))`,
-		"::before": {
-			content: '""',
-			position: "absolute",
-			zIndex: 1,
-			inset: 0,
-			pointerEvents: "none",
-			backgroundColor: colors.background,
-			mixBlendMode: "lighten",
+		backgroundImage: {
+			default: `linear-gradient(to bottom, ${colors.borderStrong}, ${colors.borderSoft})`,
+			":focus-visible": `linear-gradient(to bottom, ${colors.borderStrongHover}, ${colors.border})`,
 		},
 		"::after": {
 			content: '""',
 			position: "absolute",
 			zIndex: 1,
-			inset: 0,
+			inset: "1px",
+			borderRadius: `calc(${lengths.radiusFrame} - 1px)`,
 			pointerEvents: "none",
-			backgroundColor: colors.mediaTone,
-			mixBlendMode: "darken",
+			backgroundColor: colors.surfaceFaint,
+			mixBlendMode: {
+				default: "screen",
+				"@media (prefers-color-scheme: light)": "multiply",
+			},
 		},
 	},
 	kittyFeatureImage: {
 		display: "block",
 		width: "100%",
 		height: "100%",
+		borderRadius: `calc(${lengths.radiusFrame} - 1px)`,
 		objectFit: "cover",
-		filter: "grayscale(1) contrast(0.88)",
+		filter: "saturate(1.08) contrast(1.02)",
 	},
 });

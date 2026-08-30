@@ -14,7 +14,6 @@ export const styles = stylex.create({
 		},
 		minHeight: "calc(0.25rem * 6)",
 		minWidth: "0px",
-		cursor: "pointer",
 		listStyleType: "none",
 		alignItems: "center",
 		rowGap: "calc(0.25rem * 2)",

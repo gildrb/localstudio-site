@@ -23,7 +23,11 @@ fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
 @fragment
 fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   let scene = textureSample(sceneTexture, texSampler, input.uv);
-  let rgb = linear_to_display(aces_tonemap(scene.rgb));
+  let straightScene = scene.rgb / max(scene.a, 0.0001);
+  let sky = linear_to_display(aces_tonemap(straightScene));
+  // Preserve hue and movement while keeping every possible reflected pixel
+  // pale enough for the site's dark foreground APCA roles.
+  let rgb = mix(sky, vec3f(1.0), 0.80);
   let a = clamp(scene.a, 0.0, 1.0);
   return vec4f(rgb * a, a);
 }

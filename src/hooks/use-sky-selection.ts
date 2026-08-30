@@ -18,7 +18,6 @@ function selectionPosition(position: number) {
 	return {
 		segment: start,
 		mix: Math.round((scaled - start) * 1000) / 10,
-		lightInk: normalized >= 0.58,
 		terminal: start === end,
 	};
 }
@@ -27,9 +26,8 @@ const segmentClassNames = selectionStops.map(
 	(style) => stylex.props(style).className ?? "",
 );
 const darkInkClassName = stylex.props(selectionStyles.darkInk).className ?? "";
-const lightInkClassName = stylex.props(selectionStyles.lightInk).className ?? "";
 const selectionClasses = new Set(
-	[...segmentClassNames, darkInkClassName, lightInkClassName].flatMap(
+	[...segmentClassNames, darkInkClassName].flatMap(
 		(className) => className.split(" "),
 	),
 );
@@ -46,11 +44,10 @@ function clearSelectionClass(owner: HTMLElement) {
 
 function applySelectionClass(owner: HTMLElement, position: number) {
 	clearSelectionClass(owner);
-	const { segment, mix, lightInk, terminal } = selectionPosition(position);
+	const { segment, mix, terminal } = selectionPosition(position);
 	const current = owner.getAttribute("class");
 	const segmentClassName = segmentClassNames[segment] ?? segmentClassNames[0];
-	const inkClassName = lightInk ? lightInkClassName : darkInkClassName;
-	const className = `${segmentClassName} ${inkClassName}`;
+	const className = `${segmentClassName} ${darkInkClassName}`;
 	if (!terminal) owner.dataset["selectionMix"] = `${mix}%`;
 	owner.setAttribute("class", current ? `${current} ${className}` : className);
 }

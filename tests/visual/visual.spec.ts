@@ -11,7 +11,7 @@ for (const viewport of viewports) {
 		test(`${viewport.name} ${path}`, async ({ page }) => {
 			test.skip(process.platform !== "linux", "visual baselines are recorded on Linux");
 			await page.setViewportSize(viewport);
-			await page.emulateMedia({ reducedMotion: "reduce" });
+			await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
 			await page.goto(path);
 			await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 			await expect(page).toHaveScreenshot(`${viewport.name}${path === "/" ? "-home" : path.replaceAll("/", "-")}.png`, {

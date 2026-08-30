@@ -1,5 +1,5 @@
 export const assets = {
-	wordmark: "/images/localstudio-logo.svg",
+	brandLogo: "/images/localai_light.svg",
 	mark: "/images/optimized.svg",
 	favicon: "/images/favicon.svg",
 	faviconDark: "/images/favicon-dark.svg",
@@ -49,6 +49,11 @@ export const assets = {
 	fontMono: "/fonts/geist-mono.woff2",
 	logoMesh: "/localai/localai-logo.gltf",
 	logoMeshBin: "/localai/localai-logo.bin",
+	dayEnv: "/localai/day-sky-cubemap.jpg",
+	nightEnv: "/localai/night-sky-cubemap.jpg",
+	heroRenderDay: "/localai/hero-render-day.png",
+	ctaMark: "/localai/cta-mark.gltf",
+	heroRenderNight: "/localai/hero-render-night.png",
 } as const;
 
 const registered = new Set<string>(Object.values(assets));

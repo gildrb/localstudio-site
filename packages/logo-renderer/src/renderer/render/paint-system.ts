@@ -1,10 +1,6 @@
-// Owns paint target state as one unit, including ping-pong parity and decay/noise/debug passes.
-// INVARIANT: readIsPing flips only after encoding a decay pass; front rendering samples current read texture.
-// Imported only by render/renderer.ts.
-
-import { Device } from "@vgpu/core";
-import { RenderPass } from "@vgpu/render";
-import { createPaintDebugBindGroup, createPaintDecayBindGroup } from "./bindings";
+// Paint ping-pong state and public vgpu effects.
+import { effect, target, type Effect, type Frame, type Gpu } from "vgpu";
+import paintUpdate from "../shaders/paint/paint-update.wgsl";
 import {
   DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
   DEFAULT_PAINT_BRUSH_RADIUS,
@@ -13,17 +9,19 @@ import {
   DEFAULT_PAINT_DIFFUSION_JITTER,
   DEFAULT_PAINT_DIFFUSION_RATE,
   DEFAULT_PAINT_DT,
+  PAINT_FORMAT,
+  PAINT_STATIC_NOISE_FORMAT,
   PAINT_STROKE_MOVEMENT_EPSILON_CELLS,
+  VORONOI_NOISE_FORMAT,
   imprintGridSizeForLogicalSize,
 } from "./constants";
 import { mix } from "./math";
 import { paintMappingMetrics } from "./pointer-mapping";
 import type { RendererResources } from "./resources";
 import {
-  createPaintStaticNoiseTexture,
-  createPaintTexture,
-  createVoronoiNoiseTexture,
-  uploadStaticNoiseTexture,
+  createUploadPingPong,
+  createUploadTarget,
+  hashPaintCell,
 } from "./textures";
 import type {
   ImprintRenderOptions,
@@ -34,108 +32,98 @@ import type {
   RenderControls,
 } from "./types";
 
-export function createPaintSystem(device: Device, resources: RendererResources, mesh: MeshData) {
+function destroy(t: import("vgpu").Target) {
+  t.color.destroy();
+  t.depth?.destroy();
+}
+export function createPaintSystem(
+  gpu: Gpu,
+  r: RendererResources,
+  mesh: MeshData,
+) {
   let targets: PaintTargets | undefined;
-
+  const stepEffects: Effect[] = [];
+  const effectForStep = (step: number) => {
+    const existing = stepEffects[step];
+    if (existing) return existing;
+    const created = effect(gpu, paintUpdate, {
+      label: `eve-5-paint-step-${step}`,
+    });
+    stepEffects[step] = created;
+    return created;
+  };
   const dispose = () => {
-    targets?.ping.destroy();
-    targets?.pong.destroy();
-    targets?.staticNoise.destroy();
-    targets?.voronoiValue.destroy();
-    targets?.voronoiEdge.destroy();
+    if (!targets) return;
+    destroy(targets.paint.read);
+    destroy(targets.paint.write);
+    destroy(targets.staticNoise);
+    destroy(targets.voronoi);
     targets = undefined;
   };
-
-  const ensure = (logicalWidth: number, logicalHeight: number, gridScaleMultiplier?: number) => {
-    const { cols, rows } = imprintGridSizeForLogicalSize(
-      logicalWidth,
-      logicalHeight,
-      gridScaleMultiplier,
-    );
+  const ensure = (w: number, h: number, m?: number) => {
+    const { cols, rows } = imprintGridSizeForLogicalSize(w, h, m);
     if (targets?.cols === cols && targets.rows === rows) return targets;
     dispose();
-    const ping = createPaintTexture(device, "eve-5-paint-ping", cols, rows);
-    const pong = createPaintTexture(device, "eve-5-paint-pong", cols, rows);
-    const staticNoise = createPaintStaticNoiseTexture(
-      device,
+    const staticNoise = createUploadTarget(
+      gpu,
+      [cols, rows],
+      PAINT_STATIC_NOISE_FORMAT,
       "eve-5-paint-static-noise",
-      cols,
-      rows,
     );
-    const voronoiValue = createVoronoiNoiseTexture(device, "eve-5-ascii-voronoi-value", cols, rows);
-    const voronoiEdge = createVoronoiNoiseTexture(device, "eve-5-ascii-voronoi-edge", cols, rows);
-    uploadStaticNoiseTexture(device, staticNoise, cols, rows);
+    const values = new Float32Array(cols * rows * 4);
+    for (let y = 0; y < rows; y++)
+      for (let x = 0; x < cols; x++) {
+        const o = (y * cols + x) * 4;
+        values[o] = hashPaintCell(x, y, 0xa511e9b3);
+        values[o + 1] = hashPaintCell(x, y, 0x63d83595);
+        values[o + 2] = hashPaintCell(x, y, 0xf9bd1c5b);
+        values[o + 3] = hashPaintCell(x, y, 0x1c4b256d);
+      }
+    gpu.gpu.queue.writeTexture(
+      { texture: staticNoise.color.gpu },
+      values,
+      { bytesPerRow: cols * 16, rowsPerImage: rows },
+      { width: cols, height: rows },
+    );
     targets = {
       cols,
       rows,
-      ping,
-      pong,
+      paint: createUploadPingPong(gpu, cols, rows, PAINT_FORMAT, "eve-5-paint"),
       staticNoise,
-      voronoiValue,
-      voronoiEdge,
-      readIsPing: true,
-      pingReadBindGroup: createPaintDecayBindGroup(
-        device,
-        resources.pipelines.paintDecayPipeline,
-        ping.createView(),
-        staticNoise.createView(),
-        resources.buffers.paintParamsBuffer,
-        "eve-5-paint-decay-read-ping",
-      ),
-      pongReadBindGroup: createPaintDecayBindGroup(
-        device,
-        resources.pipelines.paintDecayPipeline,
-        pong.createView(),
-        staticNoise.createView(),
-        resources.buffers.paintParamsBuffer,
-        "eve-5-paint-decay-read-pong",
-      ),
-      pingDebugBindGroup: createPaintDebugBindGroup(
-        device,
-        resources.pipelines.paintDebugPipeline,
-        ping.createView(),
-        "eve-5-paint-debug-ping",
-      ),
-      pongDebugBindGroup: createPaintDebugBindGroup(
-        device,
-        resources.pipelines.paintDebugPipeline,
-        pong.createView(),
-        "eve-5-paint-debug-pong",
-      ),
+      voronoi: target(gpu, {
+        size: [cols, rows],
+        colors: [
+          { format: VORONOI_NOISE_FORMAT },
+          { format: VORONOI_NOISE_FORMAT },
+        ],
+        label: "eve-5-voronoi",
+      }),
     };
     return targets;
   };
-
-  const uploadSeed = (paintTargets: PaintTargets, seed: PaintSeed) => {
-    if (seed.width !== paintTargets.cols || seed.height !== paintTargets.rows) {
+  const uploadSeed = (t: PaintTargets, seed: PaintSeed) => {
+    if (
+      seed.width !== t.cols ||
+      seed.height !== t.rows ||
+      seed.values.length !== t.cols * t.rows
+    )
       throw new Error(
-        `Paint seed dimensions ${seed.width}×${seed.height} do not match paint grid ${paintTargets.cols}×${paintTargets.rows}.`,
+        `Paint seed dimensions do not match paint grid ${t.cols}×${t.rows}.`,
       );
-    }
-    if (seed.values.length !== paintTargets.cols * paintTargets.rows) {
-      throw new Error(
-        `Paint seed has ${seed.values.length} values, expected ${paintTargets.cols * paintTargets.rows}.`,
-      );
-    }
-    paintTargets.readIsPing = true;
-    device.gpu.queue.writeTexture(
-      { texture: paintTargets.ping },
+    gpu.gpu.queue.writeTexture(
+      { texture: t.paint.read.color.gpu },
       new Float32Array(seed.values),
-      {
-        bytesPerRow: paintTargets.cols * Float32Array.BYTES_PER_ELEMENT,
-        rowsPerImage: paintTargets.rows,
-      },
-      { width: paintTargets.cols, height: paintTargets.rows },
+      { bytesPerRow: t.cols * 4, rowsPerImage: t.rows },
+      { width: t.cols, height: t.rows },
     );
   };
-
-  const paintStepOptions = (
+  const stepOptions = (
     paint: PaintRenderOptions,
     step: number,
     steps: number,
   ): PaintRenderOptions => {
     const stroke = paint.stroke;
-    if (!stroke) {
+    if (!stroke)
       return {
         ...paint,
         seed: undefined,
@@ -143,21 +131,17 @@ export function createPaintSystem(device: Device, resources: RendererResources, 
         decaySteps: undefined,
         brushActive: false,
       };
-    }
-    const denominator = Math.max(1, steps - 1);
-    const t = steps <= 1 ? 1 : step / denominator;
+    const d = Math.max(1, steps - 1),
+      t = steps <= 1 ? 1 : step / d,
+      pt = steps <= 1 ? t : Math.max(0, step - 1) / d;
     const brushCell = [
-      mix(stroke.fromCell[0], stroke.toCell[0], t),
-      mix(stroke.fromCell[1], stroke.toCell[1], t),
-    ] as const;
-    const previousT = steps <= 1 ? t : Math.max(0, step - 1) / denominator;
-    const previousBrushCell = [
-      mix(stroke.fromCell[0], stroke.toCell[0], previousT),
-      mix(stroke.fromCell[1], stroke.toCell[1], previousT),
-    ] as const;
-    const dx = brushCell[0] - previousBrushCell[0];
-    const dy = brushCell[1] - previousBrushCell[1];
-    const moved = Math.hypot(dx, dy) >= PAINT_STROKE_MOVEMENT_EPSILON_CELLS;
+        mix(stroke.fromCell[0], stroke.toCell[0], t),
+        mix(stroke.fromCell[1], stroke.toCell[1], t),
+      ] as const,
+      prev = [
+        mix(stroke.fromCell[0], stroke.toCell[0], pt),
+        mix(stroke.fromCell[1], stroke.toCell[1], pt),
+      ] as const;
     return {
       ...paint,
       seed: undefined,
@@ -165,140 +149,106 @@ export function createPaintSystem(device: Device, resources: RendererResources, 
       stroke: undefined,
       decaySteps: undefined,
       brushCell,
-      brushPreviousCell: previousBrushCell,
-      brushActive: stroke.movementGated === false || moved,
-      dt: stroke.duration !== undefined && steps > 0 ? stroke.duration / steps : paint.dt,
+      brushPreviousCell: prev,
+      brushActive:
+        stroke.movementGated === false ||
+        Math.hypot(brushCell[0] - prev[0], brushCell[1] - prev[1]) >=
+          PAINT_STROKE_MOVEMENT_EPSILON_CELLS,
+      dt:
+        stroke.duration !== undefined && steps > 0
+          ? stroke.duration / steps
+          : paint.dt,
     };
   };
-
-  const renderDecay = (paintTargets: PaintTargets, paint: PaintRenderOptions = {}) => {
-    const dt = Math.min(Math.max(paint.dt ?? DEFAULT_PAINT_DT, 0), 0.1);
-    const brushCell = paint.brushCell ?? [-1000000, -1000000];
-    const brushPreviousCell = paint.brushPreviousCell ?? brushCell;
-    resources.buffers.paintParamsBuffer.write(
-      new Float32Array([
-        brushCell[0],
-        brushCell[1],
-        brushPreviousCell[0],
-        brushPreviousCell[1],
-        paint.brushRadius ?? DEFAULT_PAINT_BRUSH_RADIUS,
-        paint.brushStrength ?? DEFAULT_PAINT_BRUSH_STRENGTH,
-        paint.decayRate ?? DEFAULT_PAINT_DECAY_RATE,
-        paint.diffusionRate ?? DEFAULT_PAINT_DIFFUSION_RATE,
-        paint.diffusionJitter ?? DEFAULT_PAINT_DIFFUSION_JITTER,
-        dt,
-        paint.brushActive ? 1 : 0,
-        0,
-      ]),
-    );
-    const readBindGroup = paintTargets.readIsPing
-      ? paintTargets.pingReadBindGroup
-      : paintTargets.pongReadBindGroup;
-    const writeTexture = paintTargets.readIsPing ? paintTargets.pong : paintTargets.ping;
-    const pass = new RenderPass(device, {
-      label: "eve-5-paint-decay-pass",
-      colorAttachments: [
-        {
-          view: writeTexture.createView(),
-          loadOp: "clear",
-          storeOp: "store",
-          clearValue: [0, 0, 0, 1],
-        },
-      ],
-    });
-    pass.setPipeline(resources.pipelines.paintDecayPipeline);
-    pass.setBindGroup(0, readBindGroup);
-    pass.draw(3);
-    pass.end();
-    paintTargets.readIsPing = !paintTargets.readIsPing;
-  };
-
-  const apply = (paintTargets: PaintTargets, paint: PaintRenderOptions | undefined) => {
-    if (paint?.seed) {
-      uploadSeed(paintTargets, paint.seed);
-    }
-    if (paint?.seed || paint?.stroke) {
-      const steps = Math.max(0, Math.floor(paint.steps ?? 0));
-      for (let step = 0; step < steps; step += 1) {
-        renderDecay(paintTargets, paintStepOptions(paint, step, steps));
-      }
-      const decaySteps = Math.max(0, Math.floor(paint.decaySteps ?? 0));
-      for (let step = 0; step < decaySteps; step += 1) {
-        renderDecay(paintTargets, {
-          ...paint,
-          seed: undefined,
-          steps: undefined,
-          stroke: undefined,
-          decaySteps: undefined,
-          brushActive: false,
-        });
-      }
-    } else {
-      renderDecay(paintTargets, paint);
-    }
-  };
-
-  const renderVoronoiNoise = (
-    paintTargets: PaintTargets,
-    controls: RenderControls,
-    logicalWidth: number,
-    logicalHeight: number,
-    projectionPaddingRadius: number,
-    imprint: ImprintRenderOptions = {},
+  const decay = (
+    f: Frame,
+    t: PaintTargets,
+    p: PaintRenderOptions = {},
+    decayEffect: Effect = r.pipelines.paintDecay,
   ) => {
-    const metrics = paintMappingMetrics(
+    const brush = p.brushCell ?? [-1e6, -1e6],
+      prev = p.brushPreviousCell ?? brush;
+    decayEffect.set({
+      readTex: t.paint.read.color,
+      staticNoiseTex: t.staticNoise.color,
+      params: {
+        brushCell: brush,
+        brushPreviousCell: prev,
+        brushRadius: p.brushRadius ?? DEFAULT_PAINT_BRUSH_RADIUS,
+        brushStrength: p.brushStrength ?? DEFAULT_PAINT_BRUSH_STRENGTH,
+        decayRate: p.decayRate ?? DEFAULT_PAINT_DECAY_RATE,
+        diffusionRate: p.diffusionRate ?? DEFAULT_PAINT_DIFFUSION_RATE,
+        diffusionJitter: p.diffusionJitter ?? DEFAULT_PAINT_DIFFUSION_JITTER,
+        dt: Math.min(Math.max(p.dt ?? DEFAULT_PAINT_DT, 0), 0.1),
+        brushActive: p.brushActive ? 1 : 0,
+        _pad: 0,
+        rippleCenter: p.ripple?.center ?? [-1e6, -1e6],
+        rippleAge: p.ripple?.age ?? Number.POSITIVE_INFINITY,
+        rippleStrength: p.ripple?.strength ?? 0,
+      },
+    });
+    f.pass(t.paint.write, decayEffect);
+    t.paint.swap();
+  };
+  const apply = (f: Frame, t: PaintTargets, p?: PaintRenderOptions) => {
+    if (p?.seed) uploadSeed(t, p.seed);
+    if (p?.seed || p?.stroke) {
+      const n = Math.max(0, Math.floor(p.steps ?? 0));
+      for (let i = 0; i < n; i++) {
+        decay(f, t, stepOptions(p, i, n), effectForStep(i));
+      }
+      const decaySteps = Math.max(0, Math.floor(p.decaySteps ?? 0));
+      for (let i = 0; i < decaySteps; i++) {
+        decay(
+          f,
+          t,
+          {
+            ...p,
+            seed: undefined,
+            steps: undefined,
+            stroke: undefined,
+            decaySteps: undefined,
+            brushActive: false,
+          },
+          effectForStep(n + i),
+        );
+      }
+    } else decay(f, t, p);
+  };
+  const renderVoronoiNoise = (
+    f: Frame,
+    t: PaintTargets,
+    c: RenderControls,
+    w: number,
+    h: number,
+    pad: number,
+    im: ImprintRenderOptions = {},
+  ) => {
+    const m = paintMappingMetrics(
       mesh.bounds,
-      controls,
-      logicalWidth,
-      logicalHeight,
-      imprint.gridScaleMultiplier ?? DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
-      projectionPaddingRadius,
-      imprint.devicePixelRatio,
+      c,
+      w,
+      h,
+      im.gridScaleMultiplier ?? DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
+      pad,
+      im.devicePixelRatio,
     );
-    resources.buffers.voronoiNoiseParamsBuffer.write(
-      new Float32Array([
-        metrics.gridScale,
-        imprint.time ?? 0,
-        metrics.originCell[0],
-        metrics.originCell[1],
-      ]),
-    );
-    const pass = new RenderPass(device, {
-      label: "eve-5-ascii-voronoi-noise-pass",
-      colorAttachments: [
-        {
-          view: paintTargets.voronoiValue.createView(),
-          loadOp: "clear",
-          storeOp: "store",
-          clearValue: [0, 0, 0, 1],
-        },
-        {
-          view: paintTargets.voronoiEdge.createView(),
-          loadOp: "clear",
-          storeOp: "store",
-          clearValue: [0, 0, 0, 1],
-        },
-      ],
+    r.pipelines.voronoiNoise.set({
+      params: {
+        gridScale: m.gridScale,
+        time: im.time ?? 0,
+        originCell: m.originCell,
+      },
     });
-    pass.setPipeline(resources.pipelines.voronoiNoisePipeline);
-    pass.setBindGroup(0, resources.voronoiNoiseBindGroup);
-    pass.draw(3);
-    pass.end();
+    f.pass(t.voronoi, r.pipelines.voronoiNoise);
   };
-
-  const renderDebug = (view: GPUTextureView, paintTargets: PaintTargets) => {
-    const pass = new RenderPass(device, {
-      label: "eve-5-paint-debug-pass",
-      colorAttachments: [{ view, loadOp: "clear", storeOp: "store", clearValue: [0, 0, 0, 1] }],
-    });
-    pass.setPipeline(resources.pipelines.paintDebugPipeline);
-    pass.setBindGroup(
-      0,
-      paintTargets.readIsPing ? paintTargets.pingDebugBindGroup : paintTargets.pongDebugBindGroup,
-    );
-    pass.draw(3);
-    pass.end();
+  const renderDebug = (
+    f: Frame,
+    target: import("vgpu").Target,
+    t: PaintTargets,
+  ) => {
+    r.pipelines.paintDebug.set({ paintTex: t.paint.read.color });
+    f.pass(target, r.pipelines.paintDebug);
   };
-
   return { ensure, apply, renderVoronoiNoise, renderDebug, dispose };
 }

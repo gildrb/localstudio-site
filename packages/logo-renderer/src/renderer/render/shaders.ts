@@ -1,33 +1,26 @@
-// Single shader import/compile registry; WGSL entry paths stay unchanged.
-// INVARIANT: Pure move from render.ts; keep shader ABI, binding order, and pixel output unchanged.
-// Imported by render/renderer.ts and re-exported only through render.ts facade.
+// Central shader-source registry for public vgpu draw/effect creation.
+import glassBack from "../shaders/glass/back.wgsl";
+import glassFront from "../shaders/glass/front.wgsl";
+import glassBackDepth from "../shaders/glass/back-depth.wgsl";
+import bloomBlur from "../shaders/bloom/blur.wgsl";
+import bloomComposite from "../shaders/bloom/composite.wgsl";
+import lightComposite from "../shaders/postprocess/light-composite.wgsl";
+import envBg from "../shaders/env/background.wgsl";
+import preview from "../shaders/debug/render-target-preview.wgsl";
+import paintUpdate from "../shaders/paint/paint-update.wgsl";
+import paintDebug from "../shaders/paint/paint-debug.wgsl";
+import voronoiNoiseUpdate from "../shaders/paint/voronoi-noise-update.wgsl";
 
-import { Device } from "@vgpu/core";
-import { compile } from "@vgpu/wgsl";
-import glassBackWgsl from "../shaders/glass/back.wgsl";
-import glassFrontWgsl from "../shaders/glass/front.wgsl";
-import glassBackDepthWgsl from "../shaders/glass/back-depth.wgsl";
-import eveBloomBlurWgsl from "../shaders/bloom/blur.wgsl";
-import eveBloomCompositeWgsl from "../shaders/bloom/composite.wgsl";
-import eveLightCompositeWgsl from "../shaders/postprocess/light-composite.wgsl";
-import eveEnvBgWgsl from "../shaders/env/background.wgsl";
-import renderTargetPreviewWgsl from "../shaders/debug/render-target-preview.wgsl";
-import paintUpdateWgsl from "../shaders/paint/paint-update.wgsl";
-import paintDebugWgsl from "../shaders/paint/paint-debug.wgsl";
-import voronoiNoiseUpdateWgsl from "../shaders/paint/voronoi-noise-update.wgsl";
-
-export function createShaders(device: Device) {
-  return {
-    glassBack: device.createShader(compile(glassBackWgsl)),
-    glassFront: device.createShader(compile(glassFrontWgsl)),
-    glassBackDepth: device.createShader(compile(glassBackDepthWgsl)),
-    bloomBlur: device.createShader(compile(eveBloomBlurWgsl)),
-    bloomComposite: device.createShader(compile(eveBloomCompositeWgsl)),
-    lightComposite: device.createShader(compile(eveLightCompositeWgsl)),
-    envBg: device.createShader(compile(eveEnvBgWgsl)),
-    preview: device.createShader(compile(renderTargetPreviewWgsl)),
-    paintUpdate: device.createShader(compile(paintUpdateWgsl)),
-    paintDebug: device.createShader(compile(paintDebugWgsl)),
-    voronoiNoiseUpdate: device.createShader(compile(voronoiNoiseUpdateWgsl)),
-  };
-}
+export const shaders = {
+  glassBack,
+  glassFront,
+  glassBackDepth,
+  bloomBlur,
+  bloomComposite,
+  lightComposite,
+  envBg,
+  preview,
+  paintUpdate,
+  paintDebug,
+  voronoiNoiseUpdate,
+};

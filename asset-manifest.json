@@ -61,6 +61,17 @@
 			"sha256": "0398ffd4db275a7f0ec7d75bb43084179d9ad9fe313245891aa972cbc26f225d"
 		},
 		{
+			"path": "public/images/cta-mark.svg",
+			"role": "image",
+			"type": "image/svg+xml",
+			"dimensions": {
+				"width": 296,
+				"height": 145
+			},
+			"bytes": 1008,
+			"sha256": "e90333aec9e76dd516d442fe670d05110d31cff124dc15e53c485fbb4b42b2ef"
+		},
+		{
 			"path": "public/images/favicon-dark.svg",
 			"role": "icon",
 			"type": "image/svg+xml",
@@ -254,15 +265,15 @@
 			"sha256": "0f0689d8065a4048ae74745253c9e1ab840972c53a45c217fbc1773416416df5"
 		},
 		{
-			"path": "public/images/localstudio-logo.svg",
+			"path": "public/images/localai_light.svg",
 			"role": "image",
 			"type": "image/svg+xml",
 			"dimensions": {
-				"width": 3000,
-				"height": 566
+				"width": 525,
+				"height": 525
 			},
-			"bytes": 11615,
-			"sha256": "55e0397d92f54666715816efa8160d8a0881199e767a741d431a347fb654bdfa"
+			"bytes": 1606,
+			"sha256": "86688041e99d50818134604b74ef14402a1ff50ebaa479127d8dd7fd653ac334"
 		},
 		{
 			"path": "public/images/optimized.svg",
@@ -463,20 +474,58 @@
 			"sha256": "92cea3f2423d60c3c369b8983fa26610b6ea8b0556f34e3177ac2fd93a1c4167"
 		},
 		{
+			"path": "public/localai/day-sky-cubemap.jpg",
+			"role": "logo-mesh",
+			"type": "image/jpeg",
+			"dimensions": null,
+			"bytes": 76437,
+			"sha256": "9f5f04a8f3d46b8b5e96a257fd69f252fb4b7272a19aa3778f7ba38ad48a3036"
+		},
+		{
+			"path": "public/localai/hero-render-day.png",
+			"role": "logo-mesh",
+			"type": "image/png",
+			"dimensions": {
+				"width": 1880,
+				"height": 1237
+			},
+			"bytes": 169399,
+			"sha256": "baa780c7c041e2336b794a85b13f3ff6504856114c35c8ec5df0a92b1109b6ff"
+		},
+		{
+			"path": "public/localai/hero-render-night.png",
+			"role": "logo-mesh",
+			"type": "image/png",
+			"dimensions": {
+				"width": 1880,
+				"height": 1237
+			},
+			"bytes": 367869,
+			"sha256": "a9ad6ad3178316acea8db6a1f474c9f575e5f8815040053a2d8770123ac97a0a"
+		},
+		{
 			"path": "public/localai/localai-logo.bin",
 			"role": "logo-mesh",
 			"type": "application/octet-stream",
 			"dimensions": null,
-			"bytes": 595512,
-			"sha256": "187b1eca831f5acfa0b515f496a15488d6153ff0175759d24c184359a9c1766e"
+			"bytes": 924096,
+			"sha256": "8a71904bafbaf1083f1bb65e6509390d8273fdb5834055d714437fd5a8fe11ce"
 		},
 		{
 			"path": "public/localai/localai-logo.gltf",
 			"role": "logo-mesh",
 			"type": "model/gltf+json",
 			"dimensions": null,
-			"bytes": 1269,
-			"sha256": "ec3220296789cae5f2b6763ca8ef2db1aceef2652e4006640f183a1608bbc443"
+			"bytes": 1270,
+			"sha256": "433a645f51aa81872743d83e409ef961fc2ae3c4f3a2d9c7bcb6e7de0ec37cfa"
+		},
+		{
+			"path": "public/localai/night-sky-cubemap.jpg",
+			"role": "logo-mesh",
+			"type": "image/jpeg",
+			"dimensions": null,
+			"bytes": 97940,
+			"sha256": "823e89baa4271a260a2496db6290e85d2aaca550669ad796abe4fd776eec184c"
 		}
 	],
 	"duplicateGroups": []

@@ -1,8 +1,9 @@
 import * as stylex from "@stylexjs/stylex";
 import { styles } from "./demo-shell.styles.ts";
-import { demoStyles } from "../styles/demo-root.styles.ts";
+import { demoStyles, lightTheme } from "../styles/demo-root.styles.ts";
 import type { ReactNode } from "react";
 import { useDemoTabBoundary } from "../hooks/demo-tab-boundary";
+import { useLightScheme } from "../hooks/use-light-scheme";
 import { DEMO_HEIGHT, useDemoFrame, type DemoCrop } from "./demo-frame";
 import type { FeatureScene } from "./scenes";
 
@@ -18,12 +19,13 @@ export function DemoShell({
 	children: ReactNode;
 }) {
 	const { hostRef, mobile, scale, shiftX, shiftY, cropH } = useDemoFrame(crop);
+	const lightScheme = useLightScheme();
 	useDemoTabBoundary(hostRef);
 	return (
 		<section
 			ref={hostRef}
-			{...stylex.props(demoStyles.reset, demoStyles.root, mobile && demoStyles.mobile)}
-			data-theme="zai-dark"
+			{...stylex.props(demoStyles.reset, demoStyles.root, lightScheme && lightTheme, lightScheme && demoStyles.lightScheme, mobile && demoStyles.mobile)}
+			data-theme={lightScheme ? "zai-light" : "zai-dark"}
 			data-scene={scene}
 			aria-label={label}
 		>

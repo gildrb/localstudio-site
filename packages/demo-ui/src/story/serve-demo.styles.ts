@@ -177,6 +177,12 @@ export const styles = stylex.create({
 			default: tokens.uiSurface,
 			":hover": tokens.uiHover,
 		},
+		boxShadow: {
+			default: constants.panelElevation,
+			":hover": constants.panelElevationHover,
+		},
+		transitionProperty: "background-color, box-shadow",
+		transitionDuration: "160ms",
 		paddingTop: "calc(0.25rem * 4)",
 		paddingRight: "calc(0.25rem * 4)",
 		paddingBottom: "calc(0.25rem * 4)",

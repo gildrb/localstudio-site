@@ -1,16 +1,13 @@
-// Owns long-lived GPU resources for one Eve renderer instance.
-// INVARIANT: Creation/disposal mirrors the original render.ts resource list exactly.
-// Imported only by render/renderer.ts.
-
-import { Device } from "@vgpu/core";
+// Long-lived public vgpu resources for one Eve renderer instance.
+import { sampler, target, type Gpu } from "vgpu";
 import {
-  createBackParamsBinding,
-  createEnvParamsBinding,
-  createParamsBinding,
-  createUniformParamsBinding,
-} from "./bindings";
-import { BLOOM_RADIUS, PAINT_PARAMS_BYTE_SIZE, VORONOI_NOISE_PARAMS_BYTE_SIZE } from "./constants";
+  BLOOM_RADIUS,
+  PAINT_FORMAT,
+  SCENE_FORMAT,
+  VORONOI_NOISE_FORMAT,
+} from "./constants";
 import {
+  type StudioCubemapAtlas,
   createStudioCubemap,
   renderStudioCubemap,
   uploadStudioCubemapAtlas,
@@ -22,179 +19,84 @@ import { createPipelines } from "./pipelines";
 import type { MeshData } from "./types";
 
 export function createResources(
-  device: Device,
-  format: GPUTextureFormat,
+  gpu: Gpu,
   mesh: MeshData,
   options: {
     thicknessScale?: number;
     theme?: "light" | "dark";
     paddingRadius?: number;
     bloom?: boolean;
-    backRefraction?: boolean;
-    environmentAtlas?: ImageBitmap;
+    environmentAtlas?: StudioCubemapAtlas;
   } = {},
 ) {
-  const studioCubemap = createStudioCubemap(device, "eve-5-studio-hdr-cubemap");
+  const studioCubemap = createStudioCubemap(gpu);
   const isLight = options.theme === "light";
-  const envLights = isLight ? EVE_LIGHT_ENV_LIGHTS : EVE_DARK_ENV_LIGHTS;
-  if (options.environmentAtlas) {
-    uploadStudioCubemapAtlas(device, studioCubemap, options.environmentAtlas);
-  } else {
-    renderStudioCubemap(device, studioCubemap, envLights);
-  }
-  const orbitTarget = meshOrbitTarget(mesh);
-  const thicknessScale = options.thicknessScale ?? meshThicknessScale(mesh.bounds);
-  const paddingRadius = options.paddingRadius ?? BLOOM_RADIUS;
-  const bloomEnabled = options.bloom ?? true;
-  const pipelines = createPipelines(device, format);
-  const gpuMesh = createGpuMesh(device, mesh);
-
-  const insideParams = createBackParamsBinding(
-    device,
-    pipelines.backMaterialPipeline,
-    studioCubemap,
-    "eve-5-inside-params",
-  );
-  const backDepthParams = createUniformParamsBinding(
-    device,
-    pipelines.backDepthPipeline,
-    "eve-5-back-depth-params",
-  );
-  const envBgParams = createEnvParamsBinding(
-    device,
-    pipelines.envBgPipeline,
-    studioCubemap,
-    "eve-5-env-bg-params",
-  );
-  const outsideParams = createParamsBinding(
-    device,
-    pipelines.frontMaterialPipeline,
-    studioCubemap,
-    "eve-5-outside-params",
-  );
-  const opaqueOutsideParams = createParamsBinding(
-    device,
-    pipelines.opaquePipeline,
-    studioCubemap,
-    "eve-5-opaque-outside-params",
-  );
-  const wireParams = createParamsBinding(
-    device,
-    pipelines.wirePipeline,
-    studioCubemap,
-    "eve-5-wire-params",
-  );
-  const blurParamsBuffer = device.createBuffer({
-    label: "eve-5-bloom-blur-params",
-    size: 32,
-    usage: ["uniform", "copy_dst"],
+  if (options.environmentAtlas)
+    uploadStudioCubemapAtlas(gpu, studioCubemap, options.environmentAtlas);
+  else
+    renderStudioCubemap(
+      gpu,
+      studioCubemap,
+      isLight ? EVE_LIGHT_ENV_LIGHTS : EVE_DARK_ENV_LIGHTS,
+    );
+  const gpuMesh = createGpuMesh(gpu, mesh);
+  const pipelines = createPipelines(gpu, gpuMesh);
+  const fallbackBackMaterial = target(gpu, {
+    size: [1, 1],
+    format: SCENE_FORMAT,
+    label: "eve-5-empty-back-material",
   });
-  const compositeParamsBuffer = device.createBuffer({
-    label: "eve-5-bloom-composite-params",
-    size: 16,
-    usage: ["uniform", "copy_dst"],
+  const fallbackBackDepth = target(gpu, {
+    size: [1, 1],
+    format: SCENE_FORMAT,
+    label: "eve-5-empty-back-depth",
   });
-  const paintParamsBuffer = device.createBuffer({
-    label: "eve-5-paint-params",
-    size: PAINT_PARAMS_BYTE_SIZE,
-    usage: ["uniform", "copy_dst"],
+  const fallbackPaint = target(gpu, {
+    size: [1, 1],
+    format: PAINT_FORMAT,
+    label: "eve-5-empty-paint",
   });
-  const voronoiNoiseParamsBuffer = device.createBuffer({
-    label: "eve-5-voronoi-noise-params",
-    size: VORONOI_NOISE_PARAMS_BYTE_SIZE,
-    usage: ["uniform", "copy_dst"],
+  const fallbackVoronoiValue = target(gpu, {
+    size: [1, 1],
+    format: VORONOI_NOISE_FORMAT,
+    label: "eve-5-empty-voronoi-value",
   });
-  const voronoiNoiseBindGroup = device.gpu.createBindGroup({
-    label: "eve-5-voronoi-noise-bind-group",
-    layout: pipelines.voronoiNoisePipeline.getBindGroupLayout(0),
-    entries: [{ binding: 0, resource: { buffer: voronoiNoiseParamsBuffer.gpu } }],
+  const fallbackVoronoiEdge = target(gpu, {
+    size: [1, 1],
+    format: VORONOI_NOISE_FORMAT,
+    label: "eve-5-empty-voronoi-edge",
   });
-  const blurSampler = device.gpu.createSampler({
-    label: "eve-5-bloom-sampler",
-    magFilter: "linear",
-    minFilter: "linear",
-    addressModeU: "clamp-to-edge",
-    addressModeV: "clamp-to-edge",
-  });
-  const previewSampler = device.gpu.createSampler({
-    label: "eve-5-render-target-preview-sampler",
-    magFilter: "linear",
-    minFilter: "linear",
-    addressModeU: "clamp-to-edge",
-    addressModeV: "clamp-to-edge",
-  });
-  const previewMode = device.createBuffer({
-    label: "eve-5-render-target-preview-mode",
-    size: 16,
-    usage: ["uniform", "copy_dst"],
-  });
-
-  const params = {
-    insideParams,
-    backDepthParams,
-    envBgParams,
-    outsideParams,
-    opaqueOutsideParams,
-    wireParams,
-  };
-  const buffers = {
-    blurParamsBuffer,
-    compositeParamsBuffer,
-    paintParamsBuffer,
-    voronoiNoiseParamsBuffer,
-    previewMode,
-  };
-  const samplers = { blurSampler, previewSampler };
-
   return {
     studioCubemap,
     isLight,
-    orbitTarget,
-    thicknessScale,
-    paddingRadius,
-    bloomEnabled,
+    orbitTarget: meshOrbitTarget(mesh),
+    thicknessScale: options.thicknessScale ?? meshThicknessScale(mesh.bounds),
+    paddingRadius: options.paddingRadius ?? BLOOM_RADIUS,
+    bloomEnabled: options.bloom ?? true,
     pipelines,
     gpuMesh,
-    params,
-    buffers,
-    samplers,
-    voronoiNoiseBindGroup,
+    sampler: sampler(gpu, {
+      magFilter: "linear",
+      minFilter: "linear",
+      addressModeU: "clamp-to-edge",
+      addressModeV: "clamp-to-edge",
+    }),
+    fallbacks: {
+      fallbackBackMaterial,
+      fallbackBackDepth,
+      fallbackPaint,
+      fallbackVoronoiValue,
+      fallbackVoronoiEdge,
+    },
   };
 }
-
 export type RendererResources = ReturnType<typeof createResources>;
-
-function destroyParamsBinding(binding: {
-  buffer: { destroy(): void };
-  fallbackBackMaterial?: GPUTexture;
-  fallbackBackDepth?: GPUTexture;
-  fallbackPaint?: GPUTexture;
-  fallbackVoronoiValue?: GPUTexture;
-  fallbackVoronoiEdge?: GPUTexture;
-}) {
-  binding.buffer.destroy();
-  binding.fallbackBackMaterial?.destroy();
-  binding.fallbackBackDepth?.destroy();
-  binding.fallbackPaint?.destroy();
-  binding.fallbackVoronoiValue?.destroy();
-  binding.fallbackVoronoiEdge?.destroy();
-}
-
-export function disposeResources(resources: RendererResources) {
-  resources.gpuMesh.vertexBuffer.destroy();
-  resources.gpuMesh.indexBuffer.destroy();
-  resources.gpuMesh.lineIndexBuffer.destroy();
-  destroyParamsBinding(resources.params.insideParams);
-  destroyParamsBinding(resources.params.backDepthParams);
-  destroyParamsBinding(resources.params.outsideParams);
-  destroyParamsBinding(resources.params.opaqueOutsideParams);
-  destroyParamsBinding(resources.params.wireParams);
-  destroyParamsBinding(resources.params.envBgParams);
-  resources.buffers.blurParamsBuffer.destroy();
-  resources.buffers.compositeParamsBuffer.destroy();
-  resources.buffers.paintParamsBuffer.destroy();
-  resources.buffers.voronoiNoiseParamsBuffer.destroy();
-  resources.buffers.previewMode.destroy();
-  resources.studioCubemap.faceParams.destroy();
-  resources.studioCubemap.texture.destroy();
+export function disposeResources(r: RendererResources) {
+  r.gpuMesh.lines.destroy();
+  r.gpuMesh.triangles.destroy();
+  r.studioCubemap.texture.destroy();
+  for (const t of Object.values(r.fallbacks)) {
+    t.color.destroy();
+    t.depth?.destroy();
+  }
 }

@@ -21,12 +21,12 @@ export const shellStyles = stylex.create({
 		position: "fixed", zIndex: 100, top: "12px", left: "12px", paddingTop: "10px", paddingRight: "16px", paddingBottom: "10px", paddingLeft: "16px", borderRadius: lengths.radiusControl, backgroundColor: colors.foreground, color: colors.buttonInk, fontWeight: 500, textDecoration: "none", translate: { default: "0 calc(-100% - 24px)", ":focus": "0 0" },
 	},
 	backNav: {
-		position: "absolute", zIndex: 1, top: 0, right: 0, left: 0, display: "flex", minHeight: "72px", alignItems: "center", justifyContent: "space-between", paddingInlineStart: pageInlinePadding, paddingInlineEnd: pageInlinePadding,
+		position: "absolute", zIndex: 1, top: 0, right: 0, left: 0, display: "flex", minHeight: "max(72px, calc(env(safe-area-inset-top, 0px) + 44px))", alignItems: "center", justifyContent: "space-between", paddingTop: "env(safe-area-inset-top, 0px)", paddingInlineStart: pageInlinePadding, paddingInlineEnd: pageInlinePadding,
 	},
-	brand: { position: "relative", zIndex: 2, display: "flex", minWidth: 0, alignItems: "center", color: colors.foreground, textDecoration: "none" },
-	backLink: { display: "inline-flex", minHeight: "38px", alignItems: "center", columnGap: "6px", color: { default: colors.dim, ":hover": { default: colors.dim, [canHover]: colors.foreground } }, fontFamily: constants.fontSans, fontSize: "14px", fontWeight: 400, lineHeight: "20px", textDecoration: "none", transitionProperty: "color", transitionDuration: times.fast, transitionTimingFunction: "ease-out" },
+	brand: { position: "relative", zIndex: 2, display: "flex", width: { default: "auto", "@media (max-width: 620px)": "44px" }, height: { default: "auto", "@media (max-width: 620px)": "44px" }, minWidth: 0, alignItems: "center", justifyContent: "center", marginInlineStart: { default: 0, "@media (max-width: 620px)": "-8px" }, color: colors.foreground, textDecoration: "none" },
+	backLink: { display: "inline-flex", minHeight: { default: "38px", "@media (max-width: 620px)": "44px" }, alignItems: "center", columnGap: "6px", color: { default: colors.fine, ":hover": { default: colors.fine, [canHover]: colors.foreground } }, fontFamily: constants.fontSans, fontSize: "16px", fontWeight: 400, lineHeight: "24px", textDecoration: "none", transitionProperty: "color", transitionDuration: times.fast, transitionTimingFunction: "ease-out" },
 	main: { display: "flex", flexGrow: 1, flexDirection: "column", scrollMarginTop: "72px", outline: { default: null, ":focus-visible": "none" }, boxShadow: { default: null, ":focus": "none" } },
-	backMain: { minHeight: "100svh" },
+	backMain: { minHeight: { default: "100svh", "@media (max-width: 620px)": 0 } },
 	backFooter: {
 		position: {
 			default: "relative",

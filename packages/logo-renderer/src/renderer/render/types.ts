@@ -2,7 +2,8 @@
 // INVARIANT: Pure move from render.ts; keep shader ABI, binding order, and pixel output unchanged.
 // Imported by render/renderer.ts and re-exported only through render.ts facade.
 
-import type { Buffer } from "@vgpu/core";
+import type { Geometry, PingPongTargets, Target } from "vgpu";
+import type { Texture } from "vgpu/core";
 
 export type Bounds = {
   min: [number, number, number];
@@ -53,6 +54,7 @@ export type PaintRenderOptions = {
   diffusionJitter?: number;
   stroke?: PaintStroke | undefined;
   decaySteps?: number | undefined;
+  ripple?: { readonly center: readonly [number, number]; readonly age: number; readonly strength: number } | undefined;
 };
 
 export type ImprintRenderOptions = {
@@ -113,18 +115,14 @@ export type PaintPointerMapping = {
 };
 
 export type GpuMesh = {
-  vertexBuffer: Buffer;
-  indexBuffer: Buffer;
-  lineIndexBuffer: Buffer;
-  indexCount: number;
-  lineIndexCount: number;
+  triangles: Geometry;
+  lines: Geometry;
 };
 
 export type StudioCubemap = {
-  texture: GPUTexture;
+  texture: Texture;
   view: GPUTextureView;
   sampler: GPUSampler;
-  faceParams: Buffer;
 };
 
 export type Mat4 = Float32Array;
@@ -143,26 +141,16 @@ export type EnvLightConfig = {
 export type BloomTargets = {
   width: number;
   height: number;
-  scene: GPUTexture;
-  sceneMsaa: GPUTexture;
-  backMaterial: GPUTexture | undefined;
-  backDepth: GPUTexture | undefined;
-  backSurfaceDepth: GPUTexture | undefined;
-  horizontal: GPUTexture;
-  vertical: GPUTexture;
+  scene: Target;
+  backMaterial: Target | undefined;
+  backDepth: Target | undefined;
+  bloom: PingPongTargets;
 };
 
 export type PaintTargets = {
   cols: number;
   rows: number;
-  ping: GPUTexture;
-  pong: GPUTexture;
-  staticNoise: GPUTexture;
-  voronoiValue: GPUTexture;
-  voronoiEdge: GPUTexture;
-  readIsPing: boolean;
-  pingReadBindGroup: GPUBindGroup;
-  pongReadBindGroup: GPUBindGroup;
-  pingDebugBindGroup: GPUBindGroup;
-  pongDebugBindGroup: GPUBindGroup;
+  paint: PingPongTargets;
+  staticNoise: Target;
+  voronoi: Target;
 };

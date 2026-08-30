@@ -1,7 +1,7 @@
 import { baseStyles, type PublicStyle } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
 import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from "react";
-import { emitNavigation, scrollToHash } from "../app/browser-location";
+import { pushNavigation, scrollToHash } from "../app/browser-location";
 import { decideSameOriginNavigation } from "../domain/route";
 
 type LocalLinkProps = Omit<
@@ -42,8 +42,7 @@ export function LocalLink({
 		if (decision.kind === "external") return;
 		event.preventDefault();
 		if (decision.kind === "push") {
-			window.history.pushState({}, "", decision.next);
-			emitNavigation();
+			pushNavigation(decision.next);
 			return;
 		}
 		if (decision.kind === "hash") {

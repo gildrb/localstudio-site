@@ -28,7 +28,3 @@ export fn glass_vs_main(input: VertexInput, params: Params) -> VertexOutput {
   output.modelPos = input.position;
   return output;
 }
-
-export fn is_back_facing_to_camera(ngeo: vec3f, v: vec3f) -> bool {
-  return dot(ngeo, v) <= 0.0;
-}

@@ -46,9 +46,6 @@ export const selectionStyles = stylex.create({
 	darkInk: {
 		color: { default: null, "::selection": colors.selectionInk },
 	},
-	lightInk: {
-		color: { default: null, "::selection": colors.foreground },
-	},
 });
 
 export const baseStyles = stylex.create({
@@ -118,11 +115,11 @@ export const baseStyles = stylex.create({
 		textDecoration: "inherit",
 		touchAction: "manipulation",
 		userSelect: "none",
-		opacity: {
+		filter: {
 			default: null,
 			[coarsePointer]: {
 				default: null,
-				":active": 0.72,
+				":active": "brightness(1.16)",
 			},
 		},
 	},
@@ -136,7 +133,7 @@ export const baseStyles = stylex.create({
 			":focus": {
 				default: null,
 				[stylex.when.ancestor("[data-keyboard='true']")]:
-					`0 0 0 2px ${colors.focusRing}`,
+					`0 0 0 2px ${colors.foreground}, 0 0 0 5px ${colors.focusHalo}`,
 			},
 		},
 	},
@@ -173,6 +170,7 @@ export const baseStyles = stylex.create({
 		minWidth: "320px",
 		minHeight: "100%",
 		overflowX: "clip",
+		scrollbarGutter: "stable",
 		overflowY: {
 			default: "visible",
 			":is([data-nav-open='true'])": "hidden",
@@ -187,13 +185,16 @@ export const baseStyles = stylex.create({
 		},
 		backgroundColor: {
 			default: colors.background,
-			"::selection": colors.selection,
+			"::selection": colors.selectionSkyBlue,
 		},
 		color: {
 			default: colors.foreground,
 			"::selection": colors.selectionInk,
 		},
-		colorScheme: "dark",
+		colorScheme: {
+			default: "dark",
+			"@media (prefers-color-scheme: light)": "light",
+		},
 		fontFamily: constants.fontSans,
 		fontSynthesis: "none",
 		textRendering: "optimizeLegibility",

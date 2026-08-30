@@ -16,6 +16,9 @@ struct PaintParams {
   dt: f32,
   brushActive: f32,
   _pad: f32,
+  rippleCenter: vec2f,
+  rippleAge: f32,
+  rippleStrength: f32,
 };
 
 @group(0) @binding(0) var readTex: texture_2d<f32>;
@@ -25,6 +28,9 @@ struct PaintParams {
 const TAU = 6.28318530718;
 const BRUSH_EDGE_NOISE = 1.5;
 const PAINT_VALUE_MAX = 2.0; // Stored paint max; values >1 give a hidden decay buffer while display clamps at 1.0.
+const RIPPLE_SPEED = 26.0; // cells per second
+const RIPPLE_DURATION = 1.0; // seconds until the wave dissipates
+const RIPPLE_WIDTH = 5.0; // gaussian variance of the band, in cells^2
 
 @vertex
 fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
@@ -98,7 +104,17 @@ fn fs_main(input: VertexOutput) -> @location(0) f32 {
 
   let decayMultiplier = mix(1.0, 2.0, staticNoise.a);
   let decayRate = max(params.decayRate, 0.0) * decayMultiplier;
-  var outValue = clamp(diffused - decayRate * 0.2 * dt + brush, 0.0, PAINT_VALUE_MAX);
+  // Expanding gaussian band of paint; cells morph through the glyph ramp as it passes.
+  let rippleEnvelope = max(0.0, 1.0 - params.rippleAge / RIPPLE_DURATION);
+  let ripple = max(0.0, params.rippleStrength) * rippleEnvelope;
+  var outValue = diffused - decayRate * 0.2 * dt + brush;
+  if (ripple > 0.0) {
+    let rippleDistance = distance(cellCenter, params.rippleCenter);
+    let bandOffset = rippleDistance - params.rippleAge * RIPPLE_SPEED;
+    let band = exp(-(bandOffset * bandOffset) / RIPPLE_WIDTH);
+    outValue += ripple * band * dt;
+  }
+  outValue = clamp(outValue, 0.0, PAINT_VALUE_MAX);
   if (outValue < 0.001) {
     outValue = 0.0;
   }

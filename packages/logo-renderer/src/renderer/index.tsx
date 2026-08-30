@@ -1,5 +1,5 @@
 import * as stylex from "@stylexjs/stylex";
-import { App, Device, type VGPUAdapter } from "@vgpu/core";
+import { init, surface } from "vgpu";
 import {
 	createDevicePixelRatio,
 	prefersReducedMotion as prefersReducedMotionSync,
@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import {
 	DEFAULT_CAMERA_FOV,
+	DEFAULT_OBJECT_YAW,
 	DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
 	cameraRadiusForBounds,
 	cameraRadiusForFov,
@@ -31,33 +32,23 @@ import {
 } from "./runtime/pointer-input";
 import type { HeroRuntimeState } from "./runtime/state";
 
-class BrowserAdapter implements VGPUAdapter {
-	async requestDevice(): Promise<Device> {
-		const adapter = await navigator.gpu?.requestAdapter();
-		if (!adapter) throw new Error("WebGPU adapter unavailable");
-		return new Device(await adapter.requestDevice(), null);
-	}
-}
-
 const LOGO_VIEWPORT_ASPECT = 1.52;
 
 const DEFAULT_CONTROLS: RenderControls = {
-	yaw: 0,
+	yaw: DEFAULT_OBJECT_YAW,
 	pitch: 0,
 	radius: cameraRadiusForFov(DEFAULT_CAMERA_FOV),
 	fov: DEFAULT_CAMERA_FOV,
 	envYaw: 0,
 	envPitch: 0,
-	insideRendering: false,
+	insideRendering: true,
 	outsideRendering: true,
-	material: "metallic",
+	material: "glass",
 	wireframe: false,
 	showEnv: false,
 };
 
 const INITIAL_CANVAS_LAYOUT: CanvasLayout = { width: 1, height: 1 };
-// The flat SVG only appears when the render takes noticeably long; a quick
-// first frame goes straight to the 3D mark with no placeholder flash.
 const FALLBACK_PLACEHOLDER_DELAY_MS = 700;
 
 const rendererStyles = stylex.create({
@@ -94,12 +85,8 @@ const rendererStyles = stylex.create({
 		height: "100%",
 	},
 	canvas: {
-		opacity: 0,
-		transitionProperty: "opacity",
-		transitionDuration: rendererTimes.fade,
-		transitionTimingFunction: "ease-out",
+		opacity: 1,
 	},
-	canvasReady: { opacity: 1 },
 	fallback: {
 		maxWidth: "100%",
 		userSelect: "none",
@@ -109,12 +96,20 @@ const rendererStyles = stylex.create({
 		paddingLeft: "9.5%",
 		objectFit: "contain",
 		opacity: 0,
-		filter: "invert(1)",
+		filter: {
+			default: "invert(1)",
+			"@media (prefers-color-scheme: light)": "none",
+		},
 		transitionProperty: "opacity",
 		transitionDuration: rendererTimes.fade,
 		transitionTimingFunction: "ease-out",
 	},
-	fallbackVisible: { opacity: 0.08 },
+	fallbackVisible: { opacity: 0.16 },
+	posterImage: {
+		display: "block",
+		width: "100%",
+		height: "100%",
+	},
 });
 
 type RuntimeOwner = {
@@ -124,13 +119,55 @@ type RuntimeOwner = {
 export type LogoRendererAssets = {
 	modelUrl: string;
 	fallbackUrl: string;
+	dayUrl: string;
+	nightUrl: string;
+};
+
+// Static first-frame poster on the exact canvas stage. The site shows it until
+// the live renderer reports its first frame (see onFirstFrame).
+export function LogoPoster({ dayUrl, nightUrl }: { dayUrl: string; nightUrl: string }) {
+	return (
+		<div {...stylex.props(rendererStyles.element, rendererStyles.container)}>
+			<picture {...stylex.props(rendererStyles.element, rendererStyles.layer)}>
+				<source media="(prefers-color-scheme: dark)" srcSet={nightUrl} />
+				<img
+					{...stylex.props(rendererStyles.element, rendererStyles.posterImage)}
+					src={dayUrl}
+					alt=""
+					width="1880"
+					height="1237"
+					draggable={false}
+					decoding="sync"
+					fetchPriority="high"
+				/>
+			</picture>
+		</div>
+	);
+}
+
+export type LocalAiLogoShaderProps = LogoRendererAssets & {
+	/** Fires once when the live canvas has produced its first frame. */
+	onFirstFrame?: () => void;
+	/** Stage layout override (position/size) applied after the default stage. */
+	sx?: Parameters<typeof stylex.props>[0] | undefined;
+	/** Camera framing aspect; defaults to the hero stage's 1.52. */
+	viewportAspect?: number | undefined;
+	/** Locks the canonical environment for decorative instances; the object still follows the cursor. */
+	staticPose?: boolean | undefined;
 };
 
 export function LocalAiLogoShader({
 	modelUrl,
 	fallbackUrl,
-}: LogoRendererAssets) {
+	dayUrl,
+	nightUrl,
+	onFirstFrame,
+	sx,
+	viewportAspect = LOGO_VIEWPORT_ASPECT,
+	staticPose = false,
+}: LocalAiLogoShaderProps) {
 	const prefersReducedMotion = usePrefersReducedMotion();
+	const prefersDarkScheme = useMediaQuery("(prefers-color-scheme: dark)");
 	const coarsePointer = useMediaQuery("(pointer: coarse)");
 	const containerRef = useRef<HTMLDivElement>(null);
 	const { size: containerSize } = useSize({ ref: containerRef });
@@ -141,7 +178,6 @@ export function LocalAiLogoShader({
 	const coarsePointerRef = useSyncedRef(coarsePointer);
 	const stateRef = useRef<HeroRuntimeState | null>(null);
 	const drawLoopRef = useRef<DrawLoop | null>(null);
-	const [canvasReady, setCanvasReady] = useState(false);
 	const [fallbackVisible, setFallbackVisible] = useState(false);
 	const fallbackPlaceholderTimerRef = useRef(0);
 	const runLoopRef = useRef(() => {});
@@ -153,17 +189,15 @@ export function LocalAiLogoShader({
 	const handleCanvasRevealed = useStableCallback(() => {
 		window.clearTimeout(fallbackPlaceholderTimerRef.current);
 		if (!stateRef.current?.cancelled) {
-			setCanvasReady(true);
 			setFallbackVisible(false);
+			onFirstFrame?.();
 		}
 	});
 	const handleFallback = useStableCallback(() => {
 		window.clearTimeout(fallbackPlaceholderTimerRef.current);
-		setCanvasReady(false);
 		setFallbackVisible(true);
 	});
 	const resetLayers = useStableCallback(() => {
-		setCanvasReady(false);
 		setFallbackVisible(false);
 	});
 	const fatalErrorRef = useRef<(() => void) | null>(null);
@@ -240,6 +274,12 @@ export function LocalAiLogoShader({
 			lastBrushMoveTime: Number.NEGATIVE_INFINITY,
 			lastPointerClientX: undefined,
 			lastPointerClientY: undefined,
+			staticPose,
+			rippleCellX: 0,
+			rippleCellY: 0,
+			rippleStartTime: Number.NEGATIVE_INFINITY,
+			lastRippleSpawnTime: Number.NEGATIVE_INFINITY,
+			pointerInsideCanvas: false,
 			isCoarsePointer: coarsePointerRef.current,
 		};
 		stateRef.current = state;
@@ -300,12 +340,6 @@ export function LocalAiLogoShader({
 				handleFallback();
 				return;
 			}
-			const context = activeCanvas.getContext("webgpu");
-			if (!context || !("configure" in context)) {
-				handleFallback();
-				return;
-			}
-
 			const mesh = await loadMesh(modelUrl);
 			if (state.cancelled) return;
 			state.activeMesh = mesh;
@@ -318,35 +352,48 @@ export function LocalAiLogoShader({
 			controlsRef.current.radius = cameraRadiusForBounds(
 				DEFAULT_CAMERA_FOV,
 				mesh.bounds,
-				LOGO_VIEWPORT_ASPECT,
+				viewportAspect,
 			);
 			await new Promise<void>((resolve) =>
 				requestAnimationFrame(() => resolve()),
 			);
 			resizeCanvas(activeCanvas, canvasLayoutRef, devicePixelRatioRef);
 
-			const app = await App.create({ adapter: new BrowserAdapter() });
+			const gpu = await init();
 			if (state.cancelled) {
-				app.device.destroy();
+				gpu.dispose();
 				return;
 			}
-
-			const format = navigator.gpu.getPreferredCanvasFormat();
-			context.configure({
-				device: app.device.gpu,
-				format,
+			const canvasSurface = surface(gpu, activeCanvas, {
+				autoResize: false,
+				size: [activeCanvas.width, activeCanvas.height],
 				alphaMode: "premultiplied",
 			});
+			let environmentAtlas: ImageBitmap | undefined;
+			try {
+				const environmentUrl = prefersDarkScheme ? nightUrl : dayUrl;
+				const response = await fetch(environmentUrl);
+				if (response.ok) environmentAtlas = await createImageBitmap(await response.blob());
+			} catch {
+				// The generated cubemap remains available when the image cannot load.
+			}
 			if (state.cancelled) {
-				app.device.destroy();
+				environmentAtlas?.close();
+				gpu.dispose();
 				return;
 			}
-			const renderer = createEve5Renderer(app.device, format, mesh, {
+			const rendererOptions: NonNullable<Parameters<typeof createEve5Renderer>[2]> = {
+				// The hero surface is always dark. Day/night only selects the cubemap;
+				// it must not switch to the pale light-mode mask composite.
 				theme: "dark",
 				bloom: true,
-				backRefraction: false,
-			});
+				backRefraction: true,
+			};
+			if (environmentAtlas) rendererOptions.environmentAtlas = environmentAtlas;
+			const renderer = createEve5Renderer(gpu, mesh, rendererOptions);
+			environmentAtlas?.close();
 			let disposed = false;
+			let unsubscribeGpuError = () => {};
 			const runtime: RuntimeOwner = {};
 			state.previousFrameTime = performance.now();
 			state.autoRotateStartTime = state.previousFrameTime;
@@ -357,16 +404,24 @@ export function LocalAiLogoShader({
 				drawLoopRef.current = null;
 				fatalErrorRef.current = null;
 				runtime.drawLoopDispose?.();
+				unsubscribeGpuError();
 				// No handleFallback here: fatal paths (device lost, render throw)
 				// call it explicitly before dispose, and on remount a re-shown
 				// placeholder would flash SVG -> render again.
 				renderer.dispose();
-				app.device.destroy();
+				canvasSurface.dispose();
+				gpu.dispose();
 				disposeRuntime = undefined;
 			};
 			disposeRuntime = dispose;
+			unsubscribeGpuError = gpu.onError(() => {
+				if (state.cancelled || disposed) return;
+				handleFallback();
+				state.cancelled = true;
+				dispose();
+			});
 
-			void app.device.gpu.lost.then((info) => {
+			void gpu.gpu.lost.then((info) => {
 				if (state.cancelled || disposed || info?.reason === "destroyed") return;
 				handleFallback();
 				state.cancelled = true;
@@ -376,7 +431,7 @@ export function LocalAiLogoShader({
 			const drawLoop = createDrawLoop({
 				state,
 				canvas: activeCanvas,
-				context,
+				surface: canvasSurface,
 				renderer,
 				controlsRef,
 				canvasLayoutRef,
@@ -405,7 +460,10 @@ export function LocalAiLogoShader({
 		};
 	}, [
 		prefersReducedMotion,
+		prefersDarkScheme,
 		modelUrl,
+		dayUrl,
+		nightUrl,
 		coarsePointerRef,
 		handleCanvasRevealed,
 		handleFallback,
@@ -417,7 +475,7 @@ export function LocalAiLogoShader({
 	return (
 		<div
 			ref={containerRef}
-			{...stylex.props(rendererStyles.element, rendererStyles.container)}
+			{...stylex.props(rendererStyles.element, rendererStyles.container, sx)}
 			aria-hidden="true"
 		>
 			<img
@@ -439,7 +497,6 @@ export function LocalAiLogoShader({
 					rendererStyles.element,
 					rendererStyles.layer,
 					rendererStyles.canvas,
-					canvasReady && rendererStyles.canvasReady,
 				)}
 			/>
 		</div>

@@ -52,9 +52,12 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
       let fi = f32(i);
       let offsetUv = input.uv + params.direction * texel * fi;
       let uv = clamp(offsetUv, vec2f(0.0), vec2f(1.0));
-      var color = textureSample(sourceTexture, sourceSampler, uv).rgb;
+      let source = textureSample(sourceTexture, sourceSampler, uv);
+      var color = source.rgb;
       if (params.extract > 0.5) {
-        color = bright_pass(color);
+        // Bloom uses straight scene radiance. The final composite applies the
+        // silhouette alpha, so this preserves highlight strength without a halo.
+        color = bright_pass(source.rgb / max(source.a, 0.0001));
       }
       let weight = exp(-(fi * fi) / (2.0 * sigma * sigma));
       sum += color * weight;

@@ -2,21 +2,31 @@
 // INVARIANT: Pure move from render.ts; keep shader ABI, binding order, and pixel output unchanged.
 // Imported by render/renderer.ts and re-exported only through render.ts facade.
 
-import type { Buffer } from "@vgpu/core";
 import {
   DEFAULT_IMPRINT_GLYPH_SCALE,
   DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
   MATERIAL_KIND,
 } from "./constants";
 import { cameraClipPlanes } from "./camera";
-import { cameraBasis, degreesToRadians, lookAt, multiply, orbitEye, perspective } from "./math";
+import {
+  cameraBasis,
+  degreesToRadians,
+  lookAt,
+  multiply,
+  orbitEye,
+  perspective,
+} from "./math";
 import { getPaddedRenderSize } from "./textures";
 import { paintMappingMetrics } from "./pointer-mapping";
-import type { Bounds, ImprintRenderOptions, RenderControls, Vec3 } from "./types";
+import type {
+  Bounds,
+  ImprintRenderOptions,
+  RenderControls,
+  Vec3,
+} from "./types";
 
 // ABI: must match shaders/shared/scene-params.wgsl (176 B / 44 f32).
 export function writeParams(args: {
-  target: { buffer: Buffer };
   controls: RenderControls;
   logicalWidth: number;
   logicalHeight: number;
@@ -29,7 +39,6 @@ export function writeParams(args: {
   isLight: boolean;
 }) {
   const {
-    target,
     controls,
     logicalWidth,
     logicalHeight,
@@ -41,12 +50,21 @@ export function writeParams(args: {
     thicknessScale,
     isLight,
   } = args;
-  const padded = getPaddedRenderSize(logicalWidth, logicalHeight, projectionPaddingRadius);
+  const padded = getPaddedRenderSize(
+    logicalWidth,
+    logicalHeight,
+    projectionPaddingRadius,
+  );
   const fovRad = degreesToRadians(controls.fov);
   const verticalScale = padded.height / logicalHeight;
   const fovEff = 2 * Math.atan(verticalScale * Math.tan(fovRad * 0.5));
   const aspect = padded.width / padded.height;
-  const eye = orbitEye(orbitTarget, controls.radius, controls.yaw, controls.pitch);
+  const eye = orbitEye(
+    orbitTarget,
+    controls.radius,
+    controls.yaw,
+    controls.pitch,
+  );
   const basis = cameraBasis(eye, orbitTarget);
   const clip = cameraClipPlanes(meshBounds, eye, basis.forward);
   const proj = perspective(fovEff, aspect, clip.near, clip.far);
@@ -92,5 +110,21 @@ export function writeParams(args: {
   data[41] = imprint.mouse?.[1] ?? 0;
   data[42] = metrics.originCell[0];
   data[43] = metrics.originCell[1];
-  target.buffer.write(data);
+  return {
+    viewProj,
+    cameraPos: eye,
+    passKind,
+    cameraRight: basis.right,
+    fov: fovEff,
+    cameraUp: basis.up,
+    aspect,
+    cameraForward: basis.forward,
+    materialKind: MATERIAL_KIND[controls.material],
+    thicknessScale,
+    envYaw: controls.envYaw,
+    envPitch: controls.envPitch,
+    glassAbsorption: isLight ? 0 : 1,
+    ascii0: [data[36], data[37], data[38], data[39]],
+    ascii1: [data[40], data[41], data[42], data[43]],
+  };
 }

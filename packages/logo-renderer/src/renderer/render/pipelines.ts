@@ -1,212 +1,72 @@
-// Declarative render pipeline creation with fixed vertex layout/bindings.
-// INVARIANT: Pure move from render.ts; keep shader ABI, binding order, and pixel output unchanged.
-// Imported by render/renderer.ts and re-exported only through render.ts facade.
+// Public vgpu render units. Target formats and MSAA are compiled lazily per Target.
+import { draw, effect, type Gpu } from "vgpu";
+import { shaders } from "./shaders";
+import type { GpuMesh } from "./types";
 
-import { Device } from "@vgpu/core";
-import { createRenderPipeline } from "@vgpu/render";
-import {
-  BACK_DEPTH_FORMAT,
-  PAINT_FORMAT,
-  SCENE_FORMAT,
-  SCENE_SAMPLE_COUNT,
-  VORONOI_NOISE_FORMAT,
-} from "./constants";
-import { createShaders } from "./shaders";
-
-const SCENE_MULTISAMPLE = { count: SCENE_SAMPLE_COUNT } as const;
-
-export function createPipelines(device: Device, format: GPUTextureFormat) {
-  const shaders = createShaders(device);
-  const vertexLayout: GPUVertexBufferLayout = {
-    arrayStride: 6 * 4,
-    attributes: [
-      { shaderLocation: 0, offset: 0, format: "float32x3" },
-      { shaderLocation: 1, offset: 3 * 4, format: "float32x3" },
-    ],
-  };
-
-  const backMaterialPipeline = createRenderPipeline(device, {
-    label: "eve-5-glass-back-material-pipeline",
-    shader: shaders.glassBack,
-    vertex: { entry: "vs_main", buffers: [vertexLayout] },
-    fragment: {
-      entry: "fs_main",
-      targets: [
-        {
-          format: SCENE_FORMAT,
-          blend: {
-            color: { srcFactor: "src-alpha", dstFactor: "one", operation: "add" },
-            alpha: { srcFactor: "one", dstFactor: "one-minus-src-alpha", operation: "add" },
-          },
-        },
-      ],
-    },
-    primitive: { topology: "triangle-list" },
-    depthStencil: { format: BACK_DEPTH_FORMAT, depthWriteEnabled: true, depthCompare: "less" },
-  });
-
-  const backDepthPipeline = createRenderPipeline(device, {
-    label: "eve-5-glass-back-depth-pipeline",
-    shader: shaders.glassBackDepth,
-    vertex: { entry: "vs_main", buffers: [vertexLayout] },
-    fragment: { entry: "fs_main", targets: [{ format: SCENE_FORMAT }] },
-    primitive: { topology: "triangle-list" },
-    depthStencil: {
-      format: BACK_DEPTH_FORMAT,
-      depthWriteEnabled: false,
-      depthCompare: "less-equal",
-    },
-  });
-
-  const frontMaterialPipeline = createRenderPipeline(device, {
-    label: "eve-5-glass-front-material-pipeline",
-    shader: shaders.glassFront,
-    vertex: { entry: "vs_main", buffers: [vertexLayout] },
-    fragment: {
-      entry: "fs_main",
-      targets: [
-        {
-          format: SCENE_FORMAT,
-          blend: {
-            color: { srcFactor: "src-alpha", dstFactor: "one", operation: "add" },
-            alpha: { srcFactor: "one", dstFactor: "one-minus-src-alpha", operation: "add" },
-          },
-        },
-      ],
-    },
-    primitive: { topology: "triangle-list" },
-    multisample: SCENE_MULTISAMPLE,
-  });
-
-  const frontDisplayPipeline = createRenderPipeline(device, {
-    label: "eve-5-glass-front-display-pipeline",
-    shader: shaders.glassFront,
-    vertex: { entry: "vs_main", buffers: [vertexLayout] },
-    fragment: { entry: "fs_main", targets: [{ format }] },
-    primitive: { topology: "triangle-list" },
-  });
-
-  const opaquePipeline = createRenderPipeline(device, {
-    label: "eve-5-opaque-material-pipeline",
-    shader: shaders.glassFront,
-    vertex: { entry: "vs_main", buffers: [vertexLayout] },
-    fragment: {
-      entry: "fs_main",
-      targets: [
-        {
-          format: SCENE_FORMAT,
-          blend: {
-            color: { srcFactor: "one", dstFactor: "zero", operation: "add" },
-            alpha: { srcFactor: "one", dstFactor: "zero", operation: "add" },
-          },
-        },
-      ],
-    },
-    primitive: { topology: "triangle-list" },
-    multisample: SCENE_MULTISAMPLE,
-  });
-
-  const wirePipeline = createRenderPipeline(device, {
-    label: "eve-5-wireframe-pipeline",
-    shader: shaders.glassFront,
-    vertex: { entry: "vs_main", buffers: [vertexLayout] },
-    fragment: {
-      entry: "fs_main",
-      targets: [
-        {
-          format: SCENE_FORMAT,
-          blend: {
-            color: { srcFactor: "src-alpha", dstFactor: "one-minus-src-alpha", operation: "add" },
-            alpha: { srcFactor: "one", dstFactor: "one-minus-src-alpha", operation: "add" },
-          },
-        },
-      ],
-    },
-    primitive: { topology: "line-list" },
-    multisample: SCENE_MULTISAMPLE,
-  });
-
-  const blurPipeline = createRenderPipeline(device, {
-    label: "eve-5-bloom-blur-pipeline",
-    shader: shaders.bloomBlur,
-    vertex: { entry: "vs_main" },
-    fragment: { entry: "fs_main", targets: [{ format: SCENE_FORMAT }] },
-    primitive: { topology: "triangle-list" },
-  });
-
-  const compositePipeline = createRenderPipeline(device, {
-    label: "eve-5-bloom-composite-pipeline",
-    shader: shaders.bloomComposite,
-    vertex: { entry: "vs_main" },
-    fragment: { entry: "fs_main", targets: [{ format }] },
-    primitive: { topology: "triangle-list" },
-  });
-
-  const lightCompositePipeline = createRenderPipeline(device, {
-    label: "eve-5-light-composite-pipeline",
-    shader: shaders.lightComposite,
-    vertex: { entry: "vs_main" },
-    fragment: { entry: "fs_main", targets: [{ format }] },
-    primitive: { topology: "triangle-list" },
-  });
-
-  const envBgPipeline = createRenderPipeline(device, {
-    label: "eve-5-env-bg-pipeline",
-    shader: shaders.envBg,
-    vertex: { entry: "vs_main" },
-    fragment: { entry: "fs_main", targets: [{ format: SCENE_FORMAT }] },
-    primitive: { topology: "triangle-list" },
-    multisample: SCENE_MULTISAMPLE,
-  });
-
-  const previewPipeline = createRenderPipeline(device, {
-    label: "eve-5-render-target-preview-pipeline",
-    shader: shaders.preview,
-    vertex: { entry: "vs_main" },
-    fragment: { entry: "fs_main", targets: [{ format }] },
-    primitive: { topology: "triangle-list" },
-  });
-
-  const paintDecayPipeline = createRenderPipeline(device, {
-    label: "eve-5-paint-decay-pipeline",
-    shader: shaders.paintUpdate,
-    vertex: { entry: "vs_main" },
-    fragment: { entry: "fs_main", targets: [{ format: PAINT_FORMAT }] },
-    primitive: { topology: "triangle-list" },
-  });
-
-  const paintDebugPipeline = createRenderPipeline(device, {
-    label: "eve-5-paint-debug-pipeline",
-    shader: shaders.paintDebug,
-    vertex: { entry: "vs_main" },
-    fragment: { entry: "fs_main", targets: [{ format }] },
-    primitive: { topology: "triangle-list" },
-  });
-
-  const voronoiNoisePipeline = createRenderPipeline(device, {
-    label: "eve-5-voronoi-noise-update-pipeline",
-    shader: shaders.voronoiNoiseUpdate,
-    vertex: { entry: "vs_main" },
-    fragment: {
-      entry: "fs_main",
-      targets: [{ format: VORONOI_NOISE_FORMAT }, { format: VORONOI_NOISE_FORMAT }],
-    },
-    primitive: { topology: "triangle-list" },
-  });
+export function createPipelines(gpu: Gpu, mesh: GpuMesh) {
   return {
-    backMaterialPipeline,
-    backDepthPipeline,
-    frontMaterialPipeline,
-    frontDisplayPipeline,
-    opaquePipeline,
-    wirePipeline,
-    blurPipeline,
-    compositePipeline,
-    lightCompositePipeline,
-    envBgPipeline,
-    previewPipeline,
-    paintDecayPipeline,
-    paintDebugPipeline,
-    voronoiNoisePipeline,
+    backMaterial: draw(gpu, {
+      label: "eve-5-glass-back-material",
+      shader: shaders.glassBack,
+      geometry: mesh.triangles,
+      cull: "front",
+      depth: { write: true, compare: "less" },
+    }),
+    backDepth: draw(gpu, {
+      label: "eve-5-glass-back-depth",
+      shader: shaders.glassBackDepth,
+      geometry: mesh.triangles,
+      cull: "front",
+      depth: { write: true, compare: "less" },
+    }),
+    frontMaterial: draw(gpu, {
+      label: "eve-5-glass-front-material",
+      shader: shaders.glassFront,
+      geometry: mesh.triangles,
+      cull: "back",
+      depth: { write: true, compare: "less" },
+    }),
+    opaque: draw(gpu, {
+      label: "eve-5-opaque-material",
+      shader: shaders.glassFront,
+      geometry: mesh.triangles,
+      cull: "back",
+      depth: { write: true, compare: "less" },
+    }),
+    wire: draw(gpu, {
+      label: "eve-5-wireframe",
+      shader: shaders.glassFront,
+      geometry: mesh.lines,
+      blend: "alpha",
+      depth: { write: false, compare: "less-equal" },
+    }),
+    envBg: draw(gpu, {
+      label: "eve-5-env-bg",
+      shader: shaders.envBg,
+      vertices: 3,
+      depth: false,
+    }),
+    blurHorizontal: effect(gpu, shaders.bloomBlur, {
+      label: "eve-5-bloom-blur-horizontal",
+    }),
+    blurVertical: effect(gpu, shaders.bloomBlur, {
+      label: "eve-5-bloom-blur-vertical",
+    }),
+    composite: effect(gpu, shaders.bloomComposite, {
+      label: "eve-5-bloom-composite",
+    }),
+    lightComposite: effect(gpu, shaders.lightComposite, {
+      label: "eve-5-light-composite",
+    }),
+    preview: effect(gpu, shaders.preview, {
+      label: "eve-5-render-target-preview",
+    }),
+    paintDecay: effect(gpu, shaders.paintUpdate, {
+      label: "eve-5-paint-decay",
+    }),
+    paintDebug: effect(gpu, shaders.paintDebug, { label: "eve-5-paint-debug" }),
+    voronoiNoise: effect(gpu, shaders.voronoiNoiseUpdate, {
+      label: "eve-5-voronoi-noise",
+    }),
   };
 }

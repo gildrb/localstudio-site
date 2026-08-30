@@ -30,13 +30,13 @@
     "vercel:check": "node --experimental-strip-types scripts/vercel.mjs check",
     "index:html": "node --experimental-strip-types scripts/index-html.mjs write",
     "index:html:check": "node --experimental-strip-types scripts/index-html.mjs check",
-    "packages:check": "pnpm --filter @local-studio/demo-ui typecheck && pnpm --filter @local-ai/logo-renderer typecheck",
+    "packages:check": "pnpm --filter './packages/*' typecheck&&pnpm -C packages/logo-renderer shader:check",
     "logo:check": "pnpm --filter @local-ai/logo-renderer check",
     "stylex:check": "node scripts/stylex-check.mjs"
   },
   "dependencies": {
     "@stylexjs/stylex": "0.19.0",
-    "@vgpu/wgsl": "0.0.7",
+    "@vgpu/wgsl": "0.3.1",
     "lucide-react": "1.31.0",
     "motion": "13.1.0",
     "react": "19.2.8",

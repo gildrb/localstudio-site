@@ -18,8 +18,24 @@ const styles = stylex.create({
 		overflow: "visible",
 		borderWidth: '1px',
 		borderStyle: 'solid',
-		borderColor: 'rgba(255, 255, 255, 0.15)',
+		borderColor: colors.borderStrong,
 		borderRadius: lengths.radiusPanel,
+		boxShadow: `inset 0 1px 0 ${colors.borderSoft}`,
+	},
+	collapsedRoot: {
+		"::after": {
+			content: '""',
+			position: "absolute",
+			zIndex: 0,
+			right: "2px",
+			bottom: "2px",
+			left: "2px",
+			height: "160px",
+			borderBottomRightRadius: `calc(${lengths.radiusPanel} - 2px)`,
+			borderBottomLeftRadius: `calc(${lengths.radiusPanel} - 2px)`,
+			pointerEvents: "none",
+			backgroundImage: `linear-gradient(to bottom, transparent, ${colors.background} 88%)`,
+		},
 	},
 	pre: {
 		width: "100%",
@@ -31,7 +47,7 @@ const styles = stylex.create({
 			default: "32px 80px 32px 32px",
 			"@media (max-width: 620px)": "20px 48px 20px 20px",
 		},
-		color: "rgba(255, 255, 255, 0.8)",
+		color: colors.fine,
 		fontFamily: constants.fontMono,
 		fontSize: "16px",
 		lineHeight: "24px",
@@ -44,8 +60,6 @@ const styles = stylex.create({
 			default: "420px",
 			"@media (max-width: 620px)": "320px",
 		},
-		maskImage:
-			`linear-gradient(${colors.foreground} 62%, transparent 96%)`,
 	},
 	code: {
 		maxWidth: "100%",
@@ -59,28 +73,29 @@ const styles = stylex.create({
 		bottom: 0,
 		left: "50%",
 		display: "inline-flex",
-		minHeight: "40px",
+		minHeight: { default: "40px", "@media (max-width: 620px)": "44px" },
 		alignItems: "center",
 		paddingBlock: '0',
 		paddingInline: '20px',
 		borderWidth: '1px',
 		borderStyle: 'solid',
 		borderColor: {
-			default: colors.border,
+			default: colors.borderStrong,
 			"@media (hover: hover)": {
-				default: colors.border,
-				":hover": colors.borderStrong,
+				default: colors.borderStrong,
+				":hover": colors.borderStrongHover,
 			},
 		},
 		borderRadius: lengths.radiusControl,
 		color: colors.foreground,
 		backgroundColor: colors.background,
 		fontFamily: constants.fontSans,
-		fontSize: "14px",
+		fontSize: "16px",
 		fontWeight: 400,
-		lineHeight: "20px",
+		lineHeight: "24px",
 		transform: "translate(-50%, 50%)",
-		transitionProperty: "color, border-color",
+		boxShadow: `0 8px 24px ${colors.shadowControl}, 0 2px 8px ${colors.shadowControlDirect}`,
+		transitionProperty: "color, border-color, box-shadow",
 		transitionDuration: times.fast,
 		transitionTimingFunction: "ease-out",
 		cursor: "pointer",
@@ -93,7 +108,7 @@ export function PromptBlock({ label, sx, text }: PromptBlockProps) {
 
 	return (
 		<section
-			{...stylex.props(baseStyles.element, styles.root, stylex.defaultMarker(), sx)}
+			{...stylex.props(baseStyles.element, styles.root, !expanded && styles.collapsedRoot, stylex.defaultMarker(), sx)}
 			aria-label={label}
 			data-expanded={expanded ? "true" : "false"}
 		>

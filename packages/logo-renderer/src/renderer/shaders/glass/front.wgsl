@@ -1,6 +1,6 @@
 import { oriented_normal, env_reflect_dir, env_reflection_from_dir, encode_normal } from "../shared/material-core.wgsl";
 import { Params, WIRE_PASS_THRESHOLD } from "../shared/scene-params.wgsl";
-import { VertexInput, VertexOutput, glass_vs_main, is_back_facing_to_camera } from "../shared/glass-vertex.wgsl";
+import { VertexInput, VertexOutput, glass_vs_main } from "../shared/glass-vertex.wgsl";
 import { shade_glass } from "../shared/glass-material.wgsl";
 import { ascii_imprint_coverage } from "../shared/ascii-imprint.wgsl";
 import { normalized_thickness, blurred_back_contribution } from "./back-refraction.wgsl";
@@ -18,6 +18,11 @@ import { ascii_vertical_opacity, ascii_coverage_with_opacity, ascii_final_compos
 
 const FRONT_GATE_START = 0.55;
 const FRONT_GATE_FULL = 0.80;
+
+fn premultiplied(material: vec4f) -> vec4f {
+  let alpha = clamp(material.a, 0.0, 1.0);
+  return vec4f(material.rgb * alpha, alpha);
+}
 
 @vertex
 fn vs_main(input: VertexInput) -> VertexOutput {
@@ -37,10 +42,6 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   let n = oriented_normal(ngeo, v);
   let reflected = env_reflect_dir(n, v);
 
-  // Front material: only render fragments facing the camera.
-  if (is_back_facing_to_camera(ngeo, v)) {
-    discard;
-  }
 
   let materialKind = u32(clamp(round(params.materialKind), 0.0, 4.0));
   var glass = vec4f(0.0);
@@ -58,9 +59,8 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
       return vec4f(encode_normal(reflected), 1.0);
     }
     case 3u: {
-      // Dark chrome mirroring the baked night-sky studio: the flat faces sit
-      // near-black so the cloud bodies, softbox streaks, and the sun glint
-      // carry the look, brightening toward grazing angles via Fresnel.
+      // Polished dark chrome keeps enough normal-incidence reflectance for the
+      // sky and clouds to remain legible, then brightens toward grazing angles.
       let environment = env_reflection_from_dir(
         studioCube,
         studioSampler,
@@ -69,8 +69,8 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
         params.envPitch,
       );
       let edgeFresnel = pow(clamp(1.0 - dot(n, v), 0.0, 1.0), 5.0);
-      let metallicReflectance = mix(0.16, 1.0, edgeFresnel);
-      glass = vec4f(max(environment * metallicReflectance, vec3f(0.006)), 0.92);
+      let metallicReflectance = mix(0.34, 1.0, edgeFresnel);
+      glass = vec4f(max(environment * metallicReflectance, vec3f(0.008, 0.012, 0.020)), 0.96);
     }
     default: {
       glass = shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, false, params.glassAbsorption);
@@ -88,10 +88,9 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
           params.thicknessScale,
           params.glassAbsorption,
         );
-        // The main scene uses additive alpha blending (`src-alpha + one`). The offscreen back
-        // texture already contains the blended back-side contribution, so divide by the front
-        // alpha before returning to preserve the previous two-draw visual result.
-        glass = vec4f(glass.rgb + backContribution / max(glass.a, 0.001), glass.a);
+        // The offscreen rear interface supplies the second refraction while the
+        // front shader writes the complete transmissive material over the sky.
+        glass = vec4f(glass.rgb + backContribution, glass.a);
       }
     }
   }
@@ -118,7 +117,9 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   // `coverage` is still premultiplied-safe alpha coverage.
   let coverage = ascii_coverage_with_opacity(glyphCoverage, asciiOpacity, paintValue, themeT);
   if (params.ascii0.x <= 0.0 && paintValue <= 0.0) {
-    return glass;
+    return premultiplied(glass);
   }
-  return ascii_final_composite(glass, glassVisibility, coverage, themeT, paintValue);
+  return premultiplied(
+    ascii_final_composite(glass, glassVisibility, coverage, themeT, paintValue),
+  );
 }

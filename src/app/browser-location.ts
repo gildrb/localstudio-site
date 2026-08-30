@@ -11,6 +11,28 @@ export {
 type NavigationListener = () => void;
 
 const navigationListeners = new Set<NavigationListener>();
+const scrollStateKey = "__localStudioScroll";
+
+export function saveScrollPosition() {
+	window.history.replaceState(
+		{ ...window.history.state, [scrollStateKey]: [window.scrollX, window.scrollY] },
+		"",
+	);
+}
+
+export function readScrollPosition() {
+	// SAFETY: This history field is exclusively written by this module as an x/y tuple.
+	const saved = window.history.state?.[scrollStateKey] as
+		| readonly [number, number]
+		| undefined;
+	return saved ? { x: saved[0], y: saved[1] } : null;
+}
+
+export function pushNavigation(next: string) {
+	saveScrollPosition();
+	window.history.pushState({ [scrollStateKey]: [0, 0] }, "", next);
+	emitNavigation();
+}
 
 export function subscribeToNavigation(listener: NavigationListener) {
 	navigationListeners.add(listener);

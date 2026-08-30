@@ -143,15 +143,20 @@ export function ProductStory() {
 													{feature.storyTitle}
 												</span>
 											</div>
-											<p
-												{...stylex.props(baseStyles.element, baseStyles.paragraph, 
-													styles.storyDescription,
+											<div
+												{...stylex.props(
+													baseStyles.element,
+													styles.storyDescriptionMotion,
 													selected && styles.storySelectedDescription,
 												)}
 												aria-hidden={!selected}
 											>
-												{renderInlineReact(feature.storyDescription)}
-											</p>
+												<p
+													{...stylex.props(baseStyles.element, baseStyles.paragraph, styles.storyDescription)}
+												>
+													{renderInlineReact(feature.storyDescription)}
+												</p>
+											</div>
 										</li>
 									);
 								})}

@@ -1,133 +1,98 @@
-// Render target sizing, texture factories, and static noise upload.
-// INVARIANT: Pure move from render.ts; keep shader ABI, binding order, and pixel output unchanged.
-// Imported by render/renderer.ts and re-exported only through render.ts facade.
-
-import { Device } from "@vgpu/core";
-import {
-  BACK_DEPTH_FORMAT,
-  BLOOM_RADIUS,
-  PAINT_FORMAT,
-  PAINT_STATIC_NOISE_FORMAT,
-  SCENE_FORMAT,
-  VORONOI_NOISE_FORMAT,
-} from "./constants";
-
-export function getPaddedRenderSize(width: number, height: number, paddingRadius = BLOOM_RADIUS) {
+// Public vgpu targets intentionally omit COPY_DST. Paint seeds need direct uploads, so this
+// file isolates the small core-Texture-to-Target adapter instead of leaking it into the frame graph.
+import type { Gpu, PingPongTargets, Target } from "vgpu";
+import { createResourceIdentity } from "vgpu/core";
+import { BLOOM_RADIUS } from "./constants";
+export function getPaddedRenderSize(
+  width: number,
+  height: number,
+  paddingRadius = BLOOM_RADIUS,
+) {
   const padding = Math.max(0, Math.round(paddingRadius)) * 2;
   return {
     width: Math.max(1, Math.round(width)) + padding,
     height: Math.max(1, Math.round(height)) + padding,
   };
 }
-
-export function createBloomTexture(device: Device, label: string, width: number, height: number) {
-  return device.gpu.createTexture({
-    label,
-    size: [width, height],
-    format: SCENE_FORMAT,
-    usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
-  });
-}
-
-export function createSceneMsaaTexture(
-  device: Device,
-  label: string,
-  width: number,
-  height: number,
-  sampleCount: number,
-) {
-  return device.gpu.createTexture({
-    label,
-    size: [width, height],
-    format: SCENE_FORMAT,
-    sampleCount,
-    usage: GPUTextureUsage.RENDER_ATTACHMENT,
-  });
-}
-
-export function createBackDepthTexture(
-  device: Device,
-  label: string,
-  width: number,
-  height: number,
-) {
-  return device.gpu.createTexture({
-    label,
-    size: [width, height],
-    format: BACK_DEPTH_FORMAT,
-    usage: GPUTextureUsage.RENDER_ATTACHMENT,
-  });
-}
-
-export function createPaintTexture(device: Device, label: string, width: number, height: number) {
-  return device.gpu.createTexture({
-    label,
-    size: [width, height],
-    format: PAINT_FORMAT,
-    usage:
-      GPUTextureUsage.RENDER_ATTACHMENT |
-      GPUTextureUsage.TEXTURE_BINDING |
-      GPUTextureUsage.COPY_DST |
-      GPUTextureUsage.COPY_SRC,
-  });
-}
-
-export function createPaintStaticNoiseTexture(
-  device: Device,
-  label: string,
-  width: number,
-  height: number,
-) {
-  return device.gpu.createTexture({
-    label,
-    size: [width, height],
-    format: PAINT_STATIC_NOISE_FORMAT,
-    usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
-  });
-}
-
-export function createVoronoiNoiseTexture(
-  device: Device,
-  label: string,
-  width: number,
-  height: number,
-) {
-  return device.gpu.createTexture({
-    label,
-    size: [width, height],
-    format: VORONOI_NOISE_FORMAT,
-    usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING,
-  });
-}
-
-export function uploadStaticNoiseTexture(
-  device: Device,
-  texture: GPUTexture,
-  width: number,
-  height: number,
-) {
-  const values = new Float32Array(width * height * 4);
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      const offset = (y * width + x) * 4;
-      values[offset] = hashPaintCell(x, y, 0xa511e9b3);
-      values[offset + 1] = hashPaintCell(x, y, 0x63d83595);
-      values[offset + 2] = hashPaintCell(x, y, 0xf9bd1c5b);
-      values[offset + 3] = hashPaintCell(x, y, 0x1c4b256d);
-    }
-  }
-  device.gpu.queue.writeTexture(
-    { texture },
-    values,
-    { bytesPerRow: width * 4 * Float32Array.BYTES_PER_ELEMENT, rowsPerImage: height },
-    { width, height },
-  );
-}
-
 export function hashPaintCell(x: number, y: number, salt: number) {
-  let h = (Math.imul(x >>> 0, 0x8da6b343) ^ Math.imul(y >>> 0, 0xd8163841) ^ salt) >>> 0;
+  let h =
+    (Math.imul(x >>> 0, 0x8da6b343) ^ Math.imul(y >>> 0, 0xd8163841) ^ salt) >>>
+    0;
   h = (h ^ (h >>> 13)) >>> 0;
   h = Math.imul(h, 0x85ebca6b) >>> 0;
   h = (h ^ (h >>> 16)) >>> 0;
   return (h & 0x00ffffff) / 0x01000000;
+}
+
+export function createUploadTarget(
+  gpu: Gpu,
+  size: readonly [number, number],
+  format: GPUTextureFormat,
+  label: string,
+): Target {
+  const color = gpu.device.createTexture({
+    size,
+    format,
+    label,
+    usage: ["render_attachment", "texture_binding", "copy_dst", "copy_src"],
+  });
+  return {
+    gpu: color.gpu,
+    size,
+    texelSize: [1 / size[0], 1 / size[1]],
+    color,
+    colors: [color],
+    depth: undefined,
+    format,
+    sampleCount: 1,
+    clearColor: [0, 0, 0, 1],
+    resourceIdentity: createResourceIdentity("render-target"),
+    resize() {
+      throw new Error("Upload targets are recreated when their size changes");
+    },
+    read() {
+      return color.read();
+    },
+    readFloats() {
+      return color.readFloats();
+    },
+    onDestroy() {
+      return () => {};
+    },
+    renderPassDescriptor(opts = {}) {
+      const clear = opts.clear ?? [0, 0, 0, 1];
+      const clearValue =
+        "length" in clear
+          ? { r: clear[0], g: clear[1], b: clear[2], a: clear[3] }
+          : clear;
+      const attachment: GPURenderPassColorAttachment = {
+        view: color.createView(),
+        loadOp: opts.preserve ? "load" : "clear",
+        storeOp: "store",
+      };
+      if (!opts.preserve) attachment.clearValue = clearValue;
+      return { colorAttachments: [attachment] };
+    },
+  };
+}
+export function createUploadPingPong(
+  gpu: Gpu,
+  width: number,
+  height: number,
+  format: GPUTextureFormat,
+  label: string,
+): PingPongTargets {
+  let read = createUploadTarget(gpu, [width, height], format, `${label}-ping`);
+  let write = createUploadTarget(gpu, [width, height], format, `${label}-pong`);
+  return {
+    get read() {
+      return read;
+    },
+    get write() {
+      return write;
+    },
+    swap() {
+      [read, write] = [write, read];
+    },
+  };
 }

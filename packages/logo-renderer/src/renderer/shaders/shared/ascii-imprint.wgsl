@@ -47,6 +47,7 @@ export fn ascii_imprint_coverage(modelPosXY: vec2f, gridScale: f32, glyphScale: 
   let selectedGlyphCoverage = 1.0 - smoothstep(0.0, selectedGlyphAa, selectedGlyphDistance);
   let hoverGlyphCoverage = 1.0 - smoothstep(0.0, hoverGlyphAa, hoverGlyphDistance);
   let hoverEntry = smoothstep(HOVER_ENTRY_START, HOVER_ENTRY_FULL, safeHover);
+  let cellRand = hash3(vec3i(vec2i(cellCoord), 0));
   let selectedCoverage = selectedGlyphCoverage;
   let interiorGlyph = max(selectedCoverage, baseDotCoverage);
   let edgeGlyphDistance = sd_box(scaledP, vec2f(ASCII_EDGE_SQUARE_HALF_SIZE)) * safeGlyphScale;
@@ -56,7 +57,6 @@ export fn ascii_imprint_coverage(modelPosXY: vec2f, gridScale: f32, glyphScale: 
   // minimum dot, Voronoi edge square, then per-cell stagger reveal.
   let imprintGlyph = max(interiorGlyph, edgeGlyphCoverage);
 
-  let cellRand = hash3(vec3i(vec2i(cellCoord), 0));
   // Spread each cell's 0.25-wide reveal window across the full transition instead of scaling
   // progress by the stagger range. This keeps p=0.5 as a true mid-state while preserving exact
   // endpoints: p=0 reveals no cells, p=1 reveals every cell fully.
@@ -67,7 +67,9 @@ export fn ascii_imprint_coverage(modelPosXY: vec2f, gridScale: f32, glyphScale: 
   // Paint reveal is independent from the noise chain. On glass (progress=0) this contributes
   // only the clean station ramp; in ASCII mode it cleanly overrides the selected glyph while
   // the base dots/edge squares remain part of the imprint chain.
-  let hoverCoverage = hoverGlyphCoverage * hoverEntry * HOVER_OVERLAY_SCALE;
+  // Shimmer: painted cells breathe softly out of phase so a hover trail never reads static.
+  let shimmer = 0.72 + 0.28 * sin(time * 3.2 + cellRand * 6.2831853);
+  let hoverCoverage = hoverGlyphCoverage * hoverEntry * HOVER_OVERLAY_SCALE * shimmer;
   // Hard per-cell switchover: once hover passes the entry threshold, the entire cell shows
   // only the spinner glyph; otherwise only the imprint glyph contributes.
   let hoverGate = step(HOVER_ENTRY_START, safeHover);

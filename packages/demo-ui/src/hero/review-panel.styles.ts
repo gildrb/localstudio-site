@@ -25,6 +25,7 @@ export const styles = stylex.create({
     borderBottomColor: tokens.border80,
     borderLeftColor: tokens.border80,
     backgroundColor: tokens.colorHeader,
+    boxShadow: constants.headerElevation,
     paddingLeft: "calc(0.25rem * 3)",
     paddingRight: "calc(0.25rem * 3)",
     fontSize: "0.75rem",

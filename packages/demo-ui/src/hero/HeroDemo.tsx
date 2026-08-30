@@ -1,6 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { styles } from "./HeroDemo.styles.ts";
-import { demoStyles } from "../styles/demo-root.styles.ts";
+import { demoStyles, lightTheme } from "../styles/demo-root.styles.ts";
 import {
 	useEffect,
 	useLayoutEffect,
@@ -12,6 +12,7 @@ import {
 import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { useDemoTabBoundary } from "../hooks/demo-tab-boundary";
 import { useElementActive } from "../hooks/use-element-activity";
+import { useLightScheme } from "../hooks/use-light-scheme";
 import { ArrowUp, ChevronDown, Plus } from "../ui/icon-registry";
 import { AgentChatPaneHeader } from "../workbench/agent-chat-pane-header";
 import { AgentComposerStatusBar } from "../workbench/agent-composer-status-bar";
@@ -442,6 +443,7 @@ type HeroDemoViewModel = ReturnType<typeof useHeroDemoModel> & {
 };
 
 function HeroDemoView(model: HeroDemoViewModel) {
+	const lightScheme = useLightScheme();
 	const {
 		hostRef,
 		active,
@@ -482,11 +484,13 @@ function HeroDemoView(model: HeroDemoViewModel) {
 			{...stylex.props(
 				demoStyles.reset,
 				demoStyles.root,
+				lightScheme && lightTheme,
+				lightScheme && demoStyles.lightScheme,
 				mobile && demoStyles.mobile,
 				clipRight && demoStyles.clipRight,
 				clipBottom && demoStyles.clipBottom,
 			)}
-			data-theme="zai-dark"
+			data-theme={lightScheme ? "zai-light" : "zai-dark"}
 			data-phase={state.phase}
 			data-active={active ? "true" : "false"}
 			data-task={activeTask}

@@ -1,4 +1,1 @@
-declare module "*.wgsl" {
-	const source: string;
-	export default source;
-}
+/// <reference types="@vgpu/wgsl/wgsl-types" />

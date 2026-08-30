@@ -1,23 +1,26 @@
-// Composes Eve renderer resources and owns the frame graph behind the facade.
-// INVARIANT: This file orders passes only; subsystems own their resources and disposal.
-// Imported exclusively by render.ts.
-
-import { Device } from "@vgpu/core";
-import { BLOOM_STRENGTH_OFF, BLOOM_STRENGTH_ON, bloomRadiusForDevicePixelRatio } from "./constants";
+// Eve renderer frame graph on the public vgpu API.
+import { frame, type Gpu, type Target } from "vgpu";
+import {
+  BLOOM_STRENGTH_OFF,
+  BLOOM_STRENGTH_ON,
+  bloomRadiusForDevicePixelRatio,
+} from "./constants";
+import type { StudioCubemapAtlas } from "./cubemap";
 import { clampUnit, mix } from "./math";
 import { createPaintSystem } from "./paint-system";
 import { renderBackDepth, renderBackMaterial } from "./passes/back-pass";
 import { renderBlur, renderComposite } from "./passes/bloom-pass";
-import { renderTargetPreview, renderThicknessDebug } from "./passes/debug-passes";
+import {
+  renderTargetPreview,
+  renderThicknessDebug,
+} from "./passes/debug-passes";
 import { renderLightComposite } from "./passes/light-composite-pass";
 import { renderScene } from "./passes/scene-pass";
 import { createResources, disposeResources } from "./resources";
 import { createBloomTargetCache } from "./targets";
 import type { ImprintRenderOptions, MeshData, RenderControls } from "./types";
-
 export function createEve5Renderer(
-  device: Device,
-  format: GPUTextureFormat,
+  gpu: Gpu,
   mesh: MeshData,
   options: {
     thicknessScale?: number;
@@ -25,174 +28,137 @@ export function createEve5Renderer(
     paddingRadius?: number;
     bloom?: boolean;
     backRefraction?: boolean;
-    environmentAtlas?: ImageBitmap;
+    environmentAtlas?: StudioCubemapAtlas;
   } = {},
 ) {
-  const resources = createResources(device, format, mesh, options);
-  const backRefractionEnabled = options.backRefraction ?? true;
-  const bloomTargets = createBloomTargetCache(device);
-  const paintSystem = createPaintSystem(device, resources, mesh);
-
-  const renderGlassTarget = (
-    target: GPUTextureView,
-    controls: RenderControls,
-    logicalWidth: number,
-    logicalHeight: number,
-    imprint: ImprintRenderOptions = {},
+  const r = createResources(gpu, mesh, options),
+    backRefraction = options.backRefraction ?? true,
+    cache = createBloomTargetCache(gpu),
+    paint = createPaintSystem(gpu, r, mesh);
+  const renderGlass = (
+    out: Target,
+    c: RenderControls,
+    lw: number,
+    lh: number,
+    im: ImprintRenderOptions = {},
   ) => {
-    const safeWidth = Math.max(1, Math.round(logicalWidth));
-    const safeHeight = Math.max(1, Math.round(logicalHeight));
-    const paddingRadius =
-      options.paddingRadius ?? bloomRadiusForDevicePixelRatio(imprint.devicePixelRatio);
-    const requiresBackSurfaceTargets =
-      (backRefractionEnabled && controls.material === "glass") ||
-      controls.material === "back-albedo" ||
-      controls.material === "back-depth" ||
-      controls.material === "thickness";
-    const targets = bloomTargets.ensure(
-      safeWidth,
-      safeHeight,
-      paddingRadius,
-      requiresBackSurfaceTargets,
-    );
-    const currentPaintTargets = paintSystem.ensure(
-      safeWidth,
-      safeHeight,
-      imprint.gridScaleMultiplier,
-    );
-    const backMaterial = targets.backMaterial;
-    const backDepth = targets.backDepth;
-    const backSurfaceDepth = targets.backSurfaceDepth;
-    if (requiresBackSurfaceTargets && backMaterial && backDepth && backSurfaceDepth) {
-      const backSurfaceDepthView = backSurfaceDepth.createView();
-      renderBackMaterial(
-        device,
-        resources,
+    const w = Math.max(1, Math.round(lw)),
+      h = Math.max(1, Math.round(lh)),
+      pad =
+        options.paddingRadius ??
+        bloomRadiusForDevicePixelRatio(im.devicePixelRatio),
+      needs =
+        (backRefraction && c.material === "glass") ||
+        c.material === "back-albedo" ||
+        c.material === "back-depth" ||
+        c.material === "thickness",
+      t = cache.ensure(w, h, pad, needs),
+      pt = paint.ensure(w, h, im.gridScaleMultiplier);
+    frame(gpu, (f) => {
+      if (needs && t.backMaterial && t.backDepth) {
+        renderBackMaterial(f, r, mesh, t.backMaterial, c, w, h, pad);
+        renderBackDepth(f, r, mesh, t.backDepth, c, w, h, pad);
+      }
+      paint.apply(f, pt, im.paint);
+      if (
+        (c.material === "back-albedo" || c.material === "back-depth") &&
+        t.backMaterial &&
+        t.backDepth
+      ) {
+        renderTargetPreview(
+          f,
+          r,
+          mesh,
+          out,
+          t.backMaterial.color,
+          t.backDepth.color,
+          c,
+        );
+        return;
+      }
+      if (c.material === "thickness" && t.backMaterial && t.backDepth) {
+        renderThicknessDebug(
+          f,
+          r,
+          mesh,
+          out,
+          t.backMaterial.color,
+          t.backDepth.color,
+          pt.paint.read.color,
+          c,
+          w,
+          h,
+          pad,
+        );
+        return;
+      }
+      if (c.material === "paint-debug") {
+        paint.renderDebug(f, out, pt);
+        return;
+      }
+      paint.renderVoronoiNoise(f, pt, c, w, h, pad, im);
+      renderScene(
+        f,
+        r,
         mesh,
-        backMaterial.createView(),
-        backSurfaceDepthView,
-        controls,
-        safeWidth,
-        safeHeight,
-        paddingRadius,
+        t.scene,
+        backRefraction && t.backMaterial
+          ? t.backMaterial.color
+          : r.fallbacks.fallbackBackMaterial.color,
+        backRefraction && t.backDepth
+          ? t.backDepth.color
+          : r.fallbacks.fallbackBackDepth.color,
+        pt.paint.read.color,
+        pt.voronoi.colors[0],
+        pt.voronoi.colors[1]!,
+        c,
+        w,
+        h,
+        pad,
+        im,
       );
-      renderBackDepth(
-        device,
-        resources,
-        mesh,
-        backDepth.createView(),
-        backSurfaceDepthView,
-        controls,
-        safeWidth,
-        safeHeight,
-        paddingRadius,
+      if (r.isLight) {
+        renderLightComposite(f, r, out, t);
+        return;
+      }
+      if (!r.bloomEnabled) {
+        renderComposite(f, r, out, t, t.scene.color, 0);
+        return;
+      }
+      const strength = mix(
+        BLOOM_STRENGTH_OFF,
+        BLOOM_STRENGTH_ON,
+        clampUnit(im.progress ?? 0),
       );
-    }
-
-    paintSystem.apply(currentPaintTargets, imprint.paint);
-
-    if (
-      (controls.material === "back-albedo" || controls.material === "back-depth") &&
-      backMaterial &&
-      backDepth
-    ) {
-      renderTargetPreview(device, resources, mesh, target, backMaterial, backDepth, controls);
-      return;
-    }
-    if (controls.material === "thickness" && backMaterial && backDepth) {
-      renderThicknessDebug(
-        device,
-        resources,
-        mesh,
-        target,
-        backMaterial,
-        backDepth,
-        currentPaintTargets.readIsPing ? currentPaintTargets.ping : currentPaintTargets.pong,
-        controls,
-        safeWidth,
-        safeHeight,
-        paddingRadius,
+      renderBlur(f, r, t.scene.color, t.bloom.write, [1, 0], true, pad);
+      t.bloom.swap();
+      renderBlur(
+        f,
+        r,
+        t.bloom.read.color,
+        t.bloom.write,
+        [0, 1],
+        false,
+        Math.max(0, Math.round(pad / 2)),
       );
-      return;
-    }
-    if (controls.material === "paint-debug") {
-      paintSystem.renderDebug(target, currentPaintTargets);
-      return;
-    }
-
-    paintSystem.renderVoronoiNoise(
-      currentPaintTargets,
-      controls,
-      safeWidth,
-      safeHeight,
-      paddingRadius,
-      imprint,
-    );
-    renderScene(
-      device,
-      resources,
-      mesh,
-      targets.scene.createView(),
-      targets.sceneMsaa.createView(),
-      backRefractionEnabled && backMaterial
-        ? backMaterial
-        : resources.params.outsideParams.fallbackBackMaterial,
-      backRefractionEnabled && backDepth
-        ? backDepth
-        : resources.params.outsideParams.fallbackBackDepth,
-      currentPaintTargets.readIsPing ? currentPaintTargets.ping : currentPaintTargets.pong,
-      currentPaintTargets.voronoiValue,
-      currentPaintTargets.voronoiEdge,
-      controls,
-      safeWidth,
-      safeHeight,
-      paddingRadius,
-      imprint,
-    );
-
-    if (resources.isLight) {
-      renderLightComposite(device, resources, target, targets);
-      return;
-    }
-    if (!resources.bloomEnabled) {
-      renderComposite(device, resources, target, targets, targets.scene, 0);
-      return;
-    }
-    const effectiveBloomStrength = mix(
-      BLOOM_STRENGTH_OFF,
-      BLOOM_STRENGTH_ON,
-      clampUnit(imprint.progress ?? 0),
-    );
-    // The horizontal pass samples the full-resolution scene, so its radius
-    // stays in scene texels; the vertical pass reads the half-resolution
-    // horizontal target and needs half the radius for the same blur extent.
-    renderBlur(device, resources, targets.scene, targets.horizontal, [1, 0], true, paddingRadius);
-    renderBlur(
-      device,
-      resources,
-      targets.horizontal,
-      targets.vertical,
-      [0, 1],
-      false,
-      Math.max(0, Math.round(paddingRadius / 2)),
-    );
-    renderComposite(device, resources, target, targets, targets.vertical, effectiveBloomStrength);
+      t.bloom.swap();
+      renderComposite(f, r, out, t, t.bloom.read.color, strength);
+    });
   };
-
   return {
     render(
-      target: GPUTextureView,
+      target: Target,
       controls: RenderControls,
       logicalWidth: number,
       logicalHeight: number,
       imprint?: ImprintRenderOptions,
     ) {
-      renderGlassTarget(target, controls, logicalWidth, logicalHeight, imprint);
+      renderGlass(target, controls, logicalWidth, logicalHeight, imprint);
     },
     dispose() {
-      paintSystem.dispose();
-      bloomTargets.dispose();
-      disposeResources(resources);
+      paint.dispose();
+      cache.dispose();
+      disposeResources(r);
     },
   };
 }

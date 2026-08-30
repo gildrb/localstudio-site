@@ -13,16 +13,19 @@ function sourceFiles(directory) {
 	});
 }
 
-test("page colors use typed token groups instead of loose hex literals", () => {
+test("page colors use typed StyleX tokens instead of loose literals", () => {
 	const violations = sourceFiles("src").flatMap((path) => {
 		const projectPath = relative(".", path);
 		if (TOKEN_OWNERS.has(projectPath)) return [];
 		const source = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 		return source.split("\n").flatMap((line, index) => {
 			const code = line.replace(/\/\/.*$/, "");
-			const colors = code.match(/(?<!&)#[\da-f]{3,8}\b/gi);
-			return (
-				colors?.map((color) => `${projectPath}:${index + 1} ${color}`) ?? []
+			const colors = [
+				...(code.match(/(?<!&)#[\da-f]{3,8}\b/gi) ?? []),
+				...(code.match(/\b(?:rgb|rgba|hsl|hsla)\([^)]*\)/gi) ?? []),
+			];
+			return colors.map(
+				(color) => `${projectPath}:${index + 1} ${color}`,
 			);
 		});
 	});

@@ -1,6 +1,6 @@
 import { oriented_normal, env_reflect_dir, env_reflection_from_dir, encode_normal } from "../shared/material-core.wgsl";
 import { Params, WIRE_PASS_THRESHOLD } from "../shared/scene-params.wgsl";
-import { VertexInput, VertexOutput, glass_vs_main, is_back_facing_to_camera } from "../shared/glass-vertex.wgsl";
+import { VertexInput, VertexOutput, glass_vs_main } from "../shared/glass-vertex.wgsl";
 import { shade_glass } from "../shared/glass-material.wgsl";
 
 @group(0) @binding(0) var<uniform> params: Params;
@@ -25,10 +25,6 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   let n = oriented_normal(ngeo, v);
   let reflected = env_reflect_dir(n, v);
 
-  // Back material: only render fragments facing away from the camera.
-  if (!is_back_facing_to_camera(ngeo, v)) {
-    discard;
-  }
 
   let materialKind = u32(clamp(round(params.materialKind), 0.0, 3.0));
   switch (materialKind) {

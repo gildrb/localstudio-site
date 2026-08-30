@@ -2,13 +2,14 @@ import { baseStyles } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
 import { assets } from "../domain/asset";
 import {
+	memo,
 	useCallback,
 	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
 } from "react";
-import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
+import { LazyMotion, domAnimation, useReducedMotion } from "motion/react";
 import { animate } from "motion";
 import { motion } from "../domain/motion";
 import { styles } from "../styles/sections-styles";
@@ -94,24 +95,19 @@ const features = [
 	},
 ] as const satisfies readonly KittyFeature[];
 
-function FeatureCard({
+const FeatureCard = memo(function FeatureCard({
 	feature,
 	index,
 	active,
-	revealed,
-	reducedMotion,
 	onActivate,
 	onRequestVisible,
 }: {
 	feature: KittyFeature;
 	index: number;
 	active: boolean;
-	revealed: boolean;
-	reducedMotion: boolean;
 	onActivate: (index: number | null) => void;
-	onRequestVisible: (index: number) => void;
+	onRequestVisible: (index: number, center?: boolean) => void;
 }) {
-	const descriptionVisible = revealed || active;
 	return (
 		<article
 			{...stylex.props(baseStyles.element, styles.kittyFeature)}
@@ -122,21 +118,23 @@ function FeatureCard({
 		>
 			<div
 				{...stylex.props(baseStyles.element, baseStyles.focusable, styles.kittyFeatureMedia)}
+				data-kitty-feature-media=""
+				data-kitty-drag-interactive=""
 				role="region"
 				tabIndex={0}
 				aria-label={`Show ${feature.title}`}
 				onKeyDown={(event) => {
 					if (event.key !== "Enter" && event.key !== " ") return;
 					event.preventDefault();
-					onRequestVisible(index);
+					onRequestVisible(index, true);
 				}}
-				onClick={() => onRequestVisible(index)}
+				onClick={() => onRequestVisible(index, true)}
 			>
 				<img
 					{...stylex.props(baseStyles.element, baseStyles.image, styles.kittyFeatureImage)}
 					src={feature.image}
 					srcSet={`${feature.image} 660w, ${feature.image2x} 1320w`}
-					sizes="(max-width: 620px) calc(100vw - 48px), (max-width: 900px) 50vw, 33vw"
+					sizes="(max-width: 900px) min(620px, calc(100vw - 48px)), 620px"
 					alt={feature.alt}
 					width="1320"
 					height="1320"
@@ -147,46 +145,20 @@ function FeatureCard({
 				/>
 			</div>
 			<div
-				{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.kittyFeatureBody)}
-				role="button"
-				tabIndex={0}
-				aria-expanded={descriptionVisible}
-				onMouseEnter={() => onActivate(index)}
-				onMouseLeave={() => onActivate(null)}
-				onFocusCapture={() => onActivate(index)}
-				onKeyDown={(event) => {
-					if (event.key !== "Enter" && event.key !== " ") return;
-					event.preventDefault();
-					onActivate(active ? null : index);
-				}}
-				onClick={() => onActivate(active ? null : index)}
-				onBlurCapture={(event) => {
-					const next = event.relatedTarget;
-					if (!(next instanceof Node) || !event.currentTarget.contains(next)) {
-						onActivate(null);
-					}
-				}}
+				{...stylex.props(baseStyles.element, styles.kittyFeatureBody)}
+				data-kitty-drag-interactive=""
 			>
 				<span data-kitty-feature-trigger {...stylex.props(baseStyles.element, styles.kittyFeatureTrigger)}>{feature.title}</span>
-				{descriptionVisible ? (
-					<m.div
-						data-kitty-feature-description
-						{...stylex.props(baseStyles.element, styles.kittyFeatureDescription)}
-						initial={
-							reducedMotion
-								? false
-								: { opacity: 0, y: 6 }
-						}
-						animate={{ opacity: 1, y: 0 }}
-						transition={reducedMotion ? { duration: 0 } : motion.featureSwap}
-					>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.kittyFeatureDescriptionText)}>{feature.text}</p>
-					</m.div>
-				) : null}
+				<div
+					data-kitty-feature-description
+					{...stylex.props(baseStyles.element, styles.kittyFeatureDescription)}
+				>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.kittyFeatureDescriptionText)}>{feature.text}</p>
+				</div>
 			</div>
 		</article>
 	);
-}
+});
 
 function measureCarousel(carousel: HTMLDivElement) {
 	const card = carousel.querySelector<HTMLElement>("[data-kitty-feature]");
@@ -194,21 +166,31 @@ function measureCarousel(carousel: HTMLDivElement) {
 	if (!card || !grid) return null;
 	const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 0;
 	const stride = card.getBoundingClientRect().width + gap;
-	const visible = Math.max(
-		1,
-		Math.floor((carousel.clientWidth + gap) / stride),
+	const cards = Array.from(
+		grid.querySelectorAll<HTMLElement>("[data-kitty-feature]"),
 	);
-	const cardCount = grid.querySelectorAll("[data-kitty-feature]").length;
 	const maxScroll = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
-	const targets = Array.from({ length: cardCount }, (_, index) =>
-		index === cardCount - 1
+	const targets = cards.map((_, index) =>
+		index === cards.length - 1
 			? maxScroll
 			: Math.min(index * stride, maxScroll),
 	);
+	const carouselBounds = carousel.getBoundingClientRect();
+	const centerTargets = cards.map((item) => {
+		const itemBounds = item.getBoundingClientRect();
+		return Math.min(
+			Math.max(
+				carousel.scrollLeft + itemBounds.left + itemBounds.width / 2 -
+					(carouselBounds.left + carouselBounds.width / 2),
+				0,
+			),
+			maxScroll,
+		);
+	});
 	return {
+		centerTargets,
 		stride,
 		targets,
-		visible,
 	};
 }
 
@@ -225,12 +207,23 @@ function nearestTargetIndex(targets: readonly number[], position: number) {
 	return nearestIndex;
 }
 
+function isolateCarouselDrag(carousel: HTMLDivElement, dragging: boolean, origin: HTMLElement | null = null) {
+	if (dragging) window.getSelection()?.removeAllRanges();
+	carousel.querySelectorAll<HTMLElement>("[data-kitty-drag-interactive]").forEach((element) => {
+		element.inert = dragging && element !== origin;
+	});
+	if (dragging && document.activeElement instanceof HTMLElement && document.activeElement !== origin) {
+		document.activeElement.blur();
+	}
+}
+
 export function KittyLitter() {
 	const [active, setActive] = useState<number | null>(null);
+	const [dragging, setDragging] = useState(false);
 	const [carouselIndex, setCarouselIndex] = useState(0);
-	const [visibleFeatures, setVisibleFeatures] = useState(3);
 	const carouselRef = useRef<HTMLDivElement>(null);
 	const carouselAnimation = useRef<{ stop: () => void } | null>(null);
+	const dragOrigin = useRef<HTMLElement | null>(null);
 	const dragState = useRef({
 		pointerId: -1,
 		startX: 0,
@@ -240,13 +233,15 @@ export function KittyLitter() {
 	const reducedMotion = useReducedMotion();
 
 	const animateToIndex = useCallback(
-		(index: number) => {
+		(index: number, center = false) => {
 			const carousel = carouselRef.current;
 			if (!carousel) return;
 			const metrics = measureCarousel(carousel);
 			if (!metrics) return;
 			const bounded = Math.min(Math.max(index, 0), metrics.targets.length - 1);
-			const target = metrics.targets[bounded] ?? 0;
+			const target = center
+				? (metrics.centerTargets[bounded] ?? 0)
+				: (metrics.targets[bounded] ?? 0);
 			carouselAnimation.current?.stop();
 			if (reducedMotion || document.hidden) {
 				carousel.scrollLeft = target;
@@ -265,7 +260,6 @@ export function KittyLitter() {
 	const syncFromScroll = useCallback((carousel: HTMLDivElement) => {
 		const metrics = measureCarousel(carousel);
 		if (!metrics) return;
-		setVisibleFeatures(metrics.visible);
 		setCarouselIndex(nearestTargetIndex(metrics.targets, carousel.scrollLeft));
 	}, []);
 
@@ -288,9 +282,9 @@ export function KittyLitter() {
 		[],
 	);
 
-	function highlightCard(index: number | null) {
+	const highlightCard = useCallback((index: number | null) => {
 		setActive(index);
-	}
+	}, []);
 
 	function jumpToCarousel(index: number) {
 		setCarouselIndex(index);
@@ -306,12 +300,12 @@ export function KittyLitter() {
 			>
 				<div data-kitty-intro {...stylex.props(baseStyles.element, styles.sectionWidth, styles.kittyIntro)}>
 					<h2 id="kittylitter-title" {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.kittyHeading)}>
-						Keep the Session When You Leave Your Desk
+						Your Session, Anywhere
 					</h2>
 				</div>
 				<div
 					ref={carouselRef}
-					{...stylex.props(baseStyles.element, baseStyles.focusable, styles.kittyCarousel)}
+					{...stylex.props(baseStyles.element, baseStyles.focusable, styles.kittyCarousel, dragging && styles.kittyCarouselDragging)}
 					data-carousel-index={carouselIndex}
 					role="region"
 					aria-label="KittyLitter features"
@@ -323,16 +317,36 @@ export function KittyLitter() {
 					}}
 					onScroll={(event) => syncFromScroll(event.currentTarget)}
 					onClickCapture={(event) => {
-						if (!dragState.current.moved) return;
-						event.preventDefault();
+						if (dragState.current.moved) {
+							event.preventDefault();
+							event.stopPropagation();
+							dragState.current.moved = false;
+							return;
+						}
+						const eventTarget = event.target instanceof Element ? event.target : null;
+						const pointTarget = document.elementFromPoint(event.clientX, event.clientY);
+						const media =
+							eventTarget?.closest<HTMLElement>("[data-kitty-feature-media]") ??
+							pointTarget?.closest<HTMLElement>("[data-kitty-feature-media]");
+						const card = media?.closest<HTMLElement>("[data-kitty-feature]");
+						if (!card) return;
+						const cards = Array.from(
+							event.currentTarget.querySelectorAll<HTMLElement>("[data-kitty-feature]"),
+						);
+						const index = cards.indexOf(card);
+						if (index < 0) return;
 						event.stopPropagation();
-						dragState.current.moved = false;
+						animateToIndex(index, true);
 					}}
 					onPointerDown={(event) => {
 						if (!event.isPrimary) return;
 						if (event.pointerType === "mouse" && event.button !== 0) return;
 						dragState.current.moved = false;
 						carouselAnimation.current?.stop();
+						dragOrigin.current =
+							event.target instanceof HTMLElement
+								? event.target.closest<HTMLElement>("[data-kitty-drag-interactive]")
+								: null;
 						dragState.current = {
 							pointerId: event.pointerId,
 							startX: event.clientX,
@@ -344,7 +358,16 @@ export function KittyLitter() {
 					onPointerMove={(event) => {
 						if (dragState.current.pointerId !== event.pointerId) return;
 						const delta = event.clientX - dragState.current.startX;
-						if (Math.abs(delta) > 6) dragState.current.moved = true;
+						if (Math.abs(delta) > 6 && !dragState.current.moved) {
+							dragState.current.moved = true;
+							isolateCarouselDrag(
+								event.currentTarget,
+								true,
+								dragOrigin.current,
+							);
+							setDragging(true);
+							highlightCard(null);
+						}
 						event.currentTarget.scrollLeft =
 							dragState.current.startScroll - delta;
 					}}
@@ -352,6 +375,8 @@ export function KittyLitter() {
 						if (dragState.current.pointerId !== event.pointerId) return;
 						const { moved, startX } = dragState.current;
 						dragState.current.pointerId = -1;
+						isolateCarouselDrag(event.currentTarget, false);
+						setDragging(false);
 						event.currentTarget.releasePointerCapture(event.pointerId);
 						const metrics = measureCarousel(event.currentTarget);
 						if (!metrics) return;
@@ -380,11 +405,18 @@ export function KittyLitter() {
 						if (dragState.current.pointerId !== event.pointerId) return;
 						dragState.current.pointerId = -1;
 						dragState.current.moved = false;
+						isolateCarouselDrag(event.currentTarget, false);
+						setDragging(false);
 						const metrics = measureCarousel(event.currentTarget);
 						if (!metrics) return;
 						animateToIndex(
 							nearestTargetIndex(metrics.targets, event.currentTarget.scrollLeft),
 						);
+					}}
+					onLostPointerCapture={(event) => {
+						dragState.current.pointerId = -1;
+						isolateCarouselDrag(event.currentTarget, false);
+						setDragging(false);
 					}}
 				>
 					<div {...stylex.props(baseStyles.element, styles.kittyItems)} data-kitty-items="">
@@ -393,17 +425,8 @@ export function KittyLitter() {
 								feature={feature}
 								index={index}
 								active={active === index}
-								revealed={index < carouselIndex + visibleFeatures}
-								reducedMotion={reducedMotion ?? false}
 								onActivate={highlightCard}
-								onRequestVisible={(requested) => {
-									let next = carouselIndex;
-									if (requested < carouselIndex) next = requested;
-									if (requested >= carouselIndex + visibleFeatures) {
-										next = requested - visibleFeatures + 1;
-									}
-									if (next !== carouselIndex) jumpToCarousel(next);
-								}}
+								onRequestVisible={animateToIndex}
 								key={feature.title}
 							/>
 						))}

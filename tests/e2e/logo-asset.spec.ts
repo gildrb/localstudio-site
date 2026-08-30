@@ -1,17 +1,17 @@
 import { expect, test } from "@playwright/test";
 
-test("header uses the local wordmark asset", async ({ page }) => {
+test("header uses the standard LocalAI mark", async ({ page }) => {
 	await page.goto("/");
 	const logo = page
 		.getByRole("banner")
 		.getByRole("link", { name: "Local Studio", exact: true })
-		.locator('img[src="/images/localstudio-logo.svg"]');
+		.locator('img[src="/images/localai_light.svg"]');
 	await expect(logo).toBeVisible();
-	const response = await page.request.get("/images/localstudio-logo.svg");
+	const response = await page.request.get("/images/localai_light.svg");
 	expect(response.ok()).toBeTruthy();
 	expect(response.headers()["content-type"]).toContain("image/svg+xml");
 	const source = await response.text();
-	expect(source).toContain('viewBox="0 0 3000 566"');
+	expect(source).toContain('viewBox="0 0 525 525"');
 });
 
 test("hero uses the local standalone mark", async ({ page }) => {

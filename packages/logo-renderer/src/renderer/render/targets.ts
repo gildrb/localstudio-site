@@ -1,121 +1,90 @@
-// Owns resize-sensitive bloom/back render targets.
-// INVARIANT: Target formats, labels, and destroy-before-recreate order match the original renderer.
-// Imported only by render/renderer.ts.
-
-import { Device } from "@vgpu/core";
-import { SCENE_SAMPLE_COUNT } from "./constants";
-import {
-  createBackDepthTexture,
-  createBloomTexture,
-  createSceneMsaaTexture,
-  getPaddedRenderSize,
-} from "./textures";
+// Resize-sensitive public vgpu targets.
+import { pingPong, target, type Gpu } from "vgpu";
+import { BACK_DEPTH_FORMAT, SCENE_FORMAT } from "./constants";
+import { getPaddedRenderSize } from "./textures";
 import type { BloomTargets } from "./types";
 
-export function createBloomTargetCache(device: Device) {
+function createBackTarget(gpu: Gpu, width: number, height: number, label: string) {
+  return target(gpu, {
+    size: [width, height],
+    format: SCENE_FORMAT,
+    depth: BACK_DEPTH_FORMAT,
+    label,
+  });
+}
+
+export function createBloomTargetCache(gpu: Gpu) {
   let targets: (BloomTargets & { paddingRadius: number }) | undefined;
 
-  const dispose = () => {
-    targets?.scene.destroy();
-    targets?.sceneMsaa.destroy();
-    targets?.backMaterial?.destroy();
-    targets?.backDepth?.destroy();
-    targets?.backSurfaceDepth?.destroy();
-    targets?.horizontal.destroy();
-    targets?.vertical.destroy();
-    targets = undefined;
-  };
-
   return {
-    ensure(
-      logicalWidth: number,
-      logicalHeight: number,
-      paddingRadius: number,
-      includeBackSurface: boolean,
-    ) {
-      const padded = getPaddedRenderSize(logicalWidth, logicalHeight, paddingRadius);
-      if (
-        targets?.width === padded.width &&
-        targets.height === padded.height &&
-        targets.paddingRadius === paddingRadius
-      ) {
-        if (includeBackSurface && !targets.backMaterial) {
-          targets.backMaterial = createBloomTexture(
-            device,
-            "eve-5-back-material-linear-hdr",
-            padded.width,
-            padded.height,
-          );
-          targets.backDepth = createBloomTexture(
-            device,
-            "eve-5-back-camera-axis-depth",
-            padded.width,
-            padded.height,
-          );
-          targets.backSurfaceDepth = createBackDepthTexture(
-            device,
-            "eve-5-back-surface-depth",
-            padded.width,
-            padded.height,
-          );
-        }
+    ensure(width: number, height: number, paddingRadius: number, includeBack: boolean) {
+      const padded = getPaddedRenderSize(width, height, paddingRadius);
+      const bloomSize = [
+        Math.max(1, Math.ceil(padded.width / 2)),
+        Math.max(1, Math.ceil(padded.height / 2)),
+      ] as const;
+
+      if (!targets) {
+        targets = {
+          width: padded.width,
+          height: padded.height,
+          paddingRadius,
+          scene: target(gpu, {
+            size: [padded.width, padded.height],
+            format: SCENE_FORMAT,
+            depth: BACK_DEPTH_FORMAT,
+            msaa: true,
+            clearColor: [0, 0, 0, 0],
+            label: "eve-5-scene-linear-hdr",
+          }),
+          backMaterial: includeBack
+            ? createBackTarget(gpu, padded.width, padded.height, "eve-5-back-material")
+            : undefined,
+          backDepth: includeBack
+            ? createBackTarget(gpu, padded.width, padded.height, "eve-5-back-depth")
+            : undefined,
+          bloom: pingPong(gpu, bloomSize[0], bloomSize[1], {
+            format: SCENE_FORMAT,
+            label: "eve-5-bloom",
+          }),
+        };
         return targets;
       }
-      dispose();
-      targets = {
-        width: padded.width,
-        height: padded.height,
-        paddingRadius,
-        scene: createBloomTexture(device, "eve-5-scene-linear-hdr", padded.width, padded.height),
-        sceneMsaa: createSceneMsaaTexture(
-          device,
-          "eve-5-scene-linear-hdr-msaa",
+
+      const sizeChanged =
+        targets.width !== padded.width ||
+        targets.height !== padded.height ||
+        targets.paddingRadius !== paddingRadius;
+      if (sizeChanged) {
+        targets.scene.resize([padded.width, padded.height]);
+        targets.bloom.read.resize(bloomSize);
+        targets.bloom.write.resize(bloomSize);
+        targets.backMaterial?.resize([padded.width, padded.height]);
+        targets.backDepth?.resize([padded.width, padded.height]);
+        targets.width = padded.width;
+        targets.height = padded.height;
+        targets.paddingRadius = paddingRadius;
+      }
+      if (includeBack && !targets.backMaterial) {
+        targets.backMaterial = createBackTarget(
+          gpu,
           padded.width,
           padded.height,
-          SCENE_SAMPLE_COUNT,
-        ),
-        backMaterial: includeBackSurface
-          ? createBloomTexture(
-              device,
-              "eve-5-back-material-linear-hdr",
-              padded.width,
-              padded.height,
-            )
-          : undefined,
-        backDepth: includeBackSurface
-          ? createBloomTexture(
-              device,
-              "eve-5-back-camera-axis-depth",
-              padded.width,
-              padded.height,
-            )
-          : undefined,
-        backSurfaceDepth: includeBackSurface
-          ? createBackDepthTexture(
-              device,
-              "eve-5-back-surface-depth",
-              padded.width,
-              padded.height,
-            )
-          : undefined,
-        // Bloom runs at half resolution: the glow is a low-frequency effect,
-        // so quartering the blur pixels is visually identical and cuts the
-        // dominant per-frame cost of the wide separable gaussian.
-        horizontal: createBloomTexture(
-          device,
-          "eve-5-bloom-horizontal",
-          Math.max(1, Math.ceil(padded.width / 2)),
-          Math.max(1, Math.ceil(padded.height / 2)),
-        ),
-        vertical: createBloomTexture(
-          device,
-          "eve-5-bloom-vertical",
-          Math.max(1, Math.ceil(padded.width / 2)),
-          Math.max(1, Math.ceil(padded.height / 2)),
-        ),
-      };
+          "eve-5-back-material",
+        );
+        targets.backDepth = createBackTarget(
+          gpu,
+          padded.width,
+          padded.height,
+          "eve-5-back-depth",
+        );
+      }
       return targets;
     },
-    dispose,
+    dispose() {
+      // Public vgpu targets own private attachments such as the scene MSAA texture.
+      // The parent Gpu disposes them as one unit immediately after this renderer.
+      targets = undefined;
+    },
   };
 }

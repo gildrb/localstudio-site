@@ -3,6 +3,7 @@ import { demoStyles } from "../styles/demo-root.styles.ts";
 import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 import { styles } from "./work-demo.styles.ts";
+import { ChevronDown } from "../ui/icon-registry";
 
 const PRIMARY_METRICS = [
 	["Decode", "41.8", "tok/s", "session max 46.2"],
@@ -46,7 +47,8 @@ export function WorkDemo() {
 								styles.button38,
 							)}
 						>
-							Models⌄
+							Models
+							<ChevronDown {...stylex.props(demoStyles.reset, styles.modelChevron)} />
 						</button>
 						<button
 							type="button"

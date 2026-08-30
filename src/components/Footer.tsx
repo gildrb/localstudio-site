@@ -13,7 +13,10 @@ const styles = stylex.create({
 		position: "relative",
 		isolation: "isolate",
 		display: "grid",
-		gridTemplateColumns: "1fr auto",
+		gridTemplateColumns: {
+			default: "1fr auto",
+			"@media (max-width: 620px)": "minmax(0, 1fr)",
+		},
 		width: pageWidth,
 		alignItems: "end",
 		gap: "32px",
@@ -23,11 +26,11 @@ const styles = stylex.create({
 		paddingRight: '0',
 		paddingBottom: 'calc(48px + env(safe-area-inset-bottom,0px))',
 		paddingLeft: '0',
-		color: colors.quiet,
+		color: colors.chrome,
 		fontFamily: constants.fontSans,
-		fontSize: "14px",
+		fontSize: "16px",
 		fontWeight: 400,
-		lineHeight: "20px",
+		lineHeight: "24px",
 	},
 	copyright: {
 		order: {
@@ -61,16 +64,19 @@ const styles = stylex.create({
 	},
 	link: {
 		display: "flex",
-		minHeight: "32px",
+		minHeight: {
+			default: "32px",
+			"@media (max-width: 620px)": "44px",
+		},
 		alignItems: "center",
 		padding: {
 			default: "4px 12px",
 			"@media (max-width: 620px)": "6px 0",
 		},
 		color: {
-			default: colors.quiet,
+			default: colors.chrome,
 			"@media (hover: hover)": {
-				default: colors.quiet,
+				default: colors.chrome,
 				":hover": colors.foreground,
 			},
 		},

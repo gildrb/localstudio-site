@@ -80,7 +80,10 @@ export const styles = stylex.create({
 	},
 	button38: {
 		lineHeight: 1.5,
+		display: "inline-flex",
 		height: "calc(0.25rem * 7)",
+		alignItems: "center",
+		columnGap: "calc(0.25rem * 1)",
 		borderTopLeftRadius: "calc(infinity * 1px)",
 		borderTopRightRadius: "calc(infinity * 1px)",
 		borderBottomRightRadius: "calc(infinity * 1px)",
@@ -94,6 +97,12 @@ export const styles = stylex.create({
 		paddingLeft: "calc(0.25rem * 3)",
 		paddingRight: "calc(0.25rem * 3)",
 		fontSize: constants.fsSm,
+	},
+	modelChevron: {
+		height: "calc(0.25rem * 3)",
+		width: "calc(0.25rem * 3)",
+		flexShrink: 0,
+		strokeWidth: 2,
 	},
 	div53: {
 		marginTop: "calc(0.25rem * 5)",
@@ -241,6 +250,7 @@ export const styles = stylex.create({
 	div102: {
 		marginTop: "calc(0.25rem * 3)",
 		height: "calc(0.25rem * 24)",
+		borderRadius: "8px",
 		borderTopStyle: "solid",
 		borderRightStyle: "solid",
 		borderBottomStyle: "solid",
@@ -253,6 +263,8 @@ export const styles = stylex.create({
 		borderRightColor: tokens.separator,
 		borderBottomColor: tokens.separator,
 		borderLeftColor: tokens.separator,
+		backgroundColor: tokens.uiBg,
+		boxShadow: constants.recessedElevation,
 		paddingTop: "calc(0.25rem * 3)",
 		paddingRight: "calc(0.25rem * 3)",
 		paddingBottom: "calc(0.25rem * 3)",

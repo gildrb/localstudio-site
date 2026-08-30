@@ -1,5 +1,5 @@
 import * as stylex from "@stylexjs/stylex";
-import { constants, tokens } from "../styles/tokens.stylex.ts";
+import { constants, depth, tokens } from "../styles/tokens.stylex.ts";
 
 export const styles = stylex.create({
 	div71: {
@@ -26,6 +26,7 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiBg,
+		boxShadow: `1px 0 0 ${depth.hairline}, 6px 0 16px ${depth.far}`,
 	},
 	header73: {
 		display: "flex",
@@ -153,9 +154,10 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiSurface,
+		boxShadow: constants.recessedElevation,
 		paddingLeft: "calc(0.25rem * 9)",
 		paddingRight: "calc(0.25rem * 3)",
-		fontSize: constants.fsSm,
+		fontSize: { default: constants.fsSm, ["@media (max-width: 640px)"]: constants.fsLg },
 		outlineStyle: "none",
 	},
 	div101: {
@@ -177,6 +179,7 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiSurface,
+		boxShadow: constants.panelElevation,
 		paddingTop: "calc(0.25rem * 0.5)",
 		paddingRight: "calc(0.25rem * 0.5)",
 		paddingBottom: "calc(0.25rem * 0.5)",
@@ -383,9 +386,10 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiSurface,
+		boxShadow: constants.recessedElevation,
 		paddingLeft: "calc(0.25rem * 3)",
 		paddingRight: "calc(0.25rem * 3)",
-		fontSize: constants.fsSm,
+		fontSize: { default: constants.fsSm, ["@media (max-width: 640px)"]: constants.fsLg },
 		fontWeight: 400,
 	},
 	textarea194: {
@@ -407,11 +411,12 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiSurface,
+		boxShadow: constants.recessedElevation,
 		paddingLeft: "calc(0.25rem * 3)",
 		paddingRight: "calc(0.25rem * 3)",
 		paddingTop: "calc(0.25rem * 2)",
 		paddingBottom: "calc(0.25rem * 2)",
-		fontSize: constants.fsSm,
+		fontSize: { default: constants.fsSm, ["@media (max-width: 640px)"]: constants.fsLg },
 		fontWeight: 400,
 		lineHeight: "calc(0.25rem * 5)",
 	},
@@ -532,6 +537,7 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiSurface,
+		boxShadow: constants.recessedElevation,
 		paddingLeft: "calc(0.25rem * 3)",
 		paddingRight: "calc(0.25rem * 3)",
 		paddingTop: "calc(0.25rem * 2)",
@@ -561,6 +567,7 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiSurface,
+		boxShadow: constants.recessedElevation,
 		paddingLeft: "calc(0.25rem * 3)",
 		paddingRight: "calc(0.25rem * 3)",
 		paddingTop: "calc(0.25rem * 2)",

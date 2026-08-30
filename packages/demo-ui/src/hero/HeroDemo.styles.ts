@@ -1,5 +1,5 @@
 import * as stylex from "@stylexjs/stylex";
-import { constants, tokens } from "../styles/tokens.stylex.ts";
+import { constants, depth, tokens } from "../styles/tokens.stylex.ts";
 
 export const styles = stylex.create({
   demo: {
@@ -200,6 +200,7 @@ export const styles = stylex.create({
     borderBottomColor: tokens.border,
     borderLeftColor: tokens.border,
     backgroundColor: tokens.composer,
+    boxShadow: constants.composerElevation,
     ["cornerShape"]: "superellipse(1.5)",
   },
   div611: {
@@ -342,6 +343,7 @@ export const styles = stylex.create({
     borderBottomColor: tokens.border,
     borderLeftColor: tokens.border,
     backgroundColor: tokens.colorPanel,
+    boxShadow: `-1px 0 0 ${depth.hairline}, -8px 0 20px ${depth.far}`,
   },
   div738: {
     display: { default: null, "::-webkit-scrollbar": "none" },
@@ -441,6 +443,12 @@ export const styles = stylex.create({
       default: tokens.colorPanel,
       ":hover": tokens.hover,
     },
+    boxShadow: {
+      default: constants.panelElevation,
+      ":hover": constants.panelElevationHover,
+    },
+    transitionProperty: "background-color, box-shadow",
+    transitionDuration: "160ms",
     paddingLeft: "calc(0.25rem * 3)",
     paddingRight: "calc(0.25rem * 3)",
     paddingTop: "calc(0.25rem * 2.5)",

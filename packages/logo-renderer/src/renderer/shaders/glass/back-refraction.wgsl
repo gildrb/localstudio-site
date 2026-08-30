@@ -45,5 +45,6 @@ export fn blurred_back_contribution(
   let absorptionFade = thicknessFade * glassAbsorption;
   let transmission = mix(1.0, BACK_MIN_TRANSMISSION, absorptionFade);
   let absorptionTint = mix(vec3f(1.0), BACK_ABSORPTION_TINT, absorptionFade);
-  return backContribution * transmission * absorptionTint;
+  // The rear interface is the second refraction, not a second full-strength sky.
+  return backContribution * transmission * absorptionTint * 0.18;
 }

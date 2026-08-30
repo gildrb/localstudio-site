@@ -1,99 +1,63 @@
-// Encodes the back material and back camera-axis depth passes.
-// INVARIANT: Back material renders before front scene; pass kind and depth state are shader ABI inputs.
-// Imported only by render/renderer.ts.
-
-import { Device } from "@vgpu/core";
-import { RenderPass } from "@vgpu/render";
+import type { Frame } from "vgpu";
 import { PASS_INSIDE } from "../constants";
 import { writeParams } from "../params";
 import type { RendererResources } from "../resources";
 import type { MeshData, RenderControls } from "../types";
-
+const args = (
+  r: RendererResources,
+  m: MeshData,
+  c: RenderControls,
+  w: number,
+  h: number,
+  pad: number,
+) => ({
+  controls: c,
+  logicalWidth: w,
+  logicalHeight: h,
+  passKind: PASS_INSIDE,
+  projectionPaddingRadius: pad,
+  meshBounds: m.bounds,
+  orbitTarget: r.orbitTarget,
+  thicknessScale: r.thicknessScale,
+  isLight: r.isLight,
+});
 export function renderBackMaterial(
-  device: Device,
-  resources: RendererResources,
-  mesh: MeshData,
-  target: GPUTextureView,
-  depth: GPUTextureView,
-  controls: RenderControls,
-  logicalWidth: number,
-  logicalHeight: number,
-  projectionPaddingRadius = resources.paddingRadius,
+  f: Frame,
+  r: RendererResources,
+  m: MeshData,
+  target: import("vgpu").Target,
+  c: RenderControls,
+  w: number,
+  h: number,
+  pad = r.paddingRadius,
 ) {
-  writeParams({
-    target: resources.params.insideParams,
-    controls,
-    logicalWidth,
-    logicalHeight,
-    passKind: PASS_INSIDE,
-    projectionPaddingRadius,
-    meshBounds: mesh.bounds,
-    orbitTarget: resources.orbitTarget,
-    thicknessScale: resources.thicknessScale,
-    isLight: resources.isLight,
-  });
-  const pass = new RenderPass(device, {
-    label: "eve-5-back-material-pass",
-    colorAttachments: [
-      { view: target, loadOp: "clear", storeOp: "store", clearValue: [0, 0, 0, 1] },
-    ],
-    depthStencilAttachment: {
-      view: depth,
-      depthClearValue: 1,
-      depthLoadOp: "clear",
-      depthStoreOp: "store",
-    },
-  });
-  if (controls.insideRendering) {
-    pass.setPipeline(resources.pipelines.backMaterialPipeline);
-    pass.setVertexBuffer(0, resources.gpuMesh.vertexBuffer);
-    pass.gpu.setIndexBuffer(resources.gpuMesh.indexBuffer.gpu, "uint32");
-    pass.setBindGroup(0, resources.params.insideParams.bindGroup);
-    pass.gpu.drawIndexed(resources.gpuMesh.indexCount, 1, 0, 0, 0);
+  if (c.insideRendering) {
+    r.pipelines.backMaterial.set({
+      params: writeParams(args(r, m, c, w, h, pad)),
+      studioCube: r.studioCubemap.view,
+      studioSampler: r.studioCubemap.sampler,
+    });
   }
-  pass.end();
+  f.pass(target, (pass) => {
+    if (c.insideRendering) pass.draw(r.pipelines.backMaterial);
+  });
 }
-
 export function renderBackDepth(
-  device: Device,
-  resources: RendererResources,
-  mesh: MeshData,
-  target: GPUTextureView,
-  depth: GPUTextureView,
-  controls: RenderControls,
-  logicalWidth: number,
-  logicalHeight: number,
-  projectionPaddingRadius = resources.paddingRadius,
+  f: Frame,
+  r: RendererResources,
+  m: MeshData,
+  target: import("vgpu").Target,
+  c: RenderControls,
+  w: number,
+  h: number,
+  pad = r.paddingRadius,
 ) {
-  writeParams({
-    target: resources.params.backDepthParams,
-    controls,
-    logicalWidth,
-    logicalHeight,
-    passKind: PASS_INSIDE,
-    projectionPaddingRadius,
-    meshBounds: mesh.bounds,
-    orbitTarget: resources.orbitTarget,
-    thicknessScale: resources.thicknessScale,
-    isLight: resources.isLight,
-  });
-  const pass = new RenderPass(device, {
-    label: "eve-5-back-depth-pass",
-    colorAttachments: [
-      { view: target, loadOp: "clear", storeOp: "store", clearValue: [0, 0, 0, 1] },
-    ],
-    depthStencilAttachment: {
-      view: depth,
-      depthLoadOp: "load",
-      depthStoreOp: "store",
-    },
-  });
-  if (controls.insideRendering) {
-    pass.setPipeline(resources.pipelines.backDepthPipeline);
-    pass.setVertexBuffer(0, resources.gpuMesh.vertexBuffer);
-    pass.gpu.setIndexBuffer(resources.gpuMesh.indexBuffer.gpu, "uint32");
-    pass.setBindGroup(0, resources.params.backDepthParams.bindGroup);
-    pass.gpu.drawIndexed(resources.gpuMesh.indexCount, 1, 0, 0, 0);
+  if (c.insideRendering) {
+    r.pipelines.backDepth.set({
+      params: writeParams(args(r, m, c, w, h, pad)),
+    });
   }
-  pass.end();
+  f.pass(target, (pass) => {
+    if (c.insideRendering) pass.draw(r.pipelines.backDepth);
+  });
 }

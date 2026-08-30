@@ -10,18 +10,19 @@ const pageWidth =
 
 const styles = stylex.create({
 	root: {
+		position: "relative",
 		display: "flex",
 		width: pageWidth,
 		minWidth: 0,
 		flexDirection: "column",
-		alignItems: "center",
+		alignItems: "flex-end",
 		justifyContent: "center",
 		marginInline: "auto",
 		padding: {
 			default: "150px 0",
 			"@media (max-width: 620px)": "100px 0",
 		},
-		textAlign: "center",
+		textAlign: "right",
 	},
 	home: {
 		minHeight: "650px",
@@ -34,7 +35,8 @@ const styles = stylex.create({
 	},
 	title: {
 		marginBlock: '0',
-		marginInline: 'auto',
+		marginRight: '0',
+		marginLeft: 'auto',
 		fontFamily: constants.fontSans,
 		fontSize: {
 			default: "42px",
@@ -63,7 +65,7 @@ const styles = stylex.create({
 	actions: {
 		display: "flex",
 		alignItems: "center",
-		justifyContent: "center",
+		justifyContent: "flex-end",
 		gap: "12px",
 		marginTop: "36px",
 	},

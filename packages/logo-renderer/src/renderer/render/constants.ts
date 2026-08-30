@@ -44,6 +44,7 @@ export const CAMERA_CLIP_PADDING = 0.02;
 export const BASELINE_CAMERA_RADIUS = 1.9;
 export const BASELINE_CAMERA_FOV = 35;
 export const DEFAULT_CAMERA_FOV = BASELINE_CAMERA_FOV / 2;
+export const DEFAULT_OBJECT_YAW = -0.1;
 export const EVE_THICKNESS_SCALE_MULTIPLIER = 1.3;
 export const PREVIEW_BACK_ALBEDO = 0;
 export const PREVIEW_BACK_DEPTH = 1;

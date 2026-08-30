@@ -113,6 +113,7 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiSurface,
+		boxShadow: constants.panelElevation,
 	},
 	header49: {
 		display: "flex",
@@ -313,6 +314,7 @@ export const styles = stylex.create({
 		borderBottomColor: tokens.uiBorder,
 		borderLeftColor: tokens.uiBorder,
 		backgroundColor: tokens.uiSurface,
+		boxShadow: constants.panelElevation,
 	},
 	header118: {
 		display: "flex",

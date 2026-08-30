@@ -127,7 +127,7 @@ test("hero demo has no dead sidebar destinations", async ({ page }) => {
 	await expect(page.getByRole("heading", { name: "This page is not local" })).toHaveCount(0);
 });
 
-test("KittyLitter image hover reveals context without moving images or links", async ({ page }) => {
+test("KittyLitter keeps context visible while images and links stay fixed", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
 	const cards = page.locator("[data-kitty-feature]");
@@ -144,7 +144,7 @@ test("KittyLitter image hover reveals context without moving images or links", a
 		"More tools",
 		"Codex in your pocket",
 	]);
-	await expect(page.locator("[data-kitty-feature-description]")).toHaveCount(3);
+	await expect(page.locator("[data-kitty-feature-description]")).toHaveCount(10);
 	const images = cards.getByRole("region");
 	const before = await images.evaluateAll((elements) =>
 		elements.map((element) => element.getBoundingClientRect().top + window.scrollY),
@@ -206,10 +206,29 @@ test("KittyLitter carousel supports image jumps and pointer dragging", async ({
 		.locator("[data-kitty-feature]")
 		.nth(3)
 		.getByRole("region")
-		.dispatchEvent("click");
+		.click();
 	await expect
 		.poll(() => carousel.evaluate((element) => element.scrollLeft))
 		.toBeGreaterThan(0);
+	await expect
+		.poll(() =>
+			carousel.evaluate((element) => {
+				const card = element.querySelectorAll<HTMLElement>("[data-kitty-feature]")[3];
+				if (!card) return Number.POSITIVE_INFINITY;
+				const carouselBounds = element.getBoundingClientRect();
+				const cardBounds = card.getBoundingClientRect();
+				return Math.abs(
+					cardBounds.left + cardBounds.width / 2 -
+						(carouselBounds.left + carouselBounds.width / 2),
+				);
+			}),
+		)
+		.toBeLessThanOrEqual(2);
+	await page.waitForTimeout(500);
+	await carousel.evaluate((element) => {
+		element.scrollLeft = 0;
+	});
+	await expect.poll(() => carousel.evaluate((element) => element.scrollLeft)).toBe(0);
 	await page.waitForTimeout(500);
 	const dragMetrics = await carousel.evaluate((element) => {
 		const card = element.querySelector<HTMLElement>("[data-kitty-feature]");
