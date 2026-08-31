@@ -10,7 +10,6 @@ import { registerRuntimePipeline } from "./bun-plugins.mjs";
 
 await registerRuntimePipeline({ dev: false });
 
-const projectRoot = new URL("../", import.meta.url).pathname;
 const outputPath = new URL("../dist/index.html", import.meta.url);
 const { HomePage } = await import("../src/pages/HomePage.tsx");
 

@@ -48,7 +48,7 @@ const files = walk(assets)
 			gzip: gzipBytes(path),
 		};
 	})
-	.sort((a, b) => a.name.localeCompare(b.name));
+	.toSorted((a, b) => a.name.localeCompare(b.name));
 
 const css = files.filter((file) => file.name.endsWith(".css"));
 const js = files.filter((file) => file.name.endsWith(".js"));
@@ -82,12 +82,6 @@ const criticalJs = [...eager].map((name) => js.find((file) => file.name === name
 const criticalGzip = criticalJs.reduce((sum, file) => sum + file.gzip, 0);
 const lazyChunks = js.filter((file) => !eager.has(file.name));
 const lazyHints = ["HeroDemo", "FeatureDemo", "shader"];
-
-const report = {
-	sharedCss,
-	criticalJs,
-	lazyChunks,
-};
 
 console.log(`entry ${entryName ?? "missing"}`);
 console.log(`shared CSS ${sharedCss?.name ?? "missing"} ${sharedCss?.gzip ?? 0} gzip`);

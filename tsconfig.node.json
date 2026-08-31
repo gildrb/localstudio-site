@@ -27,7 +27,6 @@
     "allowUnusedLabels": false
   },
   "include": [
-    "eslint.config.js",
     "src/agent/**/*.ts"
   ]
 }

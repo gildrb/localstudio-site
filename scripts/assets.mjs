@@ -61,7 +61,7 @@ function dimensionsFor(rel, raw) {
 
 function walk(directory) {
 	const files = [];
-	for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) =>
+	for (const entry of readdirSync(directory, { withFileTypes: true }).toSorted((a, b) =>
 		a.name.localeCompare(b.name),
 	)) {
 		const path = join(directory, entry.name);
@@ -95,7 +95,7 @@ const files = walk(join(root, "public"))
 			sha256: createHash("sha256").update(raw).digest("hex"),
 		};
 	})
-	.sort((a, b) => a.path.localeCompare(b.path));
+	.toSorted((a, b) => a.path.localeCompare(b.path));
 
 const hashes = files.map((file) => file.sha256);
 const duplicates = hashes.filter((hash, index) => hashes.indexOf(hash) !== index);

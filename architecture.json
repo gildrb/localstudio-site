@@ -34,7 +34,6 @@
 		"src/main.tsx",
 		"agent-ready.plugin.ts",
 		"middleware.js",
-		"eslint.config.js",
 		"oxlint.config.ts",
 		"scripts/build.mjs",
 		"scripts/bun-plugins.mjs",

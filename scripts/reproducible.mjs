@@ -9,7 +9,7 @@ const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 
 function walk(directory) {
 	const files = [];
-	for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) =>
+	for (const entry of readdirSync(directory, { withFileTypes: true }).toSorted((a, b) =>
 		a.name.localeCompare(b.name),
 	)) {
 		const path = join(directory, entry.name);
@@ -33,7 +33,7 @@ function manifest() {
 				sha256: createHash("sha256").update(raw).digest("hex"),
 			};
 		})
-		.sort((a, b) => a.path.localeCompare(b.path));
+		.toSorted((a, b) => a.path.localeCompare(b.path));
 }
 
 function build() {

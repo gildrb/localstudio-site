@@ -75,10 +75,15 @@ function staticResponse(pathname) {
 }
 
 function startServer() {
-	const server = Bun.serve({
-		host,
-		port,
-		fetch(request) {
+	let server;
+	let attempt = port;
+	// Vite parity: dev falls forward to the next free port instead of failing.
+	while (true) {
+		try {
+			server = Bun.serve({
+				host,
+				port: attempt,
+				fetch(request) {
 			const url = new URL(request.url);
 			if (dev && url.pathname === "/__stamp") {
 				return new Response(String(statSync(path.join(serveRoot, "index.html")).mtimeMs), {
@@ -92,8 +97,14 @@ function startServer() {
 				staticResponse(pathname) ??
 				new Response("Not Found", { status: 404, headers: { "Content-Type": "text/plain" } })
 			);
-		},
-	});
+			},
+			});
+			break;
+		} catch (error) {
+			if (!dev || error.code !== "EADDRINUSE" || attempt >= port + 10) throw error;
+			attempt += 1;
+		}
+	}
 	console.log(`${dev ? "dev" : "preview"} on http://${host}:${server.port} serving ${path.relative(root, serveRoot)}/`);
 	if (!dev) return;
 	const build = Bun.spawn([process.execPath, "scripts/build.mjs", "--dev", "--watch"], {

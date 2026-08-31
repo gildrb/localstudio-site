@@ -42,7 +42,7 @@ const CONTACT_CLOSE_RADIUS = 0.001;
 const CONTACT_ARC_TOLERANCE = 0.00002;
 
 function closePointContacts(outline) {
-  const path = outline.map(([x, y]) => ({
+  const clipperPath = outline.map(([x, y]) => ({
     X: Math.round(x * CLIPPER_SCALE),
     Y: Math.round(y * CLIPPER_SCALE),
   }));
@@ -51,7 +51,7 @@ function closePointContacts(outline) {
     Math.round(CONTACT_ARC_TOLERANCE * CLIPPER_SCALE),
   );
   offset.AddPath(
-    path,
+    clipperPath,
     ClipperLib.JoinType.jtRound,
     ClipperLib.EndType.etClosedPolygon,
   );
@@ -62,7 +62,7 @@ function closePointContacts(outline) {
 
   const contours = solution
     .map((result) => result.map(({ X, Y }) => [X / CLIPPER_SCALE, Y / CLIPPER_SCALE]))
-    .sort((a, b) => Math.abs(signedArea(b)) - Math.abs(signedArea(a)));
+    .toSorted((a, b) => Math.abs(signedArea(b)) - Math.abs(signedArea(a)));
   for (let i = 0; i < contours.length; i += 1) {
     const shouldBePositive = i === 0;
     if ((signedArea(contours[i]) > 0) !== shouldBePositive) contours[i].reverse();

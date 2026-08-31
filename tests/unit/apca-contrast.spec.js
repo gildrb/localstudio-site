@@ -15,6 +15,7 @@ function tokenHex(name, scheme) {
 function luminance(hex) {
 	const channels = [1, 3, 5].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16) / 255);
 	const value = channels[0] ** 2.4 * 0.2126729 + channels[1] ** 2.4 * 0.7151522 + channels[2] ** 2.4 * 0.072175;
+	// oxlint-disable-next-line oxc/approx-constant -- 1.414 is the APCA exponent, not sqrt(2)
 	return value < 0.022 ? value + (0.022 - value) ** 1.414 : value;
 }
 

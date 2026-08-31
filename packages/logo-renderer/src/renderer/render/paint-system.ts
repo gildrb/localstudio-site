@@ -1,5 +1,5 @@
 // Paint ping-pong state and public vgpu effects.
-import { effect, target, type Effect, type Frame, type Gpu } from "vgpu";
+import { effect, target as createTarget, type Effect, type Frame, type Gpu } from "vgpu";
 import paintUpdate from "../shaders/paint/paint-update.wgsl";
 import {
   DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
@@ -90,7 +90,7 @@ export function createPaintSystem(
       rows,
       paint: createUploadPingPong(gpu, cols, rows, PAINT_FORMAT, "eve-5-paint"),
       staticNoise,
-      voronoi: target(gpu, {
+      voronoi: createTarget(gpu, {
         size: [cols, rows],
         colors: [
           { format: VORONOI_NOISE_FORMAT },

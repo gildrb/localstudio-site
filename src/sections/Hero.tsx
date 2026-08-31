@@ -12,7 +12,7 @@ import { site } from "../domain/site";
 import { styles } from "../styles/sections-styles";
 
 const HeroDemo = lazy(() =>
-	import("@local-studio/demo-ui/hero").then(({ HeroDemo }) => ({ default: HeroDemo })),
+	import("@local-studio/demo-ui/hero").then(({ HeroDemo: Workbench }) => ({ default: Workbench })),
 );
 
 const settle = { opacity: 1, y: 0, filter: "blur(0px)" };

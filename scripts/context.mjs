@@ -102,7 +102,7 @@ function validateWorkspacePackages() {
 }
 
 function walk(directory) {
-	const entries = readdirSync(directory, { withFileTypes: true }).sort((a, b) =>
+	const entries = readdirSync(directory, { withFileTypes: true }).toSorted((a, b) =>
 		a.name.localeCompare(b.name),
 	);
 	const files = [];
@@ -165,7 +165,6 @@ function classify(rel) {
 		rel.startsWith("tools/") ||
 		rel.startsWith(".github/") ||
 		[
-			"eslint.config.js",
 			"oxlint.config.ts",
 			"playwright.config.ts",
 			"middleware.js",
@@ -200,7 +199,7 @@ function tokenize(text) {
 }
 
 function collect() {
-	const files = walk(root).sort((a, b) => a.localeCompare(b));
+	const files = walk(root).toSorted((a, b) => a.localeCompare(b));
 	const rows = [];
 	for (const rel of files) {
 		const raw = readFileSync(join(root, rel));
@@ -247,7 +246,7 @@ function printReport(rows) {
 		"",
 		"categories",
 	];
-	for (const [category, stats] of Object.entries(all).sort((a, b) => b[1].tokens - a[1].tokens)) {
+	for (const [category, stats] of Object.entries(all).toSorted((a, b) => b[1].tokens - a[1].tokens)) {
 		const budget = CATEGORY_BUDGETS[category];
 		lines.push(
 			`  ${category.padEnd(32)} ${String(stats.tokens).padStart(7)} tokens  ${stats.files} files  target ${budget.target} hard ${Number.isFinite(budget.hard) ? budget.hard : "inf"}`,
@@ -268,7 +267,7 @@ function printReport(rows) {
 		"",
 		"top 50",
 	);
-	for (const row of [...rows].sort((a, b) => b.tokens - a.tokens).slice(0, 50)) {
+	for (const row of [...rows].toSorted((a, b) => b.tokens - a.tokens).slice(0, 50)) {
 		lines.push(`  ${String(row.tokens).padStart(6)}  ${row.category.padEnd(28)}  ${row.path}`);
 	}
 	console.log(lines.join("\n"));

@@ -17,7 +17,7 @@
 		"dev": "BUN_JSC_useJIT=0 bun scripts/serve.mjs --dev",
 		"dev:lan": "BUN_JSC_useJIT=0 bun scripts/serve.mjs --dev --host 0.0.0.0",
 		"build": "bun run packages:check && bun x --bun tsc -b && BUN_JSC_useJIT=0 bun scripts/build.mjs && BUN_JSC_useJIT=0 bun scripts/prerender.mjs && BUN_JSC_useJIT=0 bun scripts/stylex-check.mjs --dist",
-		"lint": "eslint . && oxlint .",
+		"lint": "oxlint .",
 		"generated:check": "bun scripts/verify-generated.mjs",
 		"preview": "bun scripts/serve.mjs",
 		"test": "playwright test",
@@ -55,20 +55,13 @@
 		"react-dom": "19.2.8"
 	},
 	"devDependencies": {
-		"@eslint/js": "10.0.1",
 		"@oxlint/plugins": "1.78.0",
 		"@playwright/test": "1.62.1",
-		"@stylexjs/eslint-plugin": "0.19.0",
 		"@stylexjs/unplugin": "0.19.0",
 		"@types/node": "26.2.0",
 		"@types/react": "19.2.18",
 		"@types/react-dom": "19.2.4",
-		"eslint": "10.8.1",
-		"eslint-plugin-react-hooks": "7.1.1",
-		"eslint-plugin-react-refresh": "0.5.4",
-		"globals": "17.11.0",
 		"oxlint": "1.78.0",
-		"typescript": "6.0.3",
-		"typescript-eslint": "8.67.0"
+		"typescript": "6.0.3"
 	}
 }

@@ -23,7 +23,7 @@ const EXCLUDE_DIRS = new Set([
 
 function walk(directory) {
 	const files = [];
-	for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) =>
+	for (const entry of readdirSync(directory, { withFileTypes: true }).toSorted((a, b) =>
 		a.name.localeCompare(b.name),
 	)) {
 		const path = join(directory, entry.name);
@@ -105,7 +105,7 @@ function componentName(rel) {
 	return rel;
 }
 
-const files = walk(root).sort((a, b) => a.localeCompare(b));
+const files = walk(root).toSorted((a, b) => a.localeCompare(b));
 const graph = new Map(files.map((file) => [file, new Set()]));
 const unresolved = [];
 for (const file of files) {
@@ -171,12 +171,6 @@ for (const name of Object.keys(declared)) {
 for (const name of [
 	"@oxlint/plugins",
 	"oxlint",
-	"eslint",
-	"@eslint/js",
-	"globals",
-	"typescript-eslint",
-	"eslint-plugin-react-hooks",
-	"eslint-plugin-react-refresh",
 	"@playwright/test",
 	"@webgpu/types",
 	"@vgpu/core",
@@ -230,7 +224,7 @@ function printReport() {
 	for (const gap of packageDependencyGaps) console.log(`  ${gap}`);
 	console.log("component fan-in");
 	const components = files.filter((file) => componentName(file));
-	for (const file of components.sort((a, b) => (fanIn.get(b)?.size ?? 0) - (fanIn.get(a)?.size ?? 0))) {
+	for (const file of components.toSorted((a, b) => (fanIn.get(b)?.size ?? 0) - (fanIn.get(a)?.size ?? 0))) {
 		const consumers = [...(fanIn.get(file) ?? [])];
 		console.log(`  ${String(consumers.length).padStart(2)}  ${file}`);
 	}

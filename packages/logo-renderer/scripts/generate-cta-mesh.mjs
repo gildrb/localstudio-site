@@ -40,7 +40,7 @@ const CLIPPER_SCALE = 100_000_000;
 const CLIPPER_ARC_TOLERANCE = 0.00002;
 
 function roundTips(contour) {
-  const path = contour.map(([x, y]) => ({
+  const clipperPath = contour.map(([x, y]) => ({
     X: Math.round(x * CLIPPER_SCALE),
     Y: Math.round(y * CLIPPER_SCALE),
   }));
@@ -48,7 +48,7 @@ function roundTips(contour) {
     2,
     Math.round(CLIPPER_ARC_TOLERANCE * CLIPPER_SCALE),
   );
-  offset.AddPath(path, ClipperLib.JoinType.jtRound, ClipperLib.EndType.etClosedPolygon);
+  offset.AddPath(clipperPath, ClipperLib.JoinType.jtRound, ClipperLib.EndType.etClosedPolygon);
   const solution = [];
   offset.Execute(solution, Math.round(TIP_ROUND_RADIUS * CLIPPER_SCALE));
   if (solution.length !== 1)

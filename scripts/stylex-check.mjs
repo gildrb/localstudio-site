@@ -87,7 +87,7 @@ function assertSourceContract() {
 	if (packageJson.dependencies?.["@stylexjs/stylex"] === undefined) {
 		failures.push("package.json: missing @stylexjs/stylex runtime");
 	}
-	for (const dependency of ["@stylexjs/eslint-plugin", "@stylexjs/unplugin"]) {
+	for (const dependency of ["@stylexjs/unplugin"]) {
 		if (packageJson.devDependencies?.[dependency] === undefined) {
 			failures.push(`package.json: missing ${dependency}`);
 		}

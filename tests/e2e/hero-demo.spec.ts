@@ -330,14 +330,14 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 	});
 	expect(title).toEqual(["40px", "44px"]);
 	const layout = await page.evaluate(() => {
-		const demo = document.querySelector('[aria-label="Local Studio workbench"]');
+		const region = document.querySelector('[aria-label="Local Studio workbench"]');
 		const viewport = document.querySelector("[data-demo-viewport]");
 		const app = document.querySelector("[data-demo-app]");
 		const sidebar = document.querySelector("[data-demo-app] > aside");
 		const computer = document.querySelector("[data-computer-panel]");
 		const copy = document.querySelector("[data-hero-copy]");
 		if (
-			!(demo instanceof HTMLElement) ||
+			!(region instanceof HTMLElement) ||
 			!(viewport instanceof HTMLElement) ||
 			!(app instanceof HTMLElement) ||
 			!(sidebar instanceof HTMLElement) ||
@@ -346,31 +346,31 @@ test("mobile hero shows a cropped desktop app, not a compact shell", async ({
 		) {
 			throw new Error("demo chrome");
 		}
-		const demoBox = demo.getBoundingClientRect();
+		const demoBox = region.getBoundingClientRect();
 		const thread = document.querySelector("[data-timeline-list]");
 		const threadBox = thread instanceof HTMLElement ? thread.getBoundingClientRect() : null;
-		const scale = demo.clientWidth / 950;
-		const menu = demo.querySelector('[aria-label="Open navigation menu"]');
+		const scale = region.clientWidth / 950;
+		const menu = region.querySelector('[aria-label="Open navigation menu"]');
 		return {
 			sidebar: sidebar.offsetWidth,
 			computer: computer.offsetWidth,
 			layoutWidth: Math.round(Number.parseFloat(getComputedStyle(app).width)),
 			layoutHeight: Math.round(Number.parseFloat(getComputedStyle(app).height)),
-			composer: getComputedStyle(demo).getPropertyValue("--composer-w").trim(),
+			composer: getComputedStyle(region).getPropertyValue("--composer-w").trim(),
 			visualWidth: Math.round(app.getBoundingClientRect().width),
-			demoWidth: demo.clientWidth,
+			demoWidth: region.clientWidth,
 			demoLeft: Math.round(demoBox.left),
 			demoRight: Math.round(demoBox.right),
 			copyLeft: Math.round(copy.getBoundingClientRect().left),
 			frameHeight: Math.round(viewport.getBoundingClientRect().height),
 			scaledHeight: Math.round(787 * scale),
-			rightRadius: getComputedStyle(demo).borderTopRightRadius,
+			rightRadius: getComputedStyle(region).borderTopRightRadius,
 			menu: menu instanceof HTMLElement ? getComputedStyle(menu).display : "none",
 			chatVisible: Boolean(
 				threadBox && threadBox.left < demoBox.right && threadBox.right > demoBox.left,
 			),
-			pointer: getComputedStyle(demo).pointerEvents,
-			mobile: demo.getAttribute("data-mobile"),
+			pointer: getComputedStyle(region).pointerEvents,
+			mobile: region.getAttribute("data-mobile"),
 		};
 	});
 	expect(layout.sidebar).toBe(244);
