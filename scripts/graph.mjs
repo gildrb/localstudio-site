@@ -199,7 +199,7 @@ const workspaceManifests = [
 ];
 
 function packageName(spec) {
-	if (spec.startsWith("node:") || spec.startsWith(".") || spec.startsWith("/")) return null;
+	if (spec.startsWith("node:") || spec.startsWith("bun:") || spec === "bun" || spec.startsWith(".") || spec.startsWith("/")) return null;
 	return spec.startsWith("@") ? spec.split("/").slice(0, 2).join("/") : spec.split("/")[0];
 }
 

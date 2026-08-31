@@ -2,7 +2,7 @@
 // The mark is three disjoint petals (no holes), so every parsed contour is
 // kept and caps are triangulated per contour.
 //
-// Usage: pnpm --filter @local-ai/logo-renderer generate:cta
+// Usage: bun run --filter @local-ai/logo-renderer generate:cta
 
 import ClipperLib from "clipper-lib";
 import fs from "node:fs";

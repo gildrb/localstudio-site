@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "bun:test";
 
 const source = readFileSync("src/styles/public-tokens.stylex.ts", "utf8");
 

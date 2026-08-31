@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "bun:test";
 import {
 	closedNav,
 	desktopMenu,

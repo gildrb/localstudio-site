@@ -8,10 +8,10 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "generate": "node scripts/generate-logo-mesh.mjs",
-    "check": "node scripts/generate-logo-mesh.mjs --check",
-    "shader:check": "node scripts/check-shaders.mjs",
-    "snapshot": "node --experimental-strip-types --import ./scripts/node-hooks.mjs scripts/render-snapshot.mjs"
+    "generate": "bun scripts/generate-logo-mesh.mjs",
+    "check": "bun scripts/generate-logo-mesh.mjs --check",
+    "shader:check": "bun scripts/check-shaders.mjs",
+    "snapshot": "bun scripts/render-snapshot.mjs"
   },
   "peerDependencies": {
     "react": "19.2.8",

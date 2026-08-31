@@ -62,7 +62,7 @@ if (command === "write") {
 	console.log("wrote index.html");
 } else if (command === "check") {
 	if (readFileSync(dest, "utf8") !== body) {
-		console.error("index.html is stale; run pnpm index:html");
+		console.error("index.html is stale; run bun run index:html");
 		process.exit(1);
 	}
 	console.log("index.html ok");

@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "bun:test";
 
 const SOURCE_EXTENSIONS = new Set([".ts", ".tsx"]);
 const TOKEN_OWNERS = new Set(["src/styles/public-tokens.stylex.ts"]);

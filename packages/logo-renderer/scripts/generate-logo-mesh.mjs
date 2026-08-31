@@ -3,7 +3,7 @@
 // quarter-circle fillet so bevel shading is analytically smooth — no faceted
 // chamfer bands. Caps are triangulated with earcut.
 //
-// Usage: pnpm --filter @local-ai/logo-renderer generate
+// Usage: bun run --filter @local-ai/logo-renderer generate
 
 import ClipperLib from "clipper-lib";
 import fs from "node:fs";

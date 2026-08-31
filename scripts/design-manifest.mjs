@@ -52,7 +52,7 @@ if (command === "write") {
 } else if (command === "check") {
 	const current = readFileSync(dest, "utf8");
 	if (current !== body) {
-		console.error("design-manifest.json is stale; run pnpm design:manifest");
+		console.error("design-manifest.json is stale; run bun run design:manifest");
 		process.exit(1);
 	}
 	console.log(`design-manifest.json ${hash}`);

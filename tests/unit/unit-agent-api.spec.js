@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "bun:test";
 import mcpHandler from "../../api/mcp.js";
 import productsHandler from "../../api/v1/products.js";
 import statusHandler from "../../api/v1/status.js";

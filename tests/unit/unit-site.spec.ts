@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { extname, join } from "node:path";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "bun:test";
 import { site } from "../../src/domain/site";
 
 function sourceFiles(directory: string): string[] {

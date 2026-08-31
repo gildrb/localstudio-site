@@ -1,5 +1,6 @@
 {
-	"installCommand": "pnpm install --frozen-lockfile --ignore-scripts",
+	"installCommand": "bun install --frozen-lockfile --ignore-scripts",
+	"buildCommand": "bun run build",
 	"headers": [
 		{
 			"source": "/",

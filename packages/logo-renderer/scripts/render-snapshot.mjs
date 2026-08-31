@@ -1,7 +1,8 @@
 // Renders the hero's first frame offline into committed PNG snapshots.
 // Output: public/localai/hero-render-{night,day}.png — the static image the hero
 // shows instantly on load while the WebGPU canvas warms up (no black screen).
-// Run from the repo root: pnpm -C packages/logo-renderer snapshot
+// Run from the repo root: bun run --cwd packages/logo-renderer snapshot
+import "./bun-hooks.mjs";
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";

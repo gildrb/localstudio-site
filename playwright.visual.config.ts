@@ -12,7 +12,7 @@ export default defineConfig({
 	},
 	webServer: process.env.CI
 		? {
-				command: "pnpm preview --host 127.0.0.1 --port 4173",
+				command: "bun run preview --host 127.0.0.1 --port 4173",
 				url: "http://127.0.0.1:4173",
 				reuseExistingServer: false,
 			}

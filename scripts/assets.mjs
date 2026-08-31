@@ -115,7 +115,7 @@ if (command === "write") {
 } else if (command === "check") {
 	const current = readFileSync(dest, "utf8");
 	if (current !== body) {
-		console.error("asset-manifest.json is stale; run pnpm assets:manifest");
+		console.error("asset-manifest.json is stale; run bun run assets:manifest");
 		process.exit(1);
 	}
 	if (duplicateGroups.length) {

@@ -38,7 +38,7 @@ function manifest() {
 
 function build() {
 	rmSync(join(root, "dist"), { recursive: true, force: true });
-	const result = spawnSync("pnpm", ["build"], {
+	const result = spawnSync(process.execPath, ["run", "build"], {
 		cwd: root,
 		stdio: "inherit",
 		env: process.env,

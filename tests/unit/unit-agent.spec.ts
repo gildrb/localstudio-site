@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "bun:test";
 import {
 	HOMEPAGE_LINK_HEADER,
 	agentDocument,

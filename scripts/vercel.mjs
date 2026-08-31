@@ -53,7 +53,13 @@ const rewrites = [
 ];
 
 const vercelBody = `${JSON.stringify(
-	{ installCommand: "pnpm install --frozen-lockfile --ignore-scripts", headers, redirects: redirectRules, rewrites },
+	{
+		installCommand: "bun install --frozen-lockfile --ignore-scripts",
+		buildCommand: "bun run build",
+		headers,
+		redirects: redirectRules,
+		rewrites,
+	},
 	null,
 	"\t",
 )}\n`;
@@ -128,7 +134,7 @@ if (command === "write") {
 		(output) => readFileSync(output.path, "utf8") !== output.body,
 	);
 	if (stale.length > 0) {
-		console.error("Vercel outputs are stale; run pnpm vercel:manifest");
+		console.error("Vercel outputs are stale; run bun run vercel:manifest");
 		process.exit(1);
 	}
 	console.log("Vercel outputs ok");

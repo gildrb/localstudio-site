@@ -22,14 +22,13 @@ const INCLUDE_EXT = new Set([
 ]);
 const EXCLUDE_DIRS = new Set([
 	"node_modules",
-	".pnpm-store",
 	"dist",
 	".git",
 	"test-results",
 	"playwright-report",
 	".context",
 ]);
-const EXCLUDE_FILES = new Set(["pnpm-lock.yaml"]);
+const EXCLUDE_FILES = new Set(["bun.lock"]);
 const GENERATED_FILES = new Set([
 	"asset-manifest.json",
 	"design-manifest.json",
@@ -83,10 +82,10 @@ function workspacePackageMetadata() {
 }
 
 function validateWorkspacePackages() {
-	const workspace = readFileSync(join(root, "pnpm-workspace.yaml"), "utf8");
+	const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 	const failures = [];
-	if (!workspace.includes("packages/*")) {
-		failures.push("pnpm-workspace.yaml must include packages/*");
+	if (!manifest.workspaces?.some((entry) => entry === "packages/*")) {
+		failures.push("package.json workspaces must include packages/*");
 	}
 	for (const workspacePackage of workspacePackageMetadata()) {
 		if (!workspacePackage.name) {
@@ -192,7 +191,7 @@ function classify(rel) {
 	) {
 		return "react pages/components/app";
 	}
-	if (["package.json", "index.html", "README.md", "pnpm-workspace.yaml", ".mcp.json", "architecture.json"].includes(rel)) {
+	if (["package.json", "index.html", "README.md", ".mcp.json", "architecture.json"].includes(rel)) {
 		return "package/html/misc";
 	}
 	return "other";
@@ -264,7 +263,7 @@ function printReport(rows) {
 		"exclusion basis",
 		...workspacePackageMetadata().map(
 			({ root: packageRoot, name, version, category }) =>
-				`  ${name}@${version}  ${packageRoot}  (${category}; package typecheck runs in pnpm check)`,
+				`  ${name}@${version}  ${packageRoot}  (${category}; package typecheck runs in bun check)`,
 		),
 		`  generated files: ${[...GENERATED_FILES].join(", ")}`,
 		`  excluded files: ${[...EXCLUDE_FILES].join(", ")}`,

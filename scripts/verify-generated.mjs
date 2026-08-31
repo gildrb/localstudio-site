@@ -26,18 +26,18 @@ const forbidden = [
 const generated = [
 	{
 		label: "design-manifest",
-		args: ["--experimental-strip-types", "scripts/design-manifest.mjs", "write"],
+		args: ["scripts/design-manifest.mjs", "write"],
 		files: ["design-manifest.json"],
 	},
 	{ label: "asset-manifest", args: ["scripts/assets.mjs", "write"], files: ["asset-manifest.json"] },
 	{
 		label: "Vercel outputs",
-		args: ["--experimental-strip-types", "scripts/vercel.mjs", "write"],
+		args: ["scripts/vercel.mjs", "write"],
 		files: ["vercel.json", "middleware.js"],
 	},
 	{
 		label: "index.html",
-		args: ["--experimental-strip-types", "scripts/index-html.mjs", "write"],
+		args: ["scripts/index-html.mjs", "write"],
 		files: ["index.html"],
 	},
 ];
