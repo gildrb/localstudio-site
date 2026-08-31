@@ -9,7 +9,7 @@
     "./story": "./src/story/FeatureDemo.tsx"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "bun x --bun tsc -p tsconfig.json"
   },
   "peerDependencies": {
     "react": "19.2.8",

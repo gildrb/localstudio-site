@@ -56,6 +56,7 @@ const vercelBody = `${JSON.stringify(
 	{
 		installCommand: "bun install --frozen-lockfile --ignore-scripts",
 		buildCommand: "bun run build",
+		outputDirectory: "dist",
 		headers,
 		redirects: redirectRules,
 		rewrites,

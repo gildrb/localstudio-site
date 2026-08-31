@@ -7,7 +7,7 @@
     "./react": "./src/renderer/index.tsx"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "bun x --bun tsc -p tsconfig.json",
     "generate": "bun scripts/generate-logo-mesh.mjs",
     "check": "bun scripts/generate-logo-mesh.mjs --check",
     "shader:check": "bun scripts/check-shaders.mjs",

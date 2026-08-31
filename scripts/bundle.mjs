@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 import { gzipSync } from "node:zlib";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -10,7 +10,7 @@ const command = process.argv[2] ?? "check";
 const budgets = {
 	sharedCssGzip: 20_480,
 	criticalJsGzip: 122_880,
-	routeChunkGzip: 61_440,
+	lazyChunkGzip: 61_440,
 };
 
 function walk(directory) {
@@ -38,9 +38,10 @@ try {
 	process.exit(1);
 }
 
-const files = walk(join(dist, "assets"))
+const assets = join(dist, "assets");
+const files = walk(assets)
 	.map((path) => {
-		const name = path.slice(join(dist, "assets").length + 1).split("\\").join("/");
+		const name = path.slice(assets.length + 1).split("\\").join("/");
 		return {
 			name,
 			bytes: statSync(path).size,
@@ -52,48 +53,71 @@ const files = walk(join(dist, "assets"))
 const css = files.filter((file) => file.name.endsWith(".css"));
 const js = files.filter((file) => file.name.endsWith(".js"));
 const sharedCss = css.length === 1 ? css[0] : undefined;
-const criticalJs = js.find((file) => file.name.startsWith("index-"));
+
+// The entry is the module script referenced by index.html; the eager set is
+// its static-import closure (chunks without an import( boundary).
+const entryName = readFileSync(join(dist, "index.html"), "utf8").match(
+	/module" src="\/assets\/([^"]+\.js)"/,
+)?.[1];
+function staticImports(name) {
+	const source = readFileSync(join(assets, name), "utf8");
+	const found = new Set();
+	for (const match of source.matchAll(/(?:^|;)(?:import|export)[^("';]*?from"\.\/([^"']+)"/g)) {
+		found.add(match[1]);
+	}
+	for (const match of source.matchAll(/(?:^|;)import"\.\/([^"']+)"/g)) {
+		found.add(match[1]);
+	}
+	return [...found].filter((imported) => js.some((file) => file.name === imported));
+}
+const eager = new Set();
+const queue = entryName ? [entryName] : [];
+while (queue.length > 0) {
+	const current = queue.pop();
+	if (eager.has(current)) continue;
+	eager.add(current);
+	queue.push(...staticImports(current));
+}
+const criticalJs = [...eager].map((name) => js.find((file) => file.name === name)).filter(Boolean);
+const criticalGzip = criticalJs.reduce((sum, file) => sum + file.gzip, 0);
+const lazyChunks = js.filter((file) => !eager.has(file.name));
 const lazyHints = ["HeroDemo", "FeatureDemo", "shader"];
-const routeChunks = js.filter(
-	(file) =>
-		!file.name.startsWith("index-") &&
-		!file.name.startsWith("jsx-runtime-") &&
-		!lazyHints.some((hint) => file.name.startsWith(`${hint}-`)),
-);
+
 const report = {
 	sharedCss,
 	criticalJs,
-	routeChunks,
-	lazy: js.filter((file) => lazyHints.some((hint) => file.name.startsWith(`${hint}-`))),
+	lazyChunks,
 };
 
+console.log(`entry ${entryName ?? "missing"}`);
 console.log(`shared CSS ${sharedCss?.name ?? "missing"} ${sharedCss?.gzip ?? 0} gzip`);
-console.log(`critical JS ${criticalJs?.name ?? "missing"} ${criticalJs?.gzip ?? 0} gzip`);
-for (const file of routeChunks) {
-	console.log(`route ${file.name} ${file.gzip} gzip`);
+console.log(`critical JS ${criticalJs.length} chunks ${criticalGzip} gzip`);
+for (const file of criticalJs) {
+	console.log(`  eager ${file.name} ${file.gzip} gzip`);
 }
-for (const file of report.lazy) {
+for (const file of lazyChunks) {
 	console.log(`lazy ${file.name} ${file.gzip} gzip`);
 }
 
 if (command !== "check") process.exit(0);
 
 const failures = [];
-if (css.length !== 1) failures.push(`expected one extracted StyleX CSS asset, found ${css.length}`);
+if (css.length !== 1) failures.push(`expected one collected StyleX CSS asset, found ${css.length}`);
 if (!sharedCss) failures.push("missing shared StyleX CSS chunk");
 else if (sharedCss.gzip > budgets.sharedCssGzip) {
 	failures.push(`shared CSS ${sharedCss.gzip} exceeds ${budgets.sharedCssGzip}`);
 }
-if (!criticalJs) failures.push("missing critical JS chunk");
-else if (criticalJs.gzip > budgets.criticalJsGzip) {
-	failures.push(`critical JS ${criticalJs.gzip} exceeds ${budgets.criticalJsGzip}`);
+if (!entryName) failures.push("missing entry script in index.html");
+if (!criticalJs.length) failures.push("missing critical JS chunks");
+else if (criticalGzip > budgets.criticalJsGzip) {
+	failures.push(`critical JS ${criticalGzip} exceeds ${budgets.criticalJsGzip}`);
 }
-for (const file of routeChunks) {
-	if (file.gzip > budgets.routeChunkGzip) {
-		failures.push(`route chunk ${file.name} ${file.gzip} exceeds ${budgets.routeChunkGzip}`);
+for (const file of lazyChunks) {
+	if (file.gzip > budgets.lazyChunkGzip) {
+		failures.push(`lazy chunk ${file.name} ${file.gzip} exceeds ${budgets.lazyChunkGzip}`);
 	}
 }
-if (js.some((file) => file.name.startsWith("shader-") && file === criticalJs)) {
+if (js.some((file) => file.name.startsWith("shader-") && eager.has(file.name))) {
 	failures.push("WebGPU shader chunk is eager");
 }
 for (const hint of lazyHints) {

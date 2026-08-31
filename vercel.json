@@ -1,6 +1,7 @@
 {
 	"installCommand": "bun install --frozen-lockfile --ignore-scripts",
 	"buildCommand": "bun run build",
+	"outputDirectory": "dist",
 	"headers": [
 		{
 			"source": "/",

@@ -147,7 +147,7 @@ export function LogoPoster({ dayUrl, nightUrl }: { dayUrl: string; nightUrl: str
 
 export type LocalAiLogoShaderProps = LogoRendererAssets & {
 	/** Fires once when the live canvas has produced its first frame. */
-	onFirstFrame?: () => void;
+	onFirstFrame?: (() => void) | undefined;
 	/** Stage layout override (position/size) applied after the default stage. */
 	sx?: Parameters<typeof stylex.props>[0] | undefined;
 	/** Camera framing aspect; defaults to the hero stage's 1.52. */

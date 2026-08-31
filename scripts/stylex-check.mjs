@@ -2,7 +2,7 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { unpluginFactory } from "@stylexjs/unplugin";
+import { createStylexTransform } from "./bun-plugins.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const inspectDist = process.argv.includes("--dist");
@@ -101,26 +101,14 @@ function assertSourceContract() {
 }
 
 async function assertDevelopmentCss() {
-	const plugin = unpluginFactory(
-		{
-			dev: true,
-			runtimeInjection: false,
-			unstable_moduleResolution: { type: "commonJS", rootDir: root },
-			useCSSLayers: true,
-		},
-		{ framework: "vite" },
-	);
+	const plugin = createStylexTransform(true);
 	const sources = projectFiles().filter((absolute) => {
 		const rel = relative(root, absolute).split("\\").join("/");
 		return (rel.startsWith("src/") || rel.startsWith("packages/")) && /\.[cm]?[jt]sx?$/.test(rel);
 	});
 	for (const absolute of sources) {
-		await plugin.transform.call(
-			{ meta: { watchMode: false } },
-			readFileSync(absolute, "utf8"),
-			absolute,
-		);
-		plugin.__stylexCollectCss();
+		await plugin.transform(readFileSync(absolute, "utf8"), absolute);
+		plugin.collectCss();
 	}
 	console.log(`StyleX development CSS passed: ${sources.length} modules`);
 }

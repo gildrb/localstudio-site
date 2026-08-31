@@ -1,6 +1,6 @@
 # localstudio.ai
 
-Bun is the package manager, script runner, and unit test runner: `bun install`, `bun run build`, `bun test tests/unit`. The Vite/StyleX pipeline runs on Node (Bun 1.3.14 JIT bug; see AGENTS.md).
+Bun (1.4.0) is the package manager, bundler, dev server, and test runner: `bun install`, `bun run dev`, `bun run build`, `bun test tests/unit`. No Vite, no pnpm, no Node dependency.
 
 ### Acknowledgements
 

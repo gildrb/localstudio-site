@@ -26,7 +26,7 @@ function collect(directory) {
 collect(fileURLToPath(shadersRoot));
 for (const url of wgslSources.keys()) {
 	const resolved = await resolveShader({ entry: fileURLToPath(url) });
-	wgslSources.set(url, resolved.wgsl);
+	wgslSources.set(url, { version: resolved.version ?? 1, wgsl: resolved.wgsl });
 }
 
 plugin({

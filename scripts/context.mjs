@@ -70,7 +70,7 @@ const CATEGORY_BUDGETS = {
 	other: { target: 0, hard: Number.POSITIVE_INFINITY },
 };
 
-const TOTAL_OPERATING = 96_000;
+const TOTAL_OPERATING = 98_000; // raised for the bun-native build pipeline (vite.config + agent-ready plugin replaced by scripts/build+serve+bun-plugins)
 const TOTAL_HARD = 100_000;
 const TOTAL_WARN = 86_000;
 
@@ -165,11 +165,9 @@ function classify(rel) {
 		rel.startsWith("tools/") ||
 		rel.startsWith(".github/") ||
 		[
-			"vite.config.ts",
 			"eslint.config.js",
 			"oxlint.config.ts",
 			"playwright.config.ts",
-			"agent-ready.plugin.ts",
 			"middleware.js",
 			"tsconfig.json",
 			"tsconfig.app.json",

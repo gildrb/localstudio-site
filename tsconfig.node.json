@@ -27,9 +27,7 @@
     "allowUnusedLabels": false
   },
   "include": [
-    "vite.config.ts",
     "eslint.config.js",
-    "agent-ready.plugin.ts",
     "src/agent/**/*.ts"
   ]
 }
