@@ -50,13 +50,13 @@ export const styles = stylex.create({
 			"@media (max-width: 620px)": "column",
 		},
 		alignItems: "flex-start",
-		justifyContent: "center",
+		justifyContent: "flex-start",
 		marginInline: "auto",
 		paddingTop: {
 			default: "clamp(140px, 18svh, 208px)",
 			"@media (max-width: 900px)": "76px",
 		},
-		textAlign: "center",
+		textAlign: "left",
 	},
 	heroCopy: {
 		position: { default: "relative", "::before": "absolute" },
@@ -124,7 +124,7 @@ export const styles = stylex.create({
 	heroActions: {
 		display: "flex",
 		alignItems: "center",
-		justifyContent: "center",
+		justifyContent: "flex-start",
 		columnGap: "12px",
 		rowGap: "12px",
 		marginTop: "36px",
