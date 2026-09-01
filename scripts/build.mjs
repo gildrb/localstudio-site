@@ -2,7 +2,7 @@
 // Production build on the Bun bundler (replaces `vite build` + the agent-ready
 // writeBundle step): bundles the SPA, collects the single StyleX CSS asset,
 // emits agent documents, copies public assets, and writes dist/index.html.
-import { cpSync, mkdirSync, readFileSync, rmSync, watch as watchFiles, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, watch as watchFiles, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -15,7 +15,7 @@ const outdir = path.join(root, devMode ? "dist-dev" : "dist");
 
 async function runBuild() {
 	const started = performance.now();
-	rmSync(outdir, { recursive: true, force: true });
+	if (!devMode) rmSync(outdir, { recursive: true, force: true });
 	const { plugins, stylex } = createBuildPipeline({ dev: devMode });
 	const result = await Bun.build({
 		entrypoints: [path.join(root, "src/main.tsx")],
@@ -61,16 +61,43 @@ async function runBuild() {
 	);
 }
 
-if (process.argv.includes("--watch")) {
-	await runBuild();
-	console.log("watching for changes...");
-	let timer;
-	for (const dir of ["src", "packages", "public", "index.html"]) {
-		watchFiles(path.join(root, dir), { recursive: true }, () => {
-			clearTimeout(timer);
-			timer = setTimeout(() => runBuild().catch((error) => console.error("rebuild failed:", error)), 100);
-		});
+const watchTargets = ["src", "packages", "public", "index.html"];
+
+export function sourceStamp(targets = watchTargets) {
+	const pending = targets.map((target) => path.isAbsolute(target) ? target : path.join(root, target));
+	const entries = [];
+	while (pending.length > 0) {
+		const file = pending.pop();
+		const stats = statSync(file, { throwIfNoEntry: false });
+		if (!stats) continue;
+		if (stats.isDirectory()) {
+			for (const entry of readdirSync(file)) pending.push(path.join(file, entry));
+		} else {
+			entries.push(`${path.relative(root, file)}:${stats.mtimeMs}:${stats.size}`);
+		}
 	}
-} else {
-	await runBuild();
+	return entries.toSorted().join("|");
+}
+
+if (import.meta.main) {
+	if (process.argv.includes("--watch")) {
+		if (!process.argv.includes("--skip-initial")) await runBuild();
+		console.log("watching for changes...");
+		let timer;
+		let stamp = sourceStamp();
+		let builds = Promise.resolve();
+		for (const dir of watchTargets) {
+			watchFiles(path.join(root, dir), { recursive: true }, () => {
+				clearTimeout(timer);
+				timer = setTimeout(() => {
+					const nextStamp = sourceStamp();
+					if (nextStamp === stamp) return;
+					stamp = nextStamp;
+					builds = builds.then(runBuild).catch((error) => console.error("rebuild failed:", error));
+				}, 100);
+			});
+		}
+	} else {
+		await runBuild();
+	}
 }

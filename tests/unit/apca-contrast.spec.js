@@ -52,7 +52,7 @@ test("APCA roles", () => {
 
 	const light = readFileSync("packages/logo-renderer/src/renderer/shaders/postprocess/light-composite.wgsl", "utf8");
 	const dark = readFileSync("packages/logo-renderer/src/renderer/shaders/bloom/composite.wgsl", "utf8");
-	const lightFloor = Number(light.match(/mix\(sky, vec3f\(1\.0\), ([\d.]+)\)/)?.[1]);
+	const lightFloor = Number(light.match(/MIN_LIGHT_DISPLAY_CHANNEL = ([\d.]+)/)?.[1]);
 	const darkCap = Number(dark.match(/MAX_DARK_DISPLAY_LUMA = ([\d.]+)/)?.[1]);
 	for (const [scheme, channel] of [["light", lightFloor], ["dark", darkCap]]) {
 		const hex = `#${Math.round(255 * channel).toString(16).padStart(2, "0").repeat(3)}`;

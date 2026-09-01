@@ -18,6 +18,7 @@ const SNAPSHOT_HEIGHT = Math.round(SNAPSHOT_WIDTH / LOGO_VIEWPORT_ASPECT);
 
 const { init, target } = await import("vgpu/node");
 const { decodeGltfMesh } = await import(here("../src/renderer/mesh.ts").href);
+const { ENV_BASE_YAW } = await import(here("../src/renderer/runtime/environment-input.ts").href);
 const {
   DEFAULT_CAMERA_FOV,
   DEFAULT_OBJECT_YAW,
@@ -86,7 +87,7 @@ const controls = {
   pitch: 0,
   radius,
   fov: DEFAULT_CAMERA_FOV,
-  envYaw: 0,
+  envYaw: ENV_BASE_YAW,
   envPitch: 0,
   insideRendering: true,
   outsideRendering: true,
@@ -100,7 +101,7 @@ for (const scheme of ["night", "day"]) {
     readFileSync(here(`assets/${scheme}-sky-cubemap.png`)),
   );
   const renderer = createEve5Renderer(gpu, mesh, {
-    theme: "dark",
+    theme: scheme === "night" ? "dark" : "light",
     bloom: true,
     backRefraction: true,
     environmentAtlas: atlasRGBA16(atlasPng),

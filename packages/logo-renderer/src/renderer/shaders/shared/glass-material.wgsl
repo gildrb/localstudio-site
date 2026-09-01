@@ -4,7 +4,7 @@ import { env_reflection_from_dir } from "./material-core.wgsl";
 // spectral separation. The back and front mesh passes apply this at both interfaces.
 const IOR = 1.2;
 const ROUGHNESS = 0.015;
-const DISPERSION_SPREAD = 0.035;
+const DISPERSION_SPREAD = 0.065;
 
 export fn dielectric_fresnel_schlick(cosTheta: f32, f0: vec3f) -> vec3f {
   let m = clamp(1.0 - cosTheta, 0.0, 1.0);
@@ -55,7 +55,7 @@ fn grade_transmitted_light(radiance: vec3f) -> vec3f {
   // studio-like light-to-shadow range only in transmission; reflected cards
   // retain their current color and intensity.
   let luminance = dot(radiance, vec3f(0.2126, 0.7152, 0.0722));
-  let lighting = mix(0.48, 1.06, smoothstep(0.12, 0.75, luminance));
+  let lighting = mix(0.58, 1.16, smoothstep(0.12, 0.75, luminance));
   return radiance * lighting;
 }
 
@@ -81,6 +81,13 @@ export fn shade_glass(
   let thickness = clamp(baseThickness / max(ndotv, 0.08), 0.04, 2.0);
   let absorption = beer_lambert_transmittance(vec3f(0.14) * absorptionStrength, thickness);
   let transmission = transmittedLight * absorption * (vec3f(1.0) - fresnel);
+  // A thin-film sheen gives grazing surfaces a moving cyan/violet/gold split.
+  // It follows the real normal and reflection direction, so it shimmers with
+  // object motion instead of reading as a flat blue overlay.
+  let filmPhase = (1.0 - ndotv) * 11.0 + reflected.y * 4.0 + reflected.x * 2.0;
+  let filmColor = 0.5 + 0.5 * cos(vec3f(filmPhase) + vec3f(0.0, 2.094395, 4.188790));
+  let filmWeight = 0.12 + pow(clamp(1.0 - ndotv, 0.0, 1.0), 0.9) * 0.38;
+  let iridescentSheen = filmColor * (transmittedLight + vec3f(0.10)) * filmWeight;
   // Dark cubemap directions can otherwise form a thin black ring where Fresnel
   // becomes reflection-only. Fill only those missing grazing reflections from
   // the local transmitted environment; brighter reflection detail is untouched.
@@ -93,7 +100,7 @@ export fn shade_glass(
   let grazing = pow(clamp(1.0 - ndotv, 0.0, 1.0), 0.65);
   let opacity = mix(0.36, 0.86, grazing);
   return vec4f(
-    transmission + seamlessReflection * fresnel,
+    transmission + seamlessReflection * fresnel + iridescentSheen,
     select(opacity, opacity * 0.65, inside),
   );
 }

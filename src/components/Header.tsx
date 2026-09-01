@@ -231,6 +231,7 @@ export function Header() {
 	}
 
 	function scheduleMenuClose() {
+		if (!openMenu) return;
 		cancelMenuClose();
 		closeTimerRef.current = window.setTimeout(() => {
 			setNav(closedNav);

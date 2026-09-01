@@ -35,6 +35,7 @@ export type HeroRuntimeState = {
   lastRippleSpawnTime: number;
   pointerInsideCanvas: boolean;
   isCoarsePointer: boolean;
+  paintOnHover: boolean;
   staticPose: boolean;
 };
 

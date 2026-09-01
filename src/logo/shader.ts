@@ -11,5 +11,6 @@ export default function LocalAiLogoShader(props: {
 		dayUrl: assets.dayEnv,
 		nightUrl: assets.nightEnv,
 		...props,
+		paintOnHover: false,
 	});
 }

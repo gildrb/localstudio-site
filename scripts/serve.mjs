@@ -28,7 +28,7 @@ const port = Number(flag("port") ?? (dev ? 5173 : 4173));
 const serveRoot = path.join(root, dev ? "dist-dev" : "dist");
 const TYPES = { html: "text/html; charset=utf-8", js: "text/javascript; charset=utf-8", css: "text/css; charset=utf-8", json: "application/json; charset=utf-8", md: "text/markdown; charset=utf-8", txt: "text/plain; charset=utf-8", xml: "application/xml; charset=utf-8", svg: "image/svg+xml", png: "image/png", jpg: "image/jpeg", avif: "image/avif", webp: "image/webp", woff2: "font/woff2", gltf: "model/gltf+json", bin: "application/octet-stream" };
 const HOME = { Link: HOMEPAGE_LINK_HEADER, Vary: "Accept", "Content-Signal": "search=yes, ai-input=yes, ai-train=yes" };
-const RELOAD = '<script>fetch("/__stamp").then(r=>r.text()).then(s=>setInterval(async()=>{if(await fetch("/__stamp").then(r=>r.text())!==s)location.reload()},1e3))</script>';
+const RELOAD = '<script>fetch("/__stamp").then(r=>r.text()).then(s=>setInterval(async()=>{if(await fetch("/__stamp").then(r=>r.text())!==s){sessionStorage.setItem("localstudio:dev-reload","1");location.reload()}},1e3))</script>';
 
 const send = (file, status = 200, headers = {}) =>
 	new Response(readFileSync(file), { status, headers: { "Content-Type": TYPES[file.split(".").pop()] ?? "application/octet-stream", ...headers } });
@@ -57,24 +57,49 @@ function agentResponse(request, pathname, accept) {
 	return new Response(document.body, { headers });
 }
 
-function staticResponse(pathname) {
-	const file = path.join(serveRoot, pathname.slice(1));
-	if (file.startsWith(serveRoot) && existsSync(file) && statSync(file).isFile()) return send(file);
+export function staticResponse(pathname, rootDir = serveRoot, development = dev) {
+	const file = path.join(rootDir, pathname.slice(1));
+	if (file.startsWith(rootDir) && existsSync(file) && statSync(file).isFile()) return send(file);
 	if (pathname === "/" || routePaths.includes(pathname)) {
-		const index = path.join(serveRoot, "index.html");
+		const index = path.join(rootDir, "index.html");
 		const headers = { "Content-Type": "text/html; charset=utf-8" };
-		let html = readFileSync(index, "utf8");
-		if (dev) {
+		let html;
+		try {
+			html = readFileSync(index, "utf8");
+		} catch (error) {
+			if (!development || error?.code !== "ENOENT") throw error;
+			return new Response('<meta http-equiv="refresh" content="1">Building…', {
+				status: 503,
+				headers: {
+					"Cache-Control": "no-store",
+					"Content-Type": "text/html; charset=utf-8",
+					"Retry-After": "1",
+				},
+			});
+		}
+		if (development) {
 			html = html.replace("</body>", `${RELOAD}</body>`);
 			headers["Cache-Control"] = "no-store";
 		} else Object.assign(headers, HOME);
 		return new Response(html, { headers });
 	}
-	const notFound = path.join(serveRoot, "404.html");
+	const notFound = path.join(rootDir, "404.html");
 	return existsSync(notFound) ? send(notFound, 404) : null;
 }
 
-function startServer() {
+async function startServer() {
+	if (dev) {
+		const initialBuild = Bun.spawn([process.execPath, "scripts/build.mjs", "--dev"], {
+			cwd: root,
+			stdout: "inherit",
+			stderr: "inherit",
+			env: process.env,
+		});
+		if ((await initialBuild.exited) !== 0) {
+			throw new Error("Initial development build failed");
+		}
+	}
+
 	let server;
 	let attempt = port;
 	// Vite parity: dev falls forward to the next free port instead of failing.
@@ -86,7 +111,8 @@ function startServer() {
 				fetch(request) {
 			const url = new URL(request.url);
 			if (dev && url.pathname === "/__stamp") {
-				return new Response(String(statSync(path.join(serveRoot, "index.html")).mtimeMs), {
+				const stamp = statSync(path.join(serveRoot, "index.html"), { throwIfNoEntry: false })?.mtimeMs ?? 0;
+				return new Response(String(stamp), {
 					headers: { "Content-Type": "text/plain", "Cache-Control": "no-store" },
 				});
 			}
@@ -107,13 +133,16 @@ function startServer() {
 	}
 	console.log(`${dev ? "dev" : "preview"} on http://${host}:${server.port} serving ${path.relative(root, serveRoot)}/`);
 	if (!dev) return;
-	const build = Bun.spawn([process.execPath, "scripts/build.mjs", "--dev", "--watch"], {
-		cwd: root,
-		stdout: "inherit",
-		stderr: "inherit",
-		env: process.env,
-	});
+	const build = Bun.spawn(
+		[process.execPath, "scripts/build.mjs", "--dev", "--watch", "--skip-initial"],
+		{
+			cwd: root,
+			stdout: "inherit",
+			stderr: "inherit",
+			env: process.env,
+		},
+	);
 	process.on("exit", () => build.kill());
 }
 
-if (import.meta.main) startServer();
+if (import.meta.main) await startServer();

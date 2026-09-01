@@ -31,6 +31,7 @@ import {
 	syncPointerInteractionMode,
 } from "./runtime/pointer-input";
 import type { HeroRuntimeState } from "./runtime/state";
+import { ENV_BASE_YAW } from "./runtime/environment-input";
 
 const LOGO_VIEWPORT_ASPECT = 1.52;
 
@@ -39,7 +40,7 @@ const DEFAULT_CONTROLS: RenderControls = {
 	pitch: 0,
 	radius: cameraRadiusForFov(DEFAULT_CAMERA_FOV),
 	fov: DEFAULT_CAMERA_FOV,
-	envYaw: 0,
+	envYaw: ENV_BASE_YAW,
 	envPitch: 0,
 	insideRendering: true,
 	outsideRendering: true,
@@ -152,6 +153,8 @@ export type LocalAiLogoShaderProps = LogoRendererAssets & {
 	sx?: Parameters<typeof stylex.props>[0] | undefined;
 	/** Camera framing aspect; defaults to the hero stage's 1.52. */
 	viewportAspect?: number | undefined;
+	/** Enables the pointer-painted square imprint. */
+	paintOnHover?: boolean | undefined;
 	/** Locks the canonical environment for decorative instances; the object still follows the cursor. */
 	staticPose?: boolean | undefined;
 };
@@ -164,6 +167,7 @@ export function LocalAiLogoShader({
 	onFirstFrame,
 	sx,
 	viewportAspect = LOGO_VIEWPORT_ASPECT,
+	paintOnHover = true,
 	staticPose = false,
 }: LocalAiLogoShaderProps) {
 	const prefersReducedMotion = usePrefersReducedMotion();
@@ -281,6 +285,7 @@ export function LocalAiLogoShader({
 			lastRippleSpawnTime: Number.NEGATIVE_INFINITY,
 			pointerInsideCanvas: false,
 			isCoarsePointer: coarsePointerRef.current,
+			paintOnHover,
 		};
 		stateRef.current = state;
 
@@ -383,9 +388,7 @@ export function LocalAiLogoShader({
 				return;
 			}
 			const rendererOptions: NonNullable<Parameters<typeof createEve5Renderer>[2]> = {
-				// The hero surface is always dark. Day/night only selects the cubemap;
-				// it must not switch to the pale light-mode mask composite.
-				theme: "dark",
+				theme: prefersDarkScheme ? "dark" : "light",
 				bloom: true,
 				backRefraction: true,
 			};
@@ -464,6 +467,7 @@ export function LocalAiLogoShader({
 		modelUrl,
 		dayUrl,
 		nightUrl,
+		paintOnHover,
 		coarsePointerRef,
 		handleCanvasRevealed,
 		handleFallback,

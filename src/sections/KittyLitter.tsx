@@ -339,8 +339,8 @@ export function KittyLitter() {
 						animateToIndex(index, true);
 					}}
 					onPointerDown={(event) => {
-						if (!event.isPrimary) return;
-						if (event.pointerType === "mouse" && event.button !== 0) return;
+						if (!event.isPrimary || event.pointerType !== "mouse") return;
+						if (event.button !== 0) return;
 						dragState.current.moved = false;
 						carouselAnimation.current?.stop();
 						dragOrigin.current =

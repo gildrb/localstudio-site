@@ -18,8 +18,8 @@ const storyDemoEnter = stylex.keyframes({
 const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 const heroStagePadding = `calc((100% - ${pageWidth}) / 2)`;
 const heroStageClippedWidth = `calc(100% - ${heroStagePadding})`;
-const scrimAmbient = `color-mix(in oklab, ${colors.background} 48%, transparent)`;
-const scrimDirect = `color-mix(in oklab, ${colors.background} 32%, transparent)`;
+const scrimAmbient = `color-mix(in oklab, ${colors.background} 28%, transparent)`;
+const scrimDirect = `color-mix(in oklab, ${colors.background} 68%, transparent)`;
 const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
 const kittyCardWidth = "min(620px, calc(100vw - 48px))";
 
@@ -66,7 +66,7 @@ export const styles = stylex.create({
 		inset: { default: null, "::before": "-18% -22%" },
 		backgroundImage: {
 			default: null,
-			"::before": `radial-gradient(ellipse 68% 62% at 50% 44%, ${scrimAmbient}, transparent 72%), radial-gradient(ellipse 44% 46% at 50% 40%, ${scrimDirect}, transparent 70%)`,
+			"::before": `radial-gradient(ellipse 68% 62% at 50% 44%, ${scrimAmbient}, transparent 72%), radial-gradient(ellipse 34% 36% at 50% 40%, ${scrimDirect}, transparent 70%)`,
 		},
 		pointerEvents: { default: null, "::before": "none" },
 	},
@@ -483,7 +483,7 @@ export const styles = stylex.create({
 		},
 		overscrollBehaviorX: "contain",
 		scrollbarWidth: "none",
-		touchAction: "pan-y",
+		touchAction: "pan-x pan-y",
 		"::-webkit-scrollbar": {
 			display: "none",
 		},

@@ -107,6 +107,7 @@ export function createPointerController({
     if (
       !canvas ||
       !mesh ||
+      !state.paintOnHover ||
       event.pointerType !== "mouse" ||
       !evePointerInteractionMode(state.isCoarsePointer).paintEnabled
     ) {
@@ -191,8 +192,15 @@ export function createPointerController({
   const onPointerMove = (event: PointerEvent) => {
     updateEnvRotation(event.clientX, event.clientY);
     updatePaintBrush(event);
-    const inside = event.pointerType === "mouse" && pointerInsideRect(event.clientX, event.clientY);
-    if (inside && !state.pointerInsideCanvas && evePointerInteractionMode(state.isCoarsePointer).paintEnabled) {
+    const inside =
+      state.paintOnHover &&
+      event.pointerType === "mouse" &&
+      pointerInsideRect(event.clientX, event.clientY);
+    if (
+      inside &&
+      !state.pointerInsideCanvas &&
+      evePointerInteractionMode(state.isCoarsePointer).paintEnabled
+    ) {
       spawnRippleAtBrushCell();
     }
     state.pointerInsideCanvas = inside;

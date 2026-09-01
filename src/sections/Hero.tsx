@@ -16,6 +16,13 @@ const HeroDemo = lazy(() =>
 );
 
 const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
+const resumeAfterDevReload =
+	!import.meta.env.PROD &&
+	(globalThis.sessionStorage?.getItem("localstudio:dev-reload") === "1" ||
+		globalThis.performance
+			?.getEntriesByType("navigation")
+			.some((entry) => entry.toJSON().type === "reload"));
+globalThis.sessionStorage?.removeItem("localstudio:dev-reload");
 
 const fastClock = {
 	now: () => Date.now(),
@@ -40,7 +47,7 @@ export function Hero() {
 	const clock = useHeroClock();
 	const reduceMotion = useReducedMotion();
 	const enter = (delay: number) => ({
-		initial: reduceMotion ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
+		initial: reduceMotion || resumeAfterDevReload ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
 		animate: settle,
 		transition: { ...motion.heroEnter, delay },
 	});

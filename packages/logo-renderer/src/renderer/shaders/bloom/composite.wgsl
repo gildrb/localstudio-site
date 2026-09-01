@@ -21,7 +21,7 @@ struct CompositeParams {
 @group(0) @binding(3) var<uniform> params: CompositeParams;
 
 const BLOOM_RADIAL_FULL_RADIUS = 0.55;
-const MAX_DARK_DISPLAY_LUMA = 0.58;
+const MAX_DARK_DISPLAY_LUMA = 0.43;
 
 @vertex
 fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
@@ -48,7 +48,9 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   let straightScene = scene.rgb / max(scene.a, 0.0001);
   let linearColor = straightScene + bloom * params.strength * bloomRadial * bloomMask;
   let displayColor = linear_to_display(aces_tonemap(linearColor));
-  let displayLuma = dot(displayColor, vec3f(0.2126, 0.7152, 0.0722));
-  let nightSky = displayColor * min(1.0, MAX_DARK_DISPLAY_LUMA / max(displayLuma, 0.001));
+  let neutral = vec3f(dot(displayColor, vec3f(0.2126, 0.7152, 0.0722)));
+  let vibrantColor = clamp(neutral + (displayColor - neutral) * 1.50, vec3f(0.0), vec3f(1.0));
+  let displayLuma = dot(vibrantColor, vec3f(0.2126, 0.7152, 0.0722));
+  let nightSky = vibrantColor * min(1.0, MAX_DARK_DISPLAY_LUMA / max(displayLuma, 0.001));
   return vec4f(nightSky * scene.a, scene.a);
 }
