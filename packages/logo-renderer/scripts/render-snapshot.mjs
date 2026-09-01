@@ -118,7 +118,7 @@ for (const scheme of ["night", "day"]) {
     progress: 0,
     gridScaleMultiplier: DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
     glyphScale: 1.27,
-    time: 0,
+    time: -1,
     mouse: [0, 0],
     devicePixelRatio: 2,
   });

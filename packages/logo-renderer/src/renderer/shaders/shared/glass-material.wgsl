@@ -4,7 +4,7 @@ import { env_reflection_from_dir } from "./material-core.wgsl";
 // spectral separation. The back and front mesh passes apply this at both interfaces.
 const IOR = 1.2;
 const ROUGHNESS = 0.015;
-const DISPERSION_SPREAD = 0.065;
+const DISPERSION_SPREAD = 0.075;
 
 export fn dielectric_fresnel_schlick(cosTheta: f32, f0: vec3f) -> vec3f {
   let m = clamp(1.0 - cosTheta, 0.0, 1.0);
@@ -98,7 +98,7 @@ export fn shade_glass(
   // Transmission example does. Keep front faces genuinely transmissive and
   // increase coverage only toward grazing angles, where glass is reflective.
   let grazing = pow(clamp(1.0 - ndotv, 0.0, 1.0), 0.65);
-  let opacity = mix(0.36, 0.86, grazing);
+  let opacity = mix(0.22, 0.72, grazing);
   return vec4f(
     transmission + seamlessReflection * fresnel + iridescentSheen,
     select(opacity, opacity * 0.65, inside),

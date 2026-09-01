@@ -1,7 +1,7 @@
 const ENV_EFFECTIVE_HALF_WIDTH_RATIO = 0.5;
 const ENV_EFFECTIVE_HALF_HEIGHT_RATIO = 0.75;
-export const ENV_BASE_YAW = 0.9;
-export const ENV_HORIZONTAL_YAW_RANGE = 0.55;
+export const ENV_BASE_YAW = 1.15;
+export const ENV_HORIZONTAL_YAW_RANGE = 0.35;
 const ENV_VERTICAL_PITCH_RANGE = 0.24;
 
 function clampSigned(value: number) {

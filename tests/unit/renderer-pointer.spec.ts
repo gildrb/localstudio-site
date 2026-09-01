@@ -20,7 +20,7 @@ test("renderer environment interaction follows its own bounds", () => {
 	});
 	expect(translated).toEqual(localPoint);
 	expect(mapAt(0.5, 0.5)).toEqual({
-		envYaw: 0.9,
+		envYaw: 1.15,
 		envPitch: 0,
 		normalizedX: 0,
 		normalizedY: 0,
@@ -34,8 +34,8 @@ test("vertical movement tilts the environment without crossing dull cubemap face
 	const farBelow = mapAt(0.5, 2);
 	expect(above.normalizedY).toBe(-1);
 	expect(below.normalizedY).toBe(1);
-	expect(above.envYaw).toBe(0.9);
-	expect(below.envYaw).toBe(0.9);
+	expect(above.envYaw).toBe(1.15);
+	expect(below.envYaw).toBe(1.15);
 	expect(above.envPitch).toBe(-0.24);
 	expect(below.envPitch).toBe(0.24);
 	expect(farAbove).toEqual(above);
@@ -46,9 +46,9 @@ test("horizontal movement rotates within the reflective cubemap sector", () => {
 	const left = mapAt(0, 0.65);
 	const center = mapAt(0.5, 0.65);
 	const right = mapAt(1, 0.65);
-	expect(left.envYaw).toBeCloseTo(0.35);
-	expect(center.envYaw).toBe(0.9);
-	expect(right.envYaw).toBeCloseTo(1.45);
+	expect(left.envYaw).toBeCloseTo(0.8);
+	expect(center.envYaw).toBe(1.15);
+	expect(right.envYaw).toBeCloseTo(1.5);
 	expect(left.envPitch).toBe(center.envPitch);
 	expect(right.envPitch).toBe(center.envPitch);
 });

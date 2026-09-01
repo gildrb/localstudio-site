@@ -489,8 +489,8 @@
 				"width": 1880,
 				"height": 1237
 			},
-			"bytes": 280184,
-			"sha256": "b1abcb512327cd7cbbad41c4dd6b097dcae330fa162acbd19543f09ead7eedd9"
+			"bytes": 320994,
+			"sha256": "a9e9d432b8008e4fbfe2f2c8dbec4ff855613944197fef0439ede791b379393a"
 		},
 		{
 			"path": "public/localai/hero-render-night.png",
@@ -500,8 +500,8 @@
 				"width": 1880,
 				"height": 1237
 			},
-			"bytes": 369990,
-			"sha256": "c1b432c5f08a7b1af2b3dd06021c58deeb35493ed51340c62568c01674126638"
+			"bytes": 676800,
+			"sha256": "4d5182e206251eaf05dac072a3cb55e16cfd7c83cae851a6dd681e0ea6e68050"
 		},
 		{
 			"path": "public/localai/localai-logo.bin",
