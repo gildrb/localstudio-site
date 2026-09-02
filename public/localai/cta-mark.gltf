@@ -1,0 +1,91 @@
+{
+	"asset": {
+		"generator": "ls-web scripts/generate-cta-mesh.mjs",
+		"version": "2.0"
+	},
+	"scene": 0,
+	"scenes": [
+		{
+			"name": "Scene",
+			"nodes": [
+				0
+			]
+		}
+	],
+	"nodes": [
+		{
+			"mesh": 0,
+			"name": "CtaMark"
+		}
+	],
+	"meshes": [
+		{
+			"name": "CtaMark",
+			"primitives": [
+				{
+					"attributes": {
+						"POSITION": 0,
+						"NORMAL": 1
+					},
+					"indices": 2
+				}
+			]
+		}
+	],
+	"accessors": [
+		{
+			"bufferView": 0,
+			"componentType": 5126,
+			"count": 11242,
+			"type": "VEC3",
+			"min": [
+				-0.1529170125722885,
+				-0.07573030143976212,
+				-0.011500000022351742
+			],
+			"max": [
+				0.15292616188526154,
+				0.07573050260543823,
+				0.011500000022351742
+			]
+		},
+		{
+			"bufferView": 1,
+			"componentType": 5126,
+			"count": 11242,
+			"type": "VEC3"
+		},
+		{
+			"bufferView": 2,
+			"componentType": 5125,
+			"count": 67416,
+			"type": "SCALAR"
+		}
+	],
+	"bufferViews": [
+		{
+			"buffer": 0,
+			"byteLength": 134904,
+			"byteOffset": 0,
+			"target": 34962
+		},
+		{
+			"buffer": 0,
+			"byteLength": 134904,
+			"byteOffset": 134904,
+			"target": 34962
+		},
+		{
+			"buffer": 0,
+			"byteLength": 269664,
+			"byteOffset": 269808,
+			"target": 34963
+		}
+	],
+	"buffers": [
+		{
+			"byteLength": 539472,
+			"uri": "cta-mark.bin"
+		}
+	]
+}

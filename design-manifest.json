@@ -1,5 +1,5 @@
 {
-	"hash": "7c6113e464ada8a0affb520198f4282e642e3ce0bf2073251204d547eb8a1e51",
+	"hash": "39b3ec12e6a32757ba18ed169907e120a9bd2ff42657597643613edc25a6ff2a",
 	"routes": [
 		"/",
 		"/product",
@@ -77,6 +77,8 @@
 		"nightEnv",
 		"heroRenderDay",
 		"ctaMark",
+		"ctaMarkBin",
+		"ctaMarkSvg",
 		"heroRenderNight"
 	],
 	"motion": [

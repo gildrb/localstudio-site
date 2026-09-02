@@ -9,7 +9,8 @@
   "scripts": {
     "typecheck": "bun x --bun tsc -p tsconfig.json",
     "generate": "bun scripts/generate-logo-mesh.mjs",
-    "check": "bun scripts/generate-logo-mesh.mjs --check",
+    "generate:cta": "bun scripts/generate-cta-mesh.mjs",
+    "check": "bun scripts/generate-logo-mesh.mjs --check && bun scripts/generate-cta-mesh.mjs --check",
     "shader:check": "bun scripts/check-shaders.mjs",
     "snapshot": "bun scripts/render-snapshot.mjs"
   },

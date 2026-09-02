@@ -485,16 +485,35 @@
 			"sha256": "92cea3f2423d60c3c369b8983fa26610b6ea8b0556f34e3177ac2fd93a1c4167"
 		},
 		{
-			"path": "public/localai/day-sky-cubemap.jpg",
+			"path": "public/localai/cta-mark.bin",
 			"role": "logo-mesh",
-			"type": "image/jpeg",
+			"type": "application/octet-stream",
 			"dimensions": null,
+			"bytes": 539472,
+			"sha256": "67776a21c8f292a05860e7d1a8dab701c5e0db4c145e07eb9bd82e6217fa7d31"
+		},
+		{
+			"path": "public/localai/cta-mark.gltf",
+			"role": "logo-mesh",
+			"type": "model/gltf+json",
+			"dimensions": null,
+			"bytes": 1263,
+			"sha256": "570219c7a4f64b1a41fd290a43bbee4af52a24fa28e9234f8af5b0c432f4a95f"
+		},
+		{
+			"path": "public/localai/day-sky-cubemap.jpg",
+			"role": "image",
+			"type": "image/jpeg",
+			"dimensions": {
+				"width": 256,
+				"height": 1536
+			},
 			"bytes": 76437,
 			"sha256": "9f5f04a8f3d46b8b5e96a257fd69f252fb4b7272a19aa3778f7ba38ad48a3036"
 		},
 		{
 			"path": "public/localai/hero-render-day.png",
-			"role": "logo-mesh",
+			"role": "image",
 			"type": "image/png",
 			"dimensions": {
 				"width": 1880,
@@ -505,7 +524,7 @@
 		},
 		{
 			"path": "public/localai/hero-render-night.png",
-			"role": "logo-mesh",
+			"role": "image",
 			"type": "image/png",
 			"dimensions": {
 				"width": 1880,
@@ -532,9 +551,12 @@
 		},
 		{
 			"path": "public/localai/night-sky-cubemap.jpg",
-			"role": "logo-mesh",
+			"role": "image",
 			"type": "image/jpeg",
-			"dimensions": null,
+			"dimensions": {
+				"width": 256,
+				"height": 1536
+			},
 			"bytes": 97940,
 			"sha256": "823e89baa4271a260a2496db6290e85d2aaca550669ad796abe4fd776eec184c"
 		}

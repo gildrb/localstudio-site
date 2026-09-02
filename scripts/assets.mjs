@@ -37,6 +37,27 @@ function dimensionsFor(rel, raw) {
 	if (ext === ".png" && raw.subarray(0, 8).equals(Buffer.from("\x89PNG\r\n\x1a\n", "binary"))) {
 		return { width: raw.readUInt32BE(16), height: raw.readUInt32BE(20) };
 	}
+	if ((ext === ".jpg" || ext === ".jpeg") && raw.readUInt16BE(0) === 0xffd8) {
+		let offset = 2;
+		while (offset + 8 < raw.length) {
+			if (raw[offset] !== 0xff) {
+				offset += 1;
+				continue;
+			}
+			while (raw[offset] === 0xff) offset += 1;
+			const marker = raw[offset];
+			offset += 1;
+			if (marker === 0xd9 || marker === 0xda) break;
+			if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd8)) continue;
+			const length = raw.readUInt16BE(offset);
+			const isStartOfFrame =
+				marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
+			if (isStartOfFrame) {
+				return { width: raw.readUInt16BE(offset + 5), height: raw.readUInt16BE(offset + 3) };
+			}
+			offset += length;
+		}
+	}
 	if (
 		ext === ".webp" &&
 		raw.toString("ascii", 0, 4) === "RIFF" &&
@@ -75,11 +96,14 @@ function walk(directory) {
 }
 
 function roleFor(rel) {
+	const ext = extname(rel).toLowerCase();
 	if (rel.startsWith("public/fonts/")) return "font";
-	if (rel.startsWith("public/localai/")) return "logo-mesh";
+	if (rel.startsWith("public/localai/") && (ext === ".bin" || ext === ".gltf")) {
+		return "logo-mesh";
+	}
 	if (rel.includes("/sponsors/")) return "sponsor";
 	if (rel.includes("favicon")) return "icon";
-	return ROLE_BY_EXT[extname(rel).toLowerCase()] ?? "binary";
+	return ROLE_BY_EXT[ext] ?? "binary";
 }
 
 const files = walk(join(root, "public"))

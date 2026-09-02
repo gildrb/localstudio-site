@@ -83,10 +83,14 @@ assertNoForbiddenPaths();
 const temporaryRoot = mkdtempSync(join(tmpdir(), "ls-web-generated-"));
 try {
 	cpSync(root, temporaryRoot, { recursive: true, filter: copyFilter });
-	// The logo generator is checked in place because it uses the package-owned earcut dependency.
+	// The mesh generators are checked in place because they use package-owned dependencies.
 	runGenerator(root, {
 		label: "logo mesh",
 		args: ["packages/logo-renderer/scripts/generate-logo-mesh.mjs", "--check"],
+	});
+	runGenerator(root, {
+		label: "CTA mesh",
+		args: ["packages/logo-renderer/scripts/generate-cta-mesh.mjs", "--check"],
 	});
 	for (const output of generated) {
 		runGenerator(temporaryRoot, output);
