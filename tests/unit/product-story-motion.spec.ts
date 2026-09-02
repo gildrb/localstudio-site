@@ -82,6 +82,10 @@ test("scene visibility cannot be overridden by a scrub timeline or delayed mount
 	const component = readFileSync("src/sections/ProductStory.tsx", "utf8");
 	const controller = readFileSync("src/sections/use-product-story-motion.ts", "utf8");
 	const sectionStyles = readFileSync("src/styles/sections-styles.ts", "utf8");
+	const sceneStyles = sectionStyles.slice(
+		sectionStyles.indexOf("\tstoryDemoTransition:"),
+		sectionStyles.indexOf("\tstoryDemoPlaceholder:"),
+	);
 	expect(component).toContain('import { FeatureDemo } from "@local-studio/demo-ui/story"');
 	expect(component).toContain("sceneStates.map(({ index, selected })");
 	expect(component).toContain("selected && styles.storySelectedDemo");
@@ -93,9 +97,11 @@ test("scene visibility cannot be overridden by a scrub timeline or delayed mount
 	expect(controller).not.toContain("layerAnimations");
 	expect(controller).not.toContain("registerLayer");
 	expect(controller).not.toContain("opacity:");
-	expect(sectionStyles).toContain('visibility: "hidden"');
-	expect(sectionStyles).toContain('visibility: "visible"');
-	expect(sectionStyles).toContain('transitionProperty: "opacity, transform, visibility"');
+	expect(sceneStyles).toContain('visibility: "hidden"');
+	expect(sceneStyles).toContain('visibility: "visible"');
+	expect(sceneStyles).toContain('transitionProperty: "opacity, transform, visibility"');
+	expect(sceneStyles).toContain('[reducedMotion]: "0s"');
+	expect(component).toContain('styles.storyLayerOffset(index < activeIndex ? "-12px" : "12px")');
 	expect(controller).toContain("requestAnimationFrame(update)");
 	expect(controller).toContain('{ passive: true }');
 });
