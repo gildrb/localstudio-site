@@ -298,6 +298,17 @@
 			"sha256": "2c46aff5e7f423b753bb9bff7869d806e3442c643dd4d45094fabac37e3ad8a0"
 		},
 		{
+			"path": "public/images/sponsors/hot-aisle.svg",
+			"role": "sponsor",
+			"type": "image/svg+xml",
+			"dimensions": {
+				"width": 260,
+				"height": 80
+			},
+			"bytes": 884,
+			"sha256": "b0d157d3b964b3ac396932a1d56fe5b0199cf7633ee62c18dfb4160aa22688a8"
+		},
+		{
 			"path": "public/images/sponsors/lambda.svg",
 			"role": "sponsor",
 			"type": "image/svg+xml",

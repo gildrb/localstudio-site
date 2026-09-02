@@ -12,9 +12,9 @@ const scrimDirect = `color-mix(in oklab, ${colors.background} 68%, transparent)`
 const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
 const kittyCardWidth = "min(620px, calc(100vw - 48px))";
 const kittyMobileCardWidth = "min(78vw, 320px)";
-const sponsorMarquee = stylex.keyframes({
+const sponsorRotation = stylex.keyframes({
 	from: { transform: "translateX(0)" },
-	to: { transform: "translateX(calc(-100% - 48px))" },
+	to: { transform: "translateX(calc(-100% + 100vw - 48px))" },
 });
 
 export const styles = stylex.create({
@@ -186,14 +186,8 @@ export const styles = stylex.create({
 		textAlign: "left",
 	},
 	sponsorsViewport: {
-		display: "flex",
-		columnGap: "48px",
-		overflowX: {
-			default: "visible",
-			"@media (max-width: 900px)": "hidden",
-			"@media (max-width: 900px) and (prefers-reduced-motion: reduce)": "auto",
-		},
-		overflowY: "hidden",
+		width: "100%",
+		overflow: "hidden",
 	},
 	sponsorsList: {
 		display: "flex",
@@ -201,10 +195,7 @@ export const styles = stylex.create({
 			default: "100%",
 			"@media (max-width: 900px)": "max-content",
 		},
-		flexShrink: {
-			default: 1,
-			"@media (max-width: 900px)": 0,
-		},
+		flexShrink: 0,
 		flexWrap: "nowrap",
 		alignItems: "center",
 		justifyContent: {
@@ -212,7 +203,7 @@ export const styles = stylex.create({
 			"@media (max-width: 900px)": "flex-start",
 		},
 		columnGap: {
-			default: "48px",
+			default: "16px",
 			"@media (max-width: 900px)": "48px",
 		},
 		margin: 0,
@@ -225,28 +216,26 @@ export const styles = stylex.create({
 		},
 		animationName: {
 			default: "none",
-			"@media (max-width: 900px)": sponsorMarquee,
+			"@media (max-width: 900px)": sponsorRotation,
 			"@media (max-width: 900px) and (prefers-reduced-motion: reduce)": "none",
 		},
-		animationDuration: "40s",
+		animationDuration: "30s",
 		animationTimingFunction: "linear",
 		animationIterationCount: "infinite",
+		animationDirection: "alternate",
 	},
-	sponsorsDuplicate: {
-		display: {
-			default: "none",
-			"@media (max-width: 900px)": "flex",
-		},
-	},
-	sponsorImage: {
+	sponsorLogo: {
 		display: "block",
-		width: "auto",
+		flexShrink: 0,
+		color: colors.foreground,
 		filter: {
 			default: "none",
 			"@media (prefers-color-scheme: light)": "invert(1)",
 		},
+		pointerEvents: "none",
+		userSelect: "none",
 	},
-	sponsorImageSize: (width: number, height: number) => ({
+	sponsorLogoSize: (width: number, height: number) => ({
 		width,
 		height,
 	}),

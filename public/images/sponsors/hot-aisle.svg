@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="80" viewBox="0 0 260 80" fill="none">
+  <defs>
+    <linearGradient id="hot" x1="0" y1="0" x2="64" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FB923C"/>
+      <stop offset="1" stop-color="#EA580C"/>
+    </linearGradient>
+    <linearGradient id="text-gradient" x1="70" y1="20" x2="260" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FB923C"/>
+      <stop offset="1" stop-color="#EA580C"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M10 8 L10 72 L18 72 L18 50 L46 50 L46 72 L54 72 L54 8 L46 8 L46 42 L18 42 L18 8 Z" fill="#fff"/>
+  <circle cx="32" cy="24" r="8" fill="#fff"/>
+  <circle cx="32" cy="24" r="4" fill="#fff"/>
+
+  <text x="64" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="700" fill="#fff">Hot Aisle</text>
+</svg>

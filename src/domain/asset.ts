@@ -42,6 +42,7 @@ export const assets = {
 	kittyIphone10_2x: "/images/kittylitter-appstore-iphone-10.avif",
 	sponsorNvidia: "/images/sponsors/nvidia.svg",
 	sponsorFactory: "/images/sponsors/factory.svg",
+	sponsorHotAisle: "/images/sponsors/hot-aisle.svg",
 	sponsorLambda: "/images/sponsors/lambda.svg",
 	sponsorPrime: "/images/sponsors/prime-intellect.svg",
 	sponsorTng: "/images/sponsors/tng.svg",
