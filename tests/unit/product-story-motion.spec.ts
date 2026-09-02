@@ -69,8 +69,9 @@ test("desktop options Motion scrub time is continuous and reversible", () => {
 test("scene visibility cannot be overridden by a scrub timeline or delayed mount", () => {
 	const component = readFileSync("src/sections/ProductStory.tsx", "utf8");
 	const controller = readFileSync("src/sections/use-product-story-motion.ts", "utf8");
+	const sectionStyles = readFileSync("src/styles/sections-styles.ts", "utf8");
 	expect(component).toContain('import { FeatureDemo } from "@local-studio/demo-ui/story"');
-	expect(component.match(/productFeatures\.map\(\(feature, index\)/g)).toHaveLength(2);
+	expect(component.match(/productFeatures\.map\(\(feature, index\)/gu)).toHaveLength(2);
 	expect(component).toContain("selected && styles.storySelectedDemo");
 	expect(component).toContain("aria-hidden={!selected}");
 	expect(component).toContain("inert={!selected}");
@@ -80,6 +81,9 @@ test("scene visibility cannot be overridden by a scrub timeline or delayed mount
 	expect(controller).not.toContain("layerAnimations");
 	expect(controller).not.toContain("registerLayer");
 	expect(controller).not.toContain("opacity:");
+	expect(sectionStyles).toContain('visibility: "hidden"');
+	expect(sectionStyles).toContain('visibility: "visible"');
+	expect(sectionStyles).toContain('transitionProperty: "opacity, transform, visibility"');
 	expect(controller).toContain("requestAnimationFrame(update)");
 	expect(controller).toContain('{ passive: true }');
 });

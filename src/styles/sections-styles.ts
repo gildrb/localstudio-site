@@ -450,9 +450,10 @@ export const styles = stylex.create({
 		gridArea: "1 / 1",
 		minWidth: 0,
 		opacity: 0,
+		visibility: "hidden",
 		pointerEvents: "none",
 		contain: "paint",
-		transitionProperty: "opacity, transform",
+		transitionProperty: "opacity, transform, visibility",
 		transitionDuration: {
 			default: times.feature,
 			[reducedMotion]: "0s",
@@ -464,6 +465,7 @@ export const styles = stylex.create({
 	}),
 	storySelectedDemo: {
 		opacity: 1,
+		visibility: "visible",
 		transform: "translate3d(0, 0, 0) scale(1)",
 		pointerEvents: "auto",
 	},
