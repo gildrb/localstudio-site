@@ -168,9 +168,10 @@ export function createPaintSystem(
   ) => {
     const brush = p.brushCell ?? [-1e6, -1e6],
       prev = p.brushPreviousCell ?? brush;
+    // Passing Texture here makes vgpu 0.3.1 create a native view on every set().
     decayEffect.set({
-      readTex: t.paint.read.color,
-      staticNoiseTex: t.staticNoise.color,
+      readTex: t.paint.read.color.view,
+      staticNoiseTex: t.staticNoise.color.view,
       params: {
         brushCell: brush,
         brushPreviousCell: prev,
@@ -247,7 +248,7 @@ export function createPaintSystem(
     target: import("vgpu").Target,
     t: PaintTargets,
   ) => {
-    r.pipelines.paintDebug.set({ paintTex: t.paint.read.color });
+    r.pipelines.paintDebug.set({ paintTex: t.paint.read.color.view });
     f.pass(target, r.pipelines.paintDebug);
   };
   return { ensure, apply, renderVoronoiNoise, renderDebug, dispose };

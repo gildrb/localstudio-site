@@ -30,14 +30,15 @@ export function renderScene(
     thicknessScale: r.thicknessScale,
     isLight: r.isLight,
   };
+  // Cached views preserve resource identity and avoid per-frame createView() calls.
   const bindings = {
     studioCube: r.studioCubemap.view,
     studioSampler: r.studioCubemap.sampler,
-    backMaterial,
-    backDepth,
-    paintTex: paint,
-    asciiVoronoiValueTex: voronoiValue,
-    asciiVoronoiEdgeTex: voronoiEdge,
+    backMaterial: backMaterial.view,
+    backDepth: backDepth.view,
+    paintTex: paint.view,
+    asciiVoronoiValueTex: voronoiValue.view,
+    asciiVoronoiEdgeTex: voronoiEdge.view,
   };
   if (c.showEnv)
     r.pipelines.envBg.set({

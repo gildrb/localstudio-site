@@ -16,7 +16,7 @@ export function renderBlur(
   const blur =
     direction[0] > 0 ? r.pipelines.blurHorizontal : r.pipelines.blurVertical;
   blur.set({
-    sourceTexture: source,
+    sourceTexture: source.view,
     sourceSampler: r.sampler,
     params: {
       direction,
@@ -39,8 +39,8 @@ export function renderComposite(
   light: readonly [number, number] = [0.3, 0.24],
 ) {
   r.pipelines.composite.set({
-    sceneTexture: targets.scene.color,
-    bloomTexture: bloom,
+    sceneTexture: targets.scene.color.view,
+    bloomTexture: bloom.view,
     texSampler: r.sampler,
     params: { strength, time, light },
   });

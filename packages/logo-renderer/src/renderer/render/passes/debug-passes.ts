@@ -25,8 +25,8 @@ export function renderTargetPreview(
     ),
     range = cameraAxisDepthRange(m.bounds, basis.forward);
   r.pipelines.preview.set({
-    backAlbedo: backMaterial,
-    backDepthMap: backDepth,
+    backAlbedo: backMaterial.view,
+    backDepthMap: backDepth.view,
     sourceSampler: r.sampler,
     mode: [
       c.material === "back-depth" ? PREVIEW_BACK_DEPTH : PREVIEW_BACK_ALBEDO,
@@ -68,11 +68,11 @@ export function renderThicknessDebug(
     }),
     studioCube: r.studioCubemap.view,
     studioSampler: r.studioCubemap.sampler,
-    backMaterial,
-    backDepth,
-    paintTex: paint,
-    asciiVoronoiValueTex: r.fallbacks.fallbackVoronoiValue.color,
-    asciiVoronoiEdgeTex: r.fallbacks.fallbackVoronoiEdge.color,
+    backMaterial: backMaterial.view,
+    backDepth: backDepth.view,
+    paintTex: paint.view,
+    asciiVoronoiValueTex: r.fallbacks.fallbackVoronoiValue.color.view,
+    asciiVoronoiEdgeTex: r.fallbacks.fallbackVoronoiEdge.color.view,
   });
   f.pass(target, r.pipelines.frontMaterial);
 }

@@ -511,8 +511,8 @@
 				"width": 1880,
 				"height": 1237
 			},
-			"bytes": 105412,
-			"sha256": "c79473ce6ef53295c75ac00d7e360115738cfd3cfbb138042827486e23bd4a4b"
+			"bytes": 105492,
+			"sha256": "e12f902fb71fa174627f9c39456682d62178632578307f76e8c5925fbc145608"
 		},
 		{
 			"path": "public/localai/localai-logo.bin",

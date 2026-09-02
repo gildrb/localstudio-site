@@ -26,7 +26,9 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
     return vec4f(color.rgb, 1.0);
   }
 
-  let depth = textureSample(backDepthMap, sourceSampler, uv).r;
+  let depthSize = vec2f(textureDimensions(backDepthMap));
+  let depthCoord = vec2i(clamp(uv * depthSize, vec2f(0.0), depthSize - vec2f(1.0)));
+  let depth = textureLoad(backDepthMap, depthCoord, 0).r;
   // backDepthMap stores raw camera-axis depth in its red channel. Normalize it for display with
   // renderer-provided min/max bounds so negative or tiny model-space values remain inspectable.
   let depth01 = clamp((depth - mode.y) / max(mode.z - mode.y, 0.000001), 0.0, 1.0);

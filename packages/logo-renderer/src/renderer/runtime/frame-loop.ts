@@ -21,7 +21,8 @@ import type { ControlsRef, HeroRuntimeState } from "./state";
 
 const ENV_ROTATION_LERP_SPEED = 2.5;
 const ASCII_MOUSE_LERP_SPEED = 6;
-const REFLECTION_REVEAL_LERP_SPEED = 5;
+const REFLECTION_REVEAL_ATTACK_SPEED = 10;
+const REFLECTION_REVEAL_RELEASE_SPEED = 5;
 const RIPPLE_DURATION_SECONDS = 1.0;
 const RIPPLE_STRENGTH = 18.0;
 const RIPPLE_IDLE_INTERVAL_MS = 2400;
@@ -37,6 +38,19 @@ const POINTER_OBJECT_YAW_RANGE = 0.42;
 const POINTER_OBJECT_PITCH_RANGE = 0.2;
 const MOBILE_OBJECT_YAW_RANGE = 0.28;
 const MOBILE_OBJECT_PITCH_RANGE = 0.08;
+
+export function reflectionRevealDampingAlpha(
+  current: number,
+  target: number,
+  deltaSeconds: number,
+) {
+  const speed =
+    target > current
+      ? REFLECTION_REVEAL_ATTACK_SPEED
+      : REFLECTION_REVEAL_RELEASE_SPEED;
+  const referenceFrameAlpha = Math.min(speed / 60, 1);
+  return 1 - Math.pow(1 - referenceFrameAlpha, Math.max(0, deltaSeconds) * 60);
+}
 
 type Renderer = {
   render: (
@@ -160,7 +174,11 @@ export function createDrawLoop({
     state.reflectionReveal = lerp(
       state.reflectionReveal,
       targetReflectionReveal,
-      clamp01(deltaSeconds * REFLECTION_REVEAL_LERP_SPEED),
+      reflectionRevealDampingAlpha(
+        state.reflectionReveal,
+        targetReflectionReveal,
+        deltaSeconds,
+      ),
     );
     state.brushActive = state.targetBrushActive && state.hasBrushCell;
     controlsRef.current.envYaw = state.mouseEnvYaw;

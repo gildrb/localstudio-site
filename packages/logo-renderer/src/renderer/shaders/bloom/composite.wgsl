@@ -33,13 +33,17 @@ fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
 @fragment
 fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   let scene = textureSample(sceneTexture, texSampler, input.uv);
-  let bloom = textureSample(bloomTexture, texSampler, input.uv).rgb;
-  let sceneSize = vec2f(textureDimensions(sceneTexture));
-  let aspectCorrectUv = (input.uv - vec2f(0.5)) * vec2f(sceneSize.x / max(sceneSize.y, 1.0), 1.0);
-  let bloomRadial = smoothstep(0.0, BLOOM_RADIAL_FULL_RADIUS, length(aspectCorrectUv));
-  let bloomMask = smoothstep(0.0, 0.4, scene.a);
   let straightScene = scene.rgb / max(scene.a, 0.0001);
-  let linearColor = straightScene + bloom * params.strength * bloomRadial * bloomMask;
+  var linearColor = straightScene;
+  if (params.strength > 0.0) {
+    let bloom = textureSample(bloomTexture, texSampler, input.uv).rgb;
+    let sceneSize = vec2f(textureDimensions(sceneTexture));
+    let aspectCorrectUv =
+      (input.uv - vec2f(0.5)) * vec2f(sceneSize.x / max(sceneSize.y, 1.0), 1.0);
+    let bloomRadial = smoothstep(0.0, BLOOM_RADIAL_FULL_RADIUS, length(aspectCorrectUv));
+    let bloomMask = smoothstep(0.0, 0.4, scene.a);
+    linearColor += bloom * params.strength * bloomRadial * bloomMask;
+  }
   let displayColor = linear_to_display(aces_tonemap(linearColor));
   let neutral = vec3f(dot(displayColor, vec3f(0.2126, 0.7152, 0.0722)));
   let naturalColor = clamp(neutral + (displayColor - neutral) * 1.10, vec3f(0.0), vec3f(1.0));

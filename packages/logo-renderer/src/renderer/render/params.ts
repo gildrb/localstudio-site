@@ -70,28 +70,6 @@ export function writeParams(args: {
   const proj = perspective(fovEff, aspect, clip.near, clip.far);
   const view = lookAt(eye, orbitTarget, [0, 1, 0]);
   const viewProj = multiply(proj, view);
-  const data = new Float32Array(48);
-  data.set(viewProj, 0);
-  data[16] = eye[0];
-  data[17] = eye[1];
-  data[18] = eye[2];
-  data[19] = passKind;
-  data[20] = basis.right[0];
-  data[21] = basis.right[1];
-  data[22] = basis.right[2];
-  data[23] = fovEff;
-  data[24] = basis.up[0];
-  data[25] = basis.up[1];
-  data[26] = basis.up[2];
-  data[27] = aspect;
-  data[28] = basis.forward[0];
-  data[29] = basis.forward[1];
-  data[30] = basis.forward[2];
-  data[31] = MATERIAL_KIND[controls.material];
-  data[32] = thicknessScale;
-  data[33] = controls.envYaw;
-  data[34] = controls.envPitch;
-  data[35] = isLight ? 0 : 1;
   const metrics = paintMappingMetrics(
     meshBounds,
     controls,
@@ -101,21 +79,26 @@ export function writeParams(args: {
     projectionPaddingRadius,
     imprint.devicePixelRatio,
   );
-  const gridScale = metrics.gridScale;
-  data[36] = Math.max(0, Math.min(1, imprint.progress ?? 0));
-  data[37] = gridScale;
-  data[38] = Math.max(0.1, imprint.glyphScale ?? DEFAULT_IMPRINT_GLYPH_SCALE);
-  data[39] = imprint.time ?? 0;
-  data[40] = imprint.mouse?.[0] ?? 0;
-  data[41] = imprint.mouse?.[1] ?? 0;
-  data[42] = metrics.originCell[0];
-  data[43] = metrics.originCell[1];
   const pointerX = Math.max(-1, Math.min(1, imprint.mouse?.[0] ?? 0));
   const pointerY = Math.max(-1, Math.min(1, imprint.mouse?.[1] ?? 0));
-  data[44] = projectionPaddingRadius + logicalWidth * (0.5 + pointerX * 0.5);
-  data[45] = projectionPaddingRadius + logicalHeight * (0.5 + pointerY * 0.75);
-  data[46] = Math.max(0, Math.min(1, imprint.reflectionReveal ?? 0));
-  data[47] = Math.min(logicalWidth, logicalHeight) * 0.3;
+  const ascii0 = [
+    Math.max(0, Math.min(1, imprint.progress ?? 0)),
+    metrics.gridScale,
+    Math.max(0.1, imprint.glyphScale ?? DEFAULT_IMPRINT_GLYPH_SCALE),
+    imprint.time ?? 0,
+  ];
+  const ascii1 = [
+    imprint.mouse?.[0] ?? 0,
+    imprint.mouse?.[1] ?? 0,
+    metrics.originCell[0],
+    metrics.originCell[1],
+  ];
+  const interaction = [
+    projectionPaddingRadius + logicalWidth * (0.5 + pointerX * 0.5),
+    projectionPaddingRadius + logicalHeight * (0.5 + pointerY * 0.75),
+    Math.max(0, Math.min(1, imprint.reflectionReveal ?? 0)),
+    Math.min(logicalWidth, logicalHeight) * 0.3,
+  ];
   return {
     viewProj,
     cameraPos: eye,
@@ -130,8 +113,8 @@ export function writeParams(args: {
     envYaw: controls.envYaw,
     envPitch: controls.envPitch,
     glassAbsorption: isLight ? 0 : 1,
-    ascii0: [data[36], data[37], data[38], data[39]],
-    ascii1: [data[40], data[41], data[42], data[43]],
-    interaction: [data[44], data[45], data[46], data[47]],
+    ascii0,
+    ascii1,
+    interaction,
   };
 }

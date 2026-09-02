@@ -8,7 +8,7 @@ export function renderLightComposite(
   t: BloomTargets,
 ) {
   r.pipelines.lightComposite.set({
-    sceneTexture: t.scene.color,
+    sceneTexture: t.scene.color.view,
     texSampler: r.sampler,
   });
   f.pass({ target, clear: [0, 0, 0, 0] }, r.pipelines.lightComposite);

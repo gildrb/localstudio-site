@@ -1,13 +1,23 @@
 // Resize-sensitive public vgpu targets.
 import { pingPong, target, type Gpu } from "vgpu";
-import { BACK_DEPTH_FORMAT, SCENE_FORMAT } from "./constants";
+import {
+  BACK_CAMERA_DEPTH_FORMAT,
+  BACK_DEPTH_FORMAT,
+  SCENE_FORMAT,
+} from "./constants";
 import { getPaddedRenderSize } from "./textures";
 import type { BloomTargets } from "./types";
 
-function createBackTarget(gpu: Gpu, width: number, height: number, label: string) {
+function createBackTarget(
+  gpu: Gpu,
+  width: number,
+  height: number,
+  label: string,
+  format: GPUTextureFormat = SCENE_FORMAT,
+) {
   return target(gpu, {
     size: [width, height],
-    format: SCENE_FORMAT,
+    format,
     depth: BACK_DEPTH_FORMAT,
     label,
   });
@@ -41,7 +51,13 @@ export function createBloomTargetCache(gpu: Gpu) {
             ? createBackTarget(gpu, padded.width, padded.height, "eve-5-back-material")
             : undefined,
           backDepth: includeBack
-            ? createBackTarget(gpu, padded.width, padded.height, "eve-5-back-depth")
+            ? createBackTarget(
+                gpu,
+                padded.width,
+                padded.height,
+                "eve-5-back-depth",
+                BACK_CAMERA_DEPTH_FORMAT,
+              )
             : undefined,
           bloom: pingPong(gpu, bloomSize[0], bloomSize[1], {
             format: SCENE_FORMAT,
@@ -77,6 +93,7 @@ export function createBloomTargetCache(gpu: Gpu) {
           padded.width,
           padded.height,
           "eve-5-back-depth",
+          BACK_CAMERA_DEPTH_FORMAT,
         );
       }
       return targets;

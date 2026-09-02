@@ -24,6 +24,7 @@ export const BLOOM_STRENGTH_OFF = BLOOM_STRENGTH;
 export const BLOOM_STRENGTH_ON = BLOOM_STRENGTH_OFF * 0.25;
 export const BLOOM_THRESHOLD = 0;
 export const BACK_DEPTH_FORMAT: GPUTextureFormat = "depth32float";
+export const BACK_CAMERA_DEPTH_FORMAT: GPUTextureFormat = "r32float";
 
 // The shader renders the back side first, then the front side. Keeping two passes
 // preserves the acrylic depth/overlap cues while avoiding a depth buffer.
