@@ -134,7 +134,7 @@ const FeatureCard = memo(function FeatureCard({
 					{...stylex.props(baseStyles.element, baseStyles.image, styles.kittyFeatureImage)}
 					src={feature.image}
 					srcSet={`${feature.image} 660w, ${feature.image2x} 1320w`}
-					sizes="(max-width: 900px) min(620px, calc(100vw - 48px)), 620px"
+					sizes="(max-width: 620px) min(78vw, 320px), (max-width: 900px) min(620px, calc(100vw - 48px)), 620px"
 					alt={feature.alt}
 					width="1320"
 					height="1320"

@@ -127,6 +127,7 @@ export function ProductStory() {
 										<li
 											{...stylex.props(baseStyles.element, 
 											styles.storyOption,
+											styles.storyOptionPosition(index < activeIndex ? "-10px" : "10px"),
 											index === 0 && styles.storyFirstOption,
 											selected && styles.storySelectedOption,
 										)}
@@ -170,12 +171,24 @@ export function ProductStory() {
 							>
 									{demoInRange ? (
 										<Suspense fallback={DEMO_PLACEHOLDER}>
-											<div
-												{...stylex.props(baseStyles.element, styles.storyDemoTransition)}
-												key={activeFeature.slug}
-											>
-												<FeatureDemo scene={activeFeature.demoScene} />
-											</div>
+											{productFeatures.map((feature, index) => {
+												const selected = activeIndex === index;
+												return (
+													<div
+														{...stylex.props(
+															baseStyles.element,
+															styles.storyDemoTransition,
+															styles.storyLayerOffset(index < activeIndex ? "-12px" : "12px"),
+															selected && styles.storySelectedDemo,
+														)}
+														key={feature.slug}
+														aria-hidden={!selected}
+														inert={!selected}
+													>
+														<FeatureDemo scene={feature.demoScene} />
+													</div>
+												);
+											})}
 										</Suspense>
 								) : (
 									DEMO_PLACEHOLDER

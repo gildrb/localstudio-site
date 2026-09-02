@@ -15,14 +15,14 @@ const styles = stylex.create({
 		width: pageWidth,
 		minWidth: 0,
 		flexDirection: "column",
-		alignItems: "flex-end",
+		alignItems: "center",
 		justifyContent: "center",
 		marginInline: "auto",
 		padding: {
 			default: "150px 0",
 			"@media (max-width: 620px)": "100px 0",
 		},
-		textAlign: "right",
+		textAlign: "center",
 	},
 	home: {
 		minHeight: "650px",
@@ -35,7 +35,7 @@ const styles = stylex.create({
 	},
 	title: {
 		marginBlock: '0',
-		marginRight: '0',
+		marginRight: 'auto',
 		marginLeft: 'auto',
 		fontFamily: constants.fontSans,
 		fontSize: {
@@ -65,7 +65,7 @@ const styles = stylex.create({
 	actions: {
 		display: "flex",
 		alignItems: "center",
-		justifyContent: "flex-end",
+		justifyContent: "center",
 		gap: "12px",
 		marginTop: "36px",
 	},

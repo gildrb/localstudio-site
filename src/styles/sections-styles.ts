@@ -4,17 +4,6 @@ import { colors, constants, lengths, times } from "./public-tokens.stylex";
 const reducedMotion = "@media (prefers-reduced-motion: reduce)";
 const desktopNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 40px))`;
 const mobileNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 44px))`;
-const storyDemoEnter = stylex.keyframes({
-	from: {
-		opacity: 0,
-		transform: "translateY(6px)",
-	},
-	to: {
-		opacity: 1,
-		transform: "translateY(0)",
-	},
-});
-
 const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 const heroStagePadding = `calc((100% - ${pageWidth}) / 2)`;
 const heroStageClippedWidth = `calc(100% - ${heroStagePadding})`;
@@ -22,6 +11,7 @@ const scrimAmbient = `color-mix(in oklab, ${colors.background} 28%, transparent)
 const scrimDirect = `color-mix(in oklab, ${colors.background} 68%, transparent)`;
 const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
 const kittyCardWidth = "min(620px, calc(100vw - 48px))";
+const kittyMobileCardWidth = "min(78vw, 320px)";
 
 export const styles = stylex.create({
 	sectionWidth: {
@@ -281,11 +271,11 @@ export const styles = stylex.create({
 		overflow: "visible",
 	},
 	storyOptions: {
-		display: {
-			default: "grid",
-			"@media (max-width: 900px)": "block",
+		display: "grid",
+		gridTemplateRows: {
+			default: "repeat(5, minmax(0, 1fr))",
+			"@media (max-width: 900px)": "minmax(0, auto)",
 		},
-		gridTemplateRows: "repeat(5, minmax(0, 1fr))",
 		width: "100%",
 		height: {
 			default: "100%",
@@ -306,10 +296,26 @@ export const styles = stylex.create({
 	}),
 	storyOption: {
 		position: "relative",
-		display: {
-			default: "flex",
+		display: "flex",
+		gridArea: {
+			default: "auto",
+			"@media (max-width: 900px)": "1 / 1",
+		},
+		opacity: {
+			default: 1,
+			"@media (max-width: 900px)": 0,
+		},
+		pointerEvents: {
+			default: "auto",
 			"@media (max-width: 900px)": "none",
 		},
+		transitionProperty: "opacity, transform",
+		transitionDuration: {
+			default: "0s",
+			"@media (max-width: 900px)": times.feature,
+			[reducedMotion]: "0s",
+		},
+		transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
 		flexDirection: "column",
 		justifyContent: "center",
 		minHeight: 0,
@@ -330,11 +336,19 @@ export const styles = stylex.create({
 		borderTopStyle: "solid",
 		borderTopColor: colors.borderSoft,
 	},
+	storyOptionPosition: (offset: string) => ({
+		transform: {
+			default: "none",
+			"@media (max-width: 900px)": `translate3d(0, ${offset}, 0)`,
+		},
+	}),
 	storyFirstOption: {
 		borderTopWidth: 0,
 	},
 	storySelectedOption: {
-		display: "flex",
+		opacity: 1,
+		transform: "translate3d(0, 0, 0)",
+		pointerEvents: "auto",
 	},
 	storyOptionControl: {
 		display: "grid",
@@ -362,11 +376,9 @@ export const styles = stylex.create({
 	storyDescriptionMotion: {
 		opacity: 0,
 		transform: "translateY(6px)",
-		filter: "blur(8px)",
-		transitionProperty: "opacity, transform, filter",
+		transitionProperty: "opacity, transform",
 		transitionDuration: times.feature,
-		transitionTimingFunction:
-			"cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1)",
+		transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
 	},
 	storyDescription: {
 		maxWidth: "440px",
@@ -383,7 +395,6 @@ export const styles = stylex.create({
 	storySelectedDescription: {
 		opacity: 1,
 		transform: "translateY(0)",
-		filter: "blur(0)",
 	},
 	storyVisualHome: {
 		alignSelf: "center",
@@ -402,6 +413,7 @@ export const styles = stylex.create({
 	},
 	storyVisual: {
 		position: "relative",
+		display: "grid",
 		width: "100%",
 		minWidth: 0,
 		maxWidth: "100%",
@@ -409,19 +421,25 @@ export const styles = stylex.create({
 		overflow: "clip",
 	},
 	storyDemoTransition: {
+		gridArea: "1 / 1",
+		minWidth: 0,
+		opacity: 0,
+		pointerEvents: "none",
 		contain: "paint",
-		willChange: "opacity, transform",
-		animationName: {
-			default: storyDemoEnter,
-			[reducedMotion]: "none",
+		transitionProperty: "opacity, transform",
+		transitionDuration: {
+			default: times.feature,
+			[reducedMotion]: "0s",
 		},
-		animationDuration: times.feature,
-		animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-		animationIterationCount: {
-			default: 1,
-			[reducedMotion]: 1,
-		},
-		animationFillMode: "both",
+		transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+	},
+	storyLayerOffset: (offset: string) => ({
+		transform: `translate3d(0, ${offset}, 0) scale(0.995)`,
+	}),
+	storySelectedDemo: {
+		opacity: 1,
+		transform: "translate3d(0, 0, 0) scale(1)",
+		pointerEvents: "auto",
 	},
 	storyDemoPlaceholder: {
 		width: "100%",
@@ -482,12 +500,23 @@ export const styles = stylex.create({
 	kittyCarousel: {
 		width: "100%",
 		overflowX: "auto",
-		marginTop: "32px",
+		marginTop: {
+			default: "32px",
+			"@media (max-width: 620px)": "24px",
+		},
 		cursor: {
 			default: "grab",
 			":active": "grabbing",
 		},
 		overscrollBehaviorX: "contain",
+		scrollSnapType: {
+			default: "none",
+			"@media (max-width: 620px)": "x proximity",
+		},
+		scrollPaddingInline: {
+			default: 0,
+			"@media (max-width: 620px)": "20px",
+		},
 		scrollbarWidth: "none",
 		touchAction: "pan-x pan-y",
 		"::-webkit-scrollbar": {
@@ -501,15 +530,28 @@ export const styles = stylex.create({
 		display: "flex",
 		width: "max-content",
 		alignItems: "flex-start",
-		columnGap: "24px",
+		columnGap: {
+			default: "24px",
+			"@media (max-width: 620px)": "16px",
+		},
 		rowGap: "24px",
-		paddingInline: kittyCarouselGutter,
+		paddingInline: {
+			default: kittyCarouselGutter,
+			"@media (max-width: 620px)": "20px",
+		},
 	},
 	kittyFeature: {
 		minWidth: 0,
+		scrollSnapAlign: {
+			default: "none",
+			"@media (max-width: 620px)": "start",
+		},
 		flexGrow: 0,
 		flexShrink: 0,
-		flexBasis: kittyCardWidth,
+		flexBasis: {
+			default: kittyCardWidth,
+			"@media (max-width: 620px)": kittyMobileCardWidth,
+		},
 	},
 	kittyFeatureBody: {
 		minHeight: "56px",
