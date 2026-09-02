@@ -1,213 +1,159 @@
-import { baseStyles } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense } from "react";
 import { productFeatures } from "../content/product";
-import { renderInlineReact } from "../ui/prose";
 import { site } from "../domain/site";
+import { baseStyles } from "../styles/base-styles";
 import { styles } from "../styles/sections-styles";
+import { renderInlineReact } from "../ui/prose";
+import { useBufferedStoryScenes } from "./use-buffered-story-scenes";
+import { useProductStoryMotion } from "./use-product-story-motion";
+
 const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
 
 const DEMO_PLACEHOLDER = (
 	<div {...stylex.props(baseStyles.element, styles.storyDemoPlaceholder)} aria-hidden="true" />
 );
 
-function useStoryProgress() {
-	const [activeIndex, setActiveIndex] = useState(0);
-	const showcaseRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		const showcase = showcaseRef.current;
-		const sticky = showcase?.querySelector<HTMLElement>("[data-story-sticky]");
-		if (!showcase || !sticky) return;
-		let updateFrame = 0;
-		let measureFrame = 0;
-		let showcaseTop = 0;
-		let navHeight = 72;
-		let scrollRange = 1;
-		let scrollActive = false;
-		let disposed = false;
-
-		const update = () => {
-			updateFrame = 0;
-			const traveled = Math.min(
-				Math.max(window.scrollY + navHeight - showcaseTop, 0),
-				scrollRange,
-			);
-			const scenePosition = (traveled / scrollRange) * productFeatures.length;
-			const nextIndex = Math.min(productFeatures.length - 1, Math.floor(scenePosition));
-			setActiveIndex((current) => (current === nextIndex ? current : nextIndex));
-		};
-
-		const measure = () => {
-			measureFrame = 0;
-			const header = document.querySelector("header");
-			navHeight = header?.getBoundingClientRect().height || 72;
-			const stageHeight = Math.max(1, sticky.offsetHeight);
-			scrollRange = Math.max(1, showcase.offsetHeight - stageHeight);
-			showcaseTop = window.scrollY + showcase.getBoundingClientRect().top;
-			if (updateFrame !== 0) window.cancelAnimationFrame(updateFrame);
-			update();
-		};
-
-		const scheduleUpdate = () => {
-			if (updateFrame === 0) updateFrame = window.requestAnimationFrame(update);
-		};
-		const scheduleMeasure = () => {
-			if (measureFrame === 0) measureFrame = window.requestAnimationFrame(measure);
-		};
-
-		const setScrollActive = (active: boolean) => {
-			if (scrollActive === active) return;
-			scrollActive = active;
-			if (active) {
-				window.addEventListener("scroll", scheduleUpdate, { passive: true });
-				scheduleUpdate();
-			} else {
-				window.removeEventListener("scroll", scheduleUpdate);
-			}
-		};
-		const sizeObserver = new ResizeObserver(scheduleMeasure);
-		const visibilityObserver = new IntersectionObserver(
-			(entries) => setScrollActive(entries.at(-1)?.isIntersecting ?? false),
-			{ rootMargin: "100px 0px" },
-		);
-		sizeObserver.observe(showcase);
-		sizeObserver.observe(sticky);
-		visibilityObserver.observe(showcase);
-		scheduleMeasure();
-		window.addEventListener("resize", scheduleMeasure);
-		void document.fonts.ready.then(() => {
-			if (!disposed) scheduleMeasure();
-		});
-		return () => {
-			disposed = true;
-			sizeObserver.disconnect();
-			visibilityObserver.disconnect();
-			window.removeEventListener("scroll", scheduleUpdate);
-			window.removeEventListener("resize", scheduleMeasure);
-			if (updateFrame !== 0) window.cancelAnimationFrame(updateFrame);
-			if (measureFrame !== 0) window.cancelAnimationFrame(measureFrame);
-		};
-	}, []);
-
-	return { activeIndex, showcaseRef };
-}
-
 export function ProductStory() {
-	const { activeIndex, showcaseRef } = useStoryProgress();
-	const [demoInRange, setDemoInRange] = useState(false);
-	const visualRef = useRef<HTMLElement>(null);
+	const {
+		activeIndex,
+		getLayerRef,
+		getOptionRef,
+		inRange,
+		optionsRef,
+		reducedMotion,
+		showcaseRef,
+	} = useProductStoryMotion(productFeatures.length);
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
 	const optionsOffset = `${(1 - activeIndex) * 20}%`;
-
-	useEffect(() => {
-		const visual = visualRef.current;
-		if (!visual) return;
-		const observer = new IntersectionObserver(
-			(entries) => setDemoInRange(entries.at(-1)?.isIntersecting ?? false),
-			{ rootMargin: "500px 0px" },
-		);
-		observer.observe(visual);
-		return () => observer.disconnect();
-	}, []);
+	const mountedSceneIndexes = useBufferedStoryScenes(
+		activeIndex,
+		productFeatures.length,
+		inRange,
+		reducedMotion,
+	);
 
 	return (
-		<section id="media" {...stylex.props(baseStyles.element, baseStyles.sectionAnchor, styles.sectionWidth, styles.story)} aria-label={`${site.products.localStudio.name} product story`}>
-				<div {...stylex.props(baseStyles.element, styles.storyShowcase)} ref={showcaseRef}>
-					<div {...stylex.props(baseStyles.element, styles.storySticky)} data-story-sticky="">
-						<div {...stylex.props(baseStyles.element, styles.storyOptionsWindow)}>
-							<ol
-								{...stylex.props(baseStyles.list, baseStyles.element, styles.storyOptions, styles.storyOptionsOffset(optionsOffset))}
-								aria-label={`${site.products.localStudio.name} capabilities`}
-								data-active-index={activeIndex}
-							>
-								{productFeatures.map((feature, index) => {
-									const selected = activeIndex === index;
-									return (
-										<li
-											{...stylex.props(baseStyles.element, 
+		<section
+			id="media"
+			{...stylex.props(
+				baseStyles.element,
+				baseStyles.sectionAnchor,
+				styles.sectionWidth,
+				styles.story,
+			)}
+			aria-label={`${site.products.localStudio.name} product story`}
+		>
+			<div {...stylex.props(baseStyles.element, styles.storyShowcase)} ref={showcaseRef}>
+				<div {...stylex.props(baseStyles.element, styles.storySticky)} data-story-sticky="">
+					<div {...stylex.props(baseStyles.element, styles.storyOptionsWindow)}>
+						<ol
+							{...stylex.props(
+								baseStyles.list,
+								baseStyles.element,
+								styles.storyOptions,
+								styles.storyOptionsOffset(optionsOffset),
+							)}
+							ref={optionsRef}
+							aria-label={`${site.products.localStudio.name} capabilities`}
+							data-active-index={activeIndex}
+						>
+							{productFeatures.map((feature, index) => {
+								const selected = activeIndex === index;
+								return (
+									<li
+										{...stylex.props(
+											baseStyles.element,
 											styles.storyOption,
 											styles.storyOptionPosition(index < activeIndex ? "-10px" : "10px"),
 											index === 0 && styles.storyFirstOption,
 											selected && styles.storySelectedOption,
 										)}
-											key={feature.storyTitle}
-											aria-current={selected ? "step" : undefined}
-										>
-											<div {...stylex.props(baseStyles.element, styles.storyOptionControl)}>
-												<span
-													{...stylex.props(baseStyles.element, 
+										ref={getOptionRef(index)}
+										key={feature.storyTitle}
+										aria-current={selected ? "step" : undefined}
+									>
+										<div {...stylex.props(baseStyles.element, styles.storyOptionControl)}>
+											<span
+												{...stylex.props(
+													baseStyles.element,
 													styles.storyOptionTitle,
 													selected && styles.storySelectedOptionTitle,
 												)}
-												>
-													{feature.storyTitle}
-												</span>
-											</div>
+											>
+												{feature.storyTitle}
+											</span>
+										</div>
+										<div
+											{...stylex.props(
+												baseStyles.element,
+												styles.storyDescriptionMotion,
+												selected && styles.storySelectedDescription,
+											)}
+											data-story-description=""
+										>
+											<p
+												{...stylex.props(
+													baseStyles.element,
+													baseStyles.paragraph,
+													styles.storyDescription,
+												)}
+											>
+												{renderInlineReact(feature.storyDescription)}
+											</p>
+										</div>
+									</li>
+								);
+							})}
+						</ol>
+					</div>
+					<div {...stylex.props(baseStyles.element, styles.storyVisualHome)}>
+						<figure
+							{...stylex.props(baseStyles.element, styles.storyVisual)}
+							data-active-feature={activeFeature.storyTitle}
+						>
+							{inRange ? (
+								<Suspense fallback={DEMO_PLACEHOLDER}>
+									{mountedSceneIndexes.map((index) => {
+										const feature = productFeatures[index];
+										if (!feature) return null;
+										const selected = activeIndex === index;
+										return (
 											<div
 												{...stylex.props(
 													baseStyles.element,
-													styles.storyDescriptionMotion,
-													selected && styles.storySelectedDescription,
+													styles.storyDemoTransition,
+													styles.storyLayerOffset(index < activeIndex ? "-12px" : "12px"),
+													selected && styles.storySelectedDemo,
 												)}
+												ref={getLayerRef(index)}
+												key={feature.slug}
+												data-story-scene={feature.slug}
+												data-story-scene-index={index}
 												aria-hidden={!selected}
+												inert={!selected}
 											>
-												<p
-													{...stylex.props(baseStyles.element, baseStyles.paragraph, styles.storyDescription)}
-												>
-													{renderInlineReact(feature.storyDescription)}
-												</p>
+												<FeatureDemo scene={feature.demoScene} />
 											</div>
-										</li>
-									);
-								})}
-							</ol>
-						</div>
-						<div {...stylex.props(baseStyles.element, styles.storyVisualHome)}>
-							<figure
-								{...stylex.props(baseStyles.element, styles.storyVisual)}
-								ref={visualRef}
-								data-active-feature={activeFeature.storyTitle}
-							>
-									{demoInRange ? (
-										<Suspense fallback={DEMO_PLACEHOLDER}>
-											{productFeatures.map((feature, index) => {
-												const selected = activeIndex === index;
-												return (
-													<div
-														{...stylex.props(
-															baseStyles.element,
-															styles.storyDemoTransition,
-															styles.storyLayerOffset(index < activeIndex ? "-12px" : "12px"),
-															selected && styles.storySelectedDemo,
-														)}
-														key={feature.slug}
-														aria-hidden={!selected}
-														inert={!selected}
-													>
-														<FeatureDemo scene={feature.demoScene} />
-													</div>
-												);
-											})}
-										</Suspense>
-								) : (
-									DEMO_PLACEHOLDER
-								)}
-								<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.screenReaderOnly)} role="status">
-									{activeFeature.storyTitle}. {renderInlineReact(activeFeature.storyDescription)}
-								</p>
-							</figure>
-						</div>
+										);
+									})}
+								</Suspense>
+							) : (
+								DEMO_PLACEHOLDER
+							)}
+						</figure>
 					</div>
-					<div
-						{...stylex.props(baseStyles.element, 
-							styles.storyScrollTrack(
-								`calc(${productFeatures.length + 1} * clamp(300px, 42svh, 420px))`,
-							),
-						)}
-						aria-hidden="true"
-					/>
 				</div>
+				<div
+					{...stylex.props(
+						baseStyles.element,
+						styles.storyScrollTrack(
+							`calc(${productFeatures.length + 1} * clamp(300px, 42svh, 420px))`,
+						),
+					)}
+					aria-hidden="true"
+				/>
+			</div>
 		</section>
 	);
 }
