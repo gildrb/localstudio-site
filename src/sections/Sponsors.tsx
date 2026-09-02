@@ -30,21 +30,36 @@ export function Sponsors() {
 			<p id="sponsors-title" {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.sponsorsTitle)}>
 				Supporters of {site.company.name}
 			</p>
-			<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.sponsorsList)}>
-				{SPONSORS.map(({ name, src, width, height }) => (
-					<li key={name} {...stylex.props(baseStyles.element)}>
-						<img
-							{...stylex.props(baseStyles.element, baseStyles.image, 
-								styles.sponsorImage,
-								styles.sponsorImageSize(width, height),
-							)}
-							src={src}
-							alt={name}
-							draggable={false}
-						/>
-					</li>
+			<div {...stylex.props(baseStyles.element, styles.sponsorsViewport)}>
+				{[false, true].map((duplicate) => (
+					<ul
+						key={duplicate ? "duplicate" : "primary"}
+						aria-hidden={duplicate || undefined}
+						{...stylex.props(
+							baseStyles.list,
+							baseStyles.element,
+							styles.sponsorsList,
+							duplicate && styles.sponsorsDuplicate,
+						)}
+					>
+						{SPONSORS.map(({ name, src, width, height }) => (
+							<li key={name} {...stylex.props(baseStyles.element)}>
+								<img
+									{...stylex.props(
+										baseStyles.element,
+										baseStyles.image,
+										styles.sponsorImage,
+										styles.sponsorImageSize(width, height),
+									)}
+									src={src}
+									alt={name}
+									draggable={false}
+								/>
+							</li>
+						))}
+					</ul>
 				))}
-			</ul>
+			</div>
 		</section>
 	);
 }

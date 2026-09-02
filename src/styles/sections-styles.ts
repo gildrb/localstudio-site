@@ -12,6 +12,10 @@ const scrimDirect = `color-mix(in oklab, ${colors.background} 68%, transparent)`
 const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
 const kittyCardWidth = "min(620px, calc(100vw - 48px))";
 const kittyMobileCardWidth = "min(78vw, 320px)";
+const sponsorMarquee = stylex.keyframes({
+	from: { transform: "translateX(0)" },
+	to: { transform: "translateX(calc(-100% - 48px))" },
+});
 
 export const styles = stylex.create({
 	sectionWidth: {
@@ -181,8 +185,26 @@ export const styles = stylex.create({
 		color: colors.dim,
 		textAlign: "left",
 	},
+	sponsorsViewport: {
+		display: "flex",
+		columnGap: "48px",
+		overflowX: {
+			default: "visible",
+			"@media (max-width: 900px)": "hidden",
+			"@media (max-width: 900px) and (prefers-reduced-motion: reduce)": "auto",
+		},
+		overflowY: "hidden",
+	},
 	sponsorsList: {
 		display: "flex",
+		width: {
+			default: "100%",
+			"@media (max-width: 900px)": "max-content",
+		},
+		flexShrink: {
+			default: 1,
+			"@media (max-width: 900px)": 0,
+		},
 		flexWrap: "nowrap",
 		alignItems: "center",
 		justifyContent: {
@@ -191,15 +213,30 @@ export const styles = stylex.create({
 		},
 		columnGap: {
 			default: "48px",
-			"@media (max-width: 900px)": "36px",
-		},
-		overflowX: {
-			default: "visible",
-			"@media (max-width: 900px)": "auto",
+			"@media (max-width: 900px)": "48px",
 		},
 		margin: 0,
 		padding: 0,
 		listStyle: "none",
+		willChange: {
+			default: "auto",
+			"@media (max-width: 900px)": "transform",
+			"@media (max-width: 900px) and (prefers-reduced-motion: reduce)": "auto",
+		},
+		animationName: {
+			default: "none",
+			"@media (max-width: 900px)": sponsorMarquee,
+			"@media (max-width: 900px) and (prefers-reduced-motion: reduce)": "none",
+		},
+		animationDuration: "40s",
+		animationTimingFunction: "linear",
+		animationIterationCount: "infinite",
+	},
+	sponsorsDuplicate: {
+		display: {
+			default: "none",
+			"@media (max-width: 900px)": "flex",
+		},
 	},
 	sponsorImage: {
 		display: "block",
