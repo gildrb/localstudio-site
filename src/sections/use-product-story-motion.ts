@@ -1,142 +1,30 @@
 import { animate } from "motion";
 import { useReducedMotion } from "motion/react";
-import { type RefCallback, useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "../domain/motion";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
-	STORY_LAYER_OPACITY,
-	STORY_LAYER_TIMES,
 	storyIndex,
-	storyLayerTime,
 	storyOptionsTime,
 	storyPosition,
-	storyVisualPosition,
 } from "./product-story-motion";
 
 const MOBILE_STORY_QUERY = "(max-width: 900px)";
-const STORY_TRANSFORMS = [
-	"translate3d(0, 18px, 0) scale(0.985)",
-	"translate3d(0, 18px, 0) scale(0.985)",
-	"translate3d(0, 0, 0) scale(1)",
-	"translate3d(0, 0, 0) scale(1)",
-	"translate3d(0, -18px, 0) scale(0.985)",
-	"translate3d(0, -18px, 0) scale(0.985)",
-];
-const STORY_OPTION_TRANSFORMS = [
-	"translate3d(0, 10px, 0)",
-	"translate3d(0, 10px, 0)",
-	"translate3d(0, 0, 0)",
-	"translate3d(0, 0, 0)",
-	"translate3d(0, -10px, 0)",
-	"translate3d(0, -10px, 0)",
-];
-
 type MotionControls = ReturnType<typeof animate>;
-
-function createLayerAnimation(element: HTMLElement, option = false) {
-	return animate(
-		element,
-		{
-			opacity: [...STORY_LAYER_OPACITY],
-			transform: option ? STORY_OPTION_TRANSFORMS : STORY_TRANSFORMS,
-		},
-		{
-			autoplay: false,
-			duration: 1,
-			ease: motion.ease,
-			times: [...STORY_LAYER_TIMES],
-		},
-	);
-}
 
 export function useProductStoryMotion(sceneCount: number) {
 	const reducedMotion = useReducedMotion() ?? false;
 	const [activeIndex, setActiveIndex] = useState(0);
-	const [inRange, setInRange] = useState(false);
 	const activeIndexRef = useRef(0);
 	const showcaseRef = useRef<HTMLDivElement>(null);
 	const optionsRef = useRef<HTMLOListElement>(null);
 	const positionRef = useRef(0);
-	const mobileRef = useRef(false);
-	const layerAnimations = useRef(new Map<number, MotionControls>());
-	const optionAnimations = useRef(new Map<number, MotionControls>());
-	const descriptionAnimations = useRef(new Map<number, MotionControls>());
-	const optionNodes = useRef(new Map<number, HTMLLIElement>());
-	const layerRefCallbacks = useRef(new Map<number, RefCallback<HTMLDivElement>>());
-	const optionRefCallbacks = useRef(new Map<number, RefCallback<HTMLLIElement>>());
 	const optionsAnimation = useRef<MotionControls | null>(null);
 
 	const syncMotion = useCallback((position: number) => {
 		positionRef.current = position;
-		const mountedIndexes = [...layerAnimations.current.keys()];
-		const visualPosition = storyVisualPosition(position, mountedIndexes);
-		for (const [index, controls] of layerAnimations.current) {
-			controls.time = storyLayerTime(visualPosition, index);
-		}
-		for (const [index, controls] of optionAnimations.current) {
-			controls.time = storyLayerTime(position, index);
-		}
-		for (const [index, controls] of descriptionAnimations.current) {
-			controls.time = storyLayerTime(position, index);
-		}
 		if (optionsAnimation.current) {
 			optionsAnimation.current.time = storyOptionsTime(position, sceneCount);
 		}
 	}, []);
-
-	const registerLayer = useCallback((index: number, element: HTMLDivElement | null) => {
-		layerAnimations.current.get(index)?.cancel();
-		layerAnimations.current.delete(index);
-		if (!element) return;
-		const controls = createLayerAnimation(element);
-		layerAnimations.current.set(index, controls);
-		controls.time = storyLayerTime(positionRef.current, index);
-	}, []);
-
-	const registerOption = useCallback((index: number, element: HTMLLIElement | null) => {
-		optionAnimations.current.get(index)?.cancel();
-		optionAnimations.current.delete(index);
-		descriptionAnimations.current.get(index)?.cancel();
-		descriptionAnimations.current.delete(index);
-		if (!element) {
-			optionNodes.current.delete(index);
-			return;
-		}
-		optionNodes.current.set(index, element);
-		const description = element.querySelector<HTMLElement>("[data-story-description]");
-		if (description) {
-			const controls = createLayerAnimation(description, true);
-			descriptionAnimations.current.set(index, controls);
-			controls.time = storyLayerTime(positionRef.current, index);
-		}
-		if (!mobileRef.current) return;
-		const controls = createLayerAnimation(element, true);
-		optionAnimations.current.set(index, controls);
-		controls.time = storyLayerTime(positionRef.current, index);
-	}, []);
-
-	const getLayerRef = useCallback(
-		(index: number) => {
-			let callback = layerRefCallbacks.current.get(index);
-			if (!callback) {
-				callback = (element) => registerLayer(index, element);
-				layerRefCallbacks.current.set(index, callback);
-			}
-			return callback;
-		},
-		[registerLayer],
-	);
-
-	const getOptionRef = useCallback(
-		(index: number) => {
-			let callback = optionRefCallbacks.current.get(index);
-			if (!callback) {
-				callback = (element) => registerOption(index, element);
-				optionRefCallbacks.current.set(index, callback);
-			}
-			return callback;
-		},
-		[registerOption],
-	);
 
 	useEffect(() => {
 		const showcase = showcaseRef.current;
@@ -154,18 +42,9 @@ export function useProductStoryMotion(sceneCount: number) {
 		const mobileQuery = window.matchMedia(MOBILE_STORY_QUERY);
 
 		const rebuildResponsiveMotion = () => {
-			mobileRef.current = mobileQuery.matches;
 			optionsAnimation.current?.cancel();
 			optionsAnimation.current = null;
-			for (const controls of optionAnimations.current.values()) controls.cancel();
-			optionAnimations.current.clear();
-
-			if (mobileRef.current) {
-				for (const [index, element] of optionNodes.current) {
-					const controls = createLayerAnimation(element, true);
-					optionAnimations.current.set(index, controls);
-				}
-			} else {
+			if (!mobileQuery.matches) {
 				optionsAnimation.current = animate(
 					options,
 					{ transform: ["translateY(20%)", "translateY(-60%)"] },
@@ -234,7 +113,6 @@ export function useProductStoryMotion(sceneCount: number) {
 		const visibilityObserver = new IntersectionObserver(
 			(entries) => {
 				const visible = entries.at(-1)?.isIntersecting ?? false;
-				setInRange(visible);
 				setScrollActive(visible);
 				if (visible) scheduleMeasure();
 			},
@@ -271,22 +149,10 @@ export function useProductStoryMotion(sceneCount: number) {
 		};
 	}, [reducedMotion, syncMotion]);
 
-	useEffect(
-		() => () => {
-			for (const controls of layerAnimations.current.values()) controls.cancel();
-			for (const controls of optionAnimations.current.values()) controls.cancel();
-			for (const controls of descriptionAnimations.current.values()) controls.cancel();
-		},
-		[],
-	);
 
 	return {
 		activeIndex,
-		getLayerRef,
-		getOptionRef,
-		inRange,
 		optionsRef,
-		reducedMotion,
 		showcaseRef,
 	};
 }

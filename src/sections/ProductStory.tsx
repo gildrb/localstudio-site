@@ -1,37 +1,18 @@
 import * as stylex from "@stylexjs/stylex";
-import { lazy, Suspense } from "react";
+import { FeatureDemo } from "@local-studio/demo-ui/story";
 import { productFeatures } from "../content/product";
 import { site } from "../domain/site";
 import { baseStyles } from "../styles/base-styles";
 import { styles } from "../styles/sections-styles";
 import { renderInlineReact } from "../ui/prose";
-import { useBufferedStoryScenes } from "./use-buffered-story-scenes";
 import { useProductStoryMotion } from "./use-product-story-motion";
 
-const FeatureDemo = lazy(() => import("@local-studio/demo-ui/story"));
-
-const DEMO_PLACEHOLDER = (
-	<div {...stylex.props(baseStyles.element, styles.storyDemoPlaceholder)} aria-hidden="true" />
-);
-
 export function ProductStory() {
-	const {
-		activeIndex,
-		getLayerRef,
-		getOptionRef,
-		inRange,
-		optionsRef,
-		reducedMotion,
-		showcaseRef,
-	} = useProductStoryMotion(productFeatures.length);
+	const { activeIndex, optionsRef, showcaseRef } = useProductStoryMotion(
+		productFeatures.length,
+	);
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
 	const optionsOffset = `${(1 - activeIndex) * 20}%`;
-	const mountedSceneIndexes = useBufferedStoryScenes(
-		activeIndex,
-		productFeatures.length,
-		inRange,
-		reducedMotion,
-	);
 
 	return (
 		<section
@@ -69,8 +50,7 @@ export function ProductStory() {
 											index === 0 && styles.storyFirstOption,
 											selected && styles.storySelectedOption,
 										)}
-										ref={getOptionRef(index)}
-										key={feature.storyTitle}
+												key={feature.storyTitle}
 										aria-current={selected ? "step" : undefined}
 									>
 										<div {...stylex.props(baseStyles.element, styles.storyOptionControl)}>
@@ -90,8 +70,7 @@ export function ProductStory() {
 												styles.storyDescriptionMotion,
 												selected && styles.storySelectedDescription,
 											)}
-											data-story-description=""
-										>
+												>
 											<p
 												{...stylex.props(
 													baseStyles.element,
@@ -112,35 +91,26 @@ export function ProductStory() {
 							{...stylex.props(baseStyles.element, styles.storyVisual)}
 							data-active-feature={activeFeature.storyTitle}
 						>
-							{inRange ? (
-								<Suspense fallback={DEMO_PLACEHOLDER}>
-									{mountedSceneIndexes.map((index) => {
-										const feature = productFeatures[index];
-										if (!feature) return null;
-										const selected = activeIndex === index;
-										return (
-											<div
-												{...stylex.props(
-													baseStyles.element,
-													styles.storyDemoTransition,
-													styles.storyLayerOffset(index < activeIndex ? "-12px" : "12px"),
-													selected && styles.storySelectedDemo,
-												)}
-												ref={getLayerRef(index)}
-												key={feature.slug}
-												data-story-scene={feature.slug}
-												data-story-scene-index={index}
-												aria-hidden={!selected}
-												inert={!selected}
-											>
-												<FeatureDemo scene={feature.demoScene} />
-											</div>
-										);
-									})}
-								</Suspense>
-							) : (
-								DEMO_PLACEHOLDER
-							)}
+							{productFeatures.map((feature, index) => {
+								const selected = activeIndex === index;
+								return (
+									<div
+										{...stylex.props(
+											baseStyles.element,
+											styles.storyDemoTransition,
+											styles.storyLayerOffset(index < activeIndex ? "-12px" : "12px"),
+											selected && styles.storySelectedDemo,
+										)}
+										key={feature.slug}
+										data-story-scene={feature.slug}
+										data-story-scene-index={index}
+										aria-hidden={!selected}
+										inert={!selected}
+									>
+										<FeatureDemo scene={feature.demoScene} />
+									</div>
+								);
+							})}
 						</figure>
 					</div>
 				</div>
