@@ -10,6 +10,7 @@ const excludedDirectories = new Set([
 	".context",
 	".git",
 	"dist",
+	"dist-dev",
 	"node_modules",
 	"playwright-report",
 	"test-results",
