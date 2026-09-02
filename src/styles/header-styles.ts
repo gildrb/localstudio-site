@@ -143,11 +143,8 @@ export const headerStyles = stylex.create({
 	},
 	github: {
 		display: "inline-flex",
-		width: {
-			default: "40px",
-			"@media (max-width: 620px)": "44px",
-		},
 		height: "40px",
+		paddingInline: "8px",
 		alignItems: "center",
 		justifyContent: "center",
 		borderRadius: lengths.radiusControl,
@@ -164,7 +161,6 @@ export const headerStyles = stylex.create({
 		transitionTimingFunction: "ease-out",
 		backgroundColor: "transparent",
 	},
-	githubIcon: { width: "18px", height: "18px" },
 	button: {
 		display: "inline-flex",
 		minHeight: "40px",
@@ -426,7 +422,17 @@ export const headerStyles = stylex.create({
 		columnGap: "8px",
 		marginTop: "32px",
 	},
-	sheetAction: { flexGrow: 1, flexShrink: 1, flexBasis: 0, width: "auto", minWidth: 0, minHeight: "44px", justifyContent: "center" },
+	sheetAction: {
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: 0,
+		width: "auto",
+		minWidth: 0,
+		minHeight: "44px",
+		justifyContent: "center",
+		fontSize: "14px",
+		whiteSpace: "nowrap",
+	},
 	textLink: {
 		display: "inline-flex",
 		alignItems: "center",
