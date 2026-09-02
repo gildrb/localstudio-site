@@ -50,3 +50,12 @@ export function storyOptionsTime(position: number, sceneCount: number) {
 	if (sceneCount <= 1) return 0;
 	return clamp(position / (sceneCount - 1), 0, 1);
 }
+
+export function storySceneStates(activeIndex: number, sceneCount: number) {
+	if (sceneCount <= 0) return [];
+	const selectedIndex = clamp(Math.round(activeIndex), 0, sceneCount - 1);
+	return Array.from({ length: sceneCount }, (_, index) => ({
+		index,
+		selected: index === selectedIndex,
+	}));
+}

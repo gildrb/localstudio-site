@@ -4,6 +4,7 @@ import {
 	storyIndex,
 	storyOptionsTime,
 	storyPosition,
+	storySceneStates,
 } from "../../src/sections/product-story-motion";
 
 const sceneCount = 5;
@@ -66,12 +67,23 @@ test("desktop options Motion scrub time is continuous and reversible", () => {
 	expect(storyOptionsTime(4, sceneCount)).toBe(1);
 });
 
+
+test("render state always includes five scenes and exactly one selected image", () => {
+	for (const activeIndex of [-100, -1, 0, 1, 2, 3, 4, 5, 100]) {
+		const states = storySceneStates(activeIndex, sceneCount);
+		expect(states).toHaveLength(sceneCount);
+		expect(states.filter(({ selected }) => selected)).toHaveLength(1);
+		expect(states.map(({ index }) => index)).toEqual([0, 1, 2, 3, 4]);
+	}
+	expect(storySceneStates(0, 0)).toEqual([]);
+});
+
 test("scene visibility cannot be overridden by a scrub timeline or delayed mount", () => {
 	const component = readFileSync("src/sections/ProductStory.tsx", "utf8");
 	const controller = readFileSync("src/sections/use-product-story-motion.ts", "utf8");
 	const sectionStyles = readFileSync("src/styles/sections-styles.ts", "utf8");
 	expect(component).toContain('import { FeatureDemo } from "@local-studio/demo-ui/story"');
-	expect(component.match(/productFeatures\.map\(\(feature, index\)/gu)).toHaveLength(2);
+	expect(component).toContain("sceneStates.map(({ index, selected })");
 	expect(component).toContain("selected && styles.storySelectedDemo");
 	expect(component).toContain("aria-hidden={!selected}");
 	expect(component).toContain("inert={!selected}");

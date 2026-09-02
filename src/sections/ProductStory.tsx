@@ -5,6 +5,7 @@ import { site } from "../domain/site";
 import { baseStyles } from "../styles/base-styles";
 import { styles } from "../styles/sections-styles";
 import { renderInlineReact } from "../ui/prose";
+import { storySceneStates } from "./product-story-motion";
 import { useProductStoryMotion } from "./use-product-story-motion";
 
 export function ProductStory() {
@@ -13,6 +14,7 @@ export function ProductStory() {
 	);
 	const activeFeature = productFeatures[activeIndex] ?? productFeatures[0];
 	const optionsOffset = `${(1 - activeIndex) * 20}%`;
+	const sceneStates = storySceneStates(activeIndex, productFeatures.length);
 
 	return (
 		<section
@@ -39,8 +41,9 @@ export function ProductStory() {
 							aria-label={`${site.products.localStudio.name} capabilities`}
 							data-active-index={activeIndex}
 						>
-							{productFeatures.map((feature, index) => {
-								const selected = activeIndex === index;
+							{sceneStates.map(({ index, selected }) => {
+								const feature = productFeatures[index];
+								if (!feature) return null;
 								return (
 									<li
 										{...stylex.props(
@@ -91,8 +94,9 @@ export function ProductStory() {
 							{...stylex.props(baseStyles.element, styles.storyVisual)}
 							data-active-feature={activeFeature.storyTitle}
 						>
-							{productFeatures.map((feature, index) => {
-								const selected = activeIndex === index;
+							{sceneStates.map(({ index, selected }) => {
+								const feature = productFeatures[index];
+								if (!feature) return null;
 								return (
 									<div
 										{...stylex.props(
