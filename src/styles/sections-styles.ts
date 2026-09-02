@@ -193,14 +193,20 @@ export const styles = stylex.create({
 	},
 	sponsorsList: {
 		display: "flex",
-		flexWrap: "wrap",
+		flexWrap: "nowrap",
 		alignItems: "center",
 		justifyContent: {
 			default: "space-between",
-			"@media (max-width: 900px)": "center",
+			"@media (max-width: 900px)": "flex-start",
 		},
-		columnGap: "48px",
-		rowGap: "24px",
+		columnGap: {
+			default: "48px",
+			"@media (max-width: 900px)": "36px",
+		},
+		overflowX: {
+			default: "visible",
+			"@media (max-width: 900px)": "auto",
+		},
 		margin: 0,
 		padding: 0,
 		listStyle: "none",
