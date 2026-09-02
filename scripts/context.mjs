@@ -23,6 +23,7 @@ const INCLUDE_EXT = new Set([
 const EXCLUDE_DIRS = new Set([
 	"node_modules",
 	"dist",
+	"dist-dev",
 	".git",
 	"test-results",
 	"playwright-report",
@@ -60,7 +61,7 @@ const CATEGORY_BUDGETS = {
 	"react pages/components/app": { target: 26_000, hard: 34_000 },
 	"demos + scenario": { target: 15_000, hard: 18_000 },
 	"StyleX/motion": { target: 11_000, hard: 14_000 },
-	tests: { target: 14_000, hard: 17_000 },
+	tests: { target: 18_000, hard: 20_000 },
 	"build/config/tooling": { target: 30_000, hard: 35_000 },
 	"package/html/misc": { target: 3_000, hard: 4_000 },
 	"copied-product": { target: 0, hard: Number.POSITIVE_INFINITY },
@@ -70,9 +71,10 @@ const CATEGORY_BUDGETS = {
 	other: { target: 0, hard: Number.POSITIVE_INFINITY },
 };
 
-const TOTAL_OPERATING = 98_000; // raised for the bun-native build pipeline (vite.config + agent-ready plugin replaced by scripts/build+serve+bun-plugins)
-const TOTAL_HARD = 100_000;
-const TOTAL_WARN = 86_000;
+// Refreshed after renderer and agent-ready coverage grew; ignored build output is excluded above.
+const TOTAL_OPERATING = 103_000;
+const TOTAL_HARD = 105_000;
+const TOTAL_WARN = 98_000;
 
 function workspacePackageMetadata() {
 	return WORKSPACE_PACKAGES.map((workspacePackage) => ({
@@ -263,6 +265,7 @@ function printReport(rows) {
 				`  ${name}@${version}  ${packageRoot}  (${category}; package typecheck runs in bun check)`,
 		),
 		`  generated files: ${[...GENERATED_FILES].join(", ")}`,
+		`  excluded directories: ${[...EXCLUDE_DIRS].join(", ")}`,
 		`  excluded files: ${[...EXCLUDE_FILES].join(", ")}`,
 		"",
 		"top 50",

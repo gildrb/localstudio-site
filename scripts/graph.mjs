@@ -11,6 +11,7 @@ const SOURCE_EXT = new Set([".ts", ".tsx", ".js", ".mjs", ".css", ".wgsl", ".txt
 const EXCLUDE_DIRS = new Set([
 	"node_modules",
 	"dist",
+	"dist-dev",
 	".git",
 	"test-results",
 	"playwright-report",
