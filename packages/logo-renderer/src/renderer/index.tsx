@@ -284,6 +284,7 @@ export function LocalAiLogoShader({
 			rippleStartTime: Number.NEGATIVE_INFINITY,
 			lastRippleSpawnTime: Number.NEGATIVE_INFINITY,
 			pointerInsideCanvas: false,
+			reflectionReveal: coarsePointerRef.current ? 0.5 : 0,
 			isCoarsePointer: coarsePointerRef.current,
 			paintOnHover,
 		};
@@ -389,7 +390,7 @@ export function LocalAiLogoShader({
 			}
 			const rendererOptions: NonNullable<Parameters<typeof createEve5Renderer>[2]> = {
 				theme: prefersDarkScheme ? "dark" : "light",
-				bloom: true,
+				bloom: false,
 				backRefraction: true,
 			};
 			if (environmentAtlas) rendererOptions.environmentAtlas = environmentAtlas;

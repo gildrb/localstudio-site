@@ -66,9 +66,9 @@ const styles = stylex.create({
 		borderWidth: '1px',
 		borderStyle: 'solid',
 		borderRadius: lengths.radiusControl,
-		color: colors.buttonInk,
-		backgroundColor: colors.foreground,
-		borderColor: colors.foreground,
+		color: colors.primaryButtonInk,
+		backgroundColor: colors.primaryButtonSurface,
+		borderColor: colors.primaryButtonSurface,
 		boxShadow: {
 			default: `0 6px 20px ${colors.shadowControl}, 0 1px 6px ${colors.shadowControlDirect}`,
 			"@media (hover: hover)": {

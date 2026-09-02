@@ -27,7 +27,7 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   let straightScene = scene.rgb / max(scene.a, 0.0001);
   let sky = linear_to_display(aces_tonemap(straightScene));
   let neutral = vec3f(dot(sky, vec3f(0.2126, 0.7152, 0.0722)));
-  let vibrantSky = clamp(neutral + (sky - neutral) * 1.80, vec3f(0.0), vec3f(1.0));
+  let vibrantSky = clamp(neutral + (sky - neutral) * 1.10, vec3f(0.0), vec3f(1.0));
   // Add only enough white to meet the APCA-safe channel floor. A fixed 80%
   // white mix erases most of the cubemap's color separation.
   let minChannel = min(vibrantSky.r, min(vibrantSky.g, vibrantSky.b));

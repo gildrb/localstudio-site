@@ -21,6 +21,7 @@ import type { ControlsRef, HeroRuntimeState } from "./state";
 
 const ENV_ROTATION_LERP_SPEED = 2.5;
 const ASCII_MOUSE_LERP_SPEED = 6;
+const REFLECTION_REVEAL_LERP_SPEED = 5;
 const RIPPLE_DURATION_SECONDS = 1.0;
 const RIPPLE_STRENGTH = 18.0;
 const RIPPLE_IDLE_INTERVAL_MS = 2400;
@@ -88,6 +89,11 @@ export function createDrawLoop({
       Math.abs(state.mouseEnvPitch - state.targetMouseEnvPitch) > SETTLE_EPSILON ||
       Math.abs(state.asciiMouseX - state.targetAsciiMouseX) > SETTLE_EPSILON ||
       Math.abs(state.asciiMouseY - state.targetAsciiMouseY) > SETTLE_EPSILON;
+    const targetReflectionReveal = state.isCoarsePointer
+      ? 0.5
+      : Number(state.pointerInsideCanvas);
+    const reflectionSettling =
+      Math.abs(state.reflectionReveal - targetReflectionReveal) > SETTLE_EPSILON;
     const autoRotating =
       evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw &&
       frameTime - state.autoRotateStartTime < MOBILE_AUTO_ROTATE_DURATION_MS;
@@ -109,6 +115,7 @@ export function createDrawLoop({
       successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT &&
       !state.renderRequested &&
       !pointerSettling &&
+      !reflectionSettling &&
       !autoRotating &&
       !paintSettling &&
       !rippleActive &&
@@ -150,6 +157,11 @@ export function createDrawLoop({
       state.targetAsciiMouseY,
       clamp01(deltaSeconds * ASCII_MOUSE_LERP_SPEED),
     );
+    state.reflectionReveal = lerp(
+      state.reflectionReveal,
+      targetReflectionReveal,
+      clamp01(deltaSeconds * REFLECTION_REVEAL_LERP_SPEED),
+    );
     state.brushActive = state.targetBrushActive && state.hasBrushCell;
     controlsRef.current.envYaw = state.mouseEnvYaw;
     controlsRef.current.envPitch = state.mouseEnvPitch;
@@ -189,6 +201,7 @@ export function createDrawLoop({
           glyphScale: IMPRINT_GLYPH_SCALE,
           time: frameTime / 1000,
           mouse: [state.asciiMouseX, state.asciiMouseY],
+          reflectionReveal: state.reflectionReveal,
           devicePixelRatio,
           paint: {
             dt: deltaSeconds,

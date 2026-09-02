@@ -193,7 +193,6 @@ export function createPointerController({
     updateEnvRotation(event.clientX, event.clientY);
     updatePaintBrush(event);
     const inside =
-      state.paintOnHover &&
       event.pointerType === "mouse" &&
       pointerInsideRect(event.clientX, event.clientY);
     if (

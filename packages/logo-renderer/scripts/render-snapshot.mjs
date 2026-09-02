@@ -102,7 +102,7 @@ for (const scheme of ["night", "day"]) {
   );
   const renderer = createEve5Renderer(gpu, mesh, {
     theme: scheme === "night" ? "dark" : "light",
-    bloom: true,
+    bloom: false,
     backRefraction: true,
     environmentAtlas: atlasRGBA16(atlasPng),
   });

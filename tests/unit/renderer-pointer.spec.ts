@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { writeParams } from "../../packages/logo-renderer/src/renderer/render/params";
 import { mapPointerToLocalEnvironment } from "../../packages/logo-renderer/src/renderer/runtime/environment-input";
 
 const rect = { left: 100, top: 200, width: 800, height: 400 };
@@ -60,4 +61,34 @@ test("degenerate renderer bounds keep finite interaction values", () => {
 		rect: { left: 0, top: 0, width: 0, height: 0 },
 	});
 	for (const value of Object.values(mapped)) expect(Number.isFinite(value)).toBe(true);
+});
+
+test("renderer maps the pointer reveal into padded target pixels", () => {
+	const params = writeParams({
+		controls: {
+			yaw: 0,
+			pitch: 0,
+			radius: 2,
+			fov: 35,
+			envYaw: 1.15,
+			envPitch: 0,
+			insideRendering: true,
+			outsideRendering: true,
+			material: "glass",
+			wireframe: false,
+			showEnv: false,
+		},
+		logicalWidth: 1000,
+		logicalHeight: 500,
+		passKind: 1,
+		projectionPaddingRadius: 20,
+		imprint: { mouse: [1, 0.5], reflectionReveal: 0.8 },
+		meshBounds: { min: [-1, -1, -0.1], max: [1, 1, 0.1] },
+		orbitTarget: [0, 0, 0],
+		thicknessScale: 1,
+		isLight: false,
+	});
+	expect(params.interaction.slice(0, 2)).toEqual([1020, 457.5]);
+	expect(params.interaction[2]).toBeCloseTo(0.8);
+	expect(params.interaction[3]).toBe(150);
 });

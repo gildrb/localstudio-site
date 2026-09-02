@@ -1,5 +1,5 @@
 {
-	"hash": "91e0465e696141dac6fa36ce6641dcc269318c5f8ef8c17b01342237341c5f0e",
+	"hash": "7c6113e464ada8a0affb520198f4282e642e3ce0bf2073251204d547eb8a1e51",
 	"routes": [
 		"/",
 		"/product",
@@ -65,6 +65,7 @@
 		"kittyIphone10_2x",
 		"sponsorNvidia",
 		"sponsorFactory",
+		"sponsorHotAisle",
 		"sponsorLambda",
 		"sponsorPrime",
 		"sponsorTng",
@@ -111,6 +112,8 @@
 			"selectionSkyDusk",
 			"selectionSkyNight",
 			"selectionInk",
+			"primaryButtonSurface",
+			"primaryButtonInk",
 			"pageWidth",
 			"pageGutter",
 			"navHeight",

@@ -33,6 +33,7 @@ function apcaContrast(text, background) {
 
 const roles = { foreground: 100, fine: 90, dim: 75, quiet: 65, chrome: 50 };
 const stops = ["selectionSkyBright", "selectionSkyDay", "selectionSkyBlue", "selectionSkyDusk", "selectionSkyNight"];
+const primaryButton = { ink: "primaryButtonInk", surface: "primaryButtonSurface" };
 
 test("APCA roles", () => {
 	for (const scheme of ["dark", "light"]) {
@@ -48,6 +49,10 @@ test("APCA roles", () => {
 		for (const color of palette) {
 			expect(Math.abs(apcaContrast(ink, color))).toBeGreaterThanOrEqual(75);
 		}
+		expect(Math.abs(apcaContrast(
+			tokenHex(primaryButton.ink, scheme),
+			tokenHex(primaryButton.surface, scheme),
+		))).toBeGreaterThanOrEqual(75);
 	}
 
 	const light = readFileSync("packages/logo-renderer/src/renderer/shaders/postprocess/light-composite.wgsl", "utf8");

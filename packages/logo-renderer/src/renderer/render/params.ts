@@ -25,7 +25,7 @@ import type {
   Vec3,
 } from "./types";
 
-// ABI: must match shaders/shared/scene-params.wgsl (176 B / 44 f32).
+// ABI: must match shaders/shared/scene-params.wgsl (192 B / 48 f32).
 export function writeParams(args: {
   controls: RenderControls;
   logicalWidth: number;
@@ -70,7 +70,7 @@ export function writeParams(args: {
   const proj = perspective(fovEff, aspect, clip.near, clip.far);
   const view = lookAt(eye, orbitTarget, [0, 1, 0]);
   const viewProj = multiply(proj, view);
-  const data = new Float32Array(44);
+  const data = new Float32Array(48);
   data.set(viewProj, 0);
   data[16] = eye[0];
   data[17] = eye[1];
@@ -110,6 +110,12 @@ export function writeParams(args: {
   data[41] = imprint.mouse?.[1] ?? 0;
   data[42] = metrics.originCell[0];
   data[43] = metrics.originCell[1];
+  const pointerX = Math.max(-1, Math.min(1, imprint.mouse?.[0] ?? 0));
+  const pointerY = Math.max(-1, Math.min(1, imprint.mouse?.[1] ?? 0));
+  data[44] = projectionPaddingRadius + logicalWidth * (0.5 + pointerX * 0.5);
+  data[45] = projectionPaddingRadius + logicalHeight * (0.5 + pointerY * 0.75);
+  data[46] = Math.max(0, Math.min(1, imprint.reflectionReveal ?? 0));
+  data[47] = Math.min(logicalWidth, logicalHeight) * 0.3;
   return {
     viewProj,
     cameraPos: eye,
@@ -126,5 +132,6 @@ export function writeParams(args: {
     glassAbsorption: isLight ? 0 : 1,
     ascii0: [data[36], data[37], data[38], data[39]],
     ascii1: [data[40], data[41], data[42], data[43]],
+    interaction: [data[44], data[45], data[46], data[47]],
   };
 }

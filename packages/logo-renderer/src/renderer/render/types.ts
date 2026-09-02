@@ -63,6 +63,7 @@ export type ImprintRenderOptions = {
   glyphScale?: number;
   time?: number;
   mouse?: readonly [number, number];
+  reflectionReveal?: number;
   paint?: PaintRenderOptions;
   devicePixelRatio?: number;
 };

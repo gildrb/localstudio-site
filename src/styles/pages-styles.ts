@@ -283,7 +283,7 @@ export const styles = stylex.create({
 		color: colors.fine,
 	},
 	machineBanner: {
-		display: { default: "flex", "@media (max-width: 620px)": "none" },
+		display: "flex",
 		width: "100%",
 		flexDirection: "column",
 		alignItems: "flex-start",
@@ -303,11 +303,7 @@ export const styles = stylex.create({
 	machineBannerPre: {
 		maxWidth: "100%",
 		margin: 0,
-		backgroundImage: `linear-gradient(color-mix(in srgb, ${colors.selectionSkyBright} 30%, ${colors.foreground}), color-mix(in srgb, ${colors.selectionSkyBlue} 25%, ${colors.foreground}), color-mix(in srgb, ${colors.selectionSkyNight} 20%, ${colors.foreground}))`,
-		backgroundClip: "text",
-		WebkitBackgroundClip: "text",
-		WebkitTextFillColor: "transparent",
-		color: "transparent",
+		color: colors.foreground,
 		fontFamily: "inherit",
 		fontSize: "inherit",
 		fontWeight: "inherit",
