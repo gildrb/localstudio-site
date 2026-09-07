@@ -10,6 +10,7 @@ import type { StudioCubemapAtlas } from "./cubemap";
 import { clampUnit, dot, mix } from "./math";
 import { writeParams } from "./params";
 import { createPaintSystem } from "./paint-system";
+import { createPrismAtmosphere } from "./prism/atmosphere";
 import { renderAtmosphere } from "./passes/atmosphere-pass";
 import { renderBackDepth, renderBackMaterial } from "./passes/back-pass";
 import { renderBlur, renderComposite } from "./passes/bloom-pass";
@@ -41,6 +42,8 @@ export function createEve5Renderer(
     paint = createPaintSystem(gpu, r, mesh);
   let latestScene: Target | undefined;
   let atmosphereDepth: Target | undefined;
+  let atmosphereParams: ReturnType<typeof writeParams> | undefined;
+  let prism: ReturnType<typeof createPrismAtmosphere> | undefined;
   let atmosphereCamera: readonly [number, number, number, number] = [1, 1, 0, 1];
   const renderGlass = (
     out: Target,
@@ -86,6 +89,7 @@ export function createEve5Renderer(
           isLight: r.isLight,
           imprint: im,
         });
+        atmosphereParams = depthParams;
         atmosphereCamera = [
           Math.tan(depthParams.fov / 2),
           depthParams.aspect,
@@ -160,7 +164,11 @@ export function createEve5Renderer(
         im,
       );
       latestScene = t.scene;
-      if (atmosphereDepth) {
+      if (im.atmosphere?.prism && atmosphereDepth && atmosphereParams) {
+        prism ??= createPrismAtmosphere(gpu, r, mesh);
+        prism.render(f, t.scene.color, atmosphereDepth.color, atmosphereParams,
+          c, im, options.environmentTheme === "light", true);
+      } else if (atmosphereDepth) {
         renderAtmosphere(f, r, t.scene.color, atmosphereDepth.color, atmosphereCamera, c, im, options.environmentTheme === "light");
       }
       if (r.isLight) {
@@ -207,10 +215,21 @@ export function createEve5Renderer(
       const scene = latestScene.color;
       const depth = atmosphereDepth.color;
       frame(gpu, (f) => {
-        renderAtmosphere(f, r, scene, depth, atmosphereCamera, controls, imprint, options.environmentTheme === "light");
+        if (imprint.atmosphere?.prism && atmosphereParams) {
+          prism ??= createPrismAtmosphere(gpu, r, mesh);
+          prism.render(f, scene, depth, atmosphereParams, controls, imprint,
+            options.environmentTheme === "light", false);
+        } else {
+          renderAtmosphere(f, r, scene, depth, atmosphereCamera, controls, imprint, options.environmentTheme === "light");
+        }
       });
     },
+    /** Opt-in native diagnostics; no allocations until Prism is rendered. */
+    get prismTargets() { return prism?.targets; },
     dispose() {
+      prism?.dispose();
+      prism = undefined;
+      atmosphereParams = undefined;
       latestScene = undefined;
       atmosphereDepth?.color.destroy();
       atmosphereDepth?.depth?.destroy();

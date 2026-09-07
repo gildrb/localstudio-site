@@ -1,5 +1,6 @@
 // Native fallback generation and deterministic depth/interaction checks.
-// bun packages/logo-renderer/scripts/render-atmosphere.mjs [--validate] [--blank]
+// Static posters keep neutral light: Prism beams require the live viewport/logo mapping.
+// bun packages/logo-renderer/scripts/render-atmosphere.mjs [--validate] [--blank] [--prism]
 import "./bun-hooks.mjs";
 import assert from "node:assert/strict";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -12,11 +13,16 @@ const requireFromVgpu = createRequire(import.meta.resolve("vgpu/package.json"));
 const { PNG } = requireFromVgpu("pngjs");
 const validate = process.argv.includes("--validate");
 const blank = process.argv.includes("--blank");
+const prism = process.argv.includes("--prism");
+const lightGain = Number(process.argv.find((arg) => arg.startsWith("--light-gain="))?.slice(13) ?? 0);
+assert(Number.isFinite(lightGain) && lightGain >= 0 && lightGain <= 1, "light gain must be in [0, 1]");
+assert(!(prism && lightGain > 0), "validate the additive light separately from rejected Prism ribbons");
 const outputArg = process.argv.find((arg) => arg.startsWith("--output="));
 const output = outputArg?.slice(9) ?? (validate ? "/tmp/localstudio-atmosphere" : new URL("../../../public/localai/", import.meta.url).pathname);
 mkdirSync(output, { recursive: true });
-const width = 640;
-const height = 551;
+const width = Number(process.argv.find((arg) => arg.startsWith("--width="))?.slice(8) ?? 640);
+assert(Number.isInteger(width) && width >= 64 && width <= 2048, "width must be an integer in [64, 2048]");
+const height = Math.round(width * 1365 / 1585);
 // Measured desktop hero1585x1365, padded logo canvas928x610.5.
 const logoRect = [0.2073, 0.0879, 0.5855, 0.4473];
 const logoWidth = 928;
@@ -40,7 +46,7 @@ const controls = {
   insideRendering: false, outsideRendering: !blank,
   material: "metallic", wireframe: false, showEnv: false,
 };
-const imprint = { progress: 0, time: 0, devicePixelRatio: 2, atmosphere: { target: out, foregroundTarget: foreground, logoRect } };
+const imprint = { progress: 0, time: 0, devicePixelRatio: 2, atmosphere: { target: out, foregroundTarget: foreground, logoRect, prism, lightGain, dayRoom: 0.9, pixelScale: width / 1585 } };
 
 function writePng(path, backgroundPixels, scheme, logoPixels, foregroundPixels) {
   const png = new PNG({ width, height });
@@ -155,6 +161,34 @@ try {
       const base = await out.read();
       const near = await foreground.read();
       const logoPixels = await logo.read();
+      let prismHdr;
+      if (validate && prism) {
+        const resources = renderer.prismTargets;
+        assert(resources, "opt-in Prism resources were created");
+        let peak = 0, litPixels = 0;
+        for (const layer of [resources.background, resources.foreground]) {
+          const values = await layer.readFloats();
+          for (let i = 0; i < values.length; i += 4) {
+            for (let c = 0; c < 4; c++) assert(Number.isFinite(values[i + c]), "finite Prism HDR");
+            const light = Math.max(values[i], values[i + 1], values[i + 2]);
+            peak = Math.max(peak, light);
+            if (light > 0.001) litPixels++;
+          }
+        }
+        assert(peak > 1 && litPixels > 100, "real white-beam HDR exceeds display range before tone mapping");
+        const lightDepth = await resources.lightDepth.readFloats();
+        const sourceDepthPixels = lightDepth.reduce((count, value) => count + Number(value < 999999), 0);
+        assert(sourceDepthPixels > 100, "the real mesh occludes light in the source camera");
+        renderer.renderAtmosphere(controls, { ...imprint, atmosphere: { ...imprint.atmosphere, beamOpacity: 0 } });
+        for (const layer of [resources.background, resources.foreground]) {
+          const dark = await layer.readFloats();
+          for (let i = 0; i < dark.length; i += 4) assert.equal(dark[i] + dark[i + 1] + dark[i + 2], 0, "zero beam opacity disables emission");
+        }
+        assert.deepEqual(await logo.read(), logoPixels, "Prism lighting does not redraw or alter chrome");
+        renderer.renderAtmosphere(controls, imprint);
+        assert.equal(renderer.prismTargets, resources, "idle lighting reuses Prism resources");
+        prismHdr = { peak, litPixels, sourceDepthPixels };
+      }
       let nearOverLogoMax = 0, nearOverLogoCount = 0;
       if (validate) {
         for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
@@ -216,7 +250,7 @@ try {
       await gpu.settled();
       const idleMs = (performance.now() - started) / 30;
       assert.equal(errors.length, 0, errors.join("\n"));
-      report.push({ scheme, apertures, nearOverLogoMax, nearOverLogoCount, pointerDiff, driftDiff, alphaDiff, alphaNearDiff, depthDiff, idleMs, borders: "zero", deterministic: true });
+      report.push({ scheme, prismHdr, apertures, nearOverLogoMax, nearOverLogoCount, pointerDiff, driftDiff, alphaDiff, alphaNearDiff, depthDiff, idleMs, borders: "zero", deterministic: true });
     } finally { renderer.dispose(); }
   }
   console.log(JSON.stringify({ width, height, logoRect, output, report }, null, 2));

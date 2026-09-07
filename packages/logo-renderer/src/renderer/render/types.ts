@@ -70,6 +70,14 @@ export type ImprintRenderOptions = {
     target: Target;
     foregroundTarget?: Target | undefined;
     logoRect: readonly [number, number, number, number];
+    /** Source-based Prism beams and bloom. Omitted keeps the neutral fallback. */
+    prism?: boolean;
+    /** Prism linear beam gain; defaults to the requested 0.72. */
+    beamOpacity?: number;
+    /** Optional neutral day-room display gray; 1 keeps the light layer clear. */
+    dayRoom?: number;
+    /** Render-target pixels per CSS pixel, for physical dust sizes. */
+    pixelScale?: number;
   } | undefined;
 };
 

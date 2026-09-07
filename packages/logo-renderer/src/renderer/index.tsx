@@ -21,6 +21,7 @@ import {
 	cameraRadiusForFov,
 	createEve5Renderer,
 	type RenderControls,
+	type ImprintRenderOptions,
 } from "./render";
 import { resizeCanvas, type CanvasLayout } from "./runtime/canvas-sizing";
 import { rendererTimes } from "./renderer-tokens.stylex";
@@ -150,7 +151,11 @@ export function LogoPoster({ dayUrl, nightUrl, sx }: {
 	);
 }
 
+type AtmosphereSettings = Pick<NonNullable<ImprintRenderOptions["atmosphere"]>, "prism" | "beamOpacity" | "dayRoom">;
+
 export type LocalAiLogoShaderProps = LogoRendererAssets & {
+	/** Host-selected lighting policy; omission keeps the neutral atmosphere. */
+	atmosphereSettings?: AtmosphereSettings | undefined;
 	/** Full-section canvas sharing this renderer's device, light and silhouette. */
 	atmosphereRef?: RefObject<HTMLCanvasElement | null> | undefined;
 	atmosphereForegroundRef?: RefObject<HTMLCanvasElement | null> | undefined;
@@ -181,6 +186,7 @@ export function LocalAiLogoShader({
 	onFallback,
 	atmosphereRef,
 	atmosphereForegroundRef,
+	atmosphereSettings,
 	sx,
 	viewportAspect = LOGO_VIEWPORT_ASPECT,
 	paintOnHover = true,
@@ -189,6 +195,9 @@ export function LocalAiLogoShader({
 	environment = "sky",
 	staticPose = false,
 }: LocalAiLogoShaderProps) {
+	const prismAtmosphere = atmosphereSettings?.prism ?? false;
+	const atmosphereBeamOpacity = atmosphereSettings?.beamOpacity;
+	const atmosphereDayRoom = atmosphereSettings?.dayRoom;
 	const prefersReducedMotion = usePrefersReducedMotion();
 	const prefersDarkScheme = useMediaQuery("(prefers-color-scheme: dark)");
 	const coarsePointer = useMediaQuery("(pointer: coarse)");
@@ -408,8 +417,14 @@ export function LocalAiLogoShader({
 				alphaMode: "premultiplied",
 			});
 			const atmosphere = atmosphereRef?.current
-				? createAtmosphereSurface(gpu, atmosphereRef.current, activeCanvas, requestRender, atmosphereForegroundRef?.current ?? undefined)
+				? createAtmosphereSurface(gpu, atmosphereRef.current, activeCanvas, requestRender, atmosphereForegroundRef?.current ?? undefined,
+					prismAtmosphere ? { scale: 1, maxEdge: 1280 } : undefined)
 				: undefined;
+			if (atmosphere) {
+				atmosphere.current.prism = prismAtmosphere;
+				if (atmosphereBeamOpacity !== undefined) atmosphere.current.beamOpacity = atmosphereBeamOpacity;
+				if (atmosphereDayRoom !== undefined) atmosphere.current.dayRoom = atmosphereDayRoom;
+			}
 			let environmentAtlas: ImageBitmap | undefined;
 			try {
 				if (environment === "sky") {
@@ -511,6 +526,9 @@ export function LocalAiLogoShader({
 		modelUrl,
 		atmosphereRef,
 		atmosphereForegroundRef,
+		prismAtmosphere,
+		atmosphereBeamOpacity,
+		atmosphereDayRoom,
 		dayUrl,
 		nightUrl,
 		paintOnHover,
