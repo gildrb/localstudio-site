@@ -18,8 +18,8 @@ export function ProductStory() {
 	const optionsOffset = `${(1 - activeIndex) * 20}%`;
 	const sceneStates = storySceneStates(activeIndex, productFeatures.length);
 	const transition = {
-		...motion.featureSwap,
-		duration: reducedMotion ? 0 : motion.featureSwap.duration,
+		...motion.featureEntry,
+		duration: reducedMotion ? 0 : motion.featureEntry.duration,
 	};
 
 	return (
@@ -72,12 +72,11 @@ export function ProductStory() {
 											<div {...stylex.props(baseStyles.element, styles.storyOptionControl)}>
 												<m.span
 													initial={false}
-													animate={{ opacity: selected ? 1 : 0.8 }}
+													animate={{ opacity: selected ? 1 : 0.55 }}
 													transition={transition}
 													{...stylex.props(
 														baseStyles.element,
 														styles.storyOptionTitle,
-														selected && styles.storySelectedOptionTitle,
 													)}
 												>
 													{feature.storyTitle}
@@ -122,7 +121,6 @@ export function ProductStory() {
 											{...stylex.props(
 												baseStyles.element,
 												styles.storyDemoTransition,
-												styles.storyLayerOffset(index < activeIndex ? "-12px" : "12px"),
 												selected && styles.storySelectedDemo,
 											)}
 											key={feature.slug}

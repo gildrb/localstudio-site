@@ -63,7 +63,7 @@ export function useProductStoryMotion(sceneCount: number) {
 				navHeight,
 				showcaseTop,
 				scrollRange,
-				sceneCount: sceneCount,
+				sceneCount,
 			});
 			const nextIndex = storyIndex(position, currentIndex, sceneCount);
 			if (nextIndex !== currentIndex) {

@@ -6,7 +6,7 @@ const mobileNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top,
 const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 const heroStagePadding = `calc((100% - ${pageWidth}) / 2)`;
 const heroStageClippedWidth = `calc(100% - ${heroStagePadding})`;
-const heroTextShadow = `0 2px 12px color-mix(in oklab, ${colors.background} 70%, transparent), 0 1px 2px color-mix(in oklab, ${colors.background} 95%, transparent)`;
+const heroTextShadow = `0 0 8px color-mix(in oklab, ${colors.background} 16%, transparent), 0 1px 2px color-mix(in oklab, ${colors.background} 20%, transparent)`;
 const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
 const kittyCardWidth = "min(620px, calc(100vw - 48px))";
 const kittyMobileCardWidth = "min(78vw, 320px)";
@@ -30,6 +30,24 @@ export const styles = stylex.create({
 			default: "40px",
 			"@media (max-width: 900px)": "28px",
 		},
+	},
+	heroAtmosphere: {
+		position: "absolute",
+		inset: 0,
+		zIndex: 0,
+		display: "block",
+		width: "100%",
+		height: "100%",
+		pointerEvents: "none",
+	},
+	heroAtmospherePending: { opacity: 0 },
+	heroAtmosphereForeground: { zIndex: 1 },
+	heroAtmosphereImage: {
+		display: "block",
+		width: "100%",
+		height: "100%",
+		objectFit: "fill",
+		userSelect: "none",
 	},
 	heroRender: {
 		left: "50%",
@@ -378,14 +396,11 @@ export const styles = stylex.create({
 		textAlign: "left",
 	},
 	storyOptionTitle: {
-		color: colors.quiet,
+		color: colors.foreground,
 		fontFamily: constants.fontSans,
 		fontSize: "28px",
 		fontWeight: 425,
 		lineHeight: "36px",
-	},
-	storySelectedOptionTitle: {
-		color: colors.foreground,
 	},
 	storyDescriptionMotion: {
 		opacity: 0,
@@ -438,15 +453,11 @@ export const styles = stylex.create({
 		visibility: "hidden",
 		pointerEvents: "none",
 		contain: "paint",
-		// Scene opacity, transform, and visibility are owned by Motion.
+		// Scene opacity and visibility are owned by Motion.
 	},
-	storyLayerOffset: (offset: string) => ({
-		transform: `translate3d(0, ${offset}, 0) scale(0.995)`,
-	}),
 	storySelectedDemo: {
 		opacity: 1,
 		visibility: "visible",
-		transform: "translate3d(0, 0, 0) scale(1)",
 		pointerEvents: "auto",
 	},
 	storyScrollTrack: (height: string) => ({

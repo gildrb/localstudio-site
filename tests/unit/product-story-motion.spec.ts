@@ -8,7 +8,14 @@ import {
 	storySceneAnimation,
 } from "../../src/sections/product-story-motion";
 
+import { motion } from "../../src/domain/motion";
+
 const sceneCount = 5;
+
+test("entries and images transition in 300ms", () => {
+	expect(motion.featureEntry.duration).toBe(0.3);
+	expect(motion.featureSwap.duration).toBe(0.3);
+});
 
 function positionAt(scrollY: number, scrollRange = 1000) {
 	return storyPosition({
@@ -84,28 +91,36 @@ test("Motion owns transitions; demos stay mounted", () => {
 		"aria-hidden={!selected}", "inert={!selected}", "<m.div", "<m.li", "<m.span",
 		"{...storySceneAnimation(index, activeIndex, reducedMotion)}",
 		"y: selected || reducedMotion ? 0 : 6",
-		"duration: reducedMotion ? 0 : motion.featureSwap.duration",
+		"animate={{ opacity: selected ? 1 : 0.55 }}",
+		"duration: reducedMotion ? 0 : motion.featureEntry.duration",
 	]) expect(component).toContain(text);
 	for (const text of ["Suspense", "lazy(", "mountedSceneIndexes"]) expect(component).not.toContain(text);
 	for (const text of ["layerAnimations", "registerLayer", "opacity:"]) expect(controller).not.toContain(text);
 	for (const text of ["requestAnimationFrame(update)", '{ passive: true }']) expect(controller).toContain(text);
 	for (const text of ['visibility: "hidden"', 'visibility: "visible"']) expect(story).toContain(text);
 	expect(story).not.toContain("transitionProperty:");
+	expect(component).not.toContain("styles.storySelectedOptionTitle");
+	expect(component).not.toContain("styles.storyLayerOffset");
+	const sceneStyles = story.slice(story.indexOf("	storyDemoTransition:"), story.indexOf("	storyScrollTrack:"));
+	expect(sceneStyles).not.toContain("transform:");
+	for (const text of [
+		"storyIndex(position, currentIndex, sceneCount)",
+		"syncMotion(reducedMotion ? currentIndex : position)",
+	]) expect(controller).toContain(text);
+	expect(controller).not.toContain("useSpring");
 });
 
-test("100ms fades; reduced motion snaps", () => {
+test("300ms stationary crossfades; reduced motion snaps", () => {
 	for (const reduced of [false, true]) {
 		for (let active = 0; active < sceneCount; active += 1) {
 			for (let index = 0; index < sceneCount; index += 1) {
 				const { initial, animate, transition } = storySceneAnimation(index, active, reduced);
 				const selected = index === active;
-				const duration = reduced ? 0 : 0.1;
+				const duration = reduced ? 0 : 0.3;
 				expect(initial).toBe(false);
 				expect(animate).toEqual({
 					opacity: selected ? 1 : 0,
 					visibility: selected ? "visible" : "hidden",
-					y: selected || reduced ? 0 : index < active ? -12 : 12,
-					scale: selected || reduced ? 1 : 0.995,
 				});
 				expect(transition.duration).toBe(duration);
 				expect(transition.visibility).toEqual({ duration: 0, delay: selected ? 0 : duration });

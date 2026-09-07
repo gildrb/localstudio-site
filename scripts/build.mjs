@@ -58,7 +58,10 @@ async function runBuild() {
 	);
 }
 
-const watchTargets = ["src", "packages", "public", "index.html"];
+const watchTargets = [
+	"src", "packages", "public", "scripts", "index.html",
+	"package.json", "bun.lock", "tsconfig.json", "tsconfig.app.json", "tsconfig.node.json",
+];
 
 export function sourceStamp(targets = watchTargets) {
 	const pending = targets.map((target) => path.isAbsolute(target) ? target : path.join(root, target));
@@ -78,22 +81,40 @@ export function sourceStamp(targets = watchTargets) {
 
 if (import.meta.main) {
 	if (process.argv.includes("--watch")) {
-		if (!process.argv.includes("--skip-initial")) await runBuild();
-		console.log("watching for changes...");
+		const args = process.argv.slice(2).filter((arg) => arg !== "--watch" && arg !== "--skip-initial");
+		let child;
+		process.on("exit", () => child?.kill());
+		process.once("SIGINT", () => process.exit(130));
+		process.once("SIGTERM", () => process.exit(143));
+		const rebuild = async () => {
+			// Reload build code and plugin caches as well as application sources.
+			child = Bun.spawn([process.execPath, import.meta.filename, ...args], {
+				cwd: root,
+				stdout: "inherit",
+				stderr: "inherit",
+				env: process.env,
+			});
+			if ((await child.exited) !== 0) throw new Error("Development rebuild failed");
+		};
+		if (!process.argv.includes("--skip-initial")) await rebuild();
 		let timer;
 		let stamp = sourceStamp();
 		let builds = Promise.resolve();
+		const rebuildIfChanged = () => {
+			const nextStamp = sourceStamp();
+			if (nextStamp === stamp) return;
+			stamp = nextStamp;
+			builds = builds.then(rebuild).catch((error) => console.error("rebuild failed:", error));
+		};
 		for (const dir of watchTargets) {
 			watchFiles(path.join(root, dir), { recursive: true }, () => {
 				clearTimeout(timer);
-				timer = setTimeout(() => {
-					const nextStamp = sourceStamp();
-					if (nextStamp === stamp) return;
-					stamp = nextStamp;
-					builds = builds.then(runBuild).catch((error) => console.error("rebuild failed:", error));
-				}, 100);
+				timer = setTimeout(rebuildIfChanged, 100);
 			});
 		}
+		// OS notifications can be lost during watch startup or atomic saves.
+		setInterval(rebuildIfChanged, 1_000);
+		console.log("watching for changes...");
 	} else {
 		await runBuild();
 	}

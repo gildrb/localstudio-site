@@ -9,8 +9,6 @@ export function storySceneAnimation(index: number, activeIndex: number, reducedM
 		initial: false as const,
 		animate: {
 			opacity: selected ? 1 : 0,
-			y: selected || reducedMotion ? 0 : index < activeIndex ? -12 : 12,
-			scale: selected || reducedMotion ? 1 : 0.995,
 			visibility: selected ? "visible" as const : "hidden" as const,
 		},
 		transition: {

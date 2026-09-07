@@ -512,6 +512,28 @@
 			"sha256": "9f5f04a8f3d46b8b5e96a257fd69f252fb4b7272a19aa3778f7ba38ad48a3036"
 		},
 		{
+			"path": "public/localai/hero-atmosphere-day.png",
+			"role": "image",
+			"type": "image/png",
+			"dimensions": {
+				"width": 640,
+				"height": 551
+			},
+			"bytes": 131560,
+			"sha256": "c1320c201770b66edda4363147705ea16ead500f44ce3fd4fa1e0979301c49da"
+		},
+		{
+			"path": "public/localai/hero-atmosphere-night.png",
+			"role": "image",
+			"type": "image/png",
+			"dimensions": {
+				"width": 640,
+				"height": 551
+			},
+			"bytes": 111764,
+			"sha256": "d22d741222f2c6df974c374c193bc0fb514d2c555ec90dab3775839a6043929f"
+		},
+		{
 			"path": "public/localai/hero-render-day.png",
 			"role": "image",
 			"type": "image/png",

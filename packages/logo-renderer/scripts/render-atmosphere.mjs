@@ -1,0 +1,176 @@
+// Native fallback generation and deterministic depth/interaction checks.
+// bun packages/logo-renderer/scripts/render-atmosphere.mjs [--validate] [--blank]
+import "./bun-hooks.mjs";
+import assert from "node:assert/strict";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import { draw, init, target } from "vgpu/node";
+const { decodeGltfMesh } = await import("../src/renderer/mesh.ts");
+const { DEFAULT_CAMERA_FOV, cameraRadiusForBounds, createEve5Renderer } = await import("../src/renderer/render.ts");
+
+const requireFromVgpu = createRequire(import.meta.resolve("vgpu/package.json"));
+const { PNG } = requireFromVgpu("pngjs");
+const validate = process.argv.includes("--validate");
+const blank = process.argv.includes("--blank");
+const outputArg = process.argv.find((arg) => arg.startsWith("--output="));
+const output = outputArg?.slice(9) ?? (validate ? "/tmp/localstudio-atmosphere" : new URL("../../../public/localai/", import.meta.url).pathname);
+mkdirSync(output, { recursive: true });
+const width = 640;
+const height = 551;
+// Measured desktop hero1585x1365, padded logo canvas928x610.5.
+const logoRect = [0.2073, 0.0879, 0.5855, 0.4473];
+const logoWidth = 928;
+const logoHeight = 611;
+const gltfUrl = new URL("../../../public/localai/localai-logo.gltf", import.meta.url);
+const mesh = await decodeGltfMesh(JSON.parse(readFileSync(gltfUrl, "utf8")), (uri) => {
+  const bytes = readFileSync(new URL(uri, gltfUrl));
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+});
+const gpu = await init();
+const errors = [];
+gpu.onError((error) => errors.push(String(error)));
+const out = target(gpu, { size: [width, height], format: "rgba8unorm", label: "hero-atmosphere" });
+const foreground = target(gpu, { size: [width, height], format: "rgba8unorm", label: "hero-atmosphere-near" });
+const logo = target(gpu, { size: [logoWidth, logoHeight], format: "rgba8unorm", label: "hero-atmosphere-logo" });
+const controls = {
+  yaw: 0, pitch: 0,
+  radius: cameraRadiusForBounds(DEFAULT_CAMERA_FOV, mesh.bounds, 1.52),
+  fov: DEFAULT_CAMERA_FOV,
+  envYaw: 0, envPitch: 0,
+  insideRendering: false, outsideRendering: !blank,
+  material: "metallic", wireframe: false, showEnv: false,
+};
+const imprint = { progress: 0, time: 0, devicePixelRatio: 2, atmosphere: { target: out, foregroundTarget: foreground, logoRect } };
+
+function writePng(path, backgroundPixels, scheme, logoPixels, foregroundPixels) {
+  const png = new PNG({ width, height });
+  const page = scheme === "day" ? 255 : 0;
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    const i = (y * width + x) * 4;
+    const uv = [(x / width - logoRect[0]) / logoRect[2], (y / height - logoRect[1]) / logoRect[3]];
+    const inLogo = logoPixels && uv.every((v) => v >= 0 && v < 1);
+    const j = (Math.floor(uv[1] * logoHeight) * logoWidth + Math.floor(uv[0] * logoWidth)) * 4;
+    for (let c = 0; c < 3; c++) {
+      let v = backgroundPixels[i + c] + page * (1 - backgroundPixels[i + 3] / 255);
+      if (inLogo) v = logoPixels[j + c] + v * (1 - logoPixels[j + 3] / 255);
+      if (foregroundPixels) v = foregroundPixels[i + c] + v * (1 - foregroundPixels[i + 3] / 255);
+      png.data[i + c] = Math.max(0, Math.min(255, Math.round(v)));
+    }
+    png.data[i + 3] = 255;
+  }
+  writeFileSync(path, PNG.sync.write(png, { colorType: 2 }));
+}
+function difference(a, b) {
+  let sum = 0, max = 0, changed = 0;
+  for (let i = 0; i < a.length; i++) {
+    if (i % 4 === 3) continue;
+    const d = Math.abs(a[i] - b[i]);
+    sum += d; max = Math.max(max, d); changed += d > 0 ? 1 : 0;
+  }
+  return { mean: sum / (width * height * 3), max, changed };
+}
+function checkBorder(pixels) {
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    if (x !== 0 && x !== width - 1 && y !== 0 && y !== height - 1) continue;
+    const i = (y * width + x) * 4;
+    assert.equal(pixels[i] + pixels[i + 1] + pixels[i + 2] + pixels[i + 3], 0, "exact transparent border");
+  }
+}
+const report = [];
+try {
+  if (validate) {
+    // Independent native extraction of the exact depth shader/projection used
+    // by the volume, checked against CPU bounds in normalized mesh space.
+    const { createGpuMesh } = await import("../src/renderer/render/mesh-gpu.ts");
+    const { writeParams } = await import("../src/renderer/render/params.ts");
+    const { cameraAxisDepthRange, meshOrbitTarget, meshThicknessScale } = await import("../src/renderer/render/camera.ts");
+    const { bloomRadiusForDevicePixelRatio, PASS_OUTSIDE } = await import("../src/renderer/render/constants.ts");
+    const { default: depthShader } = await import("../src/renderer/shaders/glass/back-depth.wgsl");
+    const geometry = createGpuMesh(gpu, mesh);
+    const pad = bloomRadiusForDevicePixelRatio(2);
+    const depthTarget = target(gpu, { size: [logoWidth + pad * 2, logoHeight + pad * 2], format: "r32float", depth: "depth24plus", clearColor: [-1e6, 0, 0, 0] });
+    const depthPass = draw(gpu, { shader: depthShader, geometry: geometry.triangles, cull: "back", depth: { write: true, compare: "less" } });
+    const depthReports = [];
+    for (const yaw of [0, 0.12]) {
+      const params = writeParams({ controls: { ...controls, yaw }, logicalWidth: logoWidth, logicalHeight: logoHeight, passKind: PASS_OUTSIDE, projectionPaddingRadius: pad, meshBounds: mesh.bounds, orbitTarget: meshOrbitTarget(mesh), thicknessScale: meshThicknessScale(mesh.bounds), isLight: false, imprint });
+      depthPass.set({ params });
+      depthPass.draw(depthTarget);
+      const depths = await depthTarget.readFloats();
+      const range = cameraAxisDepthRange(mesh.bounds, params.cameraForward);
+      let min = Infinity, max = -Infinity, count = 0;
+      for (const value of depths) {
+        assert(Number.isFinite(value), "finite native depth");
+        if (value < -999999) continue;
+        min = Math.min(min, value); max = Math.max(max, value); count++;
+      }
+      assert(count > 100 && max - min > 0.001, "genuine nonplanar front depth");
+      assert(min >= range.min - 0.001 && max <= range.max + 0.001, "depth agrees with CPU normalized mesh bounds");
+      depthReports.push({ yaw, min, max, count, cpuRange: range });
+    }
+    report.push({ nativeDepth: depthReports });
+    geometry.triangles.destroy(); geometry.lines.destroy();
+    depthTarget.color.destroy(); depthTarget.depth?.destroy();
+  }
+  for (const scheme of ["night", "day"]) {
+    const renderer = createEve5Renderer(gpu, mesh, { theme: "dark", environmentTheme: scheme === "day" ? "light" : "dark", bloom: true, backRefraction: false });
+    try {
+      renderer.renderAtmosphere(controls, imprint); // safe before first scene
+      renderer.render(logo, controls, logoWidth, logoHeight, imprint);
+      const base = await out.read();
+      const near = await foreground.read();
+      const logoPixels = await logo.read();
+      let nearOverLogoMax = 0, nearOverLogoCount = 0;
+      if (validate) {
+        for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+          const u = ((x + 0.5) / width - logoRect[0]) / logoRect[2];
+          const v = ((y + 0.5) / height - logoRect[1]) / logoRect[3];
+          if (u < 0 || u >= 1 || v < 0 || v >= 1) continue;
+          const j = (Math.floor(v * logoHeight) * logoWidth + Math.floor(u * logoWidth)) * 4;
+          // Erode the comparison mask: the final logo includes bloom/MSAA,
+          // while the volume samples the raw padded scene at pixel centers.
+          if ([0, -12, 12, -logoWidth * 12, logoWidth * 12].some((offset) => (logoPixels[j + offset + 3] ?? 0) < 230)) continue;
+          const alpha = near[(y * width + x) * 4 + 3];
+          nearOverLogoMax = Math.max(nearOverLogoMax, alpha);
+          if (alpha > 0) nearOverLogoCount++;
+        }
+        assert(nearOverLogoCount > 100 && nearOverLogoMax <= 9, `low but nonzero near-volume over chrome: ${nearOverLogoCount} pixels, max ${nearOverLogoMax}`);
+      }
+      writePng(`${output}/hero-atmosphere-${scheme}.png`, base, scheme, undefined, near);
+      if (!validate) continue;
+      writePng(`${output}/scene-${scheme}.png`, base, scheme, logoPixels, near);
+      writePng(`${output}/near-${scheme}.png`, new Uint8Array(base.length), "night", undefined, near);
+      renderer.renderAtmosphere(controls, imprint);
+      assert.deepEqual(await out.read(), base, "same input+time is deterministic");
+      assert.deepEqual(await foreground.read(), near, "foreground deterministic");
+      renderer.renderAtmosphere({ ...controls, envYaw: 0.28, envPitch: -0.18 }, imprint);
+      const pointer = await out.read();
+      const pointerNear = await foreground.read();
+      const pointerDiff = difference(base, pointer);
+      assert(pointerDiff.changed > 100 && pointerDiff.mean < 5, "pointer moves pixels subtly");
+      renderer.renderAtmosphere(controls, { ...imprint, time: 30 });
+      const drift = await out.read();
+      const driftDiff = difference(base, drift);
+      assert(driftDiff.changed > 100 && driftDiff.mean < 5, "slow volume drift");
+      renderer.render(logo, { ...controls, outsideRendering: false }, logoWidth, logoHeight, imprint);
+      const unoccluded = await out.read();
+      const unoccludedNear = await foreground.read();
+      const alphaDiff = difference(base, unoccluded);
+      const alphaNearDiff = difference(near, unoccludedNear);
+      assert(alphaDiff.changed + alphaNearDiff.changed > 100, "actual mesh changes volume");
+      writePng(`${output}/unoccluded-${scheme}.png`, unoccluded, scheme, undefined, unoccludedNear);
+      renderer.render(logo, { ...controls, yaw: 0.12, depthOpening: 1 }, logoWidth, logoHeight, imprint);
+      const changedDepth = await foreground.read();
+      const depthDiff = difference(near, changedDepth);
+      assert(depthDiff.changed > 100, "real front depth changes near volume");
+      for (const pixels of [base, near, pointer, pointerNear, drift, unoccluded, unoccludedNear, changedDepth]) checkBorder(pixels);
+      const started = performance.now();
+      for (let i = 0; i < 30; i++) renderer.renderAtmosphere(controls, { ...imprint, time: i / 30 });
+      await gpu.settled();
+      const idleMs = (performance.now() - started) / 30;
+      assert.equal(errors.length, 0, errors.join("\n"));
+      report.push({ scheme, nearOverLogoMax, nearOverLogoCount, pointerDiff, driftDiff, alphaDiff, alphaNearDiff, depthDiff, idleMs, borders: "zero", deterministic: true });
+    } finally { renderer.dispose(); }
+  }
+  console.log(JSON.stringify({ width, height, logoRect, output, report }, null, 2));
+  if (validate) writeFileSync(`${output}/validation.json`, JSON.stringify(report, null, 2));
+} finally { gpu.dispose(); }

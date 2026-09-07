@@ -4,6 +4,8 @@
 
 import type { EnvLightConfig } from "./types";
 
+export const STUDIO_BACKLIGHT_POSITION = [0.4, -0.3, -1] as const;
+
 const STUDIO_WHITE = ["#", "FFFFFF"].join("");
 // Editable environment-light knobs. Hex colors are sRGB and are converted to
 // linear values before the one-time cubemap bake. Light and dark intentionally
@@ -38,7 +40,7 @@ export const EVE_LIGHT_ENV_LIGHTS = [
   },
   {
     name: "back-right",
-    position: [0.4, -0.3, -1],
+    position: STUDIO_BACKLIGHT_POSITION,
     color: STUDIO_WHITE,
     intensity: 1,
     radius: 0.1,
@@ -95,7 +97,7 @@ export const EVE_DARK_ENV_LIGHTS = [
 	},
 	{
 		name: "back-right",
-		position: [0.4, -0.3, -1],
+		position: STUDIO_BACKLIGHT_POSITION,
 		color: STUDIO_WHITE,
 		intensity: 5,
 		radius: 0.08,

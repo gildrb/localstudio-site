@@ -12,7 +12,7 @@ import {
 	useStableCallback,
 	useSyncedRef,
 } from "phase/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import {
 	DEFAULT_CAMERA_FOV,
 	DEFAULT_OBJECT_YAW,
@@ -26,6 +26,7 @@ import { resizeCanvas, type CanvasLayout } from "./runtime/canvas-sizing";
 import { rendererTimes } from "./renderer-tokens.stylex";
 import { createDrawLoop, type DrawLoop } from "./runtime/frame-loop";
 import { loadMesh } from "./runtime/load-mesh";
+import { createAtmosphereSurface } from "./runtime/atmosphere-surface";
 import {
 	createPointerController,
 	syncPointerInteractionMode,
@@ -150,6 +151,9 @@ export function LogoPoster({ dayUrl, nightUrl, sx }: {
 }
 
 export type LocalAiLogoShaderProps = LogoRendererAssets & {
+	/** Full-section canvas sharing this renderer's device, light and silhouette. */
+	atmosphereRef?: RefObject<HTMLCanvasElement | null> | undefined;
+	atmosphereForegroundRef?: RefObject<HTMLCanvasElement | null> | undefined;
 	/** Fires once when the live canvas has produced its first frame. */
 	onFirstFrame?: (() => void) | undefined;
 	/** Lets the host restore its poster after renderer failure. */
@@ -175,6 +179,8 @@ export function LocalAiLogoShader({
 	nightUrl,
 	onFirstFrame,
 	onFallback,
+	atmosphereRef,
+	atmosphereForegroundRef,
 	sx,
 	viewportAspect = LOGO_VIEWPORT_ASPECT,
 	paintOnHover = true,
@@ -221,8 +227,8 @@ export function LocalAiLogoShader({
 	const fatalErrorRef = useRef<(() => void) | null>(null);
 	const handleFatalError = useStableCallback(() => fatalErrorRef.current?.());
 
-	const { isActive } = useLifecycle({
-		ref: containerRef,
+	const { isActive } = useLifecycle<HTMLElement>({
+		ref: atmosphereRef ?? containerRef,
 		reducedMotion: "pause",
 		intersectionOptions: { threshold: 0 },
 	});
@@ -316,6 +322,7 @@ export function LocalAiLogoShader({
 		stateRef.current = state;
 
 		resetLayers();
+		handleFallback();
 		if (prefersReducedMotion || prefersReducedMotionSync()) {
 			// Static path: the flat SVG is the final render, show it now.
 			handleFallback();
@@ -400,6 +407,9 @@ export function LocalAiLogoShader({
 				size: [activeCanvas.width, activeCanvas.height],
 				alphaMode: "premultiplied",
 			});
+			const atmosphere = atmosphereRef?.current
+				? createAtmosphereSurface(gpu, atmosphereRef.current, activeCanvas, requestRender, atmosphereForegroundRef?.current ?? undefined)
+				: undefined;
 			let environmentAtlas: ImageBitmap | undefined;
 			try {
 				if (environment === "sky") {
@@ -412,6 +422,8 @@ export function LocalAiLogoShader({
 			}
 			if (state.cancelled) {
 				environmentAtlas?.close();
+				atmosphere?.dispose();
+				canvasSurface.dispose();
 				gpu.dispose();
 				return;
 			}
@@ -442,6 +454,7 @@ export function LocalAiLogoShader({
 				// call it explicitly before dispose, and on remount a re-shown
 				// placeholder would flash SVG -> render again.
 				renderer.dispose();
+				atmosphere?.dispose();
 				canvasSurface.dispose();
 				gpu.dispose();
 				disposeRuntime = undefined;
@@ -465,6 +478,7 @@ export function LocalAiLogoShader({
 				state,
 				canvas: activeCanvas,
 				surface: canvasSurface,
+				atmosphere,
 				renderer,
 				controlsRef,
 				canvasLayoutRef,
@@ -495,6 +509,8 @@ export function LocalAiLogoShader({
 		prefersReducedMotion,
 		prefersDarkScheme,
 		modelUrl,
+		atmosphereRef,
+		atmosphereForegroundRef,
 		dayUrl,
 		nightUrl,
 		paintOnHover,

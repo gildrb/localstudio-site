@@ -53,6 +53,8 @@ export const assets = {
 	dayEnv: "/localai/day-sky-cubemap.jpg",
 	nightEnv: "/localai/night-sky-cubemap.jpg",
 	heroRenderDay: "/localai/hero-render-day.png",
+	heroAtmosphereDay: "/localai/hero-atmosphere-day.png",
+	heroAtmosphereNight: "/localai/hero-atmosphere-night.png",
 	ctaMark: "/localai/cta-mark.gltf",
 	ctaMarkBin: "/localai/cta-mark.bin",
 	ctaMarkSvg: "/images/cta-mark.svg",

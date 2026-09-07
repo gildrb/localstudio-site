@@ -1,13 +1,16 @@
 // Eve renderer frame graph on the public vgpu API.
-import { frame, type Gpu, type Target } from "vgpu";
+import { frame, target as createTarget, type Gpu, type Target } from "vgpu";
 import {
+  PASS_OUTSIDE,
   BLOOM_STRENGTH_OFF,
   BLOOM_STRENGTH_ON,
   bloomRadiusForDevicePixelRatio,
 } from "./constants";
 import type { StudioCubemapAtlas } from "./cubemap";
-import { clampUnit, mix } from "./math";
+import { clampUnit, dot, mix } from "./math";
+import { writeParams } from "./params";
 import { createPaintSystem } from "./paint-system";
+import { renderAtmosphere } from "./passes/atmosphere-pass";
 import { renderBackDepth, renderBackMaterial } from "./passes/back-pass";
 import { renderBlur, renderComposite } from "./passes/bloom-pass";
 import {
@@ -36,6 +39,9 @@ export function createEve5Renderer(
     backRefraction = options.backRefraction ?? true,
     cache = createBloomTargetCache(gpu),
     paint = createPaintSystem(gpu, r, mesh);
+  let latestScene: Target | undefined;
+  let atmosphereDepth: Target | undefined;
+  let atmosphereCamera: readonly [number, number, number, number] = [1, 1, 0, 1];
   const renderGlass = (
     out: Target,
     c: RenderControls,
@@ -55,7 +61,42 @@ export function createEve5Renderer(
         c.material === "thickness",
       t = cache.ensure(w, h, pad, needs),
       pt = paint.ensure(w, h, im.gridScaleMultiplier);
+    if (im.atmosphere) {
+      if (!atmosphereDepth) {
+        atmosphereDepth = createTarget(gpu, {
+          size: t.scene.size,
+          format: "r32float",
+          depth: "depth24plus",
+          clearColor: [0, 0, 0, 0],
+          label: "eve-5-atmosphere-front-depth",
+        });
+      } else atmosphereDepth.resize(t.scene.size);
+    }
     frame(gpu, (f) => {
+      if (im.atmosphere && atmosphereDepth) {
+        const depthParams = writeParams({
+          controls: c,
+          logicalWidth: w,
+          logicalHeight: h,
+          passKind: PASS_OUTSIDE,
+          projectionPaddingRadius: pad,
+          meshBounds: mesh.bounds,
+          orbitTarget: r.orbitTarget,
+          thicknessScale: r.thicknessScale,
+          isLight: r.isLight,
+          imprint: im,
+        });
+        atmosphereCamera = [
+          Math.tan(depthParams.fov / 2),
+          depthParams.aspect,
+          -dot(depthParams.cameraPos, depthParams.cameraForward),
+          c.radius,
+        ];
+        r.pipelines.atmosphereDepth.set({ params: depthParams });
+        f.pass(atmosphereDepth, (pass) => {
+          if (c.outsideRendering) pass.draw(r.pipelines.atmosphereDepth);
+        });
+      }
       if (needs && t.backMaterial && t.backDepth) {
         renderBackMaterial(f, r, mesh, t.backMaterial, c, w, h, pad);
         renderBackDepth(f, r, mesh, t.backDepth, c, w, h, pad);
@@ -118,6 +159,10 @@ export function createEve5Renderer(
         pad,
         im,
       );
+      latestScene = t.scene;
+      if (atmosphereDepth) {
+        renderAtmosphere(f, r, t.scene.color, atmosphereDepth.color, atmosphereCamera, c, im, options.environmentTheme === "light");
+      }
       if (r.isLight) {
         renderLightComposite(f, r, out, t);
         return;
@@ -156,7 +201,20 @@ export function createEve5Renderer(
     ) {
       renderGlass(target, controls, logicalWidth, logicalHeight, imprint);
     },
+    /** Idle atmosphere update: call outside a frame; never redraws the mesh. */
+    renderAtmosphere(controls: RenderControls, imprint: ImprintRenderOptions) {
+      if (!latestScene || !atmosphereDepth || !imprint.atmosphere) return;
+      const scene = latestScene.color;
+      const depth = atmosphereDepth.color;
+      frame(gpu, (f) => {
+        renderAtmosphere(f, r, scene, depth, atmosphereCamera, controls, imprint, options.environmentTheme === "light");
+      });
+    },
     dispose() {
+      latestScene = undefined;
+      atmosphereDepth?.color.destroy();
+      atmosphereDepth?.depth?.destroy();
+      atmosphereDepth = undefined;
       paint.dispose();
       cache.dispose();
       disposeResources(r);

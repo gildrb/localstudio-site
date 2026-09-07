@@ -50,6 +50,7 @@ type Renderer = {
     logicalHeight: number,
     imprint?: ImprintRenderOptions,
   ) => void;
+  renderAtmosphere: (controls: RenderControls, imprint: ImprintRenderOptions) => void;
 };
 
 export type DrawLoop = {
@@ -63,6 +64,7 @@ export function createDrawLoop({
   state,
   canvas,
   surface: canvasSurface,
+  atmosphere,
   renderer,
   controlsRef,
   canvasLayoutRef,
@@ -74,6 +76,7 @@ export function createDrawLoop({
   state: HeroRuntimeState;
   canvas: HTMLCanvasElement;
   surface: Surface;
+  atmosphere?: { current: ImprintRenderOptions["atmosphere"] } | undefined;
   renderer: Renderer;
   controlsRef: ControlsRef;
   canvasLayoutRef: CanvasLayoutRef;
@@ -84,9 +87,12 @@ export function createDrawLoop({
 }) {
   let successfulRenderCount = 0;
   let running = false;
+  let atmosphereTime = 0;
+  let lastAtmosphereFrame = Number.NEGATIVE_INFINITY;
 
   const draw = (frameTime = performance.now()) => {
     if (!running || state.cancelled) return false;
+    atmosphereTime += Math.min(MAX_FRAME_DELTA_SECONDS, Math.max(0, (frameTime - state.previousFrameTime) / 1000));
 
     const pointerSettling =
       Math.abs(state.mouseEnvYaw - state.targetMouseEnvYaw) > SETTLE_EPSILON ||
@@ -124,7 +130,19 @@ export function createDrawLoop({
       !(state.paintOnHover && state.pointerInsideCanvas)
     ) {
       state.previousFrameTime = frameTime;
-      return false;
+      if (!atmosphere?.current) return false;
+      if (frameTime - lastAtmosphereFrame >= 1000 / 30) {
+        try {
+          renderer.renderAtmosphere(controlsRef.current, { atmosphere: atmosphere.current, time: atmosphereTime });
+          lastAtmosphereFrame = frameTime;
+        } catch {
+          state.cancelled = true;
+          onFallback();
+          onFatalError();
+          return false;
+        }
+      }
+      return true;
     }
     state.renderRequested = false;
 
@@ -200,7 +218,8 @@ export function createDrawLoop({
           progress: 0,
           gridScaleMultiplier: IMPRINT_GRID_SCALE_MULTIPLIER,
           glyphScale: IMPRINT_GLYPH_SCALE,
-          time: frameTime / 1000,
+          time: atmosphere?.current ? atmosphereTime : frameTime / 1000,
+          atmosphere: atmosphere?.current,
           mouse: [state.asciiMouseX, state.asciiMouseY],
           devicePixelRatio,
           paint: {
@@ -223,6 +242,7 @@ export function createDrawLoop({
           },
         },
       );
+      lastAtmosphereFrame = frameTime;
       if (state.hasBrushCell) {
         state.previousRenderedBrushCellX = state.brushCellX;
         state.previousRenderedBrushCellY = state.brushCellY;

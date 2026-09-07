@@ -24,7 +24,18 @@ export function createStylexTransform(dev) {
 			return (await stylex.transform.call({ meta: { watchMode: false } }, source, file))?.code;
 		},
 		collectCss() {
-			return stylex.__stylexCollectCss();
+			// The unplugin merges a process-global rule store into each collection.
+			// Bun rebuilds already transform the whole graph, so only this instance's
+			// rules belong in its CSS. Collection is synchronous; restore the shared
+			// store before any in-flight transform can resume.
+			const shared = stylex.__stylexGetSharedStore();
+			const rules = shared.rulesById;
+			shared.rulesById = new Map();
+			try {
+				return stylex.__stylexCollectCss();
+			} finally {
+				shared.rulesById = rules;
+			}
 		},
 	};
 }

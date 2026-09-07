@@ -12,6 +12,13 @@ export function createPipelines(gpu: Gpu, mesh: GpuMesh) {
       cull: "front",
       depth: { write: true, compare: "less" },
     }),
+    atmosphereDepth: draw(gpu, {
+      label: "eve-5-atmosphere-front-depth",
+      shader: shaders.glassBackDepth,
+      geometry: mesh.triangles,
+      cull: "back",
+      depth: { write: true, compare: "less" },
+    }),
     backDepth: draw(gpu, {
       label: "eve-5-glass-back-depth",
       shader: shaders.glassBackDepth,
@@ -57,6 +64,12 @@ export function createPipelines(gpu: Gpu, mesh: GpuMesh) {
     }),
     lightComposite: effect(gpu, shaders.lightComposite, {
       label: "eve-5-light-composite",
+    }),
+    atmosphereForeground: effect(gpu, shaders.heroAtmosphere, {
+      label: "eve-5-hero-atmosphere-foreground",
+    }),
+    atmosphere: effect(gpu, shaders.heroAtmosphere, {
+      label: "eve-5-hero-atmosphere",
     }),
     preview: effect(gpu, shaders.preview, {
       label: "eve-5-render-target-preview",

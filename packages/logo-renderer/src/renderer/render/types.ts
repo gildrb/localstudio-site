@@ -65,6 +65,12 @@ export type ImprintRenderOptions = {
   mouse?: readonly [number, number];
   paint?: PaintRenderOptions;
   devicePixelRatio?: number;
+  /** Separate full-hero surface. Rect maps the padded logo canvas into hero UV. */
+  atmosphere?: {
+    target: Target;
+    foregroundTarget?: Target | undefined;
+    logoRect: readonly [number, number, number, number];
+  } | undefined;
 };
 
 export type RenderControls = {

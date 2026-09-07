@@ -12,7 +12,8 @@
     "generate:cta": "bun scripts/generate-cta-mesh.mjs",
     "check": "bun scripts/generate-logo-mesh.mjs --check && bun scripts/generate-cta-mesh.mjs --check",
     "shader:check": "bun scripts/check-shaders.mjs",
-    "snapshot": "bun scripts/render-snapshot.mjs"
+    "snapshot": "bun scripts/render-snapshot.mjs",
+    "snapshot:atmosphere": "bun scripts/render-atmosphere.mjs"
   },
   "peerDependencies": {
     "react": "19.2.8",
