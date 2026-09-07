@@ -126,8 +126,10 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
     let forwardScatter = pow(max(dot(normalize(lightPosition - p), normalize(p)), 0.0), 3.0);
     let illumination = (0.25 + forwardScatter * 1.5) / (1.0 + sourceDistance * sourceDistance * 0.28);
     let lit = illumination * (1.0 - occlusion * 0.88);
-    let nightGlow = vec3f(0.32, 0.35, 0.38) * (0.22 + lit * 1.8);
-    let dayGlow = vec3f(0.73, 0.75, 0.76) + vec3f(0.29, 0.27, 0.23) * lit;
+    let nightGlow = vec3f(0.32, 0.35, 0.38) * (0.22 + lit * 1.95);
+    let dayAmbient = mix(vec3f(0.42, 0.44, 0.45), vec3f(0.73, 0.75, 0.76), params.foreground);
+    let dayLight = mix(vec3f(0.68), vec3f(0.29, 0.27, 0.23) * 1.08, params.foreground);
+    let dayGlow = dayAmbient + dayLight * lit;
     let glow = mix(nightGlow, dayGlow, params.day);
     let absorb = exp(-d * stepSize * 1.8);
     accumulated += glow * (1.0 - absorb) * transmittance;
@@ -144,7 +146,10 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
     let color = accumulated / max(1.0 - transmittance, 0.0001);
     return vec4f(color * alpha * feather, alpha * feather);
   }
-  let room = mix(vec3f(0.022, 0.026, 0.031), vec3f(0.96, 0.96, 0.95), params.day);
+  let room = mix(vec3f(0.022, 0.026, 0.031), vec3f(0.62, 0.62, 0.61), params.day);
   let color = clamp(room * transmittance + accumulated, vec3f(0.0), vec3f(1.0));
-  return vec4f(color * feather, feather);
+  let roomUv = (uv - vec2f(0.5, params.logoRect.y + params.logoRect.w * 0.5)) / vec2f(0.65, 0.70);
+  let dayFeather = pow(max(0.0, 1.0 - dot(roomUv, roomUv)), 2.0);
+  let backgroundFeather = feather * mix(1.0, dayFeather, params.day);
+  return vec4f(color * backgroundFeather, backgroundFeather);
 }

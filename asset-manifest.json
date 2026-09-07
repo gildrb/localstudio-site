@@ -519,8 +519,8 @@
 				"width": 640,
 				"height": 551
 			},
-			"bytes": 131313,
-			"sha256": "3c35d6f7e5ae647c1a0d2dae2f3c7f604fbff4574b4e697e06256e4ddce85ec5"
+			"bytes": 183181,
+			"sha256": "8a206a99c9e606fc6317317d9fa84fbdfe9fc3e8638d706334c3a3606dd7e5e2"
 		},
 		{
 			"path": "public/localai/hero-atmosphere-night.png",
@@ -530,8 +530,8 @@
 				"width": 640,
 				"height": 551
 			},
-			"bytes": 112108,
-			"sha256": "1d5506d04637bba38ead2df6eb39e3bb131300d5844e00727a862bfdfd3f6ced"
+			"bytes": 115604,
+			"sha256": "3f084420a61d6466f872f0789f41e93812589dc17d2ab2723f6d4585b0f45bf4"
 		},
 		{
 			"path": "public/localai/hero-render-day.png",
