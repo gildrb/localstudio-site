@@ -264,17 +264,3 @@ export function createPrismPostprocess(gpu: Gpu, lightSampler: ReturnType<typeof
   };
 }
 
-/** Add new HDR illumination to the existing atmosphere, never instead of it.
- * Density animates on every call; this mode has no dust or room policy.
- */
-export function createIlluminationPost(gpu: Gpu, lightSampler: ReturnType<typeof sampler>) {
-  const post = createPrismPostprocess(gpu, lightSampler);
-  return {
-    render(f: Frame, args: IlluminationPostArgs) {
-      // The shared graph tone-maps only background/foreground HDR deltas.
-      // Opaque geometry exclusion and unchanged-base composition run last.
-      post.render(f, { ...args, sceneChanged: true });
-    },
-    dispose: post.dispose,
-  };
-}

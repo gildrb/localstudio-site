@@ -11,6 +11,7 @@ import { clampUnit, dot, mix } from "./math";
 import { writeParams } from "./params";
 import { createPaintSystem } from "./paint-system";
 import { createPrismAtmosphere } from "./prism/atmosphere";
+import { createIlluminationAtmosphere } from "./illumination/atmosphere";
 import { renderAtmosphere } from "./passes/atmosphere-pass";
 import { renderBackDepth, renderBackMaterial } from "./passes/back-pass";
 import { renderBlur, renderComposite } from "./passes/bloom-pass";
@@ -44,6 +45,7 @@ export function createEve5Renderer(
   let atmosphereDepth: Target | undefined;
   let atmosphereParams: ReturnType<typeof writeParams> | undefined;
   let prism: ReturnType<typeof createPrismAtmosphere> | undefined;
+  let illumination: ReturnType<typeof createIlluminationAtmosphere> | undefined;
   let atmosphereCamera: readonly [number, number, number, number] = [1, 1, 0, 1];
   const renderGlass = (
     out: Target,
@@ -164,7 +166,11 @@ export function createEve5Renderer(
         im,
       );
       latestScene = t.scene;
-      if (im.atmosphere?.prism && atmosphereDepth && atmosphereParams) {
+      if (im.atmosphere && (im.atmosphere.lightGain ?? 0) > 0 && atmosphereDepth && atmosphereParams) {
+        illumination ??= createIlluminationAtmosphere(gpu, r, mesh, im.atmosphere);
+        illumination.render(f, t.scene.color, atmosphereDepth.color, atmosphereParams,
+          c, im, options.environmentTheme === "light");
+      } else if (im.atmosphere?.prism && atmosphereDepth && atmosphereParams) {
         prism ??= createPrismAtmosphere(gpu, r, mesh);
         prism.render(f, t.scene.color, atmosphereDepth.color, atmosphereParams,
           c, im, options.environmentTheme === "light", true);
@@ -215,7 +221,11 @@ export function createEve5Renderer(
       const scene = latestScene.color;
       const depth = atmosphereDepth.color;
       frame(gpu, (f) => {
-        if (imprint.atmosphere?.prism && atmosphereParams) {
+        if (imprint.atmosphere && (imprint.atmosphere.lightGain ?? 0) > 0 && atmosphereParams) {
+          illumination ??= createIlluminationAtmosphere(gpu, r, mesh, imprint.atmosphere);
+          illumination.render(f, scene, depth, atmosphereParams, controls, imprint,
+            options.environmentTheme === "light");
+        } else if (imprint.atmosphere?.prism && atmosphereParams) {
           prism ??= createPrismAtmosphere(gpu, r, mesh);
           prism.render(f, scene, depth, atmosphereParams, controls, imprint,
             options.environmentTheme === "light", false);
@@ -226,7 +236,11 @@ export function createEve5Renderer(
     },
     /** Opt-in native diagnostics; no allocations until Prism is rendered. */
     get prismTargets() { return prism?.targets; },
+    /** Last active added-light targets; gain zero uses the original direct path. */
+    get illuminationTargets() { return illumination?.targets; },
     dispose() {
+      illumination?.dispose();
+      illumination = undefined;
       prism?.dispose();
       prism = undefined;
       atmosphereParams = undefined;

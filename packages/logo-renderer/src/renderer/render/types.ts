@@ -70,6 +70,8 @@ export type ImprintRenderOptions = {
     target: Target;
     foregroundTarget?: Target | undefined;
     logoRect: readonly [number, number, number, number];
+    /** Extra same-medium light. Omitted or zero preserves the approved atmosphere. */
+    lightGain?: number;
     /** Source-based Prism beams and bloom. Omitted keeps the neutral fallback. */
     prism?: boolean;
     /** Prism linear beam gain; defaults to the requested 0.72. */

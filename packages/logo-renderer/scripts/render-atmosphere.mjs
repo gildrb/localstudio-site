@@ -65,6 +65,7 @@ function writePng(path, backgroundPixels, scheme, logoPixels, foregroundPixels) 
     png.data[i + 3] = 255;
   }
   writeFileSync(path, PNG.sync.write(png, { colorType: 2 }));
+  return png.data;
 }
 function difference(a, b) {
   let sum = 0, max = 0, changed = 0;
@@ -161,6 +162,61 @@ try {
       const base = await out.read();
       const near = await foreground.read();
       const logoPixels = await logo.read();
+      let illumination;
+      if (validate && lightGain > 0) {
+        const resources = renderer.illuminationTargets;
+        assert(resources, "added-light resources exist only after positive gain");
+        const coverage = await resources.coverage.read();
+        assert.equal(coverage.length, base.length, "opaque coverage matches final layer resolution");
+        const approvedBG = await resources.baseBackground.read();
+        const approvedFG = await resources.baseForeground.read();
+        let peak = 0, litPixels = 0;
+        for (const layer of [resources.background, resources.foreground]) {
+          const values = await layer.readFloats();
+          for (let i = 0; i < values.length; i += 4) {
+            for (let c = 0; c < 4; c++) assert(Number.isFinite(values[i + c]), "finite added HDR scattering");
+            const value = Math.max(values[i], values[i + 1], values[i + 2]);
+            peak = Math.max(peak, value);
+            if (value > 0.0001) litPixels++;
+          }
+        }
+        assert(peak > 0 && litPixels > 100, "the moving medium receives real new radiance");
+        const sourceDepth = await resources.sourceDepth.readFloats();
+        const sourceDepthPixels = sourceDepth.reduce((count, value) => count + Number(value < 999999), 0);
+        assert(sourceDepthPixels > 100, "closed SVG-derived mesh occludes the actual source");
+        renderer.renderAtmosphere(controls, { ...imprint, atmosphere: { ...imprint.atmosphere, lightGain: 0 } });
+        const zeroBG = await out.read(), zeroFG = await foreground.read();
+        assert.deepEqual(zeroBG, approvedBG, "approved background is byte-identical, not relit or re-tonemapped");
+        assert.deepEqual(zeroFG, approvedFG, "approved foreground remains byte-identical");
+        assert.deepEqual(await logo.read(), logoPixels, "chrome output is unchanged");
+        const zeroComposite = writePng(`${output}/base-scene-${scheme}.png`, zeroBG, scheme, logoPixels, zeroFG);
+        const litComposite = writePng(`${output}/lit-scene-${scheme}.png`, base, scheme, logoPixels, near);
+        const holeRegions = aperturePixels(logoPixels);
+        const holeIndices = new Set(holeRegions.flat());
+        let solidPixels = 0, exteriorLitPixels = 0;
+        for (let i = 0; i < coverage.length; i += 4) {
+          if (coverage[i + 3] === 255) {
+            solidPixels++;
+            for (let c = 0; c < 4; c++) {
+              assert.equal(base[i + c], zeroBG[i + c], "new BG cannot leak through alpha-.92 chrome");
+              assert.equal(near[i + c], zeroFG[i + c], "new FG cannot overlay opaque geometry");
+            }
+            for (let c = 0; c < 3; c++) assert.equal(litComposite[i + c], zeroComposite[i + c], "final composited solid chrome RGB is unchanged");
+          } else if (coverage[i + 3] === 0 && !holeIndices.has(i)
+            && litComposite[i] > zeroComposite[i]) exteriorLitPixels++;
+        }
+        assert(solidPixels > 100, "independent geometry coverage includes actual chrome");
+        assert(exteriorLitPixels > 100, "new light also illuminates air around the SVG silhouette");
+        const holeIncrements = holeRegions.map((region) => region.reduce((sum, i) =>
+          sum + Math.max(0, litComposite[i] - zeroComposite[i]), 0) / region.length);
+        for (const increment of holeIncrements) assert(increment > 0.1, "each real opening receives a positive diffuse-light increment");
+        renderer.renderAtmosphere(controls, imprint);
+        assert.deepEqual(await out.read(), base, "restoring gain restores deterministic background");
+        assert.deepEqual(await foreground.read(), near, "restoring gain restores deterministic foreground");
+        illumination = { peak, litPixels, sourceDepthPixels, solidPixels, exteriorLitPixels,
+          holeIncrements, zeroGainPreservesBase: true, finalMetalRgbDifference: 0 };
+        writeFileSync(`${output}/illumination-${scheme}.json`, JSON.stringify(illumination, null, 2));
+      }
       let prismHdr;
       if (validate && prism) {
         const resources = renderer.prismTargets;
@@ -228,7 +284,7 @@ try {
         return { pixels: pixels.length, meanLight, meanResponse };
       });
       const pointerDiff = difference(base, pointer);
-      assert(pointerDiff.changed > 100 && pointerDiff.mean < 5, "pointer moves pixels subtly");
+      assert(pointerDiff.changed > 100 && pointerDiff.mean < 5, `pointer moves pixels subtly: ${JSON.stringify(pointerDiff)}`);
       renderer.renderAtmosphere(controls, { ...imprint, time: 30 });
       const drift = await out.read();
       const driftDiff = difference(base, drift);
@@ -250,7 +306,7 @@ try {
       await gpu.settled();
       const idleMs = (performance.now() - started) / 30;
       assert.equal(errors.length, 0, errors.join("\n"));
-      report.push({ scheme, prismHdr, apertures, nearOverLogoMax, nearOverLogoCount, pointerDiff, driftDiff, alphaDiff, alphaNearDiff, depthDiff, idleMs, borders: "zero", deterministic: true });
+      report.push({ scheme, prismHdr, illumination, apertures, nearOverLogoMax, nearOverLogoCount, pointerDiff, driftDiff, alphaDiff, alphaNearDiff, depthDiff, idleMs, borders: "zero", deterministic: true });
     } finally { renderer.dispose(); }
   }
   console.log(JSON.stringify({ width, height, logoRect, output, report }, null, 2));

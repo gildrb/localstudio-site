@@ -55,8 +55,9 @@ reuse HDR/bloom/display caches and animate only particles.
 
 ## Additive continuous-atmosphere candidate
 
-`createIlluminationPost` reuses this same bloom/presentation graph with a separate
-final `base-composite.wgsl` pass. Inputs `background`/`foreground` are only the new
+`createPrismPostprocess` with Target-valued `baseBackground`/`baseForeground`
+arguments and `sceneChanged: true` reuses this same bloom/presentation graph
+with a separate final `base-composite.wgsl` pass. Inputs `background`/`foreground` are only the new
 linear-HDR in-scattering delta. `baseBackground`/`baseForeground` are the untouched
 approved atmosphere outputs; they never enter bloom or tone mapping. This mode
 does not run dust, its particle-light passes, or a new room backdrop. It updates
