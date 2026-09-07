@@ -13,8 +13,7 @@ const here = (path) => new URL(`./${path}`, import.meta.url);
 const repo = (path) => new URL(`../../../${path}`, import.meta.url);
 
 const LOGO_VIEWPORT_ASPECT = 1.52;
-const SNAPSHOT_WIDTH = 1880;
-const SNAPSHOT_HEIGHT = Math.round(SNAPSHOT_WIDTH / LOGO_VIEWPORT_ASPECT);
+const SNAPSHOT_CSS_WIDTH = 940;
 
 const { init, target } = await import("vgpu/node");
 const { decodeGltfMesh } = await import(here("../src/renderer/mesh.ts").href);
@@ -24,6 +23,18 @@ const {
   cameraRadiusForBounds,
   createEve5Renderer,
 } = await import(here("../src/renderer/render.ts").href);
+
+const { getCanvasLogicalSize, resizeCanvas } = await import(
+  here("../src/renderer/runtime/canvas-sizing.ts").href
+);
+// Match the live stage at its maximum CSS width, including the backing-store
+// pixel budget and bloom padding. Other viewport widths scale this same poster.
+const canvasSize = { width: 0, height: 0 };
+const devicePixelRatio = resizeCanvas(canvasSize, {
+  current: { width: SNAPSHOT_CSS_WIDTH, height: SNAPSHOT_CSS_WIDTH / LOGO_VIEWPORT_ASPECT },
+}, { current: 2 });
+const { width: snapshotWidth, height: snapshotHeight } = canvasSize;
+const { logicalWidth, logicalHeight } = getCanvasLogicalSize(canvasSize, devicePixelRatio);
 
 // --- helpers -------------------------------------------------------------
 
@@ -68,26 +79,24 @@ for (const scheme of ["night", "day"]) {
     bloom: true,
     backRefraction: false,
   });
-  // Render at the logical stage size: the composite squeezes the padded scene
-  // into this target by the same factor the live canvas shrinks its padded
-  // bitmap into the CSS box, so the poster matches the live frame exactly.
+  // The output is the padded backing store, not the unpadded logical scene.
   const out = target(gpu, {
-    size: [SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT],
+    size: [snapshotWidth, snapshotHeight],
     format: "rgba8unorm",
     label: `hero-snapshot-${scheme}`,
   });
-  renderer.render(out, controls, SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT, {
+  renderer.render(out, controls, logicalWidth, logicalHeight, {
     progress: 0,
     gridScaleMultiplier: DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
     glyphScale: 1.27,
     time: 0,
     mouse: [0, 0],
-    devicePixelRatio: 2,
+    devicePixelRatio,
   });
   const premultiplied = await out.read();
   // Un-premultiply: the canvas composites premultiplied, PNG wants straight alpha.
-  const png = new PNG({ width: SNAPSHOT_WIDTH, height: SNAPSHOT_HEIGHT });
-  for (let i = 0; i < SNAPSHOT_WIDTH * SNAPSHOT_HEIGHT; i++) {
+  const png = new PNG({ width: snapshotWidth, height: snapshotHeight });
+  for (let i = 0; i < snapshotWidth * snapshotHeight; i++) {
     const a = premultiplied[i * 4 + 3];
     for (let c = 0; c < 3; c++) {
       const v = premultiplied[i * 4 + c];

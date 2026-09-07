@@ -70,6 +70,8 @@ export type ImprintRenderOptions = {
     target: Target;
     foregroundTarget?: Target | undefined;
     logoRect: readonly [number, number, number, number];
+    /** One-shot actual-hole lighting time in seconds. Omitted preserves the approved atmosphere. */
+    introTime?: number;
     /** Extra same-medium light. Omitted or zero preserves the approved atmosphere. */
     lightGain?: number;
     /** Source-based Prism beams and bloom. Omitted keeps the neutral fallback. */

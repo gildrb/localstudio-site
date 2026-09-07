@@ -13,6 +13,8 @@ import { createPaintSystem } from "./paint-system";
 import { createPrismAtmosphere } from "./prism/atmosphere";
 import { createIlluminationAtmosphere } from "./illumination/atmosphere";
 import { renderAtmosphere } from "./passes/atmosphere-pass";
+import { createApertureMask } from "./aperture-mask";
+import { atmosphereIntroState } from "./intro";
 import { renderBackDepth, renderBackMaterial } from "./passes/back-pass";
 import { renderBlur, renderComposite } from "./passes/bloom-pass";
 import {
@@ -41,6 +43,7 @@ export function createEve5Renderer(
     backRefraction = options.backRefraction ?? true,
     cache = createBloomTargetCache(gpu),
     paint = createPaintSystem(gpu, r, mesh);
+  let aperture: ReturnType<typeof createApertureMask> | undefined;
   let latestScene: Target | undefined;
   let atmosphereDepth: Target | undefined;
   let atmosphereParams: ReturnType<typeof writeParams> | undefined;
@@ -77,7 +80,11 @@ export function createEve5Renderer(
         });
       } else atmosphereDepth.resize(t.scene.size);
     }
+    if (im.atmosphere && atmosphereIntroState(im.atmosphere.introTime).active) {
+      aperture ??= createApertureMask(gpu, mesh);
+    }
     frame(gpu, (f) => {
+      aperture?.render(f);
       if (im.atmosphere && atmosphereDepth) {
         const depthParams = writeParams({
           controls: c,
@@ -175,7 +182,7 @@ export function createEve5Renderer(
         prism.render(f, t.scene.color, atmosphereDepth.color, atmosphereParams,
           c, im, options.environmentTheme === "light", true);
       } else if (atmosphereDepth) {
-        renderAtmosphere(f, r, t.scene.color, atmosphereDepth.color, atmosphereCamera, c, im, options.environmentTheme === "light");
+        renderAtmosphere(f, r, t.scene.color, atmosphereDepth.color, atmosphereCamera, c, im, options.environmentTheme === "light", aperture);
       }
       if (r.isLight) {
         renderLightComposite(f, r, out, t);
@@ -220,7 +227,11 @@ export function createEve5Renderer(
       if (!latestScene || !atmosphereDepth || !imprint.atmosphere) return;
       const scene = latestScene.color;
       const depth = atmosphereDepth.color;
+      if (atmosphereIntroState(imprint.atmosphere.introTime).active) {
+        aperture ??= createApertureMask(gpu, mesh);
+      }
       frame(gpu, (f) => {
+        aperture?.render(f);
         if (imprint.atmosphere && (imprint.atmosphere.lightGain ?? 0) > 0 && atmosphereParams) {
           illumination ??= createIlluminationAtmosphere(gpu, r, mesh, imprint.atmosphere);
           illumination.render(f, scene, depth, atmosphereParams, controls, imprint,
@@ -230,7 +241,7 @@ export function createEve5Renderer(
           prism.render(f, scene, depth, atmosphereParams, controls, imprint,
             options.environmentTheme === "light", false);
         } else {
-          renderAtmosphere(f, r, scene, depth, atmosphereCamera, controls, imprint, options.environmentTheme === "light");
+          renderAtmosphere(f, r, scene, depth, atmosphereCamera, controls, imprint, options.environmentTheme === "light", aperture);
         }
       });
     },
@@ -238,7 +249,11 @@ export function createEve5Renderer(
     get prismTargets() { return prism?.targets; },
     /** Last active added-light targets; gain zero uses the original direct path. */
     get illuminationTargets() { return illumination?.targets; },
+    /** Exact model-plane RGB opening identity; allocated only for the intro. */
+    get apertureMask() { return aperture?.target; },
     dispose() {
+      aperture?.dispose();
+      aperture = undefined;
       illumination?.dispose();
       illumination = undefined;
       prism?.dispose();

@@ -7,12 +7,13 @@ import { styles } from "../styles/sections-styles";
 const Shader = lazy(() => import("./shader"));
 
 export function LocalAiLogo() {
-	const [ready, setReady] = useState(false);
+	const [status, setStatus] = useState<"loading" | "ready" | "fallback">("loading");
+	const ready = status === "ready";
 	const atmosphereRef = useRef<HTMLCanvasElement>(null);
 	const atmosphereForegroundRef = useRef<HTMLCanvasElement>(null);
 	return (
 		<>
-			{!ready && (
+			{status === "fallback" && (
 				<picture aria-hidden="true" {...stylex.props(styles.heroAtmosphere)}>
 					<source media="(prefers-color-scheme: light)" srcSet={assets.heroAtmosphereDay} />
 					<img {...stylex.props(styles.heroAtmosphereImage)} src={assets.heroAtmosphereNight} alt="" draggable={false} />
@@ -20,10 +21,10 @@ export function LocalAiLogo() {
 			)}
 			<canvas ref={atmosphereRef} aria-hidden="true" {...stylex.props(styles.heroAtmosphere, !ready && styles.heroAtmospherePending)} />
 			<Suspense fallback={null}>
-				<Shader atmosphereRef={atmosphereRef} atmosphereForegroundRef={atmosphereForegroundRef} onFirstFrame={() => setReady(true)} onFallback={() => setReady(false)} />
+				<Shader atmosphereRef={atmosphereRef} atmosphereForegroundRef={atmosphereForegroundRef} onPending={() => setStatus("loading")} onFirstFrame={() => setStatus("ready")} onFallback={() => setStatus("fallback")} />
 			</Suspense>
 			<canvas ref={atmosphereForegroundRef} aria-hidden="true" {...stylex.props(styles.heroAtmosphere, styles.heroAtmosphereForeground, !ready && styles.heroAtmospherePending)} />
-			{!ready && (
+			{status === "fallback" && (
 				<LogoPoster sx={styles.heroRender} dayUrl={assets.heroRenderDay} nightUrl={assets.heroRenderNight} />
 			)}
 		</>

@@ -8,7 +8,7 @@ function openingAfter(current: number, target: number, seconds: number, refreshR
   return current;
 }
 
-test("depth opening and entrance close settle in 300ms across refresh rates", () => {
+test("pointer depth opening and closing settle in 300ms across refresh rates", () => {
   for (const rate of [30, 60, 120]) {
     expect(openingAfter(0, 1, 0.15, rate)).toBeCloseTo(Math.round(0.15 * rate) / rate / 0.3);
     expect(openingAfter(0, 1, 0.3, rate)).toBe(1);

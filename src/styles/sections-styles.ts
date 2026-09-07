@@ -1,5 +1,5 @@
 import * as stylex from "@stylexjs/stylex";
-import { colors, constants, lengths, times } from "./public-tokens.stylex";
+import { colors, constants, lengths } from "./public-tokens.stylex";
 
 const desktopNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 40px))`;
 const mobileNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 44px))`;
@@ -10,10 +10,6 @@ const heroTextShadow = `0 0 8px color-mix(in oklab, ${colors.background} 16%, tr
 const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
 const kittyCardWidth = "min(620px, calc(100vw - 48px))";
 const kittyMobileCardWidth = "min(78vw, 320px)";
-const heroBackdropEntrance = stylex.keyframes({
-	from: { opacity: 0 },
-	to: { opacity: 1 },
-});
 const sponsorRotation = stylex.keyframes({
 	from: { transform: "translateX(0)" },
 	to: { transform: "translateX(calc(-100% + 100vw - 48px))" },
@@ -39,12 +35,6 @@ export const styles = stylex.create({
 		position: "absolute",
 		inset: 0,
 		pointerEvents: "none",
-		animationName: {
-			default: heroBackdropEntrance,
-			"@media (prefers-reduced-motion: reduce)": "none",
-		},
-		animationDuration: times.normal,
-		animationTimingFunction: "ease-out",
 	},
 	heroAtmosphere: {
 		position: "absolute",

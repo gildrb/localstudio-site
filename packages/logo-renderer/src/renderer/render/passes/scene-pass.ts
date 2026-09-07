@@ -54,7 +54,7 @@ export function renderScene(
   else
     r.pipelines.opaque.set({
       ...bindings,
-      params: writeParams({ ...base, passKind: PASS_OUTSIDE }),
+      params: writeParams({ ...base, passKind: PASS_OUTSIDE, imprint: { atmosphere: im.atmosphere } }),
     });
   if (c.wireframe)
     r.pipelines.wire.set({

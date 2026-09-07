@@ -148,13 +148,7 @@ export const headerStyles = stylex.create({
 		alignItems: "center",
 		justifyContent: "center",
 		borderRadius: lengths.radiusControl,
-		color: {
-			default: colors.chrome,
-			":hover": {
-				default: colors.chrome,
-				[canHover]: colors.foreground,
-			},
-		},
+		color: colors.foreground,
 		textDecoration: "none",
 		transitionProperty: "color",
 		transitionDuration: times.fast,

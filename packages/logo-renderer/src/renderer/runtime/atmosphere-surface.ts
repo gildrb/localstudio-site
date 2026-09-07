@@ -5,6 +5,7 @@ type Rect = Pick<DOMRectReadOnly, "left" | "top" | "width" | "height">;
 type AtmosphereSurface = {
   current: NonNullable<ImprintRenderOptions["atmosphere"]>;
   dispose: () => void;
+  setResolution: (resolution?: AtmosphereResolution) => void;
 };
 
 type AtmosphereResolution = { scale: number; maxEdge: number };
@@ -21,12 +22,17 @@ export function atmosphereLayout(logo: Rect, hero: Rect, resolution = DEFAULT_RE
 }
 
 export function createAtmosphereSurface(gpu: Gpu, canvas: HTMLCanvasElement, logo: HTMLCanvasElement, requestRender: () => void, foreground?: HTMLCanvasElement, resolution = DEFAULT_RESOLUTION) {
+  let currentResolution = resolution;
   const heroRect = canvas.getBoundingClientRect();
   const layout = atmosphereLayout(logo.getBoundingClientRect(), heroRect, resolution);
   const target = surface(gpu, canvas, { autoResize: false, size: layout.size, alphaMode: "premultiplied", label: "hero-atmosphere" });
   const foregroundTarget = foreground ? surface(gpu, foreground, { autoResize: false, size: layout.size, alphaMode: "premultiplied", label: "hero-atmosphere-foreground" }) : undefined;
   const atmosphere: AtmosphereSurface = {
     current: { target, logoRect: layout.logoRect, pixelScale: layout.size[0] / Math.max(1, heroRect.width) },
+    setResolution(next = DEFAULT_RESOLUTION) {
+      currentResolution = next;
+      resize();
+    },
     dispose() {
       observer.disconnect();
       window.removeEventListener("resize", resize);
@@ -37,7 +43,7 @@ export function createAtmosphereSurface(gpu: Gpu, canvas: HTMLCanvasElement, log
   if (foregroundTarget) atmosphere.current.foregroundTarget = foregroundTarget;
   const resize = () => {
     const nextHeroRect = canvas.getBoundingClientRect();
-    const next = atmosphereLayout(logo.getBoundingClientRect(), nextHeroRect, resolution);
+    const next = atmosphereLayout(logo.getBoundingClientRect(), nextHeroRect, currentResolution);
     target.resize(next.size);
     foregroundTarget?.resize(next.size);
     atmosphere.current.logoRect = next.logoRect;

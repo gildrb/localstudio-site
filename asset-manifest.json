@@ -538,22 +538,22 @@
 			"role": "image",
 			"type": "image/png",
 			"dimensions": {
-				"width": 1880,
-				"height": 1237
+				"width": 1509,
+				"height": 993
 			},
-			"bytes": 290273,
-			"sha256": "0787fe83890fe90f4a1ed93408d3f98647fb3c285d2f2f2e261ea357546bab3e"
+			"bytes": 199070,
+			"sha256": "88d86342936f22192b6c8677dbdba2e295afc4247cea8293a7f4cd7983eb588c"
 		},
 		{
 			"path": "public/localai/hero-render-night.png",
 			"role": "image",
 			"type": "image/png",
 			"dimensions": {
-				"width": 1880,
-				"height": 1237
+				"width": 1509,
+				"height": 993
 			},
-			"bytes": 252497,
-			"sha256": "3caf660c032a2e72a48e1e6206474cdbd2038f69f06cfb4c160f719568a80c61"
+			"bytes": 171857,
+			"sha256": "b82f66588d4a9b22a68a2f4c04a294bdf8cacaa48adc1d14a0706572bc889ed4"
 		},
 		{
 			"path": "public/localai/localai-logo.bin",

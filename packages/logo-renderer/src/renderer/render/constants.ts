@@ -4,7 +4,7 @@
 
 import type { EveMaterial } from "./types";
 
-export const PARAMS_BYTE_SIZE = 192;
+export const PARAMS_BYTE_SIZE = 208;
 export const CUBE_MAX_LIGHTS = 16;
 export const CUBE_LIGHT_FLOAT_COUNT = 12;
 export const CUBE_PARAMS_FLOAT_COUNT = 4 + CUBE_MAX_LIGHTS * CUBE_LIGHT_FLOAT_COUNT;

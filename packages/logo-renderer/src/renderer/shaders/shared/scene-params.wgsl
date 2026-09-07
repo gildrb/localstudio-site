@@ -1,5 +1,5 @@
 // Shared scene uniform ABI for glass and environment entry shaders.
-// INVARIANT: 192 bytes / 48 f32; field order must match render/params.ts writeParams.
+// INVARIANT: 208 bytes / 52 f32; field order must match render/params.ts writeParams.
 // 0-15 viewProj, 16-18 cameraPos, 19 passKind, 20-22 cameraRight, 23 fov,
 // 24-26 cameraUp, 27 aspect, 28-30 cameraForward, 31 materialKind,
 // 32 thicknessScale, 33 envYaw, 34 envPitch, 35 glassAbsorption,
@@ -26,6 +26,8 @@ export struct Params {
   ascii1: vec4f,
   // x = rear depth scale; y/z/w reserved.
   depthTransform: vec4f,
+  // Transient pulses and final neutral release; W=1 bypasses the intro material.
+  introLight: vec4f,
 };
 
 export const WIRE_PASS_THRESHOLD = 1.5;

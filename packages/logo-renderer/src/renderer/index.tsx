@@ -51,7 +51,6 @@ const DEFAULT_CONTROLS: RenderControls = {
 };
 
 const INITIAL_CANVAS_LAYOUT: CanvasLayout = { width: 1, height: 1 };
-const FALLBACK_PLACEHOLDER_DELAY_MS = 700;
 
 const rendererStyles = stylex.create({
 	element: {
@@ -141,8 +140,8 @@ export function LogoPoster({ dayUrl, nightUrl, sx }: {
 					{...stylex.props(rendererStyles.element, rendererStyles.posterImage)}
 					src={dayUrl}
 					alt=""
-					width="1880"
-					height="1237"
+					width="1509"
+					height="993"
 					draggable={false}
 					decoding="sync"
 					fetchPriority="high"
@@ -155,11 +154,15 @@ export function LogoPoster({ dayUrl, nightUrl, sx }: {
 type AtmosphereSettings = Pick<NonNullable<ImprintRenderOptions["atmosphere"]>, "prism" | "beamOpacity" | "dayRoom">;
 
 export type LocalAiLogoShaderProps = LogoRendererAssets & {
+	/** One-shot actual-aperture entrance; omission preserves the steady renderer. */
+	atmosphereIntro?: boolean | undefined;
 	/** Host-selected lighting policy; omission keeps the neutral atmosphere. */
 	atmosphereSettings?: AtmosphereSettings | undefined;
 	/** Full-section canvas sharing this renderer's device, light and silhouette. */
 	atmosphereRef?: RefObject<HTMLCanvasElement | null> | undefined;
 	atmosphereForegroundRef?: RefObject<HTMLCanvasElement | null> | undefined;
+	/** Lets the host hide stale layers while the renderer initializes or restarts. */
+	onPending?: (() => void) | undefined;
 	/** Fires once when the live canvas has produced its first frame. */
 	onFirstFrame?: (() => void) | undefined;
 	/** Lets the host restore its poster after renderer failure. */
@@ -183,11 +186,13 @@ export function LocalAiLogoShader({
 	fallbackUrl,
 	dayUrl,
 	nightUrl,
+	onPending,
 	onFirstFrame,
 	onFallback,
 	atmosphereRef,
 	atmosphereForegroundRef,
 	atmosphereSettings,
+	atmosphereIntro = false,
 	sx,
 	viewportAspect = LOGO_VIEWPORT_ASPECT,
 	paintOnHover = true,
@@ -212,7 +217,6 @@ export function LocalAiLogoShader({
 	const stateRef = useRef<HeroRuntimeState | null>(null);
 	const drawLoopRef = useRef<DrawLoop | null>(null);
 	const [fallbackVisible, setFallbackVisible] = useState(true);
-	const fallbackPlaceholderTimerRef = useRef(0);
 	const runLoopRef = useRef(() => {});
 	const invalidatePointerCanvasRectRef = useRef(() => {});
 	const requestRender = useStableCallback(() => {
@@ -220,19 +224,18 @@ export function LocalAiLogoShader({
 		runLoopRef.current();
 	});
 	const handleCanvasRevealed = useStableCallback(() => {
-		window.clearTimeout(fallbackPlaceholderTimerRef.current);
 		if (!stateRef.current?.cancelled) {
 			setFallbackVisible(false);
 			onFirstFrame?.();
 		}
 	});
 	const handleFallback = useStableCallback(() => {
-		window.clearTimeout(fallbackPlaceholderTimerRef.current);
 		setFallbackVisible(true);
 		onFallback?.();
 	});
 	const resetLayers = useStableCallback(() => {
 		setFallbackVisible(true);
+		onPending?.();
 	});
 	const fatalErrorRef = useRef<(() => void) | null>(null);
 	const handleFatalError = useStableCallback(() => fatalErrorRef.current?.());
@@ -323,7 +326,7 @@ export function LocalAiLogoShader({
 		controlsRef.current.material = material;
 		controlsRef.current.insideRendering = material === "glass";
 		controlsRef.current.yaw = state.baseObjectYaw;
-		if (staticPose) {
+		if (staticPose || atmosphereIntro) {
 			state.mouseEnvYaw = 0;
 			state.targetMouseEnvYaw = 0;
 			state.mouseEnvPitch = 0;
@@ -332,15 +335,8 @@ export function LocalAiLogoShader({
 		stateRef.current = state;
 
 		resetLayers();
-		handleFallback();
 		if (prefersReducedMotion || prefersReducedMotionSync()) {
-			// Static path: the flat SVG is the final render, show it now.
 			handleFallback();
-		} else {
-			fallbackPlaceholderTimerRef.current = window.setTimeout(
-				() => handleFallback(),
-				FALLBACK_PLACEHOLDER_DELAY_MS,
-			);
 		}
 		const dprWatcher = createDevicePixelRatio({
 			onChange: (dpr) => {
@@ -365,7 +361,6 @@ export function LocalAiLogoShader({
 
 		const cleanupSetup = () => {
 			state.cancelled = true;
-			window.clearTimeout(fallbackPlaceholderTimerRef.current);
 			pointerController.detach();
 			dprWatcher.stop();
 			invalidatePointerCanvasRectRef.current = () => {};
@@ -383,18 +378,13 @@ export function LocalAiLogoShader({
 		async function start() {
 			const activeCanvas = canvasRef.current;
 			if (!activeCanvas || !navigator.gpu) {
-				// No WebGPU: the static SVG becomes the permanent render; show it
-				// immediately instead of leaving the hero blank for the timer delay.
+				// No WebGPU: let the host show the permanent static fallback.
 				handleFallback();
 				return;
 			}
 			const mesh = await loadMesh(modelUrl);
 			if (state.cancelled) return;
 			state.activeMesh = mesh;
-			// Mesh is in: cancel the placeholder timer so only genuinely slow
-			// networks ever show it. Remaining GPU init/pipeline compile time
-			// stays calmly blank instead of flashing SVG -> render.
-			window.clearTimeout(fallbackPlaceholderTimerRef.current);
 			// Frame the real mark: it is wider than tall, so a height-only fit
 			// would clip the silhouette at both canvas edges.
 			controlsRef.current.radius = cameraRadiusForBounds(
@@ -419,9 +409,10 @@ export function LocalAiLogoShader({
 			});
 			const atmosphere = atmosphereRef?.current
 				? createAtmosphereSurface(gpu, atmosphereRef.current, activeCanvas, requestRender, atmosphereForegroundRef?.current ?? undefined,
-					prismAtmosphere ? { scale: 1, maxEdge: 1280 } : undefined)
+					prismAtmosphere ? { scale: 1, maxEdge: 1280 } : atmosphereIntro ? { scale: 1, maxEdge: 768 } : undefined)
 				: undefined;
 			if (atmosphere) {
+				if (atmosphereIntro) atmosphere.current.introTime = 0;
 				atmosphere.current.prism = prismAtmosphere;
 				if (atmosphereBeamOpacity !== undefined) atmosphere.current.beamOpacity = atmosphereBeamOpacity;
 				if (atmosphereDayRoom !== undefined) atmosphere.current.dayRoom = atmosphereDayRoom;
@@ -500,6 +491,9 @@ export function LocalAiLogoShader({
 				canvasLayoutRef,
 				devicePixelRatioRef,
 				onCanvasRevealed: handleCanvasRevealed,
+				onIntroComplete: () => {
+					atmosphere?.setResolution(prismAtmosphere ? { scale: 1, maxEdge: 1280 } : undefined);
+				},
 				onFallback: handleFallback,
 				onFatalError: handleFatalError,
 			});
@@ -514,7 +508,9 @@ export function LocalAiLogoShader({
 			.then((dispose) => {
 				state.cleanup = dispose;
 			})
-			.catch(handleFallback);
+			.catch(() => {
+				if (!state.cancelled) handleFallback();
+			});
 
 		return () => {
 			state.cancelled = true;
@@ -528,6 +524,7 @@ export function LocalAiLogoShader({
 		atmosphereRef,
 		atmosphereForegroundRef,
 		prismAtmosphere,
+		atmosphereIntro,
 		atmosphereBeamOpacity,
 		atmosphereDayRoom,
 		dayUrl,

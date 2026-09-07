@@ -15,6 +15,16 @@ struct AtmosphereParams {
   envPitch: f32,
   day: f32,
   foreground: f32,
+  // RGB aperture strengths; W releases the original neutral room at the end.
+  intro: vec4f,
+  introPulse: vec4f,
+  apertureRect: vec4f,
+  apertureBounds: vec4f,
+  eye: vec3f,
+  introActive: f32,
+  right: vec3f,
+  up: vec3f,
+  forward: vec3f,
 };
 struct VertexOutput {
   @builtin(position) position: vec4f,
@@ -24,6 +34,24 @@ struct VertexOutput {
 @group(0) @binding(1) var sceneTexture: texture_2d<f32>;
 @group(0) @binding(2) var texSampler: sampler;
 @group(0) @binding(3) var sceneDepth: texture_2d<f32>;
+@group(0) @binding(4) var apertureMask: texture_2d<f32>;
+
+fn model_position(p: vec3f) -> vec3f {
+  return params.eye + params.right * p.x - params.up * p.y + params.forward * p.z;
+}
+fn aperture_identity(origin: vec3f, destination: vec3f) -> vec3f {
+  // The actual normalized front cap is z=0, including when the camera orbits.
+  let direction = destination - origin;
+  if (abs(direction.z) < 0.000001) { return vec3f(0.0); }
+  let t = -origin.z / direction.z;
+  if (t <= 0.0 || t >= 1.0) { return vec3f(0.0); }
+  let point = origin.xy + direction.xy * t;
+  let modelUv = (point - params.apertureRect.xy) / params.apertureRect.zw;
+  if (any(modelUv <= vec2f(0.0)) || any(modelUv >= vec2f(1.0))) { return vec3f(0.0); }
+  let uv = vec2f(modelUv.x, 1.0 - modelUv.y);
+  let openings = textureSampleLevel(apertureMask, texSampler, uv, 0.0).rgb;
+  return openings;
+}
 
 fn atmosphere_hash(p: vec3f) -> f32 {
   let q = fract(p * vec3f(0.1031, 0.1030, 0.0973));
@@ -108,13 +136,18 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
   let split = clamp(select(params.camera.w, front.y, front.x > 0.05), near + 0.01, far - 0.01);
   let start = select(split, near, params.foreground > 0.5);
   let end = select(far, split, params.foreground > 0.5);
-  let stepDepth = (end - start) / 8.0;
+  let sampleCount = select(8u, 48u, params.introActive > 0.5);
+  let stepDepth = (end - start) / f32(sampleCount);
   let rayLength = length(ray_position(uv, 1.0));
   let stepSize = stepDepth * rayLength;
   var accumulated = vec3f(0.0);
   var transmittance = 1.0;
-  for (var i = 0u; i < 8u; i += 1u) {
-    let depth = start + (f32(i) + 0.5) * stepDepth;
+  var visibleMass = 0.0;
+  for (var i = 0u; i < sampleCount; i += 1u) {
+    // Stable stratified samples remove coherent slice bands without temporal noise.
+    // The completed scene retains its exact original eight midpoint samples.
+    let offset = select(0.5, atmosphere_hash(vec3f(uv * vec2f(textureDimensions(sceneDepth)), f32(i) + 0.37)), params.introActive > 0.5);
+    let depth = start + (f32(i) + offset) * stepDepth;
     let p = ray_position(uv, depth);
     let field = vec3f(p.xy + parallax * (depth - params.camera.w) * 2.0, p.z - params.camera.w);
     let d = density(field);
@@ -130,8 +163,27 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
     let dayAmbient = mix(vec3f(0.42, 0.44, 0.45), vec3f(0.73, 0.75, 0.76), params.foreground);
     let dayLight = mix(vec3f(0.68), vec3f(0.29, 0.27, 0.23) * 1.08, params.foreground);
     let dayGlow = dayAmbient + dayLight * lit;
-    let glow = mix(nightGlow, dayGlow, params.day);
+    var glow = mix(nightGlow, dayGlow, params.day);
     let absorb = exp(-d * stepSize * 1.8);
+    if (params.introActive > 0.5) {
+      let model = model_position(p);
+      // Rear air appears through the camera's real opening; near air receives
+      // the source's transmitted ray. Neither contour moves or becomes a ribbon.
+      var identity = aperture_identity(params.eye, model);
+      if (params.foreground > 0.5) {
+        identity = aperture_identity(model, model_position(lightPosition));
+      }
+      // Existing transmitted rays only: never turn the mesh or its bevel into
+      // an emitter, and never draw a luminous face across the opening.
+      identity *= 1.0 - smoothstep(0.0, 0.8, front.x);
+      let pulse = dot(identity, params.introPulse.xyz);
+      let opening = clamp(pulse, 0.0, 1.0);
+      let gate = mix(opening, 1.0, params.intro.w);
+      visibleMass += (1.0 - absorb) * transmittance * gate;
+      // Amplify the same shadowed studio illumination, not a new light source.
+      // Its radiance falls back to the unchanged neutral room after the hold.
+      glow = mix(vec3f(lit * 32.0) * pulse, glow, params.intro.w);
+    }
     accumulated += glow * (1.0 - absorb) * transmittance;
     transmittance *= absorb;
   }
@@ -144,9 +196,16 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
     let gain = mix(0.55, 0.10, smoothstep(0.0, 0.8, front.x));
     let alpha = min((1.0 - transmittance) * gain, mix(0.16, 0.03, smoothstep(0.0, 0.8, front.x)));
     let color = accumulated / max(1.0 - transmittance, 0.0001);
+    if (params.introActive > 0.5) {
+      // RGB already contains the emission gate. Gate extinction once as well,
+      // so unlit air is transparent rather than black paint over the chrome.
+      let visibility = visibleMass / max(1.0 - transmittance, 0.0001);
+      return vec4f(color * alpha * feather, alpha * feather * visibility);
+    }
     return vec4f(color * alpha * feather, alpha * feather);
   }
-  let room = mix(vec3f(0.022, 0.026, 0.031), vec3f(0.62, 0.62, 0.61), params.day);
+  var room = mix(vec3f(0.022, 0.026, 0.031), vec3f(0.62, 0.62, 0.61), params.day);
+  if (params.introActive > 0.5) { room *= params.intro.w; }
   let color = clamp(room * transmittance + accumulated, vec3f(0.0), vec3f(1.0));
   let roomUv = (uv - vec2f(0.5, params.logoRect.y + params.logoRect.w * 0.5)) / vec2f(0.65, 0.70);
   let dayFeather = pow(max(0.0, 1.0 - dot(roomUv, roomUv)), 2.0);

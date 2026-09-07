@@ -1,4 +1,5 @@
 import type { Surface } from "vgpu";
+import { ATMOSPHERE_INTRO_DURATION } from "../render/intro";
 import { clamp01, lerp } from "phase/ease";
 import { evePointerInteractionMode, mobileAutoEnvYaw } from "../mobile-motion";
 import {
@@ -30,6 +31,7 @@ const IMPRINT_GLYPH_SCALE = 1.27;
 const CANVAS_REVEAL_RENDER_COUNT = 3;
 const MAX_FRAME_DELTA_SECONDS = 0.05;
 const MOBILE_AUTO_ROTATE_DURATION_MS = 2000;
+const INTRO_POSE_HOLD_SECONDS = 2;
 const SETTLE_EPSILON = 0.0005;
 const POINTER_OBJECT_YAW_RANGE = 0.42;
 const POINTER_OBJECT_PITCH_RANGE = 0.2;
@@ -70,6 +72,8 @@ export function createDrawLoop({
   canvasLayoutRef,
   devicePixelRatioRef,
   onCanvasRevealed,
+  onIntroFrame,
+  onIntroComplete,
   onFallback,
   onFatalError,
 }: {
@@ -82,26 +86,58 @@ export function createDrawLoop({
   canvasLayoutRef: CanvasLayoutRef;
   devicePixelRatioRef: DevicePixelRatioRef;
   onCanvasRevealed: () => void;
+  onIntroFrame?: ((time: number) => void) | undefined;
+  onIntroComplete?: (() => void) | undefined;
   onFallback: () => void;
   onFatalError: () => void;
 }) {
   let successfulRenderCount = 0;
   let running = false;
   let atmosphereTime = 0;
+  const introEnabled = atmosphere?.current?.introTime !== undefined;
+  let introTime = 0;
+  let introVisibleTime = 0;
+  let introRenderedTime = -1;
+  let introCompleted = false;
   let lastAtmosphereFrame = Number.NEGATIVE_INFINITY;
 
   const draw = (frameTime = performance.now()) => {
     if (!running || state.cancelled) return false;
-    atmosphereTime += Math.min(MAX_FRAME_DELTA_SECONDS, Math.max(0, (frameTime - state.previousFrameTime) / 1000));
+    const visibleDelta = Math.min(MAX_FRAME_DELTA_SECONDS, Math.max(0, (frameTime - state.previousFrameTime) / 1000));
+    atmosphereTime += visibleDelta;
+    // GPU warmup must not consume the entrance. stop/start resets the frame
+    // origin, so hidden tabs and offscreen pauses do not skip the sequence.
+    if (introEnabled && atmosphere?.current) {
+      if (successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT) {
+        introVisibleTime += visibleDelta;
+        introTime = Math.min(ATMOSPHERE_INTRO_DURATION, introVisibleTime);
+      }
+      atmosphere.current.introTime = introTime;
+    }
 
-    const pointerSettling =
+    const introActive = introEnabled && introTime < ATMOSPHERE_INTRO_DURATION;
+    if (introEnabled && !introActive && !introCompleted) {
+      introCompleted = true;
+      // Restore steady resolution before drawing the final frame, never after
+      // presentation (resizing an already-presented canvas would flash blank).
+      onIntroComplete?.();
+    }
+    const poseHeld = introEnabled && introVisibleTime < Math.max(INTRO_POSE_HOLD_SECONDS, ATMOSPHERE_INTRO_DURATION);
+    if (poseHeld) state.autoRotateStartTime = frameTime;
+    // The transient surface lights share the same frame as the volume. Limit
+    // startup mesh work to 30 fps; the settled renderer remains event-driven.
+    if (introActive && successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT && frameTime - lastAtmosphereFrame < 1000 / 30) {
+      state.previousFrameTime = frameTime;
+      return true;
+    }
+    const pointerSettling = !poseHeld && (
       Math.abs(state.mouseEnvYaw - state.targetMouseEnvYaw) > SETTLE_EPSILON ||
       Math.abs(state.mouseEnvPitch - state.targetMouseEnvPitch) > SETTLE_EPSILON ||
       Math.abs(state.asciiMouseX - state.targetAsciiMouseX) > SETTLE_EPSILON ||
-      Math.abs(state.asciiMouseY - state.targetAsciiMouseY) > SETTLE_EPSILON;
-    const targetOpening = Number(state.depthReveal && !state.isCoarsePointer && state.pointerInsideCanvas);
+      Math.abs(state.asciiMouseY - state.targetAsciiMouseY) > SETTLE_EPSILON);
+    const targetOpening = Number(!poseHeld && state.depthReveal && !state.isCoarsePointer && state.pointerInsideCanvas);
     const openingSettling = state.depthOpening !== targetOpening;
-    const autoRotating =
+    const autoRotating = !poseHeld &&
       (!state.staticPose && evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw) &&
       frameTime - state.autoRotateStartTime < MOBILE_AUTO_ROTATE_DURATION_MS;
     const paintSettling = frameTime - state.lastBrushMoveTime < PAINT_SETTLE_DURATION_MS;
@@ -120,6 +156,7 @@ export function createDrawLoop({
     const rippleActive = rippleAge >= 0 && rippleAge < RIPPLE_DURATION_SECONDS;
     if (
       successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT &&
+      (!introEnabled || introRenderedTime === ATMOSPHERE_INTRO_DURATION) &&
       !state.renderRequested &&
       !pointerSettling &&
       !openingSettling &&
@@ -135,6 +172,7 @@ export function createDrawLoop({
         try {
           renderer.renderAtmosphere(controlsRef.current, { atmosphere: atmosphere.current, time: atmosphereTime });
           lastAtmosphereFrame = frameTime;
+          if (introEnabled) onIntroFrame?.(introTime);
         } catch {
           state.cancelled = true;
           onFallback();
@@ -151,6 +189,7 @@ export function createDrawLoop({
       Math.max(0, (frameTime - state.previousFrameTime) / 1000),
     );
     state.previousFrameTime = frameTime;
+    const interactionDelta = poseHeld ? 0 : deltaSeconds;
     if ((!state.staticPose && evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw)) {
       state.targetMouseEnvYaw = mobileAutoEnvYaw(Math.min(frameTime - state.autoRotateStartTime, MOBILE_AUTO_ROTATE_DURATION_MS) / 1000);
       state.targetMouseEnvPitch = 0;
@@ -159,22 +198,22 @@ export function createDrawLoop({
     state.mouseEnvYaw = lerp(
       state.mouseEnvYaw,
       state.targetMouseEnvYaw,
-      clamp01(deltaSeconds * ENV_ROTATION_LERP_SPEED),
+      clamp01(interactionDelta * ENV_ROTATION_LERP_SPEED),
     );
     state.mouseEnvPitch = lerp(
       state.mouseEnvPitch,
       state.targetMouseEnvPitch,
-      clamp01(deltaSeconds * ENV_ROTATION_LERP_SPEED),
+      clamp01(interactionDelta * ENV_ROTATION_LERP_SPEED),
     );
     state.asciiMouseX = lerp(
       state.asciiMouseX,
       state.targetAsciiMouseX,
-      clamp01(deltaSeconds * ASCII_MOUSE_LERP_SPEED),
+      clamp01(interactionDelta * ASCII_MOUSE_LERP_SPEED),
     );
     state.asciiMouseY = lerp(
       state.asciiMouseY,
       state.targetAsciiMouseY,
-      clamp01(deltaSeconds * ASCII_MOUSE_LERP_SPEED),
+      clamp01(interactionDelta * ASCII_MOUSE_LERP_SPEED),
     );
     if (successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT) {
       state.depthOpening = advanceDepthOpening(state.depthOpening, targetOpening, deltaSeconds);
@@ -184,11 +223,15 @@ export function createDrawLoop({
     state.brushActive = state.targetBrushActive && state.hasBrushCell;
     controlsRef.current.envYaw = state.mouseEnvYaw;
     controlsRef.current.envPitch = state.mouseEnvPitch;
-    if ((!state.staticPose && evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw)) {
+    if (poseHeld) {
+      controlsRef.current.yaw = state.baseObjectYaw;
+      controlsRef.current.pitch = 0;
+    } else if ((!state.staticPose && evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw)) {
       controlsRef.current.yaw =
         state.baseObjectYaw + Math.sin(state.mouseEnvYaw) * MOBILE_OBJECT_YAW_RANGE;
       controlsRef.current.pitch =
-        Math.cos(state.mouseEnvYaw * 0.7) * MOBILE_OBJECT_PITCH_RANGE;
+        Math.cos(state.mouseEnvYaw * 0.7) * MOBILE_OBJECT_PITCH_RANGE
+        * (introEnabled ? clamp01((frameTime - state.autoRotateStartTime) / 300) : 1);
     } else {
       // Orbit-follow: positive yaw/pitch move the camera right/up, so the face
       // reads as turning away from the pointer. Invert both so the mark tracks
@@ -243,6 +286,7 @@ export function createDrawLoop({
         },
       );
       lastAtmosphereFrame = frameTime;
+      if (introEnabled) introRenderedTime = introTime;
       if (state.hasBrushCell) {
         state.previousRenderedBrushCellX = state.brushCellX;
         state.previousRenderedBrushCellY = state.brushCellY;
@@ -256,6 +300,7 @@ export function createDrawLoop({
     }
 
     successfulRenderCount += 1;
+    if (introEnabled && successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT) onIntroFrame?.(introTime);
     if (successfulRenderCount === CANVAS_REVEAL_RENDER_COUNT) {
       onCanvasRevealed();
     }
@@ -265,6 +310,7 @@ export function createDrawLoop({
   const start = () => {
     if (running) return;
     running = true;
+    lastAtmosphereFrame = Number.NEGATIVE_INFINITY;
     const frameTime = performance.now();
     state.previousFrameTime = frameTime;
     state.renderRequested = true;

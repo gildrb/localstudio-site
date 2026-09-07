@@ -11,6 +11,7 @@ import { createDrawLoop } from "../../packages/logo-renderer/src/renderer/runtim
 import type { ControlsRef, HeroRuntimeState } from "../../packages/logo-renderer/src/renderer/runtime/state";
 
 type RenderCall = { controls: RenderControls; imprint: ImprintRenderOptions | undefined };
+type AtmosphereFixture = { current: NonNullable<ImprintRenderOptions["atmosphere"]> };
 
 const idleState: HeroRuntimeState = {
   cancelled: false, renderRequested: false, cleanup: undefined,
@@ -26,7 +27,7 @@ const idleState: HeroRuntimeState = {
   depthReveal: false, depthOpening: 0, baseObjectYaw: 0, staticPose: true,
 };
 
-function createFixture(failAtmosphere = false) {
+function createFixture(failAtmosphere = false, intro = false) {
   const state = { ...idleState };
   const controlsRef: ControlsRef = { current: {
     yaw: 0, pitch: 0, radius: 2, fov: 35, envYaw: 0, envPitch: 0,
@@ -36,13 +37,16 @@ function createFixture(failAtmosphere = false) {
   const canvas = { width: 640, height: 320 } as HTMLCanvasElement;
   // SAFETY: Only resize runs on this surface; mocked renderers never submit GPU work.
   const surface = { resize() {} } as Surface;
-  const atmosphere = {
-    current: { target: surface, foregroundTarget: surface, logoRect: [0.1, 0.2, 0.8, 0.3] } satisfies ImprintRenderOptions["atmosphere"],
+  const atmosphere: AtmosphereFixture = {
+    current: { target: surface, foregroundTarget: surface, logoRect: [0.1, 0.2, 0.8, 0.3] },
   };
+  if (intro) atmosphere.current.introTime = 0;
+  const introFrames: number[] = [];
   const meshCalls: RenderCall[] = [];
   const atmosphereCalls: RenderCall[] = [];
   let reveals = 0;
   let failures = 0;
+  const introCompletionMeshCounts: number[] = [];
   const loop = createDrawLoop({
     state, canvas, surface, controlsRef, atmosphere,
     canvasLayoutRef: { current: { width: 640, height: 320 } },
@@ -57,14 +61,19 @@ function createFixture(failAtmosphere = false) {
       },
     },
     onCanvasRevealed() { reveals += 1; },
+    onIntroFrame(time) { introFrames.push(time); },
+    onIntroComplete() {
+      introCompletionMeshCounts.push(meshCalls.length);
+    },
     onFallback() { failures += 1; },
     onFatalError() { failures += 1; },
   });
   loop.start();
   state.previousFrameTime = 0;
   for (const time of [0, 40, 80]) loop.step(time);
-  return { loop, state, controlsRef, atmosphere, meshCalls, atmosphereCalls,
-    get reveals() { return reveals; }, get failures() { return failures; } };
+  return { loop, state, controlsRef, atmosphere, meshCalls, atmosphereCalls, introFrames,
+    get reveals() { return reveals; }, get failures() { return failures; },
+    introCompletionMeshCounts };
 }
 
 test("atmosphere uses half CSS resolution with a 768px longest-edge cap", () => {
@@ -173,6 +182,74 @@ test("mesh and atmosphere share the same smoothed pointer environment", () => {
   expect(atmosphere?.controls.envPitch).toBe(mesh?.controls.envPitch);
   expect(meshCalls).toHaveLength(meshCount);
   loop.dispose();
+});
+
+test("intro starts at presentation, redraws surface lighting, and pauses offscreen", () => {
+  const fixture = createFixture(false, true);
+  expect(fixture.introFrames).toEqual([0]);
+  expect(fixture.atmosphere.current.introTime).toBe(0);
+  fixture.loop.step(120);
+  expect(fixture.introFrames.at(-1)).toBeCloseTo(0.04);
+  expect(fixture.meshCalls).toHaveLength(4);
+  expect(fixture.atmosphereCalls).toHaveLength(0);
+  fixture.loop.stop();
+  fixture.loop.step(20_000);
+  expect(fixture.atmosphere.current.introTime).toBeCloseTo(0.04);
+  fixture.loop.start();
+  fixture.loop.step(fixture.state.previousFrameTime + 40);
+  expect(fixture.introFrames.at(-1)).toBeCloseTo(0.08);
+  for (let i = 0; i < 80; i++) fixture.loop.step(fixture.state.previousFrameTime + 40);
+  expect(fixture.atmosphere.current.introTime).toBe(2.1);
+  expect(fixture.introFrames.at(-1)).toBe(2.1);
+  fixture.loop.dispose();
+});
+
+test("intro holds the centered pose despite pointer input, then eases toward the latest pointer", () => {
+  const fixture = createFixture(false, true);
+  fixture.state.staticPose = false;
+  fixture.state.depthReveal = true;
+  fixture.state.pointerInsideCanvas = true;
+  fixture.state.targetAsciiMouseX = 0.8;
+  fixture.state.targetAsciiMouseY = -0.6;
+  fixture.state.targetMouseEnvYaw = 0.4;
+  fixture.state.targetMouseEnvPitch = -0.2;
+  fixture.state.renderRequested = true;
+  for (let i = 0; i < 45; i++) fixture.loop.step(fixture.state.previousFrameTime + 40);
+  expect(fixture.atmosphere.current.introTime).toBeCloseTo(1.8);
+  expect(fixture.controlsRef.current.yaw).toBe(0);
+  expect(fixture.controlsRef.current.pitch).toBe(0);
+  expect(fixture.controlsRef.current.envYaw).toBe(0);
+  expect(fixture.controlsRef.current.envPitch).toBe(0);
+  expect(fixture.controlsRef.current.depthOpening).toBe(0);
+  expect(fixture.meshCalls.length).toBeLessThan(70);
+  for (let i = 0; i < 9; i++) fixture.loop.step(fixture.state.previousFrameTime + 40);
+  expect(fixture.controlsRef.current.yaw).toBeLessThan(0);
+  expect(fixture.controlsRef.current.yaw).toBeGreaterThan(-0.8 * 0.42);
+  expect(fixture.controlsRef.current.envYaw).toBeGreaterThan(0);
+  expect(fixture.controlsRef.current.depthOpening).toBeGreaterThan(0);
+  fixture.loop.dispose();
+});
+
+test("intro surface rendering is throttled and the final baseline frame is redrawn once", () => {
+  const fixture = createFixture(false, true);
+  for (let time = 81; time <= 2400; time++) fixture.loop.step(time);
+  expect(fixture.meshCalls.length).toBeLessThan(70);
+  expect(fixture.introFrames.at(-1)).toBe(2.1);
+  const settledMeshCount = fixture.meshCalls.length;
+  fixture.loop.step(2500);
+  fixture.loop.step(2600);
+  expect(fixture.meshCalls.length).toBe(settledMeshCount);
+  expect(fixture.atmosphereCalls.length).toBeGreaterThan(0);
+  expect(fixture.introCompletionMeshCounts).toEqual([settledMeshCount - 1]);
+  fixture.loop.dispose();
+});
+
+test("omitted intro never publishes or adds an intro clock", () => {
+  const fixture = createFixture();
+  fixture.loop.step(120);
+  expect(fixture.introFrames).toEqual([]);
+  expect(fixture.atmosphere.current.introTime).toBeUndefined();
+  fixture.loop.dispose();
 });
 
 test("atmosphere time clamps long frames and does not advance while stopped", () => {

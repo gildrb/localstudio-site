@@ -72,6 +72,10 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
       let edgeFresnel = pow(clamp(1.0 - dot(n, v), 0.0, 1.0), 5.0);
       let metallicReflectance = mix(0.16, 1.0, edgeFresnel);
       glass = vec4f(max(environment * metallicReflectance, vec3f(0.006)), 0.92);
+      if (params.introLight.w < 1.0) {
+        // Only the existing studio material returns; the intro adds no rim light.
+        glass = vec4f(glass.rgb * params.introLight.w, glass.a);
+      }
     }
     default: {
       glass = shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, false, params.glassAbsorption);
