@@ -1,0 +1,505 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - generic [ref=e6]:
+            - link [ref=e7] [cursor=pointer]:
+              - /url: https://vercel.com/
+            - link [ref=e13] [cursor=pointer]:
+              - /url: /
+              - img "vgpu" [ref=e14]
+          - navigation "Main" [ref=e20]:
+            - list [ref=e22]:
+              - listitem [ref=e23]:
+                - link "Docs" [ref=e24] [cursor=pointer]:
+                  - /url: /docs
+              - listitem [ref=e25]:
+                - link "Examples" [ref=e26] [cursor=pointer]:
+                  - /url: /examples
+        - generic [ref=e27]:
+          - button "Search… ⌘ K" [ref=e28] [cursor=pointer]:
+            - generic [ref=e29]: Search…
+            - generic: ⌘ K
+          - button "Ask AI" [ref=e30] [cursor=pointer]
+          - link "GitHub repository" [ref=e32] [cursor=pointer]:
+            - /url: https://github.com/vercel-labs/vgpu
+            - img "GitHub"
+    - generic [ref=e34]:
+      - complementary [ref=e35]:
+        - navigation "Documentation" [ref=e36]:
+          - list [ref=e41]:
+            - listitem [ref=e42]:
+              - link "Simple Gradient" [ref=e43] [cursor=pointer]:
+                - /url: /examples/gradient
+            - listitem [ref=e46]:
+              - link "Triangle LED Hero" [ref=e47] [cursor=pointer]:
+                - /url: /examples/triangle-led-front
+            - listitem [ref=e50]:
+              - link "Anti-Aliasing" [ref=e51] [cursor=pointer]:
+                - /url: /examples/anti-aliasing
+            - listitem [ref=e54]:
+              - link "Black Hole" [ref=e55] [cursor=pointer]:
+                - /url: /examples/black-hole
+            - listitem [ref=e58]:
+              - link "Optimized Black Hole" [ref=e59] [cursor=pointer]:
+                - /url: /examples/optimized-black-hole
+            - listitem [ref=e62]:
+              - link "Earth" [ref=e63] [cursor=pointer]:
+                - /url: /examples/earth
+            - listitem [ref=e66]:
+              - link "Interactive Fluid" [ref=e67] [cursor=pointer]:
+                - /url: /examples/fluid
+            - listitem [ref=e70]:
+              - link "Instanced Rendering" [ref=e71] [cursor=pointer]:
+                - /url: /examples/instanced-rendering
+            - listitem [ref=e74]:
+              - link "Batch Rendering" [ref=e75] [cursor=pointer]:
+                - /url: /examples/batch-rendering
+            - listitem [ref=e78]:
+              - link "Particles ocean" [ref=e79] [cursor=pointer]:
+                - /url: /examples/fft-ocean
+            - listitem [ref=e82]:
+              - link "FFT ocean surface" [ref=e83] [cursor=pointer]:
+                - /url: /examples/fft-ocean-surface
+            - listitem [ref=e86]:
+              - link "Raymarched fractal" [ref=e87] [cursor=pointer]:
+                - /url: /examples/raymarched-fractal
+            - listitem [ref=e90]:
+              - link "Glass Fractal" [ref=e91] [cursor=pointer]:
+                - /url: /examples/glass-fractal
+            - listitem [ref=e94]:
+              - link "Environment Map" [ref=e95] [cursor=pointer]:
+                - /url: /examples/environment-map
+            - listitem [ref=e98]:
+              - link "Transmission" [ref=e99] [cursor=pointer]:
+                - /url: /examples/transmission
+            - listitem [ref=e102]:
+              - link "Clipping" [ref=e103] [cursor=pointer]:
+                - /url: /examples/clipping
+            - listitem [ref=e106]:
+              - link "Radiance Cascades" [ref=e107] [cursor=pointer]:
+                - /url: /examples/radiance-cascades
+            - listitem [ref=e110]:
+              - link "Agent Radiance Cascades" [ref=e111] [cursor=pointer]:
+                - /url: /examples/agent-radiance-cascades
+            - listitem [ref=e114]:
+              - link "Next.js Flare" [ref=e115] [cursor=pointer]:
+                - /url: /examples/nextjs-flare
+            - listitem [ref=e118]:
+              - link "Depth Estimation" [ref=e119] [cursor=pointer]:
+                - /url: /examples/depth-estimation
+            - listitem [ref=e122]:
+              - link "MNIST Classifier" [ref=e123] [cursor=pointer]:
+                - /url: /examples/mnist-classifier
+            - listitem [ref=e126]:
+              - link "Air Painting" [ref=e127] [cursor=pointer]:
+                - /url: /examples/air-painting
+            - listitem [ref=e130]:
+              - link "Three.js WGSL modules" [ref=e131] [cursor=pointer]:
+                - /url: /examples/tsl-exports
+            - listitem [ref=e134]:
+              - link "Lava material" [ref=e135] [cursor=pointer]:
+                - /url: /examples/three-tsl
+            - listitem [ref=e138]:
+              - link "Particle Orbit" [ref=e139] [cursor=pointer]:
+                - /url: /examples/particle-orbit
+            - listitem [ref=e142]:
+              - link "Adaptive Quality" [ref=e143] [cursor=pointer]:
+                - /url: /examples/adaptive-quality
+      - main [ref=e147]:
+        - generic [ref=e148]:
+          - generic [ref=e149]:
+            - heading "Agent Radiance Cascades" [level=1] [ref=e150]
+            - generic [ref=e151]:
+              - link "Open fullscreen" [ref=e152] [cursor=pointer]:
+                - /url: /preview/agent-radiance-cascades
+              - generic [ref=e153]:
+                - button "Copy prompt" [ref=e154] [cursor=pointer]
+                - button "Example actions" [ref=e157] [cursor=pointer]
+          - paragraph [ref=e159]: "The static ten-dot Agent mark becomes a selectable loading field with capture-quality controls: every gray-to-white dot is both an HDR emitter and an occluder, feeding a jump-flooded distance field and six top-down radiance cascades."
+        - generic [ref=e160]:
+          - iframe [ref=e162]:
+            - generic [ref=f1e1]:
+              - generic [ref=f1e2]: radiance cascade loading field
+              - alert [ref=f1e5]
+          - generic [ref=e163]:
+            - generic [ref=e164]:
+              - generic [ref=e165]:
+                - button "index.tsx" [ref=e166] [cursor=pointer]
+                - button "renderer.ts" [ref=e167] [cursor=pointer]
+                - button "simulation.ts" [ref=e168] [cursor=pointer]
+                - button "agent-dots.wgsl" [ref=e169] [cursor=pointer]
+                - button "jfa-init.wgsl" [ref=e170] [cursor=pointer]
+                - button "jfa-pass.wgsl" [ref=e171] [cursor=pointer]
+                - button "sdf-finalize.wgsl" [ref=e172] [cursor=pointer]
+                - button "sdf-sample.wgsl" [ref=e173] [cursor=pointer]
+                - button "radiance-cascade.wgsl" [ref=e174] [cursor=pointer]
+                - button "rc-directions.wgsl" [ref=e175] [cursor=pointer]
+                - button "present.wgsl" [ref=e176] [cursor=pointer]
+              - button "Copy code" [ref=e178] [cursor=pointer]
+            - code [ref=e185]:
+              - generic [ref=e186]: "\"use client\";"
+              - generic [ref=e187]: "import { useEffect, useRef } from \"react\";"
+              - generic [ref=e188]: "import { createRenderer } from \"./renderer\";"
+              - generic [ref=e189]: "export function Example() {"
+              - generic [ref=e190]: const canvasRef = useRef<HTMLCanvasElement>(null);
+              - generic [ref=e191]: "useEffect(() => {"
+              - generic [ref=e192]: const canvas = canvasRef.current;
+              - generic [ref=e193]: if (!canvas) return;
+              - generic [ref=e194]: "const renderer = createRenderer({ canvas });"
+              - generic [ref=e195]: void renderer.ready;
+              - generic [ref=e196]: return () => renderer.dispose();
+              - generic [ref=e197]: "}, []);"
+              - generic [ref=e198]: return (
+              - generic [ref=e199]: <div className="relative h-full w-full overflow-hidden bg-black">
+              - generic [ref=e200]: "<canvas ref={canvasRef} className=\"block h-full w-full\" />"
+              - generic [ref=e201]: <div
+              - generic [ref=e202]: "className={"
+              - generic [ref=e203]: "\"pointer-events-none absolute bottom-[18px] left-1/2 z-[2] \" +"
+              - generic [ref=e204]: "\"-translate-x-1/2 text-[10px] font-medium uppercase tracking-[.16em] text-white/45\""
+              - generic [ref=e205]: "}"
+              - generic [ref=e206]: ">"
+              - generic [ref=e207]: radiance cascade loading field
+              - generic [ref=e208]: </div>
+              - generic [ref=e209]: </div>
+              - generic [ref=e210]: );
+              - generic [ref=e211]: "}"
+              - generic [ref=e212]: export default Example;
+    - contentinfo [ref=e213]:
+      - generic [ref=e214]:
+        - generic [ref=e215]:
+          - heading "Agent Stack" [level=2] [ref=e216]
+          - list [ref=e217]:
+            - listitem [ref=e218]:
+              - link "AI SDK" [ref=e219] [cursor=pointer]:
+                - /url: https://vercel.com/ai-sdk
+            - listitem [ref=e220]:
+              - link "AI Gateway" [ref=e221] [cursor=pointer]:
+                - /url: https://vercel.com/ai-gateway
+            - listitem [ref=e222]:
+              - link "Sandbox" [ref=e223] [cursor=pointer]:
+                - /url: https://vercel.com/sandbox
+            - listitem [ref=e224]:
+              - link "Workflows" [ref=e225] [cursor=pointer]:
+                - /url: https://vercel.com/workflows
+            - listitem [ref=e226]:
+              - link "Connect New" [ref=e227] [cursor=pointer]:
+                - /url: https://vercel.com/connect
+                - text: Connect
+                - generic [ref=e228]: New
+            - listitem [ref=e229]:
+              - link "Passport New" [ref=e230] [cursor=pointer]:
+                - /url: https://vercel.com/passport
+                - text: Passport
+                - generic [ref=e231]: New
+            - listitem [ref=e232]:
+              - link "eve New" [ref=e233] [cursor=pointer]:
+                - /url: https://vercel.com/eve
+                - text: eve
+                - generic [ref=e234]: New
+        - generic [ref=e235]:
+          - heading "Core Platform" [level=2] [ref=e236]
+          - list [ref=e237]:
+            - listitem [ref=e238]:
+              - link "CI/CD" [ref=e239] [cursor=pointer]:
+                - /url: https://vercel.com/products/previews
+            - listitem [ref=e240]:
+              - link "Content Delivery" [ref=e241] [cursor=pointer]:
+                - /url: https://vercel.com/cdn
+            - listitem [ref=e242]:
+              - link "Fluid Compute" [ref=e243] [cursor=pointer]:
+                - /url: https://vercel.com/fluid
+            - listitem [ref=e244]:
+              - link "Observability" [ref=e245] [cursor=pointer]:
+                - /url: https://vercel.com/products/observability
+        - generic [ref=e246]:
+          - heading "Security" [level=2] [ref=e247]
+          - list [ref=e248]:
+            - listitem [ref=e249]:
+              - link "Platform Security" [ref=e250] [cursor=pointer]:
+                - /url: https://vercel.com/security
+            - listitem [ref=e251]:
+              - link "WAF" [ref=e252] [cursor=pointer]:
+                - /url: https://vercel.com/security/web-application-firewall
+            - listitem [ref=e253]:
+              - link "Bot Management" [ref=e254] [cursor=pointer]:
+                - /url: https://vercel.com/security/bot-management
+            - listitem [ref=e255]:
+              - link "Bot ID" [ref=e256] [cursor=pointer]:
+                - /url: https://vercel.com/botid
+        - generic [ref=e257]:
+          - heading "Tools" [level=2] [ref=e258]
+          - list [ref=e259]:
+            - listitem [ref=e260]:
+              - link "Vercel Drop New" [ref=e261] [cursor=pointer]:
+                - /url: https://vercel.com/drop
+                - text: Vercel Drop
+                - generic [ref=e262]: New
+            - listitem [ref=e263]:
+              - link "Vercel Agent" [ref=e264] [cursor=pointer]:
+                - /url: https://vercel.com/agent
+            - listitem [ref=e265]:
+              - link "Vercel Plugin New" [ref=e266] [cursor=pointer]:
+                - /url: https://vercel.com/plugin
+                - text: Vercel Plugin
+                - generic [ref=e267]: New
+            - listitem [ref=e268]:
+              - link "Agent Skills" [ref=e269] [cursor=pointer]:
+                - /url: https://skills.sh
+            - listitem [ref=e270]:
+              - link "Domains" [ref=e271] [cursor=pointer]:
+                - /url: https://vercel.com/domains
+            - listitem [ref=e272]:
+              - link "v0" [ref=e273] [cursor=pointer]:
+                - /url: https://v0.app
+        - generic [ref=e274]:
+          - heading "Frameworks" [level=2] [ref=e275]
+          - list [ref=e276]:
+            - listitem [ref=e277]:
+              - link "eve New" [ref=e278] [cursor=pointer]:
+                - /url: https://eve.dev/
+                - text: eve
+                - generic [ref=e279]: New
+            - listitem [ref=e280]:
+              - link "Next.js" [ref=e281] [cursor=pointer]:
+                - /url: https://vercel.com/frameworks/nextjs
+            - listitem [ref=e282]:
+              - link "Nuxt" [ref=e283] [cursor=pointer]:
+                - /url: https://vercel.com/docs/frameworks/full-stack/nuxt
+            - listitem [ref=e284]:
+              - link "SvelteKit" [ref=e285] [cursor=pointer]:
+                - /url: https://vercel.com/docs/frameworks/full-stack/sveltekit
+            - listitem [ref=e286]:
+              - link "Nitro" [ref=e287] [cursor=pointer]:
+                - /url: https://vercel.com/docs/frameworks/backend/nitro
+            - listitem [ref=e288]:
+              - link "Turborepo" [ref=e289] [cursor=pointer]:
+                - /url: https://vercel.com/solutions/turborepo
+            - listitem [ref=e290]:
+              - link "Tanstack Start" [ref=e291] [cursor=pointer]:
+                - /url: https://vercel.com/docs/frameworks/full-stack/tanstack-start
+            - listitem [ref=e292]:
+              - link "FastAPI" [ref=e293] [cursor=pointer]:
+                - /url: https://vercel.com/docs/frameworks/backend/fastapi
+            - listitem [ref=e294]:
+              - link "xmcp" [ref=e295] [cursor=pointer]:
+                - /url: https://vercel.com/docs/frameworks/backend/xmcp
+            - listitem [ref=e296]:
+              - link "All frameworks" [ref=e297] [cursor=pointer]:
+                - /url: https://vercel.com/docs/frameworks
+        - generic [ref=e298]:
+          - heading "SDKs" [level=2] [ref=e299]
+          - list [ref=e300]:
+            - listitem [ref=e301]:
+              - link "Vercel SDK" [ref=e302] [cursor=pointer]:
+                - /url: https://vercel.com/docs/rest-api/sdk
+            - listitem [ref=e303]:
+              - link "Workflow SDK New" [ref=e304] [cursor=pointer]:
+                - /url: https://vercel.com/workflows
+                - text: Workflow SDK
+                - generic [ref=e305]: New
+            - listitem [ref=e306]:
+              - link "Flags SDK" [ref=e307] [cursor=pointer]:
+                - /url: https://vercel.com/docs/flags/flags-sdk-reference
+            - listitem [ref=e308]:
+              - link "Chat SDK New" [ref=e309] [cursor=pointer]:
+                - /url: https://vercel.com/chat
+                - text: Chat SDK
+                - generic [ref=e310]: New
+            - listitem [ref=e311]:
+              - link "Queues SDK New" [ref=e312] [cursor=pointer]:
+                - /url: https://vercel.com/docs/queues/sdk
+                - text: Queues SDK
+                - generic [ref=e313]: New
+            - listitem [ref=e314]:
+              - link "Streamdown" [ref=e315] [cursor=pointer]:
+                - /url: https://streamdown.ai
+        - generic [ref=e316]:
+          - heading "Build" [level=2] [ref=e317]
+          - list [ref=e318]:
+            - listitem [ref=e319]:
+              - link "AI Apps" [ref=e320] [cursor=pointer]:
+                - /url: https://vercel.com/solutions/ai-apps
+            - listitem [ref=e321]:
+              - link "Web Apps" [ref=e322] [cursor=pointer]:
+                - /url: https://vercel.com/solutions/web-apps
+            - listitem [ref=e323]:
+              - link "Marketing Sites" [ref=e324] [cursor=pointer]:
+                - /url: https://vercel.com/solutions/marketing-sites
+            - listitem [ref=e325]:
+              - link "Platforms" [ref=e326] [cursor=pointer]:
+                - /url: https://vercel.com/solutions/multi-tenant-saas
+            - listitem [ref=e327]:
+              - link "Commerce" [ref=e328] [cursor=pointer]:
+                - /url: https://vercel.com/solutions/composable-commerce
+            - listitem [ref=e329]:
+              - link "Platform Engineers" [ref=e330] [cursor=pointer]:
+                - /url: https://vercel.com/solutions/platform-engineering
+            - listitem [ref=e331]:
+              - link "Design Engineers" [ref=e332] [cursor=pointer]:
+                - /url: https://vercel.com/solutions/design-engineering
+        - generic [ref=e333]:
+          - heading "Learn" [level=2] [ref=e334]
+          - list [ref=e335]:
+            - listitem [ref=e336]:
+              - link "Docs" [ref=e337] [cursor=pointer]:
+                - /url: https://vercel.com/docs
+            - listitem [ref=e338]:
+              - link "Blog" [ref=e339] [cursor=pointer]:
+                - /url: https://vercel.com/blog
+            - listitem [ref=e340]:
+              - link "Changelog" [ref=e341] [cursor=pointer]:
+                - /url: https://vercel.com/changelog
+            - listitem [ref=e342]:
+              - link "Knowledge Base" [ref=e343] [cursor=pointer]:
+                - /url: https://vercel.com/kb
+            - listitem [ref=e344]:
+              - link "Academy" [ref=e345] [cursor=pointer]:
+                - /url: https://vercel.com/academy
+            - listitem [ref=e346]:
+              - link "Articles" [ref=e347] [cursor=pointer]:
+                - /url: https://vercel.com/i
+            - listitem [ref=e348]:
+              - link "Community" [ref=e349] [cursor=pointer]:
+                - /url: https://community.vercel.com
+        - generic [ref=e350]:
+          - heading "Explore" [level=2] [ref=e351]
+          - list [ref=e352]:
+            - listitem [ref=e353]:
+              - link "Customers" [ref=e354] [cursor=pointer]:
+                - /url: https://vercel.com/customers
+            - listitem [ref=e355]:
+              - link "Marketplace" [ref=e356] [cursor=pointer]:
+                - /url: https://vercel.com/marketplace
+            - listitem [ref=e357]:
+              - link "Templates" [ref=e358] [cursor=pointer]:
+                - /url: https://vercel.com/templates
+            - listitem [ref=e359]:
+              - link "Partner Finder" [ref=e360] [cursor=pointer]:
+                - /url: https://vercel.com/partners/solution-partners
+            - listitem [ref=e361]:
+              - link "Vercel + AWS" [ref=e362] [cursor=pointer]:
+                - /url: https://vercel.com/partners/aws
+        - generic [ref=e363]:
+          - heading "Company" [level=2] [ref=e364]
+          - list [ref=e365]:
+            - listitem [ref=e366]:
+              - link "About" [ref=e367] [cursor=pointer]:
+                - /url: https://vercel.com/about
+            - listitem [ref=e368]:
+              - link "Careers" [ref=e369] [cursor=pointer]:
+                - /url: https://vercel.com/careers
+            - listitem [ref=e370]:
+              - link "Press" [ref=e371] [cursor=pointer]:
+                - /url: https://vercel.com/press
+            - listitem [ref=e372]:
+              - link "Events" [ref=e373] [cursor=pointer]:
+                - /url: https://vercel.com/events
+            - listitem [ref=e374]:
+              - link "Startups" [ref=e375] [cursor=pointer]:
+                - /url: https://vercel.com/startups
+            - listitem [ref=e376]:
+              - link "Shipped on Vercel" [ref=e377] [cursor=pointer]:
+                - /url: https://vercel.com/shipped
+            - listitem [ref=e378]:
+              - link "Open Source Program" [ref=e379] [cursor=pointer]:
+                - /url: https://vercel.com/open-source-program
+            - listitem [ref=e380]:
+              - link "Enterprise" [ref=e381] [cursor=pointer]:
+                - /url: https://vercel.com/enterprise
+            - listitem [ref=e382]:
+              - link "Pricing" [ref=e383] [cursor=pointer]:
+                - /url: https://vercel.com/pricing
+            - listitem [ref=e384]:
+              - link "Help" [ref=e385] [cursor=pointer]:
+                - /url: https://vercel.com/help
+        - generic [ref=e386]:
+          - heading "Legal & Trust" [level=2] [ref=e387]
+          - list [ref=e388]:
+            - listitem [ref=e389]:
+              - link "Privacy Policy" [ref=e390] [cursor=pointer]:
+                - /url: https://vercel.com/legal/privacy-policy
+            - listitem [ref=e391]:
+              - link "Terms of Service" [ref=e392] [cursor=pointer]:
+                - /url: https://vercel.com/legal/terms
+            - listitem [ref=e393]:
+              - link "Cookie Policy" [ref=e394] [cursor=pointer]:
+                - /url: https://vercel.com/legal/cookie-policy
+            - listitem [ref=e395]:
+              - link "DPA" [ref=e396] [cursor=pointer]:
+                - /url: https://vercel.com/legal/dpa
+            - listitem [ref=e397]:
+              - link "Acceptable Use Policy" [ref=e398] [cursor=pointer]:
+                - /url: https://vercel.com/legal/acceptable-use-policy
+            - listitem [ref=e399]:
+              - link "Legal" [ref=e400] [cursor=pointer]:
+                - /url: https://vercel.com/legal
+            - listitem [ref=e401]:
+              - link "Trust Center" [ref=e402] [cursor=pointer]:
+                - /url: https://security.vercel.com
+            - listitem [ref=e403]:
+              - link "Status" [ref=e404] [cursor=pointer]:
+                - /url: https://vercel-status.com
+        - generic [ref=e405]:
+          - heading "Social" [level=2] [ref=e406]
+          - list [ref=e407]:
+            - listitem [ref=e408]:
+              - link "GitHub" [ref=e409] [cursor=pointer]:
+                - /url: https://github.com/vercel
+            - listitem [ref=e410]:
+              - link "X" [ref=e411] [cursor=pointer]:
+                - /url: https://x.com/vercel
+            - listitem [ref=e412]:
+              - link "LinkedIn" [ref=e413] [cursor=pointer]:
+                - /url: https://linkedin.com/company/vercel
+            - listitem [ref=e414]:
+              - link "YouTube" [ref=e415] [cursor=pointer]:
+                - /url: https://youtube.com/@VercelHQ
+            - listitem [ref=e416]:
+              - link "Instagram" [ref=e417] [cursor=pointer]:
+                - /url: https://www.instagram.com/vercelhq/
+      - generic [ref=e418]:
+        - link "Vercel" [ref=e419] [cursor=pointer]:
+          - /url: https://vercel.com/home
+        - group "Select a display theme:" [ref=e422]:
+          - generic [ref=e424]:
+            - radio "system" [checked]
+            - generic [ref=e425] [cursor=pointer]: system
+          - generic [ref=e430]:
+            - radio "light"
+            - generic [ref=e431] [cursor=pointer]: light
+          - generic [ref=e436]:
+            - radio "dark"
+            - generic [ref=e437] [cursor=pointer]: dark
+    - navigation "vgpu project links" [ref=e442]:
+      - link "About" [ref=e443] [cursor=pointer]:
+        - /url: /about
+      - link "Contact" [ref=e444] [cursor=pointer]:
+        - /url: /contact
+    - region "Notifications alt+T"
+  - alert [ref=e445]
+  - generic [ref=e447]:
+    - generic [ref=e448]:
+      - heading "Chat" [level=2] [ref=e449]
+      - generic [ref=e451]:
+        - button "Copy chat" [disabled] [ref=e452]
+        - button "Clear chat" [disabled] [ref=e453]
+        - button "Close chat" [ref=e454] [cursor=pointer]
+    - log [ref=e455]
+    - generic [ref=e458]:
+      - generic [ref=e462]:
+        - button "What is vgpu?" [ref=e463] [cursor=pointer]
+        - button "How do I render to a canvas with vgpu?" [ref=e464] [cursor=pointer]
+        - button "How do I run vgpu headless in Node.js?" [ref=e465] [cursor=pointer]
+        - button "How do I import a .wgsl file?" [ref=e466] [cursor=pointer]
+      - paragraph [ref=e467]:
+        - text: "Tip: You can open and close chat with"
+        - generic [ref=e468]:
+          - generic: ⌘
+          - generic: I
+      - generic [ref=e470]:
+        - textbox "What would you like to know?" [ref=e471]
+        - generic [ref=e472]:
+          - paragraph [ref=e473]: 0 / 1000
+          - button "Submit" [ref=e474] [cursor=pointer]

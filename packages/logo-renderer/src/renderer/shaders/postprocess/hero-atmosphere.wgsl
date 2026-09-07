@@ -82,7 +82,10 @@ fn shadow(p: vec3f, light: vec3f, offset: vec2f) -> f32 {
   if (light.z <= p.z) { return 0.0; }
   let t = clamp((params.camera.w - p.z) / max(light.z - p.z, 0.001), 0.0, 1.0);
   let first = logo_sample(project_position(mix(p, light, t)) + offset);
-  let hitT = clamp((first.y - p.z) / max(light.z - p.z, 0.001), 0.0, 1.0);
+  // Empty pixels (including all SVG holes) have no surface depth. Refining
+  // against their cleared depth bends an open light ray back onto the metal.
+  let refinedT = clamp((first.y - p.z) / max(light.z - p.z, 0.001), 0.0, 1.0);
+  let hitT = select(t, refinedT, first.x > 0.05);
   let hit = logo_sample(project_position(mix(p, light, hitT)) + offset);
   return hit.x * smoothstep(0.005, 0.035, hit.y - p.z);
 }

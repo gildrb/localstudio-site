@@ -76,6 +76,42 @@ function checkBorder(pixels) {
     assert.equal(pixels[i] + pixels[i + 1] + pixels[i + 2] + pixels[i + 3], 0, "exact transparent border");
   }
 }
+// Find enclosed transparent regions in the actual rendered mesh, not guessed SVG ellipses.
+function aperturePixels(pixels) {
+  const seen = new Uint8Array(logoWidth * logoHeight);
+  const holes = [];
+  for (let seed = 0; seed < seen.length; seed++) {
+    if (seen[seed] || pixels[seed * 4 + 3] >= 128) continue;
+    const pending = [seed], region = [];
+    let touchesEdge = false;
+    seen[seed] = 1;
+    while (pending.length > 0) {
+      const cell = pending.pop();
+      const x = cell % logoWidth, y = Math.floor(cell / logoWidth);
+      region.push(cell);
+      if (x === 0 || x === logoWidth - 1 || y === 0 || y === logoHeight - 1) touchesEdge = true;
+      for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) {
+        if (nx < 0 || nx >= logoWidth || ny < 0 || ny >= logoHeight) continue;
+        const next = ny * logoWidth + nx;
+        if (seen[next] || pixels[next * 4 + 3] >= 128) continue;
+        seen[next] = 1;
+        pending.push(next);
+      }
+    }
+    if (touchesEdge || region.length < 64) continue;
+    const projected = new Set();
+    for (const cell of region) {
+      const u = (cell % logoWidth + 0.5) / logoWidth;
+      const v = (Math.floor(cell / logoWidth) + 0.5) / logoHeight;
+      const x = Math.floor((logoRect[0] + u * logoRect[2]) * width);
+      const y = Math.floor((logoRect[1] + v * logoRect[3]) * height);
+      projected.add((y * width + x) * 4);
+    }
+    holes.push([...projected]);
+  }
+  assert.equal(holes.length, 3, "actual mesh has three enclosed apertures");
+  return holes;
+}
 const report = [];
 try {
   if (validate) {
@@ -145,6 +181,18 @@ try {
       renderer.renderAtmosphere({ ...controls, envYaw: 0.28, envPitch: -0.18 }, imprint);
       const pointer = await out.read();
       const pointerNear = await foreground.read();
+      const apertures = aperturePixels(logoPixels).map((pixels) => {
+        let light = 0, response = 0;
+        for (const i of pixels) for (let c = 0; c < 3; c++) {
+          light += near[i + c];
+          response += Math.abs(near[i + c] - pointerNear[i + c]);
+        }
+        const meanLight = light / (pixels.length * 3);
+        const meanResponse = response / (pixels.length * 3);
+        assert(meanLight > 0.25, "each aperture contains visible near-volume light");
+        assert(meanResponse > 0.01, "each aperture responds to the shared light position");
+        return { pixels: pixels.length, meanLight, meanResponse };
+      });
       const pointerDiff = difference(base, pointer);
       assert(pointerDiff.changed > 100 && pointerDiff.mean < 5, "pointer moves pixels subtly");
       renderer.renderAtmosphere(controls, { ...imprint, time: 30 });
@@ -168,7 +216,7 @@ try {
       await gpu.settled();
       const idleMs = (performance.now() - started) / 30;
       assert.equal(errors.length, 0, errors.join("\n"));
-      report.push({ scheme, nearOverLogoMax, nearOverLogoCount, pointerDiff, driftDiff, alphaDiff, alphaNearDiff, depthDiff, idleMs, borders: "zero", deterministic: true });
+      report.push({ scheme, apertures, nearOverLogoMax, nearOverLogoCount, pointerDiff, driftDiff, alphaDiff, alphaNearDiff, depthDiff, idleMs, borders: "zero", deterministic: true });
     } finally { renderer.dispose(); }
   }
   console.log(JSON.stringify({ width, height, logoRect, output, report }, null, 2));
