@@ -13,61 +13,6 @@ export const styles = stylex.create({
 	pageBottom: {
 		paddingBottom: { default: 120, "@media (max-width: 620px)": 96 },
 	},
-	productHero: {
-		marginBottom: { default: 120, "@media (max-width: 620px)": 80 },
-	},
-	productArticle: {
-		display: "grid",
-		minHeight: {
-			default: 720,
-			"@media (max-width: 900px)": 0,
-		},
-		alignItems: "center",
-		columnGap: {
-			default: 120,
-			"@media (max-width: 900px)": 48,
-		},
-		rowGap: {
-			default: 120,
-			"@media (max-width: 900px)": 48,
-		},
-		paddingTop: { default: 80, "@media (max-width: 620px)": 64 },
-		paddingBottom: { default: 80, "@media (max-width: 620px)": 64 },
-		gridTemplateColumns: {
-			"@media (max-width: 900px)": "minmax(0, 1fr)",
-		},
-	},
-	productArticleEven: {
-		gridTemplateColumns: {
-			default: "minmax(260px, .72fr) minmax(0, 1.28fr)",
-			"@media (max-width: 900px)": "minmax(0, 1fr)",
-		},
-	},
-	productArticleOdd: {
-		gridTemplateColumns: {
-			default: "minmax(0, 1.28fr) minmax(260px, .72fr)",
-			"@media (max-width: 900px)": "minmax(0, 1fr)",
-		},
-	},
-	productCopyOdd: {
-		order: {
-			default: 2,
-			"@media (max-width: 900px)": 0,
-		},
-	},
-	productMediaOdd: {
-		order: {
-			default: 1,
-			"@media (max-width: 900px)": 0,
-		},
-	},
-	productText: {
-		maxWidth: 448,
-		marginTop: 24,
-		color: colors.fine,
-		fontSize: 16,
-		lineHeight: "24px",
-	},
 	docsSection: {
 		marginTop: 80,
 		scrollMarginTop: 112,

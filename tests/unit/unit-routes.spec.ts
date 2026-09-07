@@ -25,10 +25,11 @@ test("isRoutePath accepts only canonical HTML routes", () => {
 	expect(isRoutePath("/machine")).toBe(true);
 	expect(isRoutePath("/mobile")).toBe(false);
 	expect(isRoutePath("/agents")).toBe(false);
-	expect(routePaths.includes("/product")).toBe(true);
+	expect(isRoutePath("/product")).toBe(false);
 });
 
 test("redirects preserve compatibility paths", () => {
+	expect(redirectFor("/product")).toBe("/");
 	expect(redirectFor("/mobile")).toBe("/#mobile");
 	expect(redirectFor("/agents")).toBe("/setup");
 	expect(redirectFor("/docs")).toBeNull();
@@ -57,7 +58,6 @@ test("every HTML route has a page module", () => {
 	const source = readFileSync("src/app/pages.ts", "utf8");
 	const names = [
 		"homePath",
-		"productPath",
 		"docsPath",
 		"setupPath",
 		"downloadPath",
@@ -72,8 +72,8 @@ test("every HTML route has a page module", () => {
 test("design-manifest routes match the canonical route model", () => {
 	const manifest = JSON.parse(readFileSync("design-manifest.json", "utf8"));
 	expect(manifest.routes).toEqual([...routePaths]);
-	expect(manifest.redirects).toEqual(["/mobile", "/agents"]);
-	expect(manifest.motion).toEqual(["ease", "heroEnter", "featureSwap"]);
+	expect(manifest.redirects).toEqual(["/product", "/mobile", "/agents"]);
+	expect(manifest.motion).toEqual(["ease", "heroEnter", "featureEntry", "featureSwap"]);
 });
 
 test("product nav uses canonical product facts", () => {

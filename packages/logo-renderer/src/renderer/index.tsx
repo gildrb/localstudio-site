@@ -89,6 +89,7 @@ const rendererStyles = stylex.create({
 	canvas: {
 		opacity: 1,
 	},
+	canvasPending: { visibility: "hidden" },
 	fallback: {
 		maxWidth: "100%",
 		userSelect: "none",
@@ -169,7 +170,7 @@ export type LocalAiLogoShaderProps = LogoRendererAssets & {
 	viewportAspect?: number | undefined;
 	/** Enables the pointer-painted square imprint. */
 	paintOnHover?: boolean | undefined;
-	/** Opens the rear glass depth briefly on entry and pointer interaction. */
+	/** Opens the rear glass depth during pointer interaction, never on entry. */
 	depthReveal?: boolean | undefined;
 	material?: "glass" | "metallic" | undefined;
 	environment?: "sky" | "studio" | undefined;
@@ -210,7 +211,7 @@ export function LocalAiLogoShader({
 	const coarsePointerRef = useSyncedRef(coarsePointer);
 	const stateRef = useRef<HeroRuntimeState | null>(null);
 	const drawLoopRef = useRef<DrawLoop | null>(null);
-	const [fallbackVisible, setFallbackVisible] = useState(false);
+	const [fallbackVisible, setFallbackVisible] = useState(true);
 	const fallbackPlaceholderTimerRef = useRef(0);
 	const runLoopRef = useRef(() => {});
 	const invalidatePointerCanvasRectRef = useRef(() => {});
@@ -231,7 +232,7 @@ export function LocalAiLogoShader({
 		onFallback?.();
 	});
 	const resetLayers = useStableCallback(() => {
-		setFallbackVisible(false);
+		setFallbackVisible(true);
 	});
 	const fatalErrorRef = useRef<(() => void) | null>(null);
 	const handleFatalError = useStableCallback(() => fatalErrorRef.current?.());
@@ -316,7 +317,7 @@ export function LocalAiLogoShader({
 			isCoarsePointer: coarsePointerRef.current,
 			paintOnHover,
 			depthReveal,
-			depthOpening: depthReveal ? 1 : 0,
+			depthOpening: 0,
 			baseObjectYaw: material === "metallic" ? 0 : DEFAULT_OBJECT_YAW,
 		};
 		controlsRef.current.material = material;
@@ -570,6 +571,7 @@ export function LocalAiLogoShader({
 					rendererStyles.element,
 					rendererStyles.layer,
 					rendererStyles.canvas,
+					fallbackVisible && rendererStyles.canvasPending,
 				)}
 			/>
 		</div>

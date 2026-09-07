@@ -3,6 +3,18 @@ import { routes, routePaths } from "../../src/domain/route";
 
 const pages = routePaths;
 
+test("/product redirects to the homepage", async ({ page }) => {
+  await page.goto("/product");
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { level: 1, name: routes["/"].heading })).toBeVisible();
+});
+
+test("overview omits the retired product page", async ({ page }) => {
+  await page.goto("/overview");
+  await expect(page.locator('a[href="/product"]')).toHaveCount(0);
+  await expect(page.locator('#this-site a[href="/"]')).toBeVisible();
+});
+
 test("/mobile redirects to the homepage mobile section", async ({ page }) => {
   await page.goto("/mobile");
   await expect(page).toHaveURL(/\/#mobile$/);

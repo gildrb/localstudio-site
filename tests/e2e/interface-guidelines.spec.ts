@@ -36,19 +36,6 @@ test("2", async ({ page }) => {
 	const borderChannels = primaryStyle.borderColor.match(/[\d.]+/g)?.map(Number) ?? [];
 	expect(borderChannels[2]).toBeGreaterThanOrEqual(borderChannels[0] ?? 0);
 
-	await page.goto("/product");
-	const frame = page.locator("figure").filter({ has: page.locator("img") }).first();
-	const radii = await frame.evaluate((element) => {
-		const image = element.querySelector("img");
-		return {
-			inner: image ? Number.parseFloat(getComputedStyle(image).borderTopLeftRadius) : 0,
-			outer: Number.parseFloat(getComputedStyle(element).borderTopLeftRadius),
-			padding: Number.parseFloat(getComputedStyle(element).paddingTop),
-		};
-	});
-	expect(radii.inner).toBeLessThanOrEqual(radii.outer);
-	expect(Math.abs(radii.outer - radii.inner - radii.padding)).toBeLessThanOrEqual(1);
-
 	await page.goto("/setup");
 	const prompt = page.getByRole("region", { name: "Portable setup prompt" });
 	const fade = await prompt.evaluate((element) => ({

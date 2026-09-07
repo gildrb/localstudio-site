@@ -11,7 +11,6 @@
 		"src/sections/ProductStory.tsx": "owns scroll-driven product story",
 		"src/sections/Sponsors.tsx": "owns homepage sponsor row",
 		"src/pages/HomePage.tsx": "canonical route module",
-		"src/pages/ProductPage.tsx": "canonical route module",
 		"src/pages/DocsPage.tsx": "canonical route module",
 		"src/pages/PromptPage.tsx": "canonical route module",
 		"src/pages/DownloadPage.tsx": "canonical route module",

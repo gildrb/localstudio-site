@@ -9,16 +9,12 @@ import {
 	homePath,
 	machinePath,
 	overviewPath,
-	productPath,
 	setupPath,
 	type RoutePath,
 } from "../domain/route";
 
 export const pages = {
 	[homePath]: HomePage,
-	[productPath]: lazy(() =>
-		import("../pages/ProductPage").then(({ ProductPage }) => ({ default: ProductPage })),
-	),
 	[docsPath]: DocsPage,
 	[setupPath]: PromptPage,
 	[downloadPath]: lazy(() =>

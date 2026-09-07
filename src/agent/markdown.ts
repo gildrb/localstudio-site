@@ -12,14 +12,12 @@ import {
 	downloadPath,
 	homePath,
 	overviewPath,
-	productPath,
 	routePaths,
 	routes,
 	setupPath,
 	type DocumentPath,
 } from "../domain/route.ts";
 import { machineText } from "./machine.ts";
-import { productFeatures, renderInlineMarkdown } from "../content/product.ts";
 
 const SITE_ORIGIN = site.origin;
 const DOWNLOAD = release;
@@ -158,7 +156,7 @@ Local intelligence. Local Studio is a local-first workstation for running, manag
 
 - [${downloadLabel()}](${SITE_ORIGIN}${downloadPath}) - v${DOWNLOAD.version}, ${DOWNLOAD.label}, arm64
 - [Setup prompt](${SITE_ORIGIN}/setup)
-- [Product](${SITE_ORIGIN}/product)
+- [Home](${SITE_ORIGIN}${homePath})
 - [KittyLitter](${SITE_ORIGIN}/mobile)
 
 ## Control
@@ -176,19 +174,6 @@ Models, providers, browser, files, terminal, and agents in the same session.
 ## KittyLitter
 
 Native iOS + Android client for Codex, Claude, OpenCode, Pi, and Droid. LAN, SSH, or Alleycat. [kittylitter.app](${site.products.kittyLitter.url}).
-`,
-	);
-}
-
-export function productMarkdown(): string {
-	const sections = productFeatures
-		.map((feature) => `## ${feature.productTitle}\n\n${renderInlineMarkdown(feature.productText)}`)
-		.join("\n\n");
-	return markdownPage(
-		routes[productPath].title,
-		`One place to run local AI. Local Studio is a local-first workstation for running, managing, and using self-hosted language-model backends on local or remote controllers.
-
-${sections}
 `,
 	);
 }
@@ -572,7 +557,6 @@ export function llmsFull(): string {
 		machineText(),
 		"",
 		indexMarkdown(),
-		productMarkdown(),
 		mobileMarkdown(),
 		docsMarkdown(),
 		promptMarkdown(),

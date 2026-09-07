@@ -2,8 +2,7 @@ import * as stylex from "@stylexjs/stylex";
 import { StrictMode } from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
 import App from "./app/App";
-import { assets, heroSizes, responsiveSrcSet } from "./domain/asset";
-import { isHeroImageRoute } from "./domain/route";
+import { assets } from "./domain/asset";
 import "./styles/stylex-entry.css";
 import { baseStyles } from "./styles/base-styles";
 import { constants } from "./styles/public-tokens.stylex";
@@ -64,20 +63,6 @@ document.addEventListener("pointerdown", syncKeyboardMode);
 document.addEventListener("contextmenu", preventImageAction);
 document.addEventListener("dragstart", preventImageAction);
 document.addEventListener("selectstart", preventImageAction);
-
-if (isHeroImageRoute(window.location.pathname)) {
-	const preload = document.createElement("link");
-	preload.rel = "preload";
-	preload.as = "image";
-	preload.setAttribute("fetchpriority", "high");
-	preload.href = assets.workbenchBrowserHero;
-	preload.setAttribute(
-		"imagesrcset",
-		responsiveSrcSet(assets.workbenchBrowser),
-	);
-	preload.setAttribute("imagesizes", heroSizes);
-	document.head.append(preload);
-}
 
 const root = document.getElementById("root");
 if (root === null) {

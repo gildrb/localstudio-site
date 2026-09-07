@@ -189,6 +189,11 @@
 	],
 	"redirects": [
 		{
+			"source": "/product",
+			"destination": "/",
+			"permanent": true
+		},
+		{
 			"source": "/mobile",
 			"destination": "/#mobile",
 			"permanent": true
@@ -203,10 +208,6 @@
 		{
 			"source": "/.well-known/mcp",
 			"destination": "/api/mcp"
-		},
-		{
-			"source": "/product",
-			"destination": "/index.html"
 		},
 		{
 			"source": "/docs",

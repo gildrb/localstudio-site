@@ -10,8 +10,6 @@ import {
 import { markdownPages, routePaths } from "../../src/domain/route";
 import { site } from "../../src/domain/site";
 import { release } from "../../src/domain/release";
-import { productFeatures, renderInlineMarkdown } from "../../src/content/product";
-import { productMarkdown } from "../../src/agent/markdown";
 import { machineText } from "../../src/agent/machine";
 
 test("robots and sitemap stay deterministic", () => {
@@ -86,11 +84,13 @@ test("machine routes derive from the canonical HTML route model", () => {
 	expect(routesSection).not.toContain("/agents");
 });
 
-test("product markdown is generated from canonical feature prose", () => {
-	const body = productMarkdown();
-	for (const feature of productFeatures) {
-		expect(body).toContain(feature.productTitle);
-		expect(body).toContain(renderInlineMarkdown(feature.productText));
+test("retired product page is absent from discovery and overview", () => {
+	expect(agentDocument("/product.md")).toBeNull();
+	expect(markdownPages().has("/product")).toBe(false);
+	for (const path of ["/sitemap.xml", "/sitemap.md", "/overview.md", "/index.md", "/llms.txt"]) {
+		const document = agentDocument(path);
+		expect(document).toBeDefined();
+		expect(document?.body).not.toContain(`${site.origin}/product`);
 	}
 });
 

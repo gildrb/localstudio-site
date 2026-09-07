@@ -14,15 +14,6 @@ export const routes = {
 		priority: 1,
 		machineLabel: "home",
 	},
-	"/product": {
-		title: brandedTitle("Product"),
-		heading: "One Place to Run Local AI",
-		summary: "Control, serve, and work: controller, runtimes, Workbench.",
-		markdown: "/product.md",
-		footerLabel: null,
-		priority: 0.9,
-		machineLabel: "product",
-	},
 	"/docs": {
 		title: brandedTitle("Documentation"),
 		heading: "Get Local Studio Running",
@@ -75,7 +66,6 @@ export type RoutePath = keyof typeof routes;
 
 export const routePaths = [
 	"/",
-	"/product",
 	"/docs",
 	"/setup",
 	"/download",
@@ -89,15 +79,11 @@ export function isRoutePath(pathname: string): pathname is RoutePath {
 
 
 export const homePath = "/" satisfies RoutePath;
-export const productPath = "/product" satisfies RoutePath;
 export const machinePath = "/machine" satisfies RoutePath;
 export const downloadPath = "/download" satisfies RoutePath;
 export const setupPath = "/setup" satisfies RoutePath;
 export const docsPath = "/docs" satisfies RoutePath;
 export const overviewPath = "/overview" satisfies RoutePath;
-export function isHeroImageRoute(pathname: string): boolean {
-	return pathname === "/product";
-}
 
 export function routeTitle(path: RoutePath): string {
 	return routes[path].title;
@@ -129,6 +115,7 @@ export function documentPaths(): readonly DocumentPath[] {
 }
 
 export const redirects = {
+	"/product": "/",
 	"/mobile": "/#mobile",
 	"/agents": "/setup",
 } as const;
@@ -182,8 +169,7 @@ export function notFoundSuggestions(): readonly {
 	label: string;
 }[] {
 	return [
-		{ href: "/", label: "Overview" },
-		{ href: "/product", label: "Product" },
+		{ href: "/", label: "Home" },
 		{ href: "/docs", label: "Docs" },
 		{ href: "/setup", label: "Setup Prompt" },
 		{ href: "/download", label: "Download" },

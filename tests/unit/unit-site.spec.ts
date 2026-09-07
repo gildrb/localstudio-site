@@ -55,9 +55,6 @@ test("header and machine chrome labels read the product name from site facts", (
 	expect(notFound.includes("site.products.localStudio.name")).toBe(true);
 	expect(notFound.includes(">Local Studio<")).toBe(false);
 	const docs = readFileSync("src/pages/DocsPage.tsx", "utf8");
-	const product = readFileSync("src/pages/ProductPage.tsx", "utf8");
 	expect(docs.includes("site.products.localStudio.name")).toBe(true);
-	expect(product.includes("site.products.localStudio.name")).toBe(true);
 	expect(docs.includes(">Local Studio<")).toBe(false);
-	expect(product.includes(">Local Studio<")).toBe(false);
 });
