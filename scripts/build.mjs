@@ -1,7 +1,4 @@
 #!/usr/bin/env bun
-// Production build on the Bun bundler (replaces `vite build` + the agent-ready
-// writeBundle step): bundles the SPA, collects the single StyleX CSS asset,
-// emits agent documents, copies public assets, and writes dist/index.html.
 import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, watch as watchFiles, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";

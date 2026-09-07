@@ -1,23 +1,26 @@
 import { expect, test } from "bun:test";
-import { reflectionRevealDampingAlpha } from "../../packages/logo-renderer/src/renderer/runtime/frame-loop";
+import { advanceDepthOpening } from "../../packages/logo-renderer/src/renderer/runtime/frame-loop";
 
-function revealAfter(seconds: number, refreshRate: number) {
-	let reveal = 0;
-	const frames = Math.round(seconds * refreshRate);
-	for (let frame = 0; frame < frames; frame++) {
-		const alpha = reflectionRevealDampingAlpha(reveal, 1, 1 / refreshRate);
-		reveal += (1 - reveal) * alpha;
-	}
-	return reveal;
+function openingAfter(current: number, target: number, seconds: number, refreshRate: number) {
+  for (let frame = 0; frame < Math.round(seconds * refreshRate); frame++) {
+    current = advanceDepthOpening(current, target, 1 / refreshRate);
+  }
+  return current;
 }
 
-test("reflection reveal attacks quickly and consistently across refresh rates", () => {
-	expect(revealAfter(0.1, 60)).toBeGreaterThan(0.5);
-	expect(revealAfter(0.25, 60)).toBeGreaterThan(0.9);
-	expect(revealAfter(0.25, 120)).toBeCloseTo(revealAfter(0.25, 60), 12);
+test("depth opening and entrance close settle in 300ms across refresh rates", () => {
+  for (const rate of [30, 60, 120]) {
+    expect(openingAfter(0, 1, 0.15, rate)).toBeCloseTo(Math.round(0.15 * rate) / rate / 0.3);
+    expect(openingAfter(0, 1, 0.3, rate)).toBe(1);
+    expect(openingAfter(1, 0, 0.3, rate)).toBe(0);
+    expect(openingAfter(1, 0, 0.4, rate)).toBe(0);
+  }
 });
 
-test("reflection reveal keeps the existing 60 Hz release curve", () => {
-	expect(reflectionRevealDampingAlpha(1, 0, 1 / 60)).toBeCloseTo(5 / 60, 12);
-	expect(reflectionRevealDampingAlpha(0, 1, 1 / 60)).toBeCloseTo(10 / 60, 12);
+test("depth motion reverses continuously without overshoot or negative time", () => {
+  expect(advanceDepthOpening(0.5, 0, 0.03)).toBeCloseTo(0.4);
+  expect(advanceDepthOpening(0.5, 1, 0.03)).toBeCloseTo(0.6);
+  expect(advanceDepthOpening(0.5, 0, -1)).toBe(0.5);
+  expect(advanceDepthOpening(0.5, 1, 1)).toBe(1);
+  expect(advanceDepthOpening(0.5, 0, 1)).toBe(0);
 });

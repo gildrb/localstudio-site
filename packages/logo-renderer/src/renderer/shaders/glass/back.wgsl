@@ -1,7 +1,7 @@
 import { oriented_normal, env_reflect_dir, env_reflection_from_dir, encode_normal } from "../shared/material-core.wgsl";
 import { Params, WIRE_PASS_THRESHOLD } from "../shared/scene-params.wgsl";
 import { VertexInput, VertexOutput, glass_vs_main } from "../shared/glass-vertex.wgsl";
-import { pointer_reflection_reveal, shade_glass } from "../shared/glass-material.wgsl";
+import { shade_glass } from "../shared/glass-material.wgsl";
 
 @group(0) @binding(0) var<uniform> params: Params;
 @group(0) @binding(1) var studioCube: texture_2d_array<f32>;
@@ -24,7 +24,7 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
 
   let n = oriented_normal(ngeo, v);
   let reflected = env_reflect_dir(n, v);
-  let reflectionReveal = pointer_reflection_reveal(input.clipPosition.xy, params.interaction);
+
 
   let materialKind = u32(clamp(round(params.materialKind), 0.0, 3.0));
   switch (materialKind) {
@@ -38,7 +38,7 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
       return vec4f(env_reflection_from_dir(studioCube, studioSampler, reflected, params.envYaw, params.envPitch), 1.0);
     }
     default: {
-      return shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, true, params.glassAbsorption, reflectionReveal);
+      return shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, true, params.glassAbsorption);
     }
   }
 }

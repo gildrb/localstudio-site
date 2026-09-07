@@ -248,7 +248,8 @@ export function KittyLitter() {
 				return;
 			}
 			carouselAnimation.current = animate(carousel.scrollLeft, target, {
-				...motion.featureSwap,
+				duration: 0.3,
+				ease: motion.ease,
 				onUpdate: (value) => {
 					carousel.scrollLeft = value;
 				},

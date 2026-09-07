@@ -85,12 +85,17 @@ export function createPointerController({
       state.targetMouseEnvYaw = mapped.envYaw;
       state.targetMouseEnvPitch = mapped.envPitch;
     }
-    state.targetAsciiMouseX = mapped.normalizedX;
-    state.targetAsciiMouseY = mapped.normalizedY;
+    const outside = clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom;
+    state.targetAsciiMouseX = state.staticPose && outside ? 0 : mapped.normalizedX;
+    state.targetAsciiMouseY = state.staticPose && outside ? 0 : mapped.normalizedY;
     requestRender();
   };
 
   const deactivateBrush = () => {
+    if (state.staticPose) {
+      state.targetAsciiMouseX = 0;
+      state.targetAsciiMouseY = 0;
+    }
     state.targetBrushActive = false;
     state.pointerInsideCanvas = false;
     requestRender();
@@ -104,10 +109,13 @@ export function createPointerController({
   const updatePaintBrush = (event: PointerEvent) => {
     const canvas = canvasRef.current;
     const mesh = state.activeMesh;
+    if (!state.paintOnHover) {
+      state.targetBrushActive = false;
+      return;
+    }
     if (
       !canvas ||
       !mesh ||
-      !state.paintOnHover ||
       event.pointerType !== "mouse" ||
       !evePointerInteractionMode(state.isCoarsePointer).paintEnabled
     ) {

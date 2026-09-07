@@ -21,37 +21,22 @@ test("renderer environment interaction follows its own bounds", () => {
 	});
 	expect(translated).toEqual(localPoint);
 	expect(mapAt(0.5, 0.5)).toEqual({
-		envYaw: 1.15,
+		envYaw: 0,
 		envPitch: 0,
 		normalizedX: 0,
 		normalizedY: 0,
 	});
 });
 
-test("vertical movement tilts the environment without crossing dull cubemap faces", () => {
-	const above = mapAt(0.5, -0.25);
-	const below = mapAt(0.5, 1.25);
-	const farAbove = mapAt(0.5, -1);
-	const farBelow = mapAt(0.5, 2);
-	expect(above.normalizedY).toBe(-1);
-	expect(below.normalizedY).toBe(1);
-	expect(above.envYaw).toBe(1.15);
-	expect(below.envYaw).toBe(1.15);
+test("reflections follow both cursor axes within a restrained range", () => {
+	const above = mapAt(0.5, -0.25), below = mapAt(0.5, 1.25);
 	expect(above.envPitch).toBe(-0.24);
 	expect(below.envPitch).toBe(0.24);
-	expect(farAbove).toEqual(above);
-	expect(farBelow).toEqual(below);
-});
-
-test("horizontal movement rotates within the reflective cubemap sector", () => {
-	const left = mapAt(0, 0.65);
-	const center = mapAt(0.5, 0.65);
-	const right = mapAt(1, 0.65);
-	expect(left.envYaw).toBeCloseTo(0.8);
-	expect(center.envYaw).toBe(1.15);
-	expect(right.envYaw).toBeCloseTo(1.5);
-	expect(left.envPitch).toBe(center.envPitch);
-	expect(right.envPitch).toBe(center.envPitch);
+	expect(mapAt(0.5, -1)).toEqual(above);
+	expect(mapAt(0.5, 2)).toEqual(below);
+	expect(mapAt(0, 0.5).envYaw).toBe(-0.35);
+	expect(mapAt(1, 0.5).envYaw).toBe(0.35);
+	expect(above.envYaw).toBe(0);
 });
 
 test("degenerate renderer bounds keep finite interaction values", () => {
@@ -63,32 +48,24 @@ test("degenerate renderer bounds keep finite interaction values", () => {
 	for (const value of Object.values(mapped)) expect(Number.isFinite(value)).toBe(true);
 });
 
-test("renderer maps the pointer reveal into padded target pixels", () => {
-	const params = writeParams({
-		controls: {
-			yaw: 0,
-			pitch: 0,
-			radius: 2,
-			fov: 35,
-			envYaw: 1.15,
-			envPitch: 0,
-			insideRendering: true,
-			outsideRendering: true,
-			material: "glass",
-			wireframe: false,
-			showEnv: false,
-		},
-		logicalWidth: 1000,
-		logicalHeight: 500,
-		passKind: 1,
-		projectionPaddingRadius: 20,
-		imprint: { mouse: [1, 0.5], reflectionReveal: 0.8 },
-		meshBounds: { min: [-1, -1, -0.1], max: [1, 1, 0.1] },
-		orbitTarget: [0, 0, 0],
-		thicknessScale: 1,
-		isLight: false,
-	});
-	expect(params.interaction.slice(0, 2)).toEqual([1020, 457.5]);
-	expect(params.interaction[2]).toBeCloseTo(0.8);
-	expect(params.interaction[3]).toBe(150);
+
+test("rear-depth opening is opt-in, bounded, and shared by material/depth passes", () => {
+  const args: Parameters<typeof writeParams>[0] = {
+    controls: {
+      yaw: 0, pitch: 0, radius: 2, fov: 35, envYaw: 0, envPitch: 0,
+      insideRendering: true, outsideRendering: true, material: "glass",
+      wireframe: false, showEnv: false,
+    },
+    logicalWidth: 1000, logicalHeight: 500, passKind: 1,
+    projectionPaddingRadius: 20,
+    meshBounds: { min: [-1, -1, -0.1], max: [1, 1, 0.1] },
+    orbitTarget: [0, 0, 0], thicknessScale: 1, isLight: false,
+  };
+  expect(writeParams(args).depthTransform).toEqual([1, 0, 0, 0]);
+  for (const passKind of [0, 1, 2]) {
+    const params = writeParams({ ...args, passKind, controls: { ...args.controls, depthOpening: 1 } });
+    expect(params.depthTransform).toEqual([1.12, 0, 0, 0]);
+  }
+  expect(writeParams({ ...args, controls: { ...args.controls, depthOpening: -1 } }).depthTransform[0]).toBe(1);
+  expect(writeParams({ ...args, controls: { ...args.controls, depthOpening: 2 } }).depthTransform[0]).toBe(1.12);
 });

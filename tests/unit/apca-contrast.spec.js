@@ -55,11 +55,12 @@ test("APCA roles", () => {
 		))).toBeGreaterThanOrEqual(75);
 	}
 
-	const light = readFileSync("packages/logo-renderer/src/renderer/shaders/postprocess/light-composite.wgsl", "utf8");
-	const dark = readFileSync("packages/logo-renderer/src/renderer/shaders/bloom/composite.wgsl", "utf8");
-	const lightFloor = Number(light.match(/MIN_LIGHT_DISPLAY_CHANNEL = ([\d.]+)/)?.[1]);
-	const darkCap = Number(dark.match(/MAX_DARK_DISPLAY_LUMA = ([\d.]+)/)?.[1]);
-	for (const [scheme, channel] of [["light", lightFloor], ["dark", darkCap]]) {
+	const layout = readFileSync("src/styles/sections-styles.ts", "utf8");
+	const heroRender = layout.slice(layout.indexOf("heroRender:"), layout.indexOf("heroInner:"));
+	const overlayOpacity = Number(heroRender.match(/opacity: \{ default: 1, "@media \(max-width: 1200px\)": ([\d.]+)/u)?.[1]);
+	expect(Number.isFinite(overlayOpacity)).toBe(true);
+	// Small-screen reflections leave copy readable.
+	for (const [scheme, channel] of [["light", 1 - overlayOpacity], ["dark", overlayOpacity]]) {
 		const hex = `#${Math.round(255 * channel).toString(16).padStart(2, "0").repeat(3)}`;
 		expect(Math.abs(apcaContrast(tokenHex("foreground", scheme), hex))).toBeGreaterThanOrEqual(75);
 	}

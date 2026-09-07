@@ -1,8 +1,8 @@
 import { baseStyles } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
 import { assets } from "../domain/asset";
-import { lazy, Suspense } from "react";
-import { LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
+import { lazy, Suspense, useLayoutEffect, type ReactNode } from "react";
+import { animate, LazyMotion, domAnimation, m, useAnimationControls, useReducedMotion } from "motion/react";
 import { machinePath, setupPath } from "../domain/route";
 import { CtaPair } from "../components/Links";
 import { motion } from "../domain/motion";
@@ -15,14 +15,20 @@ const HeroDemo = lazy(() =>
 	import("@local-studio/demo-ui/hero").then(({ HeroDemo: Workbench }) => ({ default: Workbench })),
 );
 
-const settle = { opacity: 1, y: 0, filter: "blur(0px)" };
-const resumeAfterDevReload =
-	!import.meta.env.PROD &&
-	(globalThis.sessionStorage?.getItem("localstudio:dev-reload") === "1" ||
-		globalThis.performance
-			?.getEntriesByType("navigation")
-			.some((entry) => entry.toJSON().type === "reload"));
-globalThis.sessionStorage?.removeItem("localstudio:dev-reload");
+function HeroEntrance({ delay, children, sx, id }: {
+	delay: number; children: ReactNode; sx?: stylex.StyleXStyles; id?: string;
+}) {
+	const reduced = useReducedMotion();
+	const controls = useAnimationControls();
+	useLayoutEffect(() => {
+		const update = (opacity: number) => controls.set({ opacity, y: 12 * (1 - opacity), filter: `blur(${6 * (1 - opacity)}px)` });
+		update(reduced ? 1 : 0);
+		if (reduced) return;
+		const playback = animate(0, 1, { ...motion.heroEnter, delay, onUpdate: update });
+		return () => playback.stop();
+	}, [controls, delay, reduced]);
+	return <m.div id={id} {...stylex.props(baseStyles.element, sx)} initial={false} animate={controls}>{children}</m.div>;
+}
 
 const fastClock = {
 	now: () => Date.now(),
@@ -45,12 +51,6 @@ function useHeroClock() {
 
 export function Hero() {
 	const clock = useHeroClock();
-	const reduceMotion = useReducedMotion();
-	const enter = (delay: number) => ({
-		initial: reduceMotion || resumeAfterDevReload ? false : { opacity: 0, y: 12, filter: "blur(6px)" },
-		animate: settle,
-		transition: { ...motion.heroEnter, delay },
-	});
 	return (
 		<LazyMotion features={domAnimation} strict>
 			<section
@@ -61,7 +61,7 @@ export function Hero() {
 				<LocalAiLogo />
 				<div {...stylex.props(baseStyles.element, styles.heroInner)}>
 					<div data-hero-copy {...stylex.props(baseStyles.element, styles.heroCopy)}>
-						<m.div {...stylex.props(baseStyles.element)} {...enter(0.12)}>
+						<HeroEntrance delay={0}>
 							<h1
 								id="landing-title"
 								tabIndex={-1}
@@ -87,26 +87,18 @@ export function Hero() {
 									</LocalLink>
 								</span>
 							</h1>
-						</m.div>
-						<m.div {...stylex.props(baseStyles.element)} {...enter(0.2)}>
+						</HeroEntrance>
+						<HeroEntrance delay={0.03}>
 							<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.heroThesis)}>
 								Private AI that works for you, not the cloud.
 							</p>
-						</m.div>
-						<m.div {...stylex.props(baseStyles.element, styles.heroActions)} {...enter(0.28)}>
+						</HeroEntrance>
+						<HeroEntrance delay={0.06} sx={styles.heroActions}>
 							<CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />
-						</m.div>
+						</HeroEntrance>
 					</div>
 				</div>
-				<m.div
-					{...stylex.props(baseStyles.element, 
-					baseStyles.sectionAnchor,
-					styles.sectionWidth,
-					styles.heroStage,
-				)}
-					id="product"
-					{...enter(0.75)}
-				>
+				<HeroEntrance delay={0.09} id="product" sx={[baseStyles.sectionAnchor, styles.sectionWidth, styles.heroStage]}>
 					<Suspense
 						fallback={
 							<div
@@ -124,7 +116,7 @@ export function Hero() {
 							<HeroDemo repositoryUrl={site.products.localStudio.repository} />
 						)}
 					</Suspense>
-				</m.div>
+				</HeroEntrance>
 			</section>
 		</LazyMotion>
 	);

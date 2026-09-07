@@ -1,7 +1,7 @@
 import { oriented_normal, env_reflect_dir, env_reflection_from_dir, encode_normal } from "../shared/material-core.wgsl";
 import { Params, WIRE_PASS_THRESHOLD } from "../shared/scene-params.wgsl";
 import { VertexInput, VertexOutput, glass_vs_main } from "../shared/glass-vertex.wgsl";
-import { pointer_reflection_reveal, shade_glass } from "../shared/glass-material.wgsl";
+import { shade_glass } from "../shared/glass-material.wgsl";
 import { ascii_imprint_coverage } from "../shared/ascii-imprint.wgsl";
 import { normalized_thickness, blurred_back_contribution } from "./back-refraction.wgsl";
 import { sample_paint, sample_ascii_voronoi } from "./paint-read.wgsl";
@@ -41,7 +41,7 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
 
   let n = oriented_normal(ngeo, v);
   let reflected = env_reflect_dir(n, v);
-  let reflectionReveal = pointer_reflection_reveal(input.clipPosition.xy, params.interaction);
+
 
   let materialKind = u32(clamp(round(params.materialKind), 0.0, 4.0));
   var glass = vec4f(0.0);
@@ -59,8 +59,9 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
       return vec4f(encode_normal(reflected), 1.0);
     }
     case 3u: {
-      // Polished dark chrome keeps enough normal-incidence reflectance for the
-      // sky and clouds to remain legible, then brightens toward grazing angles.
+      // Dark chrome mirroring the baked night-sky studio: the flat faces sit
+      // near-black so the cloud bodies, softbox streaks, and the sun glint
+      // carry the look, brightening toward grazing angles via Fresnel.
       let environment = env_reflection_from_dir(
         studioCube,
         studioSampler,
@@ -69,11 +70,11 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
         params.envPitch,
       );
       let edgeFresnel = pow(clamp(1.0 - dot(n, v), 0.0, 1.0), 5.0);
-      let metallicReflectance = mix(0.34, 1.0, edgeFresnel);
-      glass = vec4f(max(environment * metallicReflectance, vec3f(0.008, 0.012, 0.020)), 0.96);
+      let metallicReflectance = mix(0.16, 1.0, edgeFresnel);
+      glass = vec4f(max(environment * metallicReflectance, vec3f(0.006)), 0.92);
     }
     default: {
-      glass = shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, false, params.glassAbsorption, reflectionReveal);
+      glass = shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, false, params.glassAbsorption);
       let backSize = vec2i(textureDimensions(backMaterial));
       let pixel = vec2i(input.clipPosition.xy);
       if (all(pixel >= vec2i(0)) && all(pixel < backSize)) {

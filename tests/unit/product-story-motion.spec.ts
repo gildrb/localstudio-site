@@ -5,6 +5,7 @@ import {
 	storyOptionsTime,
 	storyPosition,
 	storySceneStates,
+	storySceneAnimation,
 } from "../../src/sections/product-story-motion";
 
 const sceneCount = 5;
@@ -19,12 +20,10 @@ function positionAt(scrollY: number, scrollRange = 1000) {
 	});
 }
 
-test("story position is finite, clamped, and gives every scene equal distance", () => {
-	expect(positionAt(-100)).toBe(0);
-	expect(positionAt(0)).toBe(0);
-	expect(positionAt(500)).toBe(2);
-	expect(positionAt(1000)).toBe(4);
-	expect(positionAt(2000)).toBe(4);
+test("position clamps and spaces scenes equally", () => {
+	for (const [scroll, expected] of [[-100, 0], [0, 0], [500, 2], [1000, 4], [2000, 4]] as const) {
+		expect(positionAt(scroll)).toBe(expected);
+	}
 	expect(positionAt(10, 0)).toBe(4);
 	expect(
 		storyPosition({
@@ -41,7 +40,7 @@ test("story position is finite, clamped, and gives every scene equal distance", 
 	}
 });
 
-test("story position and selection stay monotonic in both directions", () => {
+test("position is monotonic both ways", () => {
 	const forward = Array.from({ length: 1001 }, (_, index) => positionAt(index));
 	for (let index = 1; index < forward.length; index += 1) {
 		expect(forward[index]).toBeGreaterThanOrEqual(forward[index - 1] ?? 0);
@@ -52,23 +51,19 @@ test("story position and selection stay monotonic in both directions", () => {
 	}
 });
 
-test("hysteresis rejects threshold jitter and handles fast jumps", () => {
-	expect(storyIndex(0.519, 0, sceneCount)).toBe(0);
-	expect(storyIndex(0.521, 0, sceneCount)).toBe(1);
-	expect(storyIndex(0.481, 1, sceneCount)).toBe(1);
-	expect(storyIndex(0.479, 1, sceneCount)).toBe(0);
-	expect(storyIndex(4, 0, sceneCount)).toBe(4);
-	expect(storyIndex(0, 4, sceneCount)).toBe(0);
+test("hysteresis rejects jitter and permits jumps", () => {
+	for (const [position, current, expected] of [
+		[0.519, 0, 0], [0.521, 0, 1], [0.481, 1, 1], [0.479, 1, 0], [4, 0, 4], [0, 4, 0],
+	] as const) expect(storyIndex(position, current, sceneCount)).toBe(expected);
 });
 
-test("desktop options Motion scrub time is continuous and reversible", () => {
+test("desktop scrub is continuous", () => {
 	expect(storyOptionsTime(0, sceneCount)).toBe(0);
 	expect(storyOptionsTime(2, sceneCount)).toBe(0.5);
 	expect(storyOptionsTime(4, sceneCount)).toBe(1);
 });
 
-
-test("render state always includes five scenes and exactly one selected image", () => {
+test("all scenes mount; one is selected", () => {
 	for (const activeIndex of [-100, -1, 0, 1, 2, 3, 4, 5, 100]) {
 		const states = storySceneStates(activeIndex, sceneCount);
 		expect(states).toHaveLength(sceneCount);
@@ -78,30 +73,43 @@ test("render state always includes five scenes and exactly one selected image", 
 	expect(storySceneStates(0, 0)).toEqual([]);
 });
 
-test("scene visibility cannot be overridden by a scrub timeline or delayed mount", () => {
+test("Motion owns transitions; demos stay mounted", () => {
 	const component = readFileSync("src/sections/ProductStory.tsx", "utf8");
 	const controller = readFileSync("src/sections/use-product-story-motion.ts", "utf8");
-	const sectionStyles = readFileSync("src/styles/sections-styles.ts", "utf8");
-	const sceneStyles = sectionStyles.slice(
-		sectionStyles.indexOf("\tstoryDemoTransition:"),
-		sectionStyles.indexOf("\tstoryDemoPlaceholder:"),
-	);
-	expect(component).toContain('import { FeatureDemo } from "@local-studio/demo-ui/story"');
-	expect(component).toContain("sceneStates.map(({ index, selected })");
-	expect(component).toContain("selected && styles.storySelectedDemo");
-	expect(component).toContain("aria-hidden={!selected}");
-	expect(component).toContain("inert={!selected}");
-	expect(component).not.toContain("Suspense");
-	expect(component).not.toContain("lazy(");
-	expect(component).not.toContain("mountedSceneIndexes");
-	expect(controller).not.toContain("layerAnimations");
-	expect(controller).not.toContain("registerLayer");
-	expect(controller).not.toContain("opacity:");
-	expect(sceneStyles).toContain('visibility: "hidden"');
-	expect(sceneStyles).toContain('visibility: "visible"');
-	expect(sceneStyles).toContain('transitionProperty: "opacity, transform, visibility"');
-	expect(sceneStyles).toContain('[reducedMotion]: "0s"');
-	expect(component).toContain('styles.storyLayerOffset(index < activeIndex ? "-12px" : "12px")');
-	expect(controller).toContain("requestAnimationFrame(update)");
-	expect(controller).toContain('{ passive: true }');
+	const styles = readFileSync("src/styles/sections-styles.ts", "utf8");
+	const story = styles.slice(styles.indexOf("\tstory:"), styles.indexOf("\tscreenReaderOnly:"));
+	for (const text of [
+		'import { FeatureDemo } from "@local-studio/demo-ui/story"',
+		"sceneStates.map(({ index, selected })", "selected && styles.storySelectedDemo",
+		"aria-hidden={!selected}", "inert={!selected}", "<m.div", "<m.li", "<m.span",
+		"{...storySceneAnimation(index, activeIndex, reducedMotion)}",
+		"y: selected || reducedMotion ? 0 : 6",
+		"duration: reducedMotion ? 0 : motion.featureSwap.duration",
+	]) expect(component).toContain(text);
+	for (const text of ["Suspense", "lazy(", "mountedSceneIndexes"]) expect(component).not.toContain(text);
+	for (const text of ["layerAnimations", "registerLayer", "opacity:"]) expect(controller).not.toContain(text);
+	for (const text of ["requestAnimationFrame(update)", '{ passive: true }']) expect(controller).toContain(text);
+	for (const text of ['visibility: "hidden"', 'visibility: "visible"']) expect(story).toContain(text);
+	expect(story).not.toContain("transitionProperty:");
+});
+
+test("100ms fades; reduced motion snaps", () => {
+	for (const reduced of [false, true]) {
+		for (let active = 0; active < sceneCount; active += 1) {
+			for (let index = 0; index < sceneCount; index += 1) {
+				const { initial, animate, transition } = storySceneAnimation(index, active, reduced);
+				const selected = index === active;
+				const duration = reduced ? 0 : 0.1;
+				expect(initial).toBe(false);
+				expect(animate).toEqual({
+					opacity: selected ? 1 : 0,
+					visibility: selected ? "visible" : "hidden",
+					y: selected || reduced ? 0 : index < active ? -12 : 12,
+					scale: selected || reduced ? 1 : 0.995,
+				});
+				expect(transition.duration).toBe(duration);
+				expect(transition.visibility).toEqual({ duration: 0, delay: selected ? 0 : duration });
+			}
+		}
+	}
 });

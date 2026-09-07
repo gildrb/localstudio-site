@@ -2,7 +2,6 @@ import type { Surface } from "vgpu";
 import { clamp01, lerp } from "phase/ease";
 import { evePointerInteractionMode, mobileAutoEnvYaw } from "../mobile-motion";
 import {
-  DEFAULT_OBJECT_YAW,
   DEFAULT_PAINT_BRUSH_RADIUS,
   DEFAULT_PAINT_BRUSH_STRENGTH,
   DEFAULT_PAINT_DECAY_PER_FRAME_120,
@@ -21,8 +20,6 @@ import type { ControlsRef, HeroRuntimeState } from "./state";
 
 const ENV_ROTATION_LERP_SPEED = 2.5;
 const ASCII_MOUSE_LERP_SPEED = 6;
-const REFLECTION_REVEAL_ATTACK_SPEED = 10;
-const REFLECTION_REVEAL_RELEASE_SPEED = 5;
 const RIPPLE_DURATION_SECONDS = 1.0;
 const RIPPLE_STRENGTH = 18.0;
 const RIPPLE_IDLE_INTERVAL_MS = 2400;
@@ -39,17 +36,10 @@ const POINTER_OBJECT_PITCH_RANGE = 0.2;
 const MOBILE_OBJECT_YAW_RANGE = 0.28;
 const MOBILE_OBJECT_PITCH_RANGE = 0.08;
 
-export function reflectionRevealDampingAlpha(
-  current: number,
-  target: number,
-  deltaSeconds: number,
-) {
-  const speed =
-    target > current
-      ? REFLECTION_REVEAL_ATTACK_SPEED
-      : REFLECTION_REVEAL_RELEASE_SPEED;
-  const referenceFrameAlpha = Math.min(speed / 60, 1);
-  return 1 - Math.pow(1 - referenceFrameAlpha, Math.max(0, deltaSeconds) * 60);
+export function advanceDepthOpening(current: number, target: number, deltaSeconds: number) {
+  const step = Math.max(0, deltaSeconds) / 0.3;
+  if (Math.abs(target - current) <= step + Number.EPSILON * 4) return target;
+  return target > current ? current + step : current - step;
 }
 
 type Renderer = {
@@ -103,13 +93,10 @@ export function createDrawLoop({
       Math.abs(state.mouseEnvPitch - state.targetMouseEnvPitch) > SETTLE_EPSILON ||
       Math.abs(state.asciiMouseX - state.targetAsciiMouseX) > SETTLE_EPSILON ||
       Math.abs(state.asciiMouseY - state.targetAsciiMouseY) > SETTLE_EPSILON;
-    const targetReflectionReveal = state.isCoarsePointer
-      ? 0.5
-      : Number(state.pointerInsideCanvas);
-    const reflectionSettling =
-      Math.abs(state.reflectionReveal - targetReflectionReveal) > SETTLE_EPSILON;
+    const targetOpening = Number(state.depthReveal && !state.isCoarsePointer && state.pointerInsideCanvas);
+    const openingSettling = state.depthOpening !== targetOpening;
     const autoRotating =
-      evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw &&
+      (!state.staticPose && evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw) &&
       frameTime - state.autoRotateStartTime < MOBILE_AUTO_ROTATE_DURATION_MS;
     const paintSettling = frameTime - state.lastBrushMoveTime < PAINT_SETTLE_DURATION_MS;
     const idleRippleDue =
@@ -129,12 +116,12 @@ export function createDrawLoop({
       successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT &&
       !state.renderRequested &&
       !pointerSettling &&
-      !reflectionSettling &&
+      !openingSettling &&
       !autoRotating &&
       !paintSettling &&
       !rippleActive &&
-      // Hovering keeps the loop alive: idle ripples and the shimmer animate.
-      !state.pointerInsideCanvas
+      // Only pointer painting needs idle ripples and continuous shimmer.
+      !(state.paintOnHover && state.pointerInsideCanvas)
     ) {
       state.previousFrameTime = frameTime;
       return false;
@@ -146,8 +133,8 @@ export function createDrawLoop({
       Math.max(0, (frameTime - state.previousFrameTime) / 1000),
     );
     state.previousFrameTime = frameTime;
-    if (evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw) {
-      state.targetMouseEnvYaw = mobileAutoEnvYaw((frameTime - state.autoRotateStartTime) / 1000);
+    if ((!state.staticPose && evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw)) {
+      state.targetMouseEnvYaw = mobileAutoEnvYaw(Math.min(frameTime - state.autoRotateStartTime, MOBILE_AUTO_ROTATE_DURATION_MS) / 1000);
       state.targetMouseEnvPitch = 0;
       state.targetBrushActive = false;
     }
@@ -171,21 +158,17 @@ export function createDrawLoop({
       state.targetAsciiMouseY,
       clamp01(deltaSeconds * ASCII_MOUSE_LERP_SPEED),
     );
-    state.reflectionReveal = lerp(
-      state.reflectionReveal,
-      targetReflectionReveal,
-      reflectionRevealDampingAlpha(
-        state.reflectionReveal,
-        targetReflectionReveal,
-        deltaSeconds,
-      ),
-    );
+    if (successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT) {
+      state.depthOpening = advanceDepthOpening(state.depthOpening, targetOpening, deltaSeconds);
+    }
+    const opening = state.depthOpening;
+    controlsRef.current.depthOpening = opening * opening * (3 - 2 * opening);
     state.brushActive = state.targetBrushActive && state.hasBrushCell;
     controlsRef.current.envYaw = state.mouseEnvYaw;
     controlsRef.current.envPitch = state.mouseEnvPitch;
-    if (evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw) {
+    if ((!state.staticPose && evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw)) {
       controlsRef.current.yaw =
-        DEFAULT_OBJECT_YAW + Math.sin(state.mouseEnvYaw) * MOBILE_OBJECT_YAW_RANGE;
+        state.baseObjectYaw + Math.sin(state.mouseEnvYaw) * MOBILE_OBJECT_YAW_RANGE;
       controlsRef.current.pitch =
         Math.cos(state.mouseEnvYaw * 0.7) * MOBILE_OBJECT_PITCH_RANGE;
     } else {
@@ -193,7 +176,7 @@ export function createDrawLoop({
       // reads as turning away from the pointer. Invert both so the mark tracks
       // the cursor: cursor right -> face right, cursor up -> face up.
       controlsRef.current.yaw =
-        DEFAULT_OBJECT_YAW - state.asciiMouseX * POINTER_OBJECT_YAW_RANGE;
+        state.baseObjectYaw - state.asciiMouseX * POINTER_OBJECT_YAW_RANGE;
       controlsRef.current.pitch = state.asciiMouseY * POINTER_OBJECT_PITCH_RANGE;
     }
 
@@ -219,7 +202,6 @@ export function createDrawLoop({
           glyphScale: IMPRINT_GLYPH_SCALE,
           time: frameTime / 1000,
           mouse: [state.asciiMouseX, state.asciiMouseY],
-          reflectionReveal: state.reflectionReveal,
           devicePixelRatio,
           paint: {
             dt: deltaSeconds,
@@ -266,7 +248,7 @@ export function createDrawLoop({
     const frameTime = performance.now();
     state.previousFrameTime = frameTime;
     state.renderRequested = true;
-    if (evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw) {
+    if ((!state.staticPose && evePointerInteractionMode(state.isCoarsePointer).autoRotateEnvYaw)) {
       state.autoRotateStartTime = frameTime;
     }
   };

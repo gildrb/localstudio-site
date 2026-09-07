@@ -79,8 +79,6 @@ export function writeParams(args: {
     projectionPaddingRadius,
     imprint.devicePixelRatio,
   );
-  const pointerX = Math.max(-1, Math.min(1, imprint.mouse?.[0] ?? 0));
-  const pointerY = Math.max(-1, Math.min(1, imprint.mouse?.[1] ?? 0));
   const ascii0 = [
     Math.max(0, Math.min(1, imprint.progress ?? 0)),
     metrics.gridScale,
@@ -92,12 +90,6 @@ export function writeParams(args: {
     imprint.mouse?.[1] ?? 0,
     metrics.originCell[0],
     metrics.originCell[1],
-  ];
-  const interaction = [
-    projectionPaddingRadius + logicalWidth * (0.5 + pointerX * 0.5),
-    projectionPaddingRadius + logicalHeight * (0.5 + pointerY * 0.75),
-    Math.max(0, Math.min(1, imprint.reflectionReveal ?? 0)),
-    Math.min(logicalWidth, logicalHeight) * 0.3,
   ];
   return {
     viewProj,
@@ -115,6 +107,6 @@ export function writeParams(args: {
     glassAbsorption: isLight ? 0 : 1,
     ascii0,
     ascii1,
-    interaction,
+    depthTransform: [1 + Math.max(0, Math.min(1, controls.depthOpening ?? 0)) * 0.12, 0, 0, 0],
   };
 }

@@ -23,10 +23,6 @@ struct VertexOutput {
 
 @group(0) @binding(0) var<uniform> params: CubeParams;
 
-// Cloud-sky base layer. The site wants "freedom": a metallic mark mirroring an
-// open sky. The sky (gradient + FBM clouds + sun) is baked here, once, under
-// the eve.dev HDR softbox layer; per-frame material shaders only sample the
-// baked cubemap array, so runtime cost is a plain texture fetch.
 
 const SUN_DIRECTION = vec3f(0.32, 0.44, 0.84);
 const WIND_OFFSET = vec2f(2.7, -1.4);
@@ -43,10 +39,6 @@ fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
   let p = xy[vertexIndex];
   var output: VertexOutput;
   output.clipPosition = vec4f(p, 0.0, 1.0);
-  // The rasterizer writes clip-top (p.y = +1) to texel row 0, but cube_dir/cube_lookup_uv_face
-  // treat uv.y as texture-v growing DOWNWARD (p.y = 2v-1). Without flipping v here, the baked
-  // face is stored vertically mirrored relative to how the sampler reads it, which inverts +Y
-  // and disagrees with the /cube-camera rasterized capture. Flip v so bake matches read.
   output.uv = vec2f(p.x * 0.5 + 0.5, 0.5 - p.y * 0.5);
   return output;
 }
@@ -54,10 +46,6 @@ fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
 fn spot(dir: vec3f, center: vec3f, radius: f32, softness: f32, luminance: f32, color: vec3f, intensity: f32) -> vec3f {
   let d = distance(normalize(dir), normalize(center));
   let soft = clamp(softness, 0.0, 1.0);
-  // Gaussian softboxes keep an HDR tail instead of clamping to exact zero at radius.
-  // This avoids content-driven hard cuts in reflected highlights when only one or two
-  // manually edited lights are enabled. Radius still controls apparent card size;
-  // softness widens/narrows the falloff without changing the desaturated white color.
   let sigma = max(radius * mix(0.35, 0.85, soft), 0.001);
   let t = exp(-0.5 * (d / sigma) * (d / sigma));
   // Units are scene-linear relative cd/m^2-ish values.
@@ -98,10 +86,6 @@ fn fbm(p: vec2f) -> f32 {
 }
 
 fn cloud_field(dir: vec3f) -> vec2f {
-  // Perspective projection of a cloud layer at fixed altitude: the view ray
-  // hits the layer plane far away near the horizon, compressing detail there.
-  // Returns (coverage, detail); detail doubles as a thickness proxy for
-  // shading: thin edges glow, thick cores darken.
   let uv = dir.xz / (dir.y + 0.12) * 1.15 + WIND_OFFSET;
   let shape = fbm(uv * 0.55);
   let detail = fbm(uv * 1.35 + vec2f(3.7, 1.1));
@@ -111,10 +95,9 @@ fn cloud_field(dir: vec3f) -> vec2f {
 
 fn sky_radiance(dir: vec3f) -> vec3f {
   let y = dir.y;
-  // Clear blue vertical gradient, scene-linear. The saturated sky separates
-  // from the black page while keeping the chrome silhouette dark.
-  let zenith = vec3f(0.035, 0.110, 0.300);
-  let horizon = vec3f(0.300, 0.560, 0.900);
+  let day = params._pad0;
+  let zenith = mix(vec3f(0.020, 0.045, 0.100), vec3f(0.120, 0.120, 0.115), day);
+  let horizon = mix(vec3f(0.220, 0.300, 0.420), vec3f(0.600, 0.580, 0.550), day);
   let horizonWeight = pow(1.0 - clamp(y, 0.0, 1.0), 2.2);
   var radiance = mix(zenith, horizon, horizonWeight);
 
@@ -123,10 +106,13 @@ fn sky_radiance(dir: vec3f) -> vec3f {
   if (y > 0.015) {
     let field = cloud_field(dir);
     let density = field.x;
-    // Bright cloud tops and blue-grey cores stay readable on the metal.
+    // Moonlit cloud tops against steel-grey thick cores, with a clear
+    // silver-lining forward-scatter toward the sun.
     let thickness = clamp(field.y * 0.9 + 0.25, 0.0, 1.0);
-    let body = mix(vec3f(0.820, 0.900, 1.000), vec3f(0.150, 0.240, 0.390), thickness);
-    let silverLining = pow(max(cosSun, 0.0), 4.0) * 0.48;
+    let body = mix(
+      mix(vec3f(0.420, 0.460, 0.520), vec3f(0.650, 0.640, 0.620), day),
+      mix(vec3f(0.090, 0.105, 0.135), vec3f(0.180, 0.175, 0.170), day), thickness);
+    let silverLining = pow(max(cosSun, 0.0), 4.0) * 0.30;
     let cloudColor = body + vec3f(silverLining);
     // Clouds compress into haze at the horizon instead of aliasing.
     let horizonFade = smoothstep(0.015, 0.18, y);
@@ -137,6 +123,14 @@ fn sky_radiance(dir: vec3f) -> vec3f {
   // the pointer rotates the environment, plus a restrained atmospheric halo.
   radiance += vec3f(1.0, 0.97, 0.92) * pow(max(cosSun, 0.0), 1400.0) * 26.0;
   radiance += vec3f(0.9, 0.95, 1.0) * pow(max(cosSun, 0.0), 9.0) * 0.18;
+
+  if (y < 0.0) {
+    // Below the horizon: near-black water/ground keeps reflection contrast.
+    let ground = mix(
+      mix(vec3f(0.020, 0.024, 0.032), vec3f(0.100, 0.095, 0.085), day),
+      mix(vec3f(0.004, 0.005, 0.008), vec3f(0.025, 0.024, 0.022), day), smoothstep(0.0, -0.45, y));
+    radiance = mix(radiance * 0.55, ground, smoothstep(0.0, -0.06, y));
+  }
 
   return radiance;
 }

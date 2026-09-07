@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, expect, test } from "bun:test";
 import { sourceStamp } from "../../scripts/build.mjs";
+import { createBuildPipeline } from "../../scripts/bun-plugins.mjs";
 
 const directories: string[] = [];
 
@@ -24,4 +25,21 @@ test("source stamps ignore read-only filesystem events", () => {
 
 	writeFileSync(file, "changed asset");
 	expect(sourceStamp([root])).not.toBe(before);
+});
+
+
+test("rebuild resolves changed WGSL dependencies", async () => {
+	const root = mkdtempSync(path.join(tmpdir(), "localstudio-wgsl-"));
+	directories.push(root);
+	const entry = path.join(root, "main.ts");
+	const dependency = path.join(root, "color.wgsl");
+	writeFileSync(entry, 'export { default } from "./main.wgsl";');
+	writeFileSync(path.join(root, "main.wgsl"), 'import { shade } from "./color.wgsl"; @fragment fn main() -> @location(0) vec4f { return shade(); }');
+	for (const color of ["0.125", "0.875"]) {
+		writeFileSync(dependency, `export fn shade() -> vec4f { return vec4f(${color}); }`);
+		const { plugins } = createBuildPipeline({ dev: true });
+		const result = await Bun.build({ entrypoints: [entry], target: "browser", plugins });
+		expect(result.success).toBe(true);
+		expect(await result.outputs[0]!.text()).toContain(color);
+	}
 });

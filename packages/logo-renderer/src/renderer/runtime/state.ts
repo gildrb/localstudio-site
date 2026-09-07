@@ -34,9 +34,11 @@ export type HeroRuntimeState = {
   rippleStartTime: number;
   lastRippleSpawnTime: number;
   pointerInsideCanvas: boolean;
-  reflectionReveal: number;
   isCoarsePointer: boolean;
   paintOnHover: boolean;
+  depthReveal: boolean;
+  depthOpening: number;
+  baseObjectYaw: number;
   staticPose: boolean;
 };
 

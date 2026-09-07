@@ -1,4 +1,26 @@
+import { motion } from "../domain/motion";
+
 export const STORY_HYSTERESIS = 0.02;
+
+export function storySceneAnimation(index: number, activeIndex: number, reducedMotion: boolean) {
+	const selected = index === activeIndex;
+	const duration = reducedMotion ? 0 : motion.featureSwap.duration;
+	return {
+		initial: false as const,
+		animate: {
+			opacity: selected ? 1 : 0,
+			y: selected || reducedMotion ? 0 : index < activeIndex ? -12 : 12,
+			scale: selected || reducedMotion ? 1 : 0.995,
+			visibility: selected ? "visible" as const : "hidden" as const,
+		},
+		transition: {
+			...motion.featureSwap,
+			duration,
+			// Keep the outgoing scene visible until its fade completes.
+			visibility: { duration: 0, delay: selected ? 0 : duration },
+		},
+	};
+}
 
 function clamp(value: number, minimum: number, maximum: number) {
 	return Math.min(Math.max(value, minimum), maximum);

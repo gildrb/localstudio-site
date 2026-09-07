@@ -31,7 +31,6 @@ import {
 	syncPointerInteractionMode,
 } from "./runtime/pointer-input";
 import type { HeroRuntimeState } from "./runtime/state";
-import { ENV_BASE_YAW } from "./runtime/environment-input";
 
 const LOGO_VIEWPORT_ASPECT = 1.52;
 
@@ -40,7 +39,7 @@ const DEFAULT_CONTROLS: RenderControls = {
 	pitch: 0,
 	radius: cameraRadiusForFov(DEFAULT_CAMERA_FOV),
 	fov: DEFAULT_CAMERA_FOV,
-	envYaw: ENV_BASE_YAW,
+	envYaw: 0,
 	envPitch: 0,
 	insideRendering: true,
 	outsideRendering: true,
@@ -119,16 +118,20 @@ type RuntimeOwner = {
 
 export type LogoRendererAssets = {
 	modelUrl: string;
-	fallbackUrl: string;
+	fallbackUrl?: string | undefined;
 	dayUrl: string;
 	nightUrl: string;
 };
 
 // Static first-frame poster on the exact canvas stage. The site shows it until
 // the live renderer reports its first frame (see onFirstFrame).
-export function LogoPoster({ dayUrl, nightUrl }: { dayUrl: string; nightUrl: string }) {
+export function LogoPoster({ dayUrl, nightUrl, sx }: {
+	dayUrl: string;
+	nightUrl: string;
+	sx?: stylex.StyleXStyles | undefined;
+}) {
 	return (
-		<div {...stylex.props(rendererStyles.element, rendererStyles.container)}>
+		<div {...stylex.props(rendererStyles.element, rendererStyles.container, sx)}>
 			<picture {...stylex.props(rendererStyles.element, rendererStyles.layer)}>
 				<source media="(prefers-color-scheme: dark)" srcSet={nightUrl} />
 				<img
@@ -149,12 +152,18 @@ export function LogoPoster({ dayUrl, nightUrl }: { dayUrl: string; nightUrl: str
 export type LocalAiLogoShaderProps = LogoRendererAssets & {
 	/** Fires once when the live canvas has produced its first frame. */
 	onFirstFrame?: (() => void) | undefined;
+	/** Lets the host restore its poster after renderer failure. */
+	onFallback?: (() => void) | undefined;
 	/** Stage layout override (position/size) applied after the default stage. */
-	sx?: Parameters<typeof stylex.props>[0] | undefined;
+	sx?: stylex.StyleXStyles | undefined;
 	/** Camera framing aspect; defaults to the hero stage's 1.52. */
 	viewportAspect?: number | undefined;
 	/** Enables the pointer-painted square imprint. */
 	paintOnHover?: boolean | undefined;
+	/** Opens the rear glass depth briefly on entry and pointer interaction. */
+	depthReveal?: boolean | undefined;
+	material?: "glass" | "metallic" | undefined;
+	environment?: "sky" | "studio" | undefined;
 	/** Locks the canonical environment for decorative instances; the object still follows the cursor. */
 	staticPose?: boolean | undefined;
 };
@@ -165,9 +174,13 @@ export function LocalAiLogoShader({
 	dayUrl,
 	nightUrl,
 	onFirstFrame,
+	onFallback,
 	sx,
 	viewportAspect = LOGO_VIEWPORT_ASPECT,
 	paintOnHover = true,
+	depthReveal = false,
+	material = "glass",
+	environment = "sky",
 	staticPose = false,
 }: LocalAiLogoShaderProps) {
 	const prefersReducedMotion = usePrefersReducedMotion();
@@ -176,7 +189,7 @@ export function LocalAiLogoShader({
 	const containerRef = useRef<HTMLDivElement>(null);
 	const { size: containerSize } = useSize({ ref: containerRef });
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const controlsRef = useRef<RenderControls>({ ...DEFAULT_CONTROLS });
+	const controlsRef = useRef<RenderControls>({ ...DEFAULT_CONTROLS, material });
 	const canvasLayoutRef = useRef<CanvasLayout>(INITIAL_CANVAS_LAYOUT);
 	const devicePixelRatioRef = useRef(1);
 	const coarsePointerRef = useSyncedRef(coarsePointer);
@@ -200,6 +213,7 @@ export function LocalAiLogoShader({
 	const handleFallback = useStableCallback(() => {
 		window.clearTimeout(fallbackPlaceholderTimerRef.current);
 		setFallbackVisible(true);
+		onFallback?.();
 	});
 	const resetLayers = useStableCallback(() => {
 		setFallbackVisible(false);
@@ -284,10 +298,21 @@ export function LocalAiLogoShader({
 			rippleStartTime: Number.NEGATIVE_INFINITY,
 			lastRippleSpawnTime: Number.NEGATIVE_INFINITY,
 			pointerInsideCanvas: false,
-			reflectionReveal: coarsePointerRef.current ? 0.5 : 0,
 			isCoarsePointer: coarsePointerRef.current,
 			paintOnHover,
+			depthReveal,
+			depthOpening: depthReveal ? 1 : 0,
+			baseObjectYaw: material === "metallic" ? 0 : DEFAULT_OBJECT_YAW,
 		};
+		controlsRef.current.material = material;
+		controlsRef.current.insideRendering = material === "glass";
+		controlsRef.current.yaw = state.baseObjectYaw;
+		if (staticPose) {
+			state.mouseEnvYaw = 0;
+			state.targetMouseEnvYaw = 0;
+			state.mouseEnvPitch = 0;
+			state.targetMouseEnvPitch = 0;
+		}
 		stateRef.current = state;
 
 		resetLayers();
@@ -377,9 +402,11 @@ export function LocalAiLogoShader({
 			});
 			let environmentAtlas: ImageBitmap | undefined;
 			try {
-				const environmentUrl = prefersDarkScheme ? nightUrl : dayUrl;
-				const response = await fetch(environmentUrl);
-				if (response.ok) environmentAtlas = await createImageBitmap(await response.blob());
+				if (environment === "sky") {
+					const environmentUrl = prefersDarkScheme ? nightUrl : dayUrl;
+					const response = await fetch(environmentUrl);
+					if (response.ok) environmentAtlas = await createImageBitmap(await response.blob());
+				}
 			} catch {
 				// The generated cubemap remains available when the image cannot load.
 			}
@@ -389,9 +416,11 @@ export function LocalAiLogoShader({
 				return;
 			}
 			const rendererOptions: NonNullable<Parameters<typeof createEve5Renderer>[2]> = {
-				theme: prefersDarkScheme ? "dark" : "light",
-				bloom: false,
-				backRefraction: true,
+				// Day/night selects the sky atlas, not a pale mask composite.
+				theme: "dark",
+				environmentTheme: prefersDarkScheme ? "dark" : "light",
+				bloom: true,
+				backRefraction: material === "glass",
 			};
 			if (environmentAtlas) rendererOptions.environmentAtlas = environmentAtlas;
 			const renderer = createEve5Renderer(gpu, mesh, rendererOptions);
@@ -469,6 +498,9 @@ export function LocalAiLogoShader({
 		dayUrl,
 		nightUrl,
 		paintOnHover,
+		depthReveal,
+		material,
+		environment,
 		coarsePointerRef,
 		handleCanvasRevealed,
 		handleFallback,
@@ -483,19 +515,21 @@ export function LocalAiLogoShader({
 			{...stylex.props(rendererStyles.element, rendererStyles.container, sx)}
 			aria-hidden="true"
 		>
-			<img
-				{...stylex.props(
-					rendererStyles.element,
-					rendererStyles.layer,
-					rendererStyles.fallback,
-					fallbackVisible && rendererStyles.fallbackVisible,
-				)}
-				src={fallbackUrl}
-				alt=""
-				width="525"
-				height="525"
-				draggable={false}
-			/>
+			{fallbackUrl ? (
+				<img
+					{...stylex.props(
+						rendererStyles.element,
+						rendererStyles.layer,
+						rendererStyles.fallback,
+						fallbackVisible && rendererStyles.fallbackVisible,
+					)}
+					src={fallbackUrl}
+					alt=""
+					width="525"
+					height="525"
+					draggable={false}
+				/>
+			) : null}
 			<canvas
 				ref={canvasRef}
 				{...stylex.props(

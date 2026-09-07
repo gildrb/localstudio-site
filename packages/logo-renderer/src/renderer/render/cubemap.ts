@@ -130,11 +130,12 @@ export function renderStudioCubemap(
   cubemap: StudioCubemap,
   lights: readonly EnvLightConfig[],
   globalIntensity = 1,
+  daylight = false,
 ) {
   const bakes = Array.from({ length: CUBE_FACE_COUNT }, (_, face) =>
     effect(gpu, eveCubemap, {
       label: `eve-5-studio-cubemap-bake-${face}`,
-      set: { params: cubeParams(face, lights, globalIntensity) },
+      set: { params: cubeParams(face, lights, globalIntensity, daylight) },
     }),
   );
   frame(gpu, (current) => {
@@ -146,6 +147,7 @@ function cubeParams(
   face: number,
   lights: readonly EnvLightConfig[],
   globalIntensity: number,
+  daylight: boolean,
 ) {
   if (lights.length > CUBE_MAX_LIGHTS)
     throw new Error(
@@ -169,7 +171,7 @@ function cubeParams(
   return {
     face,
     lightCount: lights.length,
-    _pad0: 0,
+    _pad0: Number(daylight),
     _pad1: 0,
     lights: packed,
   };
@@ -178,10 +180,12 @@ export function cubeParamsData(
   face: number,
   lights: readonly EnvLightConfig[],
   globalIntensity: number,
+  daylight = false,
 ) {
   const data = new Float32Array(4 + CUBE_MAX_LIGHTS * 12);
   data[0] = face;
   data[1] = lights.length;
+  data[2] = Number(daylight);
   lights.forEach((light, index) => {
     const [r, g, b] = lightColorLinear(light),
       o = 4 + index * 12;

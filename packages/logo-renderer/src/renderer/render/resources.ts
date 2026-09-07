@@ -24,6 +24,7 @@ export function createResources(
   options: {
     thicknessScale?: number;
     theme?: "light" | "dark";
+    environmentTheme?: "light" | "dark";
     paddingRadius?: number;
     bloom?: boolean;
     environmentAtlas?: StudioCubemapAtlas;
@@ -38,6 +39,8 @@ export function createResources(
       gpu,
       studioCubemap,
       isLight ? EVE_LIGHT_ENV_LIGHTS : EVE_DARK_ENV_LIGHTS,
+      1,
+      options.environmentTheme === "light",
     );
   const gpuMesh = createGpuMesh(gpu, mesh);
   const pipelines = createPipelines(gpu, gpuMesh);

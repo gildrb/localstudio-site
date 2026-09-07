@@ -25,6 +25,7 @@ export function createEve5Renderer(
   options: {
     thicknessScale?: number;
     theme?: "light" | "dark";
+    environmentTheme?: "light" | "dark";
     paddingRadius?: number;
     bloom?: boolean;
     backRefraction?: boolean;
@@ -142,21 +143,7 @@ export function createEve5Renderer(
         Math.max(0, Math.round(pad / 2)),
       );
       t.bloom.swap();
-      const mouse = im.mouse ?? [0, 0];
-      const light: readonly [number, number] = [
-        0.3 + mouse[0] * 0.16,
-        0.24 - mouse[1] * 0.14,
-      ];
-      renderComposite(
-        f,
-        r,
-        out,
-        t,
-        t.bloom.read.color,
-        strength,
-        im.time ?? 0,
-        light,
-      );
+      renderComposite(f, r, out, t, t.bloom.read.color, strength);
     });
   };
   return {

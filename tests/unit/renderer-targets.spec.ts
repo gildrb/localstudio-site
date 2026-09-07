@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { cubeParamsData } from "../../packages/logo-renderer/src/renderer/render/cubemap";
 import { init } from "../../packages/logo-renderer/node_modules/vgpu/dist/mock.js";
 import { createBloomTargetCache } from "../../packages/logo-renderer/src/renderer/render/targets";
 
@@ -15,4 +16,14 @@ test("rear camera depth uses one full-precision channel", async () => {
 
 	cache.dispose();
 	gpu.dispose();
+});
+
+
+test("day studio palette uses the reserved uniform without changing the night rig", () => {
+  const night = cubeParamsData(2, [], 1);
+  const day = cubeParamsData(2, [], 1, true);
+  expect(night[2]).toBe(0);
+  expect(day[2]).toBe(1);
+  day[2] = 0;
+  expect(day).toEqual(night);
 });

@@ -62,8 +62,8 @@ export const times = stylex.defineVars({
 		"@media (prefers-reduced-motion: reduce)": "0.01ms",
 	}),
 	feature: stylex.types.time({
-		default: "450ms",
-		"@media (prefers-reduced-motion: reduce)": "0.01ms",
+		default: "100ms",
+		"@media (prefers-reduced-motion: reduce)": "0s",
 	}),
 });
 

@@ -4,7 +4,7 @@
 // 24-26 cameraUp, 27 aspect, 28-30 cameraForward, 31 materialKind,
 // 32 thicknessScale, 33 envYaw, 34 envPitch, 35 glassAbsorption,
 // 36 imprintProgress, 37 gridScale, 38 glyphScale, 39 time,
-// 40-41 mouse, 42-43 originCell, 44-45 pointer pixels, 46 reveal, 47 radius.
+// 40-41 mouse, 42-43 originCell, 44 rear depth scale, 45-47 reserved.
 
 export struct Params {
   viewProj: mat4x4f,
@@ -24,8 +24,8 @@ export struct Params {
   ascii0: vec4f,
   // x/y = normalized mouse offset; z/w = origin cell.
   ascii1: vec4f,
-  // x/y = pointer in padded target pixels; z = reflection reveal; w = reveal radius pixels.
-  interaction: vec4f,
+  // x = rear depth scale; y/z/w reserved.
+  depthTransform: vec4f,
 };
 
 export const WIRE_PASS_THRESHOLD = 1.5;

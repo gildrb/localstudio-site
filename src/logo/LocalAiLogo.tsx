@@ -1,19 +1,19 @@
 import { lazy, Suspense, useState } from "react";
 import { LogoPoster } from "@local-ai/logo-renderer/react";
 import { assets } from "../domain/asset";
+import { styles } from "../styles/sections-styles";
 
 const Shader = lazy(() => import("./shader"));
 
-// Poster renders outside the Suspense boundary for the first client paint.
 export function LocalAiLogo() {
 	const [ready, setReady] = useState(false);
 	return (
 		<>
 			<Suspense fallback={null}>
-				<Shader onFirstFrame={() => setReady(true)} />
+				<Shader onFirstFrame={() => setReady(true)} onFallback={() => setReady(false)} />
 			</Suspense>
 			{!ready && (
-				<LogoPoster dayUrl={assets.heroRenderDay} nightUrl={assets.heroRenderNight} />
+				<LogoPoster sx={styles.heroRender} dayUrl={assets.heroRenderDay} nightUrl={assets.heroRenderNight} />
 			)}
 		</>
 	);

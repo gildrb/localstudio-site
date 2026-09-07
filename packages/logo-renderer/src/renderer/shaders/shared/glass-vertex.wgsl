@@ -19,12 +19,14 @@ export struct VertexOutput {
 
 export fn glass_vs_main(input: VertexInput, params: Params) -> VertexOutput {
   var output: VertexOutput;
-  output.clipPosition = params.viewProj * vec4f(input.position, 1.0);
-  output.normal = normalize(input.normal);
-  output.viewDir = normalize(params.cameraPos - input.position);
-  // Depth along the camera forward axis in object/world space. Unlike view-space distance,
-  // this is independent of orbit radius, so front/back subtraction gives stable thickness.
-  output.cameraAxisDepth = dot(input.position, normalize(params.cameraForward));
-  output.modelPos = input.position;
+  // GPU mesh coordinates anchor the front at z=0. Open only the rear depth,
+  // preserving the front outline and keeping every depth/material pass aligned.
+  let depthScale = params.depthTransform.x;
+  let position = input.position * vec3f(1.0, 1.0, depthScale);
+  output.clipPosition = params.viewProj * vec4f(position, 1.0);
+  output.normal = normalize(input.normal / vec3f(1.0, 1.0, depthScale));
+  output.viewDir = normalize(params.cameraPos - position);
+  output.cameraAxisDepth = dot(position, normalize(params.cameraForward));
+  output.modelPos = position;
   return output;
 }

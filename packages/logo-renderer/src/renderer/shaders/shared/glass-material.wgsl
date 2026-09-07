@@ -4,7 +4,7 @@ import { env_reflection_from_dir } from "./material-core.wgsl";
 // spectral separation. The back and front mesh passes apply this at both interfaces.
 const IOR = 1.2;
 const ROUGHNESS = 0.015;
-const DISPERSION_SPREAD = 0.075;
+const DISPERSION_SPREAD = 0.035;
 
 export fn dielectric_fresnel_schlick(cosTheta: f32, f0: vec3f) -> vec3f {
   let m = clamp(1.0 - cosTheta, 0.0, 1.0);
@@ -51,19 +51,9 @@ fn dispersed_transmission(
 }
 
 fn grade_transmitted_light(radiance: vec3f) -> vec3f {
-  // The supplied LDR sky atlases have compressed dark values. Restore a
-  // studio-like light-to-shadow range only in transmission; reflected cards
-  // retain their current color and intensity.
   let luminance = dot(radiance, vec3f(0.2126, 0.7152, 0.0722));
-  let lighting = mix(0.58, 1.16, smoothstep(0.12, 0.75, luminance));
+  let lighting = mix(0.48, 1.06, smoothstep(0.12, 0.75, luminance));
   return radiance * lighting;
-}
-
-export fn pointer_reflection_reveal(fragmentPosition: vec2f, interaction: vec4f) -> f32 {
-  let radius = max(interaction.w, 1.0);
-  let distanceFromPointer = distance(fragmentPosition, interaction.xy);
-  let localReveal = 1.0 - smoothstep(radius * 0.2, radius, distanceFromPointer);
-  return localReveal * clamp(interaction.z, 0.0, 1.0);
 }
 
 export fn shade_glass(
@@ -76,7 +66,6 @@ export fn shade_glass(
   envPitch: f32,
   inside: bool,
   absorptionStrength: f32,
-  reflectionReveal: f32,
 ) -> vec4f {
   let ndotv = clamp(dot(n, v), 0.0, 1.0);
   let f0 = pow((IOR - 1.0) / (IOR + 1.0), 2.0);
@@ -88,62 +77,14 @@ export fn shade_glass(
   let baseThickness = select(0.20, 0.12, inside);
   let thickness = clamp(baseThickness / max(ndotv, 0.08), 0.04, 2.0);
   let absorption = beer_lambert_transmittance(vec3f(0.14) * absorptionStrength, thickness);
-  let transmission = transmittedLight * absorption;
-
-  // A dark environment direction must not turn transparent glass into a black
-  // cutout. Fill only missing grazing reflection from nearby transmission.
+  let transmission = transmittedLight * absorption * (vec3f(1.0) - fresnel);
   let rimWeight = pow(clamp(1.0 - ndotv, 0.0, 1.0), 3.0);
-  let rimFloor = transmittedLight * 0.12;
+  let rimFloor = transmittedLight * 0.22;
   let seamlessReflection = mix(reflection, max(reflection, rimFloor), rimWeight);
-  let grazing = pow(clamp(1.0 - ndotv, 0.0, 1.0), 1.35);
-
-  // Thin-film interference alters Fresnel reflectance per wavelength. It is
-  // visible only where the cursor reveals a bright environment reflection.
-  let reflectionLuminance = dot(reflection, vec3f(0.2126, 0.7152, 0.0722));
-  let studioLight = smoothstep(0.36, 0.84, reflectionLuminance);
-  let filmThicknessNm = 390.0 + (0.5 + reflected.y * 0.5) * 110.0;
-  let opticalPath = 12.566371 * 1.34 * filmThicknessNm * max(ndotv, 0.08);
-  let spectralResponse = 0.5 + 0.5 * cos(
-    opticalPath / vec3f(650.0, 510.0, 475.0)
-  );
-  let filmAmount = reflectionReveal * studioLight * (0.025 + grazing * 0.16);
-  let filmReflectance = filmAmount * mix(vec3f(0.08), spectralResponse, 0.82);
-  let fresnelRgb = clamp(
-    fresnel + (vec3f(1.0) - fresnel) * filmReflectance,
-    vec3f(0.0),
-    vec3f(1.0),
-  );
-  let physicalGlass =
-    transmission * (vec3f(1.0) - fresnelRgb) + seamlessReflection * fresnelRgb;
-
-  // Preserve the footprint of the reflected light without adding a halo or
-  // tinting the unlit material. Screen blending stays inside the glass only.
-  let highlightStrength = studioLight * reflectionReveal * (0.12 + grazing * 0.22);
-  let pointerLightColor = mix(
-    vec3f(0.92),
-    spectralResponse * 1.05,
-    0.12 + studioLight * 0.16,
-  );
-  let pointerHighlight = pointerLightColor
-    * reflectionReveal
-    * (0.16 + (1.0 - grazing) * 0.22);
-  let reflectedHighlight = clamp(
-    seamlessReflection * highlightStrength + pointerHighlight,
-    vec3f(0.0),
-    vec3f(1.0),
-  );
-  let revealedGlass = vec3f(1.0) - (
-    (vec3f(1.0) - clamp(physicalGlass, vec3f(0.0), vec3f(1.0)))
-    * (vec3f(1.0) - reflectedHighlight)
-  );
-
-  // At rest the page shows through. Hover raises only the local material
-  // coverage, so the cursor appears to catch an otherwise impossible object.
-  let restOpacity = mix(0.018, 0.10, grazing);
-  let litOpacity = mix(0.34, 0.68, grazing);
-  let opacity = mix(restOpacity, litOpacity, reflectionReveal);
+  let grazing = pow(clamp(1.0 - ndotv, 0.0, 1.0), 0.65);
+  let opacity = mix(0.36, 0.86, grazing);
   return vec4f(
-    revealedGlass,
-    select(opacity, opacity * 0.6, inside),
+    transmission + seamlessReflection * fresnel,
+    select(opacity, opacity * 0.65, inside),
   );
 }

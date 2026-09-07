@@ -63,12 +63,13 @@ export type ImprintRenderOptions = {
   glyphScale?: number;
   time?: number;
   mouse?: readonly [number, number];
-  reflectionReveal?: number;
   paint?: PaintRenderOptions;
   devicePixelRatio?: number;
 };
 
 export type RenderControls = {
+  /** Smooth opening amount, 0–1; rear depth extends by at most 12%. */
+  depthOpening?: number;
   yaw: number;
   pitch: number;
   radius: number;

@@ -13,6 +13,7 @@ type MotionControls = ReturnType<typeof animate>;
 export function useProductStoryMotion(sceneCount: number) {
 	const reducedMotion = useReducedMotion() ?? false;
 	const [activeIndex, setActiveIndex] = useState(0);
+	const [mobile, setMobile] = useState<boolean | null>(null);
 	const activeIndexRef = useRef(0);
 	const showcaseRef = useRef<HTMLDivElement>(null);
 	const optionsRef = useRef<HTMLOListElement>(null);
@@ -24,7 +25,7 @@ export function useProductStoryMotion(sceneCount: number) {
 		if (optionsAnimation.current) {
 			optionsAnimation.current.time = storyOptionsTime(position, sceneCount);
 		}
-	}, []);
+	}, [sceneCount]);
 
 	useEffect(() => {
 		const showcase = showcaseRef.current;
@@ -42,6 +43,7 @@ export function useProductStoryMotion(sceneCount: number) {
 		const mobileQuery = window.matchMedia(MOBILE_STORY_QUERY);
 
 		const rebuildResponsiveMotion = () => {
+			setMobile(mobileQuery.matches);
 			optionsAnimation.current?.cancel();
 			optionsAnimation.current = null;
 			if (!mobileQuery.matches) {
@@ -147,12 +149,14 @@ export function useProductStoryMotion(sceneCount: number) {
 			if (updateFrame !== 0) window.cancelAnimationFrame(updateFrame);
 			if (measureFrame !== 0) window.cancelAnimationFrame(measureFrame);
 		};
-	}, [reducedMotion, syncMotion]);
+	}, [reducedMotion, sceneCount, syncMotion]);
 
 
 	return {
 		activeIndex,
+		mobile,
 		optionsRef,
+		reducedMotion,
 		showcaseRef,
 	};
 }

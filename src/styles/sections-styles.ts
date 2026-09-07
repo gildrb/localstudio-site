@@ -1,14 +1,12 @@
 import * as stylex from "@stylexjs/stylex";
-import { colors, constants, lengths, times } from "./public-tokens.stylex";
+import { colors, constants, lengths } from "./public-tokens.stylex";
 
-const reducedMotion = "@media (prefers-reduced-motion: reduce)";
 const desktopNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 40px))`;
 const mobileNavHeight = `max(${lengths.navHeight}, calc(env(safe-area-inset-top, 0px) + 44px))`;
 const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 const heroStagePadding = `calc((100% - ${pageWidth}) / 2)`;
 const heroStageClippedWidth = `calc(100% - ${heroStagePadding})`;
-const scrimAmbient = `color-mix(in oklab, ${colors.background} 28%, transparent)`;
-const scrimDirect = `color-mix(in oklab, ${colors.background} 68%, transparent)`;
+const heroTextShadow = `0 2px 12px color-mix(in oklab, ${colors.background} 70%, transparent), 0 1px 2px color-mix(in oklab, ${colors.background} 95%, transparent)`;
 const kittyCarouselGutter = `max(24px, calc((100vw - ${lengths.pageWidth}) / 2))`;
 const kittyCardWidth = "min(620px, calc(100vw - 48px))";
 const kittyMobileCardWidth = "min(78vw, 320px)";
@@ -33,6 +31,14 @@ export const styles = stylex.create({
 			"@media (max-width: 900px)": "28px",
 		},
 	},
+	heroRender: {
+		left: "50%",
+		width: {
+			default: "clamp(720px, 58vw, 940px)",
+			"@media (max-width: 900px)": "min(96vw, 620px)",
+		},
+		opacity: { default: 1, "@media (max-width: 1200px)": 0.16 },
+	},
 	heroInner: {
 		position: "relative",
 		zIndex: 2,
@@ -53,18 +59,12 @@ export const styles = stylex.create({
 		textAlign: "left",
 	},
 	heroCopy: {
-		position: { default: "relative", "::before": "absolute" },
-		zIndex: { default: 2, "::before": -1 },
+		position: "relative",
+		zIndex: 2,
 		maxWidth: "790px",
-		content: { default: null, "::before": '""' },
-		inset: { default: null, "::before": "-18% -22%" },
-		backgroundImage: {
-			default: null,
-			"::before": `radial-gradient(ellipse 68% 62% at 50% 44%, ${scrimAmbient}, transparent 72%), radial-gradient(ellipse 34% 36% at 50% 40%, ${scrimDirect}, transparent 70%)`,
-		},
-		pointerEvents: { default: null, "::before": "none" },
 	},
 	heroHeading: {
+		textShadow: heroTextShadow,
 		marginTop: 0,
 		fontFamily: constants.fontSans,
 		fontSize: {
@@ -108,6 +108,7 @@ export const styles = stylex.create({
 		},
 	},
 	heroThesis: {
+		textShadow: heroTextShadow,
 		marginTop: "12px",
 		color: colors.foreground,
 		fontFamily: constants.fontSans,
@@ -310,9 +311,6 @@ export const styles = stylex.create({
 		margin: 0,
 		padding: 0,
 		listStyle: "none",
-		transitionProperty: "transform",
-		transitionDuration: times.feature,
-		transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
 	},
 	storyOptionsOffset: (offset: string) => ({
 		transform: {
@@ -335,13 +333,6 @@ export const styles = stylex.create({
 			default: "auto",
 			"@media (max-width: 900px)": "none",
 		},
-		transitionProperty: "opacity, transform",
-		transitionDuration: {
-			default: "0s",
-			"@media (max-width: 900px)": times.feature,
-			[reducedMotion]: "0s",
-		},
-		transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
 		flexDirection: "column",
 		justifyContent: "center",
 		minHeight: 0,
@@ -392,9 +383,6 @@ export const styles = stylex.create({
 		fontSize: "28px",
 		fontWeight: 425,
 		lineHeight: "36px",
-		transitionProperty: "color",
-		transitionDuration: times.fast,
-		transitionTimingFunction: "ease-out",
 	},
 	storySelectedOptionTitle: {
 		color: colors.foreground,
@@ -402,9 +390,6 @@ export const styles = stylex.create({
 	storyDescriptionMotion: {
 		opacity: 0,
 		transform: "translateY(6px)",
-		transitionProperty: "opacity, transform",
-		transitionDuration: times.feature,
-		transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
 	},
 	storyDescription: {
 		maxWidth: "440px",
@@ -453,12 +438,7 @@ export const styles = stylex.create({
 		visibility: "hidden",
 		pointerEvents: "none",
 		contain: "paint",
-		transitionProperty: "opacity, transform, visibility",
-		transitionDuration: {
-			default: times.feature,
-			[reducedMotion]: "0s",
-		},
-		transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+		// Scene opacity, transform, and visibility are owned by Motion.
 	},
 	storyLayerOffset: (offset: string) => ({
 		transform: `translate3d(0, ${offset}, 0) scale(0.995)`,
@@ -468,17 +448,6 @@ export const styles = stylex.create({
 		visibility: "visible",
 		transform: "translate3d(0, 0, 0) scale(1)",
 		pointerEvents: "auto",
-	},
-	storyDemoPlaceholder: {
-		width: "100%",
-		maxHeight: {
-			default: "787px",
-			"@media (max-width: 900px)": "none",
-		},
-		aspectRatio: {
-			default: "820 / 787",
-			"@media (max-width: 900px)": "680 / 580",
-		},
 	},
 	storyScrollTrack: (height: string) => ({
 		position: "relative",

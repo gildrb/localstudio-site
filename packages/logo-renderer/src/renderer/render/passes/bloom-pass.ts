@@ -35,14 +35,12 @@ export function renderComposite(
   targets: BloomTargets,
   bloom: Texture = targets.bloom.read.color,
   strength = BLOOM_STRENGTH_OFF,
-  time = 0,
-  light: readonly [number, number] = [0.3, 0.24],
 ) {
   r.pipelines.composite.set({
     sceneTexture: targets.scene.color.view,
     bloomTexture: bloom.view,
     texSampler: r.sampler,
-    params: { strength, time, light },
+    params: { strength, _pad0: 0, _pad1: 0, _pad2: 0 },
   });
   f.pass(target, r.pipelines.composite);
 }
