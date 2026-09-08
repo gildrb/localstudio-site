@@ -76,22 +76,22 @@
 			"role": "icon",
 			"type": "image/svg+xml",
 			"dimensions": {
-				"width": 428,
-				"height": 428
+				"width": 525,
+				"height": 525
 			},
-			"bytes": 989,
-			"sha256": "3493f5f4527c0b8efad79e71856ee9daf78b8f169d9b51ddab2b4fff16b8b2f1"
+			"bytes": 1244,
+			"sha256": "78025e8c72602bb571e2102d9fec38a3f31f2eb1eb8c19220bb8c44d249e64b0"
 		},
 		{
 			"path": "public/images/favicon.svg",
 			"role": "icon",
 			"type": "image/svg+xml",
 			"dimensions": {
-				"width": 428,
-				"height": 428
+				"width": 525,
+				"height": 525
 			},
-			"bytes": 989,
-			"sha256": "8de45cde7dccd23487c1159336bd4a10477f75b3c81da5064e790f2ff5185edf"
+			"bytes": 1244,
+			"sha256": "aa728cf0dcdf86010995f30e7e2e0e710c9dcdf4a7dd56a69e21878e16841989"
 		},
 		{
 			"path": "public/images/kittylitter-appstore-iphone-01-660.avif",
@@ -489,8 +489,8 @@
 			"role": "logo-mesh",
 			"type": "application/octet-stream",
 			"dimensions": null,
-			"bytes": 539472,
-			"sha256": "67776a21c8f292a05860e7d1a8dab701c5e0db4c145e07eb9bd82e6217fa7d31"
+			"bytes": 539448,
+			"sha256": "a32c0f9aeadd19f9238b4912f72bfe9123fd92423047afb72301674b93d8d821"
 		},
 		{
 			"path": "public/localai/cta-mark.gltf",
@@ -498,7 +498,7 @@
 			"type": "model/gltf+json",
 			"dimensions": null,
 			"bytes": 1263,
-			"sha256": "570219c7a4f64b1a41fd290a43bbee4af52a24fa28e9234f8af5b0c432f4a95f"
+			"sha256": "6c8fd8f6b5ad5100ddb879fa1d55340386afc5f39028377510c2f6109ce2aec2"
 		},
 		{
 			"path": "public/localai/day-sky-cubemap.jpg",
@@ -621,7 +621,7 @@
 			"type": "application/octet-stream",
 			"dimensions": null,
 			"bytes": 924096,
-			"sha256": "8a71904bafbaf1083f1bb65e6509390d8273fdb5834055d714437fd5a8fe11ce"
+			"sha256": "08ab8e2a003d2689a0155535011d68c5bcb3ee23a8da2ef0f07eafb539be3879"
 		},
 		{
 			"path": "public/localai/localai-logo.gltf",

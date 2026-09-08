@@ -38,11 +38,12 @@ export const styles = stylex.create({
 	},
 	heroAtmosphere: {
 		position: "absolute",
-		inset: 0,
+		top: "-25svh",
+		left: "-20%",
 		zIndex: 0,
 		display: "block",
-		width: "100%",
-		height: "100%",
+		width: "140%",
+		height: "calc(100% + 25svh)",
 		pointerEvents: "none",
 	},
 	heroAtmospherePending: { visibility: "hidden" },
@@ -53,8 +54,8 @@ export const styles = stylex.create({
 		display: "block",
 		left: "50%",
 		top: {
-			default: "calc(clamp(72px, 11svh, 120px) - clamp(720px, 58vw, 940px) * 0.5)",
-			"@media (max-width: 900px)": "calc(24px - min(96vw, 620px) * 0.5)",
+			default: "calc(25svh + clamp(72px, 11svh, 120px) - clamp(720px, 58vw, 940px) * 0.5)",
+			"@media (max-width: 900px)": "calc(25svh + 24px - min(96vw, 620px) * 0.5)",
 		},
 		width: {
 			default: "calc(clamp(720px, 58vw, 940px) * 4)",
@@ -76,8 +77,8 @@ export const styles = stylex.create({
 		maskImage: {
 			default: "none",
 			"@media (prefers-color-scheme: light)": {
-				default: "radial-gradient(ellipse 65% 70% at 50% calc(clamp(72px, 11svh, 120px) + clamp(720px, 58vw, 940px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
-				"@media (max-width: 900px)": "radial-gradient(ellipse 65% 70% at 50% calc(24px + min(96vw, 620px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
+				default: "radial-gradient(ellipse 65% 70% at 50% calc(25svh + clamp(72px, 11svh, 120px) + clamp(720px, 58vw, 940px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
+				"@media (max-width: 900px)": "radial-gradient(ellipse 65% 70% at 50% calc(25svh + 24px + min(96vw, 620px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
 			},
 		},
 	},

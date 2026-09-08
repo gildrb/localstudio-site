@@ -42,7 +42,6 @@ export function createEve5Renderer(
   let intro: ReturnType<typeof createIntroAtmosphere> | undefined;
   let latestScene: Target | undefined;
   let latestLogo: Target | undefined;
-  let latestPaddingRadius = 0;
   let atmosphereDepth: Target | undefined;
   let atmosphereParams: ReturnType<typeof writeParams> | undefined;
   let prism: ReturnType<typeof createPrismAtmosphere> | undefined;
@@ -66,7 +65,6 @@ export function createEve5Renderer(
       t = cache.ensure(w, h, pad, needs),
       pt = paint.ensure(w, h, im.gridScaleMultiplier);
     latestLogo = out;
-    latestPaddingRadius = pad;
     if (im.atmosphere) {
       if (!atmosphereDepth) {
         atmosphereDepth = createTarget(gpu, {
@@ -234,7 +232,6 @@ export function createEve5Renderer(
     /** Reuses the baseline mesh frame. An active intro has its own material-light pass. */
     renderAtmosphere(controls: RenderControls, imprint: ImprintRenderOptions) {
       if (!latestScene || !latestLogo || !atmosphereDepth || !imprint.atmosphere) return;
-      const originalLogo = latestLogo;
       const scene = latestScene.color;
       const depth = atmosphereDepth.color;
       frame(gpu, (f) => {

@@ -385,8 +385,22 @@ export function LocalAiLogoShader({
 				handleFallback();
 				return;
 			}
-			const mesh = await loadMesh(modelUrl);
-			if (state.cancelled) return;
+			const [meshResult, gpuResult] = await Promise.allSettled([
+				loadMesh(modelUrl),
+				init(),
+			]);
+			if (meshResult.status === "rejected") {
+				if (gpuResult.status === "fulfilled") gpuResult.value.dispose();
+				throw meshResult.reason;
+			}
+			if (gpuResult.status === "rejected") throw gpuResult.reason;
+			const mesh = meshResult.value;
+			const gpu = gpuResult.value;
+			if (state.cancelled) {
+				gpu.dispose();
+				return;
+			}
+			disposeRuntime = () => gpu.dispose();
 			state.activeMesh = mesh;
 			// Frame the real mark: it is wider than tall, so a height-only fit
 			// would clip the silhouette at both canvas edges.
@@ -401,11 +415,6 @@ export function LocalAiLogoShader({
 			}
 			resizeCanvas(activeCanvas, canvasLayoutRef, devicePixelRatioRef);
 
-			const gpu = await init();
-			if (state.cancelled) {
-				gpu.dispose();
-				return;
-			}
 			const canvasSurface = surface(gpu, activeCanvas, {
 				autoResize: false,
 				size: [activeCanvas.width, activeCanvas.height],
@@ -519,6 +528,8 @@ export function LocalAiLogoShader({
 				state.cleanup = dispose;
 			})
 			.catch(() => {
+				disposeRuntime?.();
+				disposeRuntime = undefined;
 				if (!state.cancelled) handleFallback();
 			});
 
