@@ -58,7 +58,7 @@
 		{
 			"bufferView": 2,
 			"componentType": 5125,
-			"count": 67416,
+			"count": 67410,
 			"type": "SCALAR"
 		}
 	],
@@ -77,14 +77,14 @@
 		},
 		{
 			"buffer": 0,
-			"byteLength": 269664,
+			"byteLength": 269640,
 			"byteOffset": 269808,
 			"target": 34963
 		}
 	],
 	"buffers": [
 		{
-			"byteLength": 539472,
+			"byteLength": 539448,
 			"uri": "cta-mark.bin"
 		}
 	]

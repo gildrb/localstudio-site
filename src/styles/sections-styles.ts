@@ -457,16 +457,19 @@ export const styles = stylex.create({
 		minHeight: 0,
 		minWidth: 0,
 		maxWidth: "100%",
-		overflow: "clip",
+		overflow: "visible",
 	},
 	storyVisual: {
 		position: "relative",
+		isolation: "isolate",
+		perspective: "1200px",
+		perspectiveOrigin: "50% 50%",
 		display: "grid",
 		width: "100%",
 		minWidth: 0,
 		maxWidth: "100%",
 		margin: 0,
-		overflow: "clip",
+		overflow: "visible",
 	},
 	storyDemoTransition: {
 		gridArea: "1 / 1",
@@ -474,8 +477,8 @@ export const styles = stylex.create({
 		opacity: 0,
 		visibility: "hidden",
 		pointerEvents: "none",
-		contain: "paint",
-		// Scene opacity and visibility are owned by Motion.
+		transformOrigin: "50% 50%",
+		// Motion owns depth and visibility; document order fixes the card stack.
 	},
 	storySelectedDemo: {
 		opacity: 1,

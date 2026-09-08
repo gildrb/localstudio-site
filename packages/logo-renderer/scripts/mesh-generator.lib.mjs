@@ -1,6 +1,5 @@
 // Shared SVG-subpath -> swept extruded-solid mesh machinery.
-// Extracted verbatim from generate-logo-mesh.mjs so the committed logo mesh
-// stays byte-identical; new marks reuse the same fillet/cap pipeline.
+// Shared by the brandmark generator; caps meet the inset end of a convex fillet.
 import earcut from "earcut";
 import fs from "node:fs";
 
@@ -100,15 +99,18 @@ export function signedArea(points) {
 }
 
 export function contourNormals(points) {
-  // Outward 2D normals from neighbor tangents. The dense adaptive sampling
-  // keeps these smooth along G1 curves.
+  // Bisect unit edge tangents. Adaptive SVG sampling gives neighboring
+  // edges unequal lengths; using next - prev biases normals toward long edges.
   const n = points.length;
   const normals = Array.from({ length: n });
   for (let i = 0; i < n; i += 1) {
     const prev = points[(i - 1 + n) % n];
     const next = points[(i + 1) % n];
-    let tx = next[0] - prev[0];
-    let ty = next[1] - prev[1];
+    const point = points[i];
+    const before = Math.hypot(point[0] - prev[0], point[1] - prev[1]);
+    const after = Math.hypot(next[0] - point[0], next[1] - point[1]);
+    let tx = (point[0] - prev[0]) / before + (next[0] - point[0]) / after;
+    let ty = (point[1] - prev[1]) / before + (next[1] - point[1]) / after;
     const len = Math.hypot(tx, ty) || 1;
     tx /= len;
     ty /= len;
@@ -180,7 +182,9 @@ export function buildSweptSolid(contours, contourNormals2d, bevelContours, {
   const K = filletSteps;
   const fillet = (k) => {
     const alpha = (k / K) * (Math.PI / 2);
-    return { inset: r * Math.sin(alpha), z: T - r + r * Math.cos(alpha) };
+    // Move outward from the inset cap to the outline wall. This tangent
+    // is perpendicular to the supplied (sin(alpha), cos(alpha)) normal.
+    return { inset: r * (1 - Math.sin(alpha)), z: T - r + r * Math.cos(alpha) };
   };
 
   for (let contourIndex = 0; contourIndex < contours.length; contourIndex += 1) {
@@ -189,7 +193,7 @@ export function buildSweptSolid(contours, contourNormals2d, bevelContours, {
     const normals2d = contourNormals2d[contourIndex];
     if (contourIndex > 0) holeStarts.push(capCoordinates.length / 2);
     const coordinateStart = capCoordinates.length / 2;
-    for (const point of outline) capCoordinates.push(...point);
+    for (const point of bevelContours[contourIndex]) capCoordinates.push(...point);
 
     const pushRing = (inset, z, normalFor) => {
       const start = positions.length / 3;
@@ -212,7 +216,7 @@ export function buildSweptSolid(contours, contourNormals2d, bevelContours, {
       }
     };
 
-    const frontCap = pushRing(0, T, () => [0, 0, 1]);
+    const frontCap = pushRing(r, T, () => [0, 0, 1]);
     for (let i = 0; i < n; i += 1) frontCapVertices.push(frontCap + i);
     const frontRings = [];
     for (let k = 1; k <= K; k += 1) {
@@ -227,7 +231,7 @@ export function buildSweptSolid(contours, contourNormals2d, bevelContours, {
       );
     }
     const wallTop = frontRings[frontRings.length - 1];
-    const wallBottom = pushRing(r, -(T - r), (i) => [
+    const wallBottom = pushRing(0, -(T - r), (i) => [
       normals2d[i][0],
       normals2d[i][1],
       0,
@@ -244,7 +248,7 @@ export function buildSweptSolid(contours, contourNormals2d, bevelContours, {
         ]),
       );
     }
-    const backCap = pushRing(0, -T, () => [0, 0, -1]);
+    const backCap = pushRing(r, -T, () => [0, 0, -1]);
     for (let i = 0; i < n; i += 1) backCapVertices.push(backCap + i);
 
     let upper = frontCap;

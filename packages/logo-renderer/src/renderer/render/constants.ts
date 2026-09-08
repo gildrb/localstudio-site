@@ -19,10 +19,10 @@ export const SCENE_FORMAT: GPUTextureFormat = "rgba16float";
 // 4x MSAA on the main scene pass keeps logo silhouette/bevel edges clean
 // without paying supersampled fragment cost for the material shaders.
 export const SCENE_SAMPLE_COUNT = 4;
-export const BLOOM_STRENGTH = 0.85;
+export const BLOOM_STRENGTH = 0.25;
 export const BLOOM_STRENGTH_OFF = BLOOM_STRENGTH;
 export const BLOOM_STRENGTH_ON = BLOOM_STRENGTH_OFF * 0.25;
-export const BLOOM_THRESHOLD = 0;
+export const BLOOM_THRESHOLD = 1;
 export const BACK_DEPTH_FORMAT: GPUTextureFormat = "depth32float";
 export const BACK_CAMERA_DEPTH_FORMAT: GPUTextureFormat = "r32float";
 

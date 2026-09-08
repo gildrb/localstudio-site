@@ -4,18 +4,25 @@ export const STORY_HYSTERESIS = 0.02;
 
 export function storySceneAnimation(index: number, activeIndex: number, reducedMotion: boolean) {
 	const selected = index === activeIndex;
+	const passed = index < activeIndex;
+	const visible = selected || (!reducedMotion && index === activeIndex + 1);
 	const duration = reducedMotion ? 0 : motion.featureSwap.duration;
 	return {
 		initial: false as const,
 		animate: {
-			opacity: selected ? 1 : 0,
-			visibility: selected ? "visible" as const : "hidden" as const,
+			opacity: passed ? 0 : 1,
+			z: reducedMotion || selected ? 0 : passed ? 140 : -100,
+			y: reducedMotion || selected ? 0 : passed ? -8 : 0,
+			visibility: visible ? "visible" as const : "hidden" as const,
 		},
 		transition: {
 			...motion.featureSwap,
+			type: "tween" as const,
 			duration,
-			// Keep the outgoing scene visible until its fade completes.
-			visibility: { duration: 0, delay: selected ? 0 : duration },
+			ease: [0.4, 0, 0.2, 1] as const,
+			// Only the departing foreground dissolves; the scene beneath stays opaque.
+			opacity: { duration: passed ? duration : 0, ease: "easeIn" as const },
+			visibility: { duration: 0, delay: visible ? 0 : duration },
 		},
 	};
 }

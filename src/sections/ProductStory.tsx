@@ -123,6 +123,7 @@ export function ProductStory() {
 												styles.storyDemoTransition,
 												selected && styles.storySelectedDemo,
 											)}
+											style={{ zIndex: sceneStates.length - index }}
 											key={feature.slug}
 											data-story-scene={feature.slug}
 											data-story-scene-index={index}

@@ -1,6 +1,6 @@
 import { sample_env } from "./env-sample.wgsl";
 
-export const METALLIC_OPACITY = 0.92;
+export const METALLIC_OPACITY = 1.0;
 
 // Shared material/reflection primitives for eve-5 mesh materials.
 // Keep camera-facing normal orientation and reflection direction here so glass,

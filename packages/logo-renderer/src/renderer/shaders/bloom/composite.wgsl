@@ -21,7 +21,6 @@ struct CompositeParams {
 @group(0) @binding(3) var<uniform> params: CompositeParams;
 
 const BLOOM_RADIAL_FULL_RADIUS = 0.55;
-const MAX_DARK_DISPLAY_LUMA = 0.58;
 
 @vertex
 fn vs_main(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
@@ -46,8 +45,7 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
     linearColor += bloom * params.strength * bloomRadial * bloomMask;
   }
   let displayColor = linear_to_display(aces_tonemap(linearColor));
-  let displayLuma = dot(displayColor, vec3f(0.2126, 0.7152, 0.0722));
-  let nightSky = displayColor * min(1.0, MAX_DARK_DISPLAY_LUMA / max(displayLuma, 0.001));
+  // ACES rolls highlights off continuously; a display-luma cap flattens reflections.
   let outputAlpha = clamp(scene.a, 0.0, 1.0);
-  return vec4f(nightSky * outputAlpha, outputAlpha);
+  return vec4f(displayColor * outputAlpha, outputAlpha);
 }

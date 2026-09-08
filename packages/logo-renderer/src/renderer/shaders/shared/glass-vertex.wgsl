@@ -25,7 +25,9 @@ export fn glass_vs_main(input: VertexInput, params: Params) -> VertexOutput {
   let position = input.position * vec3f(1.0, 1.0, depthScale);
   output.clipPosition = params.viewProj * vec4f(position, 1.0);
   output.normal = normalize(input.normal / vec3f(1.0, 1.0, depthScale));
-  output.viewDir = normalize(params.cameraPos - position);
+  // Interpolate the affine displacement, then normalize per fragment. Normalizing
+  // at vertices makes reflections depend on triangle size and triangulation.
+  output.viewDir = params.cameraPos - position;
   output.cameraAxisDepth = dot(position, normalize(params.cameraForward));
   output.modelPos = position;
   return output;

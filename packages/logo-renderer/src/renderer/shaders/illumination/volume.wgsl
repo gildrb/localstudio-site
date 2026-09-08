@@ -124,10 +124,14 @@ fn fs_main(@location(0) uv: vec2f, @builtin(position) pixel: vec4f) -> @location
     let world = params.eye + params.right * p.x - params.up * p.y + params.forward * p.z;
     let offset = light - p;
     let distance = length(offset);
-    let forwardScatter = pow(max(dot(offset / max(distance, 0.0001), normalize(p)), 0.0), 3.0);
-    // Integral over the sphere: 0.25 * 4*pi + 1.5 * 2*pi/4 = 1.75*pi.
-    // Normalize angular scattering without changing incident radiance or gain.
-    let phase = (0.25 + 1.5 * forwardScatter) / (1.75 * 3.141592653589793);
+    // Henyey-Greenstein scattering conserves angular energy but favors light
+    // travelling from the backlight toward the eye through the open mesh.
+    // Unlike a broad ambient pedestal, this leaves off-axis air subdued.
+    let anisotropy = 0.65;
+    let cosine = clamp(dot(offset / max(distance, 0.0001), normalize(p)), -1.0, 1.0);
+    let phaseDenominator = 1.0 + anisotropy * anisotropy - 2.0 * anisotropy * cosine;
+    let phase = (1.0 - anisotropy * anisotropy)
+      / (4.0 * 3.141592653589793 * pow(phaseDenominator, 1.5));
     let illumination = phase / (1.0 + 0.28 * distance * distance);
     // Integrate hard visibility within each density step instead of exposing
     // its midpoint as a visible shadow ring. Density/T/phase stay midpoint;
@@ -139,10 +143,10 @@ fn fs_main(@location(0) uv: vec2f, @builtin(position) pixel: vec4f) -> @location
       visibility += sourceVisibility(world + worldStep * fraction);
     }
     visibility *= 0.25;
-    // Continuous emitter-distance decay and smooth numerical integration tails:
-    // no finite ribbon, projected endpoint, per-hole axis, or hard cone exists.
-    let tail = exp(-0.35 * distance * distance)
-      * smoothstep(near, near + 0.4, depth)
+    // The incident light already has distance falloff above. A second
+    // exponential distance cutoff erased the shafts as they left the holes.
+    // Only feather the numerical integration bounds, not the light transport.
+    let tail = smoothstep(near, near + 0.4, depth)
       * (1.0 - smoothstep(far - 0.6, far, depth));
     scattered += params.lightRadiance * (params.gain * weight * illumination * tail
       * visibility);
