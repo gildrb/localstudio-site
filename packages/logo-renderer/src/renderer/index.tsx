@@ -395,9 +395,10 @@ export function LocalAiLogoShader({
 				mesh.bounds,
 				viewportAspect,
 			);
-			await new Promise<void>((resolve) =>
-				requestAnimationFrame(() => resolve()),
-			);
+			const initialRect = containerRef.current?.getBoundingClientRect();
+			if (initialRect && initialRect.width > 0 && initialRect.height > 0) {
+				canvasLayoutRef.current = { width: initialRect.width, height: initialRect.height };
+			}
 			resizeCanvas(activeCanvas, canvasLayoutRef, devicePixelRatioRef);
 
 			const gpu = await init();

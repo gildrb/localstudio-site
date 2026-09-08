@@ -1,5 +1,5 @@
 // Native fallback generation and deterministic depth/interaction checks.
-// Static posters keep neutral light: Prism beams require the live viewport/logo mapping.
+// Static posters include the live additive light at its first-frame gain.
 // bun packages/logo-renderer/scripts/render-atmosphere.mjs [--validate] [--blank] [--prism]
 import "./bun-hooks.mjs";
 import assert from "node:assert/strict";
@@ -14,7 +14,7 @@ const { PNG } = requireFromVgpu("pngjs");
 const validate = process.argv.includes("--validate");
 const blank = process.argv.includes("--blank");
 const prism = process.argv.includes("--prism");
-const lightGain = Number(process.argv.find((arg) => arg.startsWith("--light-gain="))?.slice(13) ?? 0);
+const lightGain = Number(process.argv.find((arg) => arg.startsWith("--light-gain="))?.slice(13) ?? (prism ? 0 : 0.72));
 assert(Number.isFinite(lightGain) && lightGain >= 0 && lightGain <= 1, "light gain must be in [0, 1]");
 assert(!(prism && lightGain > 0), "validate the additive light separately from rejected Prism ribbons");
 const outputArg = process.argv.find((arg) => arg.startsWith("--output="));
@@ -32,7 +32,8 @@ const mesh = await decodeGltfMesh(JSON.parse(readFileSync(gltfUrl, "utf8")), (ur
   const bytes = readFileSync(new URL(uri, gltfUrl));
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 });
-const gpu = await init();
+// Core WebGPU is required for the live rgba16float + MSAA render targets.
+const gpu = await init({ backend: "webgpu" });
 const errors = [];
 gpu.onError((error) => errors.push(String(error)));
 const out = target(gpu, { size: [width, height], format: "rgba8unorm", label: "hero-atmosphere" });

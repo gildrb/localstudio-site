@@ -48,6 +48,10 @@ export const constants = stylex.defineConsts({
 	iconScale: "0.84",
 });
 
+export const storyMotion = stylex.defineVars({
+	"--story-content-blur": stylex.types.length("0px"),
+});
+
 export const tokens = stylex.defineVars({
 	bg: stylex.types.color({ default: "#181818" }),
 	fg: stylex.types.color({ default: "#f7f8f8" }),

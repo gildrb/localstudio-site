@@ -84,8 +84,15 @@ export function ProductStory() {
 											</div>
 											<m.div
 												initial={false}
-												animate={{ opacity: selected ? 1 : 0, y: selected || reducedMotion ? 0 : 6 }}
-												transition={transition}
+												animate={{
+													opacity: selected ? 1 : 0,
+													y: selected || reducedMotion ? 0 : 6,
+													filter: selected || reducedMotion ? "blur(0px)" : "blur(8px)",
+												}}
+												transition={{
+													...motion.featureSwap,
+													duration: reducedMotion ? 0 : motion.featureSwap.duration,
+												}}
 												{...stylex.props(
 													baseStyles.element,
 													styles.storyDescriptionMotion,
@@ -121,9 +128,9 @@ export function ProductStory() {
 											{...stylex.props(
 												baseStyles.element,
 												styles.storyDemoTransition,
+												styles.storyDemoOrder(sceneStates.length - index),
 												selected && styles.storySelectedDemo,
 											)}
-											style={{ zIndex: sceneStates.length - index }}
 											key={feature.slug}
 											data-story-scene={feature.slug}
 											data-story-scene-index={index}

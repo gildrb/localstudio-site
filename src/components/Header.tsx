@@ -385,6 +385,7 @@ export function Header() {
 							headerStyles.topLink,
 							stylex.defaultMarker(),
 						)}
+						data-nav-company=""
 						href={site.company.url}
 						onPointerEnter={close}
 					>

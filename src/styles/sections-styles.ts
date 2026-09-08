@@ -462,8 +462,6 @@ export const styles = stylex.create({
 	storyVisual: {
 		position: "relative",
 		isolation: "isolate",
-		perspective: "1200px",
-		perspectiveOrigin: "50% 50%",
 		display: "grid",
 		width: "100%",
 		minWidth: 0,
@@ -477,9 +475,10 @@ export const styles = stylex.create({
 		opacity: 0,
 		visibility: "hidden",
 		pointerEvents: "none",
-		transformOrigin: "50% 50%",
-		// Motion owns depth and visibility; document order fixes the card stack.
 	},
+	storyDemoOrder: (order: number) => ({
+		zIndex: order,
+	}),
 	storySelectedDemo: {
 		opacity: 1,
 		visibility: "visible",

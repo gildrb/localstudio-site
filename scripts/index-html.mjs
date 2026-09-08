@@ -47,6 +47,8 @@ const body = `<!doctype html>
     <link rel="describedby" type="text/markdown" href="/llms.txt" />
     <link rel="api-catalog" href="/.well-known/api-catalog" type="application/linkset+json" />
     <link rel="preload" href="${assets.fontSans}" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="${assets.heroRenderDay}" as="image" media="(prefers-color-scheme: light)" />
+    <link rel="preload" href="${assets.heroRenderNight}" as="image" media="(prefers-color-scheme: dark)" />
     <link rel="preload" href="${assets.heroAtmosphereDay}" as="image" media="(prefers-color-scheme: light)" />
     <link rel="preload" href="${assets.heroAtmosphereNight}" as="image" media="(prefers-color-scheme: dark)" />
     <link rel="preload" href="${assets.heroAtmosphereForegroundDay}" as="image" media="(prefers-color-scheme: light)" />

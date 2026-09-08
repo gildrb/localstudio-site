@@ -1,10 +1,9 @@
-import { lazy, Suspense, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import * as stylex from "@stylexjs/stylex";
 import { LogoPoster } from "@local-ai/logo-renderer/react";
 import { assets } from "../domain/asset";
 import { styles } from "../styles/sections-styles";
-
-const Shader = lazy(() => import("./shader"));
+import Shader from "./shader";
 
 export function LocalAiLogo() {
 	const [status, setStatus] = useState<"loading" | "ready" | "fallback">("loading");
@@ -22,9 +21,7 @@ export function LocalAiLogo() {
 				</div>
 			)}
 			<canvas ref={atmosphereRef} aria-hidden="true" {...stylex.props(styles.heroAtmosphere, !ready && styles.heroAtmospherePending)} />
-			<Suspense fallback={null}>
-				<Shader atmosphereRef={atmosphereRef} atmosphereForegroundRef={atmosphereForegroundRef} onPending={() => setStatus("loading")} onFirstFrame={() => setStatus("ready")} onFallback={() => setStatus("fallback")} />
-			</Suspense>
+			<Shader atmosphereRef={atmosphereRef} atmosphereForegroundRef={atmosphereForegroundRef} onPending={() => setStatus("loading")} onFirstFrame={() => setStatus("ready")} onFallback={() => setStatus("fallback")} />
 			<canvas ref={atmosphereForegroundRef} aria-hidden="true" {...stylex.props(styles.heroAtmosphere, styles.heroAtmosphereForeground, !ready && styles.heroAtmospherePending)} />
 			{status !== "ready" && (
 				<>

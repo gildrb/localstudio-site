@@ -56,7 +56,8 @@ function loadMesh() {
 // --- render ----------------------------------------------------------------
 
 const mesh = await loadMesh();
-const gpu = await init();
+// Core WebGPU is required for the live rgba16float + MSAA render targets.
+const gpu = await init({ backend: "webgpu" });
 const radius = cameraRadiusForBounds(DEFAULT_CAMERA_FOV, mesh.bounds, LOGO_VIEWPORT_ASPECT);
 const controls = {
   yaw: 0,

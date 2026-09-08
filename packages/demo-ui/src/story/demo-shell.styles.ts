@@ -1,10 +1,11 @@
 import * as stylex from "@stylexjs/stylex";
-import { tokens } from "../styles/tokens.stylex.ts";
+import { storyMotion, tokens } from "../styles/tokens.stylex.ts";
 
 export const styles = stylex.create({
   demo: {
   },
   demoViewport: {
+    filter: `blur(${storyMotion["--story-content-blur"]})`,
   },
   demoApp: {
   },

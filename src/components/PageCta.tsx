@@ -1,7 +1,7 @@
 import { baseStyles, type PublicStyle } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
 import { constants, lengths } from "../styles/public-tokens.stylex";
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { setupPath } from "../domain/route";
 import { CtaPair } from "./Links";
 
@@ -27,6 +27,11 @@ const styles = stylex.create({
 	home: {
 		minHeight: "650px",
 		paddingBlock: 0,
+		alignItems: "flex-start",
+		textAlign: "left",
+	},
+	homeActions: {
+		justifyContent: "flex-start",
 	},
 	child: {
 		width: "100%",
@@ -51,6 +56,8 @@ const styles = stylex.create({
 		overflowWrap: "anywhere",
 	},
 	homeTitle: {
+		marginLeft: 0,
+		marginRight: 0,
 		maxWidth: "900px",
 		fontSize: {
 			default: "70px",
@@ -97,7 +104,7 @@ export function PageCta({
 			>
 				{title}
 			</h2>
-			<div {...stylex.props(baseStyles.element, styles.child, styles.actions)}>
+			<div {...stylex.props(baseStyles.element, styles.child, styles.actions, home && styles.homeActions)}>
 				{actions ?? (
 					<CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />
 				)}
