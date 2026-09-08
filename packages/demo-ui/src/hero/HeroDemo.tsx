@@ -147,13 +147,23 @@ function useDemoFrame() {
 	useEffect(() => {
 		const host = hostRef.current;
 		if (!host) return;
-		const block = (event: Event) => event.preventDefault();
-		host.addEventListener("wheel", block, { passive: false });
-		host.addEventListener("touchmove", block, { passive: false });
-		return () => {
-			host.removeEventListener("wheel", block);
-			host.removeEventListener("touchmove", block);
+		const scrollPage = (event: WheelEvent) => {
+			if (event.ctrlKey || !event.cancelable) return;
+			event.preventDefault();
+			const unit =
+				event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+					? window.innerHeight
+					: event.deltaMode === WheelEvent.DOM_DELTA_LINE
+						? 16
+						: 1;
+			window.scrollBy({
+				top: event.deltaY * unit,
+				left: event.deltaX * unit,
+				behavior: "instant",
+			});
 		};
+		host.addEventListener("wheel", scrollPage, { passive: false });
+		return () => host.removeEventListener("wheel", scrollPage);
 	}, []);
 	return { hostRef, active, renderContents, ...frame };
 }
@@ -509,7 +519,6 @@ function HeroDemoView(model: HeroDemoViewModel) {
 					demoStyles.reset,
 					styles.demoViewport,
 					demoStyles.viewport,
-					demoStyles.mobileViewport,
 					demoStyles.viewportHeight(mobile ? DEMO_HEIGHT * scale : DEMO_HEIGHT),
 				)}
 			>
