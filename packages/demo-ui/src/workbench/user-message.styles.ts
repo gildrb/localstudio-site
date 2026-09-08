@@ -5,6 +5,6 @@ export const styles = stylex.create({
     minWidth: "0px",
   },
   chatMarkdown: {
-    whiteSpace: "pre-wrap",
+    color: "inherit",
   },
 });

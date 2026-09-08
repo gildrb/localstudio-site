@@ -309,7 +309,7 @@ export const demoStyles = stylex.create({
 	},
 	chatMarkdown: {
 		fontFamily: constants.fontSans,
-		fontSize: "16px",
+		fontSize: constants.fsLg,
 		lineHeight: 1.5,
 		fontWeight: 400,
 		color: tokens.fg85Srgb,

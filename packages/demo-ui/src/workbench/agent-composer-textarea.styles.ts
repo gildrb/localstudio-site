@@ -1,5 +1,5 @@
 import * as stylex from "@stylexjs/stylex";
-import { tokens } from "../styles/tokens.stylex.ts";
+import { constants, tokens } from "../styles/tokens.stylex.ts";
 
 export const styles = stylex.create({
   element37: {
@@ -16,7 +16,7 @@ export const styles = stylex.create({
     paddingRight: "calc(0.25rem * 4)",
     paddingBottom: "0px",
     paddingTop: "calc(0.25rem * 3.5)",
-    fontSize: "16px",
+    fontSize: constants.fsLg,
     lineHeight: 1.5,
     letterSpacing: "0em",
     color: {

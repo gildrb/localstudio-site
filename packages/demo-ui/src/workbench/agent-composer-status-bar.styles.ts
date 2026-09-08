@@ -69,7 +69,7 @@ export const styles = stylex.create({
     whiteSpace: "nowrap",
   },
   button43: {
-    fontSize: constants.fsSm,
+    fontSize: constants.fsXs,
     lineHeight: 1.5,
     display: "inline-flex",
     flexShrink: 0,
@@ -94,7 +94,7 @@ export const styles = stylex.create({
     color: tokens.err,
   },
   button54: {
-    fontSize: constants.fsSm,
+    fontSize: constants.fsXs,
     lineHeight: 1.5,
     marginLeft: "auto",
     display: "inline-flex",

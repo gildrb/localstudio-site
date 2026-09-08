@@ -8,7 +8,11 @@ export function UserMessage({
 }) {
 	return (
 		<article {...stylex.props(demoStyles.reset, styles.article7)}>
-			<div {...stylex.props(demoStyles.reset, styles.chatMarkdown)}>{message.text}</div>
+			<div
+				{...stylex.props(demoStyles.reset, demoStyles.chatMarkdown, styles.chatMarkdown)}
+			>
+				{message.text}
+			</div>
 		</article>
 	);
 }

@@ -80,7 +80,11 @@ export const styles = stylex.create({
     paddingRight: "calc(0.25rem * 1.5)",
     paddingTop: "calc(0.25rem * 0.5)",
     paddingBottom: "calc(0.25rem * 0.5)",
-    fontSize: { default: constants.fsMd, ["@media (max-width: 640px)"]: constants.fsLg },
+    fontSize: {
+      default: constants.fsMd,
+      "@media (width >= 48rem)": constants.fsBase,
+      "@media (max-width: 640px)": constants.fsLg,
+    },
     fontWeight: 500,
     color: tokens.fg,
     outlineStyle: "none",
