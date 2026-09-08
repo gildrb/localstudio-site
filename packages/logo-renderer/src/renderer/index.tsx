@@ -161,6 +161,8 @@ export type LocalAiLogoShaderProps = LogoRendererAssets & {
 	/** Full-section canvas sharing this renderer's device, light and silhouette. */
 	atmosphereRef?: RefObject<HTMLCanvasElement | null> | undefined;
 	atmosphereForegroundRef?: RefObject<HTMLCanvasElement | null> | undefined;
+	/** Opaque intro presentation above the unchanged steady canvas stack. */
+	atmosphereIntroRef?: RefObject<HTMLCanvasElement | null> | undefined;
 	/** Lets the host hide stale layers while the renderer initializes or restarts. */
 	onPending?: (() => void) | undefined;
 	/** Fires once when the live canvas has produced its first frame. */
@@ -191,6 +193,7 @@ export function LocalAiLogoShader({
 	onFallback,
 	atmosphereRef,
 	atmosphereForegroundRef,
+	atmosphereIntroRef,
 	atmosphereSettings,
 	atmosphereIntro = false,
 	sx,
@@ -409,7 +412,7 @@ export function LocalAiLogoShader({
 			});
 			const atmosphere = atmosphereRef?.current
 				? createAtmosphereSurface(gpu, atmosphereRef.current, activeCanvas, requestRender, atmosphereForegroundRef?.current ?? undefined,
-					prismAtmosphere ? { scale: 1, maxEdge: 1280 } : atmosphereIntro ? { scale: 1, maxEdge: 768 } : undefined)
+					prismAtmosphere ? { scale: 1, maxEdge: 1280 } : undefined)
 				: undefined;
 			if (atmosphere) {
 				if (atmosphereIntro) atmosphere.current.introTime = 0;
@@ -490,9 +493,15 @@ export function LocalAiLogoShader({
 				controlsRef,
 				canvasLayoutRef,
 				devicePixelRatioRef,
-				onCanvasRevealed: handleCanvasRevealed,
-				onIntroComplete: () => {
-					atmosphere?.setResolution(prismAtmosphere ? { scale: 1, maxEdge: 1280 } : undefined);
+				onCanvasRevealed: () => {
+					void gpu.device.queue.flush().then(() => {
+						if (!state.cancelled && !disposed) handleCanvasRevealed();
+					}).catch(() => {
+						if (state.cancelled || disposed) return;
+						handleFallback();
+						state.cancelled = true;
+						dispose();
+					});
 				},
 				onFallback: handleFallback,
 				onFatalError: handleFatalError,
@@ -523,6 +532,7 @@ export function LocalAiLogoShader({
 		modelUrl,
 		atmosphereRef,
 		atmosphereForegroundRef,
+		atmosphereIntroRef,
 		prismAtmosphere,
 		atmosphereIntro,
 		atmosphereBeamOpacity,

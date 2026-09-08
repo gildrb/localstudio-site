@@ -8,7 +8,6 @@ import {
   MATERIAL_KIND,
 } from "./constants";
 import { cameraClipPlanes } from "./camera";
-import { atmosphereIntroState } from "./intro";
 import {
   cameraBasis,
   degreesToRadians,
@@ -26,7 +25,7 @@ import type {
   Vec3,
 } from "./types";
 
-// ABI: must match shaders/shared/scene-params.wgsl (208 B / 52 f32).
+// ABI: must match shaders/shared/scene-params.wgsl (192 B / 48 f32).
 export function writeParams(args: {
   controls: RenderControls;
   logicalWidth: number;
@@ -92,9 +91,7 @@ export function writeParams(args: {
     metrics.originCell[0],
     metrics.originCell[1],
   ];
-  const intro = atmosphereIntroState(imprint.atmosphere?.introTime);
   return {
-    introLight: [...intro.pulses, intro.settle],
     viewProj,
     cameraPos: eye,
     passKind,

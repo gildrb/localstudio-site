@@ -12,6 +12,7 @@
     "generate:cta": "bun scripts/generate-cta-mesh.mjs",
     "check": "bun scripts/generate-logo-mesh.mjs --check && bun scripts/generate-cta-mesh.mjs --check",
     "shader:check": "bun scripts/check-shaders.mjs",
+		"intro:coverage:check": "bun scripts/check-intro-coverage.mjs",
     "snapshot": "bun scripts/render-snapshot.mjs",
     "snapshot:atmosphere": "bun scripts/render-atmosphere.mjs"
   },

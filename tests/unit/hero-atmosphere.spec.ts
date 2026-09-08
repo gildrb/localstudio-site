@@ -46,7 +46,7 @@ function createFixture(failAtmosphere = false, intro = false) {
   const atmosphereCalls: RenderCall[] = [];
   let reveals = 0;
   let failures = 0;
-  const introCompletionMeshCounts: number[] = [];
+  const introFrameMeshCounts: number[] = [];
   const loop = createDrawLoop({
     state, canvas, surface, controlsRef, atmosphere,
     canvasLayoutRef: { current: { width: 640, height: 320 } },
@@ -61,9 +61,9 @@ function createFixture(failAtmosphere = false, intro = false) {
       },
     },
     onCanvasRevealed() { reveals += 1; },
-    onIntroFrame(time) { introFrames.push(time); },
-    onIntroComplete() {
-      introCompletionMeshCounts.push(meshCalls.length);
+    onIntroFrame(time) {
+      introFrames.push(time);
+      introFrameMeshCounts.push(meshCalls.length);
     },
     onFallback() { failures += 1; },
     onFatalError() { failures += 1; },
@@ -73,7 +73,7 @@ function createFixture(failAtmosphere = false, intro = false) {
   for (const time of [0, 40, 80]) loop.step(time);
   return { loop, state, controlsRef, atmosphere, meshCalls, atmosphereCalls, introFrames,
     get reveals() { return reveals; }, get failures() { return failures; },
-    introCompletionMeshCounts };
+    introFrameMeshCounts };
 }
 
 test("atmosphere uses half CSS resolution with a 768px longest-edge cap", () => {
@@ -184,14 +184,14 @@ test("mesh and atmosphere share the same smoothed pointer environment", () => {
   loop.dispose();
 });
 
-test("intro starts at presentation, redraws surface lighting, and pauses offscreen", () => {
+test("intro starts at presentation, reuses the normal mesh, and pauses offscreen", () => {
   const fixture = createFixture(false, true);
   expect(fixture.introFrames).toEqual([0]);
   expect(fixture.atmosphere.current.introTime).toBe(0);
   fixture.loop.step(120);
   expect(fixture.introFrames.at(-1)).toBeCloseTo(0.04);
-  expect(fixture.meshCalls).toHaveLength(4);
-  expect(fixture.atmosphereCalls).toHaveLength(0);
+  expect(fixture.meshCalls).toHaveLength(3);
+  expect(fixture.atmosphereCalls).toHaveLength(1);
   fixture.loop.stop();
   fixture.loop.step(20_000);
   expect(fixture.atmosphere.current.introTime).toBeCloseTo(0.04);
@@ -230,17 +230,26 @@ test("intro holds the centered pose despite pointer input, then eases toward the
   fixture.loop.dispose();
 });
 
-test("intro surface rendering is throttled and the final baseline frame is redrawn once", () => {
+test("intro reuses the mesh and redraws the final baseline frame once", () => {
   const fixture = createFixture(false, true);
   for (let time = 81; time <= 2400; time++) fixture.loop.step(time);
-  expect(fixture.meshCalls.length).toBeLessThan(70);
+  expect(fixture.meshCalls).toHaveLength(4);
   expect(fixture.introFrames.at(-1)).toBe(2.1);
   const settledMeshCount = fixture.meshCalls.length;
   fixture.loop.step(2500);
   fixture.loop.step(2600);
   expect(fixture.meshCalls.length).toBe(settledMeshCount);
   expect(fixture.atmosphereCalls.length).toBeGreaterThan(0);
-  expect(fixture.introCompletionMeshCounts).toEqual([settledMeshCount - 1]);
+  expect(fixture.introFrameMeshCounts.at(-1)).toBe(settledMeshCount);
+  fixture.loop.dispose();
+});
+
+test("failed intro rendering does not publish another visible frame", () => {
+  const fixture = createFixture(true, true);
+  expect(fixture.introFrames).toEqual([0]);
+  expect(fixture.loop.step(120)).toBe(false);
+  expect(fixture.introFrames).toEqual([0]);
+  expect(fixture.failures).toBe(2);
   fixture.loop.dispose();
 });
 

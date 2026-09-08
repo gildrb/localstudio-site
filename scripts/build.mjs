@@ -52,7 +52,19 @@ async function runBuild() {
 			'<script type="module" src="/src/main.tsx"></script>',
 			`<script type="module" src="/assets/${path.basename(entry.path)}"></script>`,
 		);
-	writeFileSync(path.join(outdir, "index.html"), html);
+	if (devMode) {
+		writeFileSync(path.join(outdir, "index.pending.html"), html);
+		const prerender = Bun.spawn([process.execPath, "scripts/prerender.mjs", "--dev"], {
+			cwd: root,
+			stdout: "inherit",
+			stderr: "inherit",
+			env: process.env,
+		});
+		if ((await prerender.exited) !== 0) throw new Error("Development prerender failed");
+		rmSync(path.join(outdir, "index.pending.html"));
+	} else {
+		writeFileSync(path.join(outdir, "index.html"), html);
+	}
 	console.log(
 		`built ${path.basename(entry.path)} + ${cssName} (${result.outputs.length} outputs) in ${Math.round(performance.now() - started)}ms`,
 	);

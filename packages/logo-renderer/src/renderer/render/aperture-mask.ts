@@ -11,7 +11,7 @@ export function createApertureMask(gpu: Gpu, mesh: MeshData) {
   const aspect = Number.isFinite(ratio) && ratio > 0 ? ratio : 1;
   const rect = [-aspect / 2, -0.5, aspect, 1] as const;
   const vertices: number[] = [];
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  let maxX = -Infinity, maxY = -Infinity, minX = Infinity, minY = Infinity;
   const holes = extractApertures(mesh);
   // This choreography is for the three-opening mark. Other/invalid meshes fail closed.
   if (holes.length === 3) {

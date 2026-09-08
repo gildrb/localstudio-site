@@ -54,7 +54,13 @@ export type PaintRenderOptions = {
   diffusionJitter?: number;
   stroke?: PaintStroke | undefined;
   decaySteps?: number | undefined;
-  ripple?: { readonly center: readonly [number, number]; readonly age: number; readonly strength: number } | undefined;
+  ripple?:
+    | {
+        readonly center: readonly [number, number];
+        readonly age: number;
+        readonly strength: number;
+      }
+    | undefined;
 };
 
 export type ImprintRenderOptions = {
@@ -66,23 +72,32 @@ export type ImprintRenderOptions = {
   paint?: PaintRenderOptions;
   devicePixelRatio?: number;
   /** Separate full-hero surface. Rect maps the padded logo canvas into hero UV. */
-  atmosphere?: {
-    target: Target;
-    foregroundTarget?: Target | undefined;
-    logoRect: readonly [number, number, number, number];
-    /** One-shot actual-hole lighting time in seconds. Omitted preserves the approved atmosphere. */
-    introTime?: number;
-    /** Extra same-medium light. Omitted or zero preserves the approved atmosphere. */
-    lightGain?: number;
-    /** Source-based Prism beams and bloom. Omitted keeps the neutral fallback. */
-    prism?: boolean;
-    /** Prism linear beam gain; defaults to the requested 0.72. */
-    beamOpacity?: number;
-    /** Optional neutral day-room display gray; 1 keeps the light layer clear. */
-    dayRoom?: number;
-    /** Render-target pixels per CSS pixel, for physical dust sizes. */
-    pixelScale?: number;
-  } | undefined;
+  atmosphere?:
+    | {
+        target: Target;
+        foregroundTarget?: Target | undefined;
+        logoRect: readonly [number, number, number, number];
+        /** One-shot actual-hole lighting time in seconds. Omitted preserves the approved atmosphere. */
+        introTime?: number;
+        /** Optional opaque intro presentation. Visibility changes only after the settled frame. */
+        introTarget?: Target | undefined;
+        /** Actual unpadded host canvas framing and its fixed presentation opacity. */
+        introPresentation?: {
+          logoRect: readonly [number, number, number, number];
+          logoOpacity: number;
+        };
+        /** Extra same-medium light. Omitted or zero preserves the approved atmosphere. */
+        lightGain?: number;
+        /** Source-based Prism beams and bloom. Omitted keeps the neutral fallback. */
+        prism?: boolean;
+        /** Prism linear beam gain; defaults to the requested 0.72. */
+        beamOpacity?: number;
+        /** Optional neutral day-room display gray; 1 keeps the light layer clear. */
+        dayRoom?: number;
+        /** Render-target pixels per CSS pixel, for physical dust sizes. */
+        pixelScale?: number;
+      }
+    | undefined;
 };
 
 export type RenderControls = {

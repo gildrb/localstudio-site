@@ -512,6 +512,25 @@
 			"sha256": "9f5f04a8f3d46b8b5e96a257fd69f252fb4b7272a19aa3778f7ba38ad48a3036"
 		},
 		{
+			"path": "public/localai/hero-atmosphere-day-bg.webp",
+			"role": "image",
+			"type": "image/webp",
+			"dimensions": null,
+			"bytes": 13202,
+			"sha256": "9ac4c53f78fc56f66cd497498d40913ddc4a609cd222bedbcacf4847d7608a17"
+		},
+		{
+			"path": "public/localai/hero-atmosphere-day-fg.webp",
+			"role": "image",
+			"type": "image/webp",
+			"dimensions": {
+				"width": 1203,
+				"height": 1280
+			},
+			"bytes": 344594,
+			"sha256": "fb36102729a64539071d4651b81277f30302dc476e153e10ae12c1fce7b304ce"
+		},
+		{
 			"path": "public/localai/hero-atmosphere-day.png",
 			"role": "image",
 			"type": "image/png",
@@ -521,6 +540,47 @@
 			},
 			"bytes": 183181,
 			"sha256": "8a206a99c9e606fc6317317d9fa84fbdfe9fc3e8638d706334c3a3606dd7e5e2"
+		},
+		{
+			"path": "public/localai/hero-atmosphere-loading-day.png",
+			"role": "image",
+			"type": "image/png",
+			"dimensions": {
+				"width": 1280,
+				"height": 1102
+			},
+			"bytes": 598750,
+			"sha256": "cf7e62b8279b81ab223aaad193adc72e90096cc0848500ae5c9526bf1f34ba1e"
+		},
+		{
+			"path": "public/localai/hero-atmosphere-loading-night.png",
+			"role": "image",
+			"type": "image/png",
+			"dimensions": {
+				"width": 1280,
+				"height": 1102
+			},
+			"bytes": 304195,
+			"sha256": "0bfd3b950e7fad33dd8db062b59b9e2a5c7c1bd54061f824f07e6773ecaefb6f"
+		},
+		{
+			"path": "public/localai/hero-atmosphere-night-bg.webp",
+			"role": "image",
+			"type": "image/webp",
+			"dimensions": null,
+			"bytes": 10790,
+			"sha256": "49d800fe0c3853353ea3060573ac79cf52fcec3df0e13eeb17756a11c6767a2d"
+		},
+		{
+			"path": "public/localai/hero-atmosphere-night-fg.webp",
+			"role": "image",
+			"type": "image/webp",
+			"dimensions": {
+				"width": 1203,
+				"height": 1280
+			},
+			"bytes": 169790,
+			"sha256": "0cf90f5df178cd031387b7b06ccba77f5d44eed436061b0c5defa91eb60ce0a9"
 		},
 		{
 			"path": "public/localai/hero-atmosphere-night.png",

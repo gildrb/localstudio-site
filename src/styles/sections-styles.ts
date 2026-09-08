@@ -45,14 +45,41 @@ export const styles = stylex.create({
 		height: "100%",
 		pointerEvents: "none",
 	},
-	heroAtmospherePending: { opacity: 0 },
+	heroAtmospherePending: { visibility: "hidden" },
 	heroAtmosphereForeground: { zIndex: 1 },
+	heroAtmosphereIntro: { zIndex: 1, opacity: 0, visibility: "hidden" },
 	heroAtmosphereImage: {
+		position: "absolute",
 		display: "block",
-		width: "100%",
-		height: "100%",
-		objectFit: "fill",
+		left: "50%",
+		top: {
+			default: "calc(clamp(72px, 11svh, 120px) - clamp(720px, 58vw, 940px) * 0.5)",
+			"@media (max-width: 900px)": "calc(24px - min(96vw, 620px) * 0.5)",
+		},
+		width: {
+			default: "calc(clamp(720px, 58vw, 940px) * 4)",
+			"@media (max-width: 900px)": "calc(min(96vw, 620px) * 4)",
+		},
+		height: "auto",
+		aspectRatio: "3760 / 4000",
+		transform: "translateX(-50%)",
 		userSelect: "none",
+	},
+	heroAtmospherePlaceholder: {
+		overflow: "hidden",
+		maskImage: "linear-gradient(to right, transparent 1.2%, rgb(0 0 0 / 15.625%) 3.525%, rgb(0 0 0 / 50%) 5.85%, rgb(0 0 0 / 84.375%) 8.175%, black 10.5%, black 89.5%, rgb(0 0 0 / 84.375%) 91.825%, rgb(0 0 0 / 50%) 94.15%, rgb(0 0 0 / 15.625%) 96.475%, transparent 98.8%), linear-gradient(to bottom, transparent 1.8%, rgb(0 0 0 / 15.625%) 4.225%, rgb(0 0 0 / 50%) 6.65%, rgb(0 0 0 / 84.375%) 9.075%, black 11.5%, black 78%, rgb(0 0 0 / 84.375%) 82.875%, rgb(0 0 0 / 50%) 87.75%, rgb(0 0 0 / 15.625%) 92.625%, transparent 97.5%)",
+		maskComposite: "intersect",
+	},
+	heroAtmosphereBackgroundPoster: {
+		position: "absolute",
+		inset: 0,
+		maskImage: {
+			default: "none",
+			"@media (prefers-color-scheme: light)": {
+				default: "radial-gradient(ellipse 65% 70% at 50% calc(clamp(72px, 11svh, 120px) + clamp(720px, 58vw, 940px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
+				"@media (max-width: 900px)": "radial-gradient(ellipse 65% 70% at 50% calc(24px + min(96vw, 620px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
+			},
+		},
 	},
 	heroRender: {
 		left: "50%",

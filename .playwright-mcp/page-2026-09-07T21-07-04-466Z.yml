@@ -1,0 +1,267 @@
+- generic [ref=f188e3]:
+  - link "Skip to content" [ref=f188e4] [cursor=pointer]:
+    - /url: "#content"
+  - banner [ref=f188e5]:
+    - generic [ref=f188e6]:
+      - link "Local Studio" [ref=f188e7] [cursor=pointer]:
+        - /url: /
+      - navigation "Landing navigation" [ref=f188e8]:
+        - button "Products" [ref=f188e10] [cursor=pointer]
+        - button "Resources" [ref=f188e15] [cursor=pointer]
+        - link "Company" [ref=f188e19] [cursor=pointer]:
+          - /url: https://www.sybilsolutions.ai/
+    - generic [ref=f188e21]:
+      - link "Local Studio on GitHub" [ref=f188e22] [cursor=pointer]:
+        - /url: https://github.com/sybil-solutions/local-studio
+        - text: GitHub
+      - link "Download for macOS" [ref=f188e23] [cursor=pointer]:
+        - /url: /download
+  - main [ref=f188e24]:
+    - region [ref=f188e25]:
+      - generic [ref=f188e27]:
+        - heading [level=1] [ref=f188e29]:
+          - text: Intelligence Should Be
+          - generic [ref=f188e30]:
+            - text: Owned
+            - link "Machine-readable page" [ref=f188e31] [cursor=pointer]:
+              - /url: /machine
+        - paragraph [ref=f188e34]: Private AI that works for you, not the cloud.
+        - generic [ref=f188e36]:
+          - link "Download for macOS" [ref=f188e37] [cursor=pointer]:
+            - /url: /download
+          - link "Setup Prompt" [ref=f188e38] [cursor=pointer]:
+            - /url: /setup
+      - region "Local Studio workbench" [ref=f188e40]:
+        - status [ref=f188e41]: Selecting Qwen3.8-27B
+        - generic [ref=f188e43]:
+          - complementary [ref=f188e44]:
+            - generic [ref=f188e45]:
+              - generic [ref=f188e46]:
+                - button "Collapse sidebar" [ref=f188e47]
+                - button "Go back" [ref=f188e51]
+                - button "Go forward" [ref=f188e54]
+                - button "Search sessions" [ref=f188e57]
+              - navigation [ref=f188e61]:
+                - button "New task" [ref=f188e62]
+                - link "Status" [ref=f188e67]:
+                  - /url: /
+                - link "Models" [ref=f188e71]:
+                  - /url: /models
+                - link "Automations" [ref=f188e83]:
+                  - /url: /agent/automations
+                - link "Configure" [ref=f188e88]:
+                  - /url: /configure
+                - link "Usage" [ref=f188e101]:
+                  - /url: /usage
+                - generic [ref=f188e106]: Projects
+                - button "Home" [ref=f188e109]
+                - generic [ref=f188e116]: Tasks
+                - generic [ref=f188e117]:
+                  - button "Maya's birthday weekend now" [ref=f188e118]:
+                    - generic [ref=f188e119]: Maya's birthday weekend
+                    - generic [ref=f188e120]: now
+                  - button "Monday family reset 3h" [ref=f188e121]:
+                    - generic [ref=f188e122]: Monday family reset
+                    - generic [ref=f188e123]: 3h
+              - generic [ref=f188e124]: Sero
+          - generic [ref=f188e138]:
+            - generic [ref=f188e139]:
+              - generic [ref=f188e140]:
+                - 'button "Rename session: Maya''s birthday weekend" [ref=f188e142]': Maya's birthday weekend
+                - button "Hide right sidebar" [pressed] [ref=f188e143]
+              - generic [ref=f188e146]:
+                - paragraph [ref=f188e147]: A dream is something you build for yourself.
+                - paragraph [ref=f188e148]: Just talk to it.
+              - generic [ref=f188e149]:
+                - generic [ref=f188e150]:
+                  - generic [ref=f188e151]: Message
+                  - textbox "Message" [ref=f188e152]:
+                    - /placeholder: Describe a task, e.g. plan a weekend…
+                  - generic [ref=f188e153]:
+                    - button "Attach files" [ref=f188e154]
+                    - generic [ref=f188e156]:
+                      - 'button "Model: Select model" [ref=f188e157]':
+                        - generic [ref=f188e158]: Select model
+                      - button "Send" [disabled] [ref=f188e159]
+                - generic [ref=f188e162]:
+                  - generic [ref=f188e163]:
+                    - generic "/Users/sero/Home" [ref=f188e164]: ~/Home
+                    - generic [ref=f188e165]: main
+                    - button "+0 -0" [ref=f188e169]:
+                      - generic [ref=f188e170]: "+0"
+                      - generic [ref=f188e171]: "-0"
+                  - button "0/202,144" [ref=f188e172]
+            - complementary [ref=f188e174]:
+              - generic [ref=f188e175]:
+                - generic "Status" [ref=f188e177]:
+                  - button "Status" [ref=f188e178]
+                - generic [ref=f188e180]:
+                  - button "Show tools" [ref=f188e181]
+                  - button "Close controller panel" [ref=f188e182]
+              - generic [ref=f188e183]:
+                - paragraph [ref=f188e184]: SessionMaya's birthday weekend
+                - paragraph [ref=f188e185]: Statusidle
+                - paragraph [ref=f188e186]: ModelNone
+                - paragraph [ref=f188e187]: ProjectHome
+    - region [ref=f188e188]:
+      - paragraph [ref=f188e189]: Supporters of Sybil Solutions
+      - list [ref=f188e191]:
+        - listitem [ref=f188e192]:
+          - img "NVIDIA"
+        - listitem [ref=f188e193]:
+          - img "Factory"
+        - listitem [ref=f188e194]:
+          - img "Lambda"
+        - listitem [ref=f188e195]:
+          - img "Prime Intellect"
+        - listitem [ref=f188e196]:
+          - img "TNG Technology Consulting"
+        - listitem [ref=f188e197]:
+          - img "Hot Aisle":
+            - img [aria-hidden]:
+              - generic: Hot Aisle
+    - region "Local Studio product story" [ref=f188e198]:
+      - generic [ref=f188e200]:
+        - list "Local Studio capabilities" [ref=f188e202]:
+          - listitem [ref=f188e203]:
+            - generic [ref=f188e204]: Control
+            - paragraph [ref=f188e207]: Local and remote controllers, live status, launch state, logs, and metrics.
+          - listitem [ref=f188e208]:
+            - generic [ref=f188e209]: Serve
+            - paragraph [ref=f188e212]: vLLM, SGLang, MLX, and llama.cpp behind one OpenAI-compatible surface.
+          - listitem [ref=f188e213]:
+            - generic [ref=f188e214]: Work
+            - paragraph [ref=f188e217]: Models, providers, browser, files, terminal, and agents in the same session.
+          - listitem [ref=f188e218]:
+            - generic [ref=f188e219]: Automate
+            - paragraph [ref=f188e222]: Scheduled health checks, downloads, and reports that run on this machine.
+          - listitem [ref=f188e223]:
+            - generic [ref=f188e224]: Configure
+            - paragraph [ref=f188e227]: Hardware, runtimes, and controller identity for the machine the models run on.
+        - figure [ref=f188e229]:
+          - region "Usage controller" [ref=f188e231]:
+            - generic [ref=f188e235]:
+              - heading "Usage" [level=3] [ref=f188e236]
+              - paragraph [ref=f188e237]: Proxied through this controller
+              - paragraph [ref=f188e238]: 1.28M
+              - generic [ref=f188e239]:
+                - generic [ref=f188e240]:
+                  - definition [ref=f188e241]: 2.3K
+                  - term [ref=f188e242]: Requests
+                - generic [ref=f188e243]:
+                  - definition [ref=f188e244]: "94"
+                  - term [ref=f188e245]: Sessions
+                - generic [ref=f188e246]:
+                  - definition [ref=f188e247]: "86"
+                  - term [ref=f188e248]: Active days
+              - generic [ref=f188e249]:
+                - heading "Token Activity" [level=4] [ref=f188e250]
+                - generic [ref=f188e252]:
+                  - generic [ref=f188e253]:
+                    - generic [ref=f188e254]: Sep
+                    - generic [ref=f188e258]: Oct
+                    - generic [ref=f188e262]: Nov
+                    - generic [ref=f188e267]: Dec
+                    - generic [ref=f188e271]: Jan
+                    - generic [ref=f188e275]: Feb
+                    - generic [ref=f188e279]: Mar
+                    - generic [ref=f188e284]: Apr
+                    - generic [ref=f188e288]: May
+                    - generic [ref=f188e293]: Jun
+                    - generic [ref=f188e297]: Jul
+                    - generic [ref=f188e301]: Aug
+                    - generic [ref=f188e306]: Sep
+                  - slider "Daily token activity for the past year" [ref=f188e307]
+                  - generic [ref=f188e679]:
+                    - generic [ref=f188e680]: Sep 7, 2026 · 0 tokens · 0 requests
+                    - generic [ref=f188e681]:
+                      - generic [ref=f188e682]: Less
+                      - generic [ref=f188e688]: More
+    - region [ref=f188e689]:
+      - heading "Your Session, Anywhere" [level=2] [ref=f188e691]
+      - region "KittyLitter features" [ref=f188e692]:
+        - generic [ref=f188e693]:
+          - article [ref=f188e694]:
+            - region "Show Sessions everywhere" [ref=f188e695]:
+              - img "KittyLitter sessions continuing on an iPhone." [ref=f188e696]
+            - generic [ref=f188e697]:
+              - generic [ref=f188e698]: Sessions everywhere
+              - paragraph [ref=f188e700]: Pick up exactly where you left off. Sessions, threads, and context follow you across phone and desktop.
+          - article [ref=f188e701]:
+            - region "Show Generative UI" [ref=f188e702]:
+              - img "KittyLitter generative interface running on an iPhone." [ref=f188e703]
+            - generic [ref=f188e704]:
+              - generic [ref=f188e705]: Generative UI
+              - paragraph [ref=f188e707]: Interactive agent output stays native and usable on the phone instead of collapsing into a text transcript.
+          - article [ref=f188e708]:
+            - region "Show Remote connections" [ref=f188e709]:
+              - img "KittyLitter remote connection running on an iPhone." [ref=f188e710]
+            - generic [ref=f188e711]:
+              - generic [ref=f188e712]: Remote connections
+              - paragraph [ref=f188e714]: Connect to agents on another machine and keep the same coding workflow away from your desk.
+          - article [ref=f188e715]:
+            - region "Show Debug anywhere" [ref=f188e716]:
+              - img "KittyLitter debugging workflow on an iPhone." [ref=f188e717]
+            - generic [ref=f188e718]:
+              - generic [ref=f188e719]: Debug anywhere
+              - paragraph [ref=f188e721]: Inspect long-running tasks, tool output, and failures without reopening the desktop workspace.
+          - article [ref=f188e722]:
+            - region "Show Plans" [ref=f188e723]:
+              - img "KittyLitter plan view on an iPhone." [ref=f188e724]
+            - generic [ref=f188e725]:
+              - generic [ref=f188e726]: Plans
+              - paragraph [ref=f188e728]: Review and continue structured agent plans from the same mobile session.
+          - article [ref=f188e729]:
+            - region "Show Voice input" [ref=f188e730]:
+              - img "KittyLitter voice input on an iPhone." [ref=f188e731]
+            - generic [ref=f188e732]:
+              - generic [ref=f188e733]: Voice input
+              - paragraph [ref=f188e735]: Real-time voice turns spoken context into agent prompts while you walk, drive, or think.
+          - article [ref=f188e736]:
+            - region "Show Explore projects" [ref=f188e737]:
+              - img "KittyLitter project explorer on an iPhone." [ref=f188e738]
+            - generic [ref=f188e739]:
+              - generic [ref=f188e740]: Explore projects
+              - paragraph [ref=f188e742]: Browse project context and find the session or file you need from the phone.
+          - article [ref=f188e743]:
+            - region "Show Usage insights" [ref=f188e744]:
+              - img "KittyLitter usage statistics on an iPhone." [ref=f188e745]
+            - generic [ref=f188e746]:
+              - generic [ref=f188e747]: Usage insights
+              - paragraph [ref=f188e749]: See session activity and usage without leaving the mobile workspace.
+          - article [ref=f188e750]:
+            - region "Show More tools" [ref=f188e751]:
+              - img "Additional KittyLitter tools on an iPhone." [ref=f188e752]
+            - generic [ref=f188e753]:
+              - generic [ref=f188e754]: More tools
+              - paragraph [ref=f188e756]: Keep the surrounding controls and utilities available wherever the session goes.
+          - article [ref=f188e757]:
+            - region "Show Codex in your pocket" [ref=f188e758]:
+              - img "KittyLitter home screen on an iPhone." [ref=f188e759]
+            - generic [ref=f188e760]:
+              - generic [ref=f188e761]: Codex in your pocket
+              - paragraph [ref=f188e763]: Your servers and recent coding sessions stay within reach from one native mobile client.
+    - region [ref=f188e764]:
+      - heading "AI that stays yours" [level=2] [ref=f188e765]
+      - generic [ref=f188e767]:
+        - link "Download for macOS" [ref=f188e768] [cursor=pointer]:
+          - /url: /download
+        - link "Setup Prompt" [ref=f188e769] [cursor=pointer]:
+          - /url: /setup
+  - contentinfo [ref=f188e770]:
+    - navigation "Footer navigation" [ref=f188e771]:
+      - link "Machines" [ref=f188e772] [cursor=pointer]:
+        - /url: /machine
+      - link "Overview" [ref=f188e773] [cursor=pointer]:
+        - /url: /overview
+      - link "Docs" [ref=f188e774] [cursor=pointer]:
+        - /url: /docs
+      - link "Setup" [ref=f188e775] [cursor=pointer]:
+        - /url: /setup
+      - link "Download" [ref=f188e776] [cursor=pointer]:
+        - /url: /download
+      - link "Developers" [ref=f188e777] [cursor=pointer]:
+        - /url: /developers
+      - link "API" [ref=f188e778] [cursor=pointer]:
+        - /url: /openapi.json
+    - generic [ref=f188e779]: © 2026 Local Studio

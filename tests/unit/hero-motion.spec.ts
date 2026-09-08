@@ -13,10 +13,14 @@ test("hero copy and demo mount fully visible without entrance effects", () => {
 	expect(hero).toContain('id="product"');
 });
 
-test("background stays blank during GPU initialization instead of stretching a loading poster", () => {
+test("reload shows covered atmosphere and framed logo until the first GPU frame", () => {
 	const logo = readFileSync("src/logo/LocalAiLogo.tsx", "utf8");
 	expect(logo).toContain('useState<"loading" | "ready" | "fallback">("loading")');
-	expect(logo.match(/status === "fallback" &&/g)).toHaveLength(2);
+	expect(logo.match(/status !== "ready" &&/g)).toHaveLength(2);
+	expect(logo).toContain("heroAtmospherePending");
+	expect(logo).toContain("LogoPoster");
+	expect(logo).toContain("heroAtmosphereDay");
+	expect(styles).toContain('objectFit: "cover"');
 	expect(logo).toContain('onPending={() => setStatus("loading")}');
 	expect(logo).toContain('onFallback={() => setStatus("fallback")}');
 	expect(renderer).not.toContain("fallbackPlaceholderTimerRef");
@@ -27,8 +31,13 @@ test("background stays blank during GPU initialization instead of stretching a l
 
 test("live logo stays hidden until the poster handoff and starts without depth deformation", () => {
 	expect(renderer).toContain("const [fallbackVisible, setFallbackVisible] = useState(true)");
-	expect(renderer).toContain('canvasPending: { visibility: "hidden" }');
 	expect(renderer).toContain("fallbackVisible && rendererStyles.canvasPending");
 	expect(renderer).toContain("depthOpening: 0,");
 	expect(renderer).not.toContain("depthOpening: depthReveal ? 1 : 0");
+});
+
+
+test("intro material clears empty apertures transparently", () => {
+  const material = readFileSync("packages/logo-renderer/src/renderer/render/intro-material.ts", "utf8");
+  expect(material).toContain("clearColor: [0, 0, 0, 0]");
 });

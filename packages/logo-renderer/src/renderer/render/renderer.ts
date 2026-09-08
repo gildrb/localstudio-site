@@ -13,14 +13,10 @@ import { createPaintSystem } from "./paint-system";
 import { createPrismAtmosphere } from "./prism/atmosphere";
 import { createIlluminationAtmosphere } from "./illumination/atmosphere";
 import { renderAtmosphere } from "./passes/atmosphere-pass";
-import { createApertureMask } from "./aperture-mask";
-import { atmosphereIntroState } from "./intro";
+import { createIntroAtmosphere } from "./intro-atmosphere";
 import { renderBackDepth, renderBackMaterial } from "./passes/back-pass";
 import { renderBlur, renderComposite } from "./passes/bloom-pass";
-import {
-  renderTargetPreview,
-  renderThicknessDebug,
-} from "./passes/debug-passes";
+import { renderTargetPreview, renderThicknessDebug } from "./passes/debug-passes";
 import { renderLightComposite } from "./passes/light-composite-pass";
 import { renderScene } from "./passes/scene-pass";
 import { createResources, disposeResources } from "./resources";
@@ -43,8 +39,10 @@ export function createEve5Renderer(
     backRefraction = options.backRefraction ?? true,
     cache = createBloomTargetCache(gpu),
     paint = createPaintSystem(gpu, r, mesh);
-  let aperture: ReturnType<typeof createApertureMask> | undefined;
+  let intro: ReturnType<typeof createIntroAtmosphere> | undefined;
   let latestScene: Target | undefined;
+  let latestLogo: Target | undefined;
+  let latestPaddingRadius = 0;
   let atmosphereDepth: Target | undefined;
   let atmosphereParams: ReturnType<typeof writeParams> | undefined;
   let prism: ReturnType<typeof createPrismAtmosphere> | undefined;
@@ -59,9 +57,7 @@ export function createEve5Renderer(
   ) => {
     const w = Math.max(1, Math.round(lw)),
       h = Math.max(1, Math.round(lh)),
-      pad =
-        options.paddingRadius ??
-        bloomRadiusForDevicePixelRatio(im.devicePixelRatio),
+      pad = options.paddingRadius ?? bloomRadiusForDevicePixelRatio(im.devicePixelRatio),
       needs =
         (backRefraction && c.material === "glass") ||
         c.material === "back-albedo" ||
@@ -69,6 +65,8 @@ export function createEve5Renderer(
         c.material === "thickness",
       t = cache.ensure(w, h, pad, needs),
       pt = paint.ensure(w, h, im.gridScaleMultiplier);
+    latestLogo = out;
+    latestPaddingRadius = pad;
     if (im.atmosphere) {
       if (!atmosphereDepth) {
         atmosphereDepth = createTarget(gpu, {
@@ -80,11 +78,7 @@ export function createEve5Renderer(
         });
       } else atmosphereDepth.resize(t.scene.size);
     }
-    if (im.atmosphere && atmosphereIntroState(im.atmosphere.introTime).active) {
-      aperture ??= createApertureMask(gpu, mesh);
-    }
     frame(gpu, (f) => {
-      aperture?.render(f);
       if (im.atmosphere && atmosphereDepth) {
         const depthParams = writeParams({
           controls: c,
@@ -120,15 +114,7 @@ export function createEve5Renderer(
         t.backMaterial &&
         t.backDepth
       ) {
-        renderTargetPreview(
-          f,
-          r,
-          mesh,
-          out,
-          t.backMaterial.color,
-          t.backDepth.color,
-          c,
-        );
+        renderTargetPreview(f, r, mesh, out, t.backMaterial.color, t.backDepth.color, c);
         return;
       }
       if (c.material === "thickness" && t.backMaterial && t.backDepth) {
@@ -160,9 +146,7 @@ export function createEve5Renderer(
         backRefraction && t.backMaterial
           ? t.backMaterial.color
           : r.fallbacks.fallbackBackMaterial.color,
-        backRefraction && t.backDepth
-          ? t.backDepth.color
-          : r.fallbacks.fallbackBackDepth.color,
+        backRefraction && t.backDepth ? t.backDepth.color : r.fallbacks.fallbackBackDepth.color,
         pt.paint.read.color,
         pt.voronoi.colors[0],
         pt.voronoi.colors[1]!,
@@ -173,16 +157,45 @@ export function createEve5Renderer(
         im,
       );
       latestScene = t.scene;
-      if (im.atmosphere && (im.atmosphere.lightGain ?? 0) > 0 && atmosphereDepth && atmosphereParams) {
+      if (
+        im.atmosphere &&
+        (im.atmosphere.lightGain ?? 0) > 0 &&
+        atmosphereDepth &&
+        atmosphereParams
+      ) {
         illumination ??= createIlluminationAtmosphere(gpu, r, mesh, im.atmosphere);
-        illumination.render(f, t.scene.color, atmosphereDepth.color, atmosphereParams,
-          c, im, options.environmentTheme === "light");
+        illumination.render(
+          f,
+          t.scene.color,
+          atmosphereDepth.color,
+          atmosphereParams,
+          c,
+          im,
+          options.environmentTheme === "light",
+        );
       } else if (im.atmosphere?.prism && atmosphereDepth && atmosphereParams) {
         prism ??= createPrismAtmosphere(gpu, r, mesh);
-        prism.render(f, t.scene.color, atmosphereDepth.color, atmosphereParams,
-          c, im, options.environmentTheme === "light", true);
+        prism.render(
+          f,
+          t.scene.color,
+          atmosphereDepth.color,
+          atmosphereParams,
+          c,
+          im,
+          options.environmentTheme === "light",
+          true,
+        );
       } else if (atmosphereDepth) {
-        renderAtmosphere(f, r, t.scene.color, atmosphereDepth.color, atmosphereCamera, c, im, options.environmentTheme === "light", aperture);
+        renderAtmosphere(
+          f,
+          r,
+          t.scene.color,
+          atmosphereDepth.color,
+          atmosphereCamera,
+          c,
+          im,
+          options.environmentTheme === "light",
+        );
       }
       if (r.isLight) {
         renderLightComposite(f, r, out, t);
@@ -192,11 +205,7 @@ export function createEve5Renderer(
         renderComposite(f, r, out, t, t.scene.color, 0);
         return;
       }
-      const strength = mix(
-        BLOOM_STRENGTH_OFF,
-        BLOOM_STRENGTH_ON,
-        clampUnit(im.progress ?? 0),
-      );
+      const strength = mix(BLOOM_STRENGTH_OFF, BLOOM_STRENGTH_ON, clampUnit(im.progress ?? 0));
       renderBlur(f, r, t.scene.color, t.bloom.write, [1, 0], true, pad);
       t.bloom.swap();
       renderBlur(
@@ -222,44 +231,76 @@ export function createEve5Renderer(
     ) {
       renderGlass(target, controls, logicalWidth, logicalHeight, imprint);
     },
-    /** Idle atmosphere update: call outside a frame; never redraws the mesh. */
+    /** Reuses the baseline mesh frame. An active intro has its own material-light pass. */
     renderAtmosphere(controls: RenderControls, imprint: ImprintRenderOptions) {
-      if (!latestScene || !atmosphereDepth || !imprint.atmosphere) return;
+      if (!latestScene || !latestLogo || !atmosphereDepth || !imprint.atmosphere) return;
+      const originalLogo = latestLogo;
       const scene = latestScene.color;
       const depth = atmosphereDepth.color;
-      if (atmosphereIntroState(imprint.atmosphere.introTime).active) {
-        aperture ??= createApertureMask(gpu, mesh);
-      }
       frame(gpu, (f) => {
-        aperture?.render(f);
         if (imprint.atmosphere && (imprint.atmosphere.lightGain ?? 0) > 0 && atmosphereParams) {
           illumination ??= createIlluminationAtmosphere(gpu, r, mesh, imprint.atmosphere);
-          illumination.render(f, scene, depth, atmosphereParams, controls, imprint,
-            options.environmentTheme === "light");
+          illumination.render(
+            f,
+            scene,
+            depth,
+            atmosphereParams,
+            controls,
+            imprint,
+            options.environmentTheme === "light",
+          );
         } else if (imprint.atmosphere?.prism && atmosphereParams) {
           prism ??= createPrismAtmosphere(gpu, r, mesh);
-          prism.render(f, scene, depth, atmosphereParams, controls, imprint,
-            options.environmentTheme === "light", false);
+          prism.render(
+            f,
+            scene,
+            depth,
+            atmosphereParams,
+            controls,
+            imprint,
+            options.environmentTheme === "light",
+            false,
+          );
         } else {
-          renderAtmosphere(f, r, scene, depth, atmosphereCamera, controls, imprint, options.environmentTheme === "light", aperture);
+          renderAtmosphere(
+            f,
+            r,
+            scene,
+            depth,
+            atmosphereCamera,
+            controls,
+            imprint,
+            options.environmentTheme === "light",
+          );
         }
       });
     },
     /** Opt-in native diagnostics; no allocations until Prism is rendered. */
-    get prismTargets() { return prism?.targets; },
+    get prismTargets() {
+      return prism?.targets;
+    },
     /** Last active added-light targets; gain zero uses the original direct path. */
-    get illuminationTargets() { return illumination?.targets; },
+    get illuminationTargets() {
+      return illumination?.targets;
+    },
     /** Exact model-plane RGB opening identity; allocated only for the intro. */
-    get apertureMask() { return aperture?.target; },
+    get apertureMask() {
+      return intro?.apertureMask;
+    },
+    /** Linear HDR fields for native diagnostics, never SDR canvas overlays. */
+    get introTargets() {
+      return intro?.targets;
+    },
     dispose() {
-      aperture?.dispose();
-      aperture = undefined;
+      intro?.dispose();
+      intro = undefined;
       illumination?.dispose();
       illumination = undefined;
       prism?.dispose();
       prism = undefined;
       atmosphereParams = undefined;
       latestScene = undefined;
+      latestLogo = undefined;
       atmosphereDepth?.color.destroy();
       atmosphereDepth?.depth?.destroy();
       atmosphereDepth = undefined;

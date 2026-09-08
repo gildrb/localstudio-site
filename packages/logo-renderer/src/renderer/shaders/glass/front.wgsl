@@ -1,4 +1,4 @@
-import { oriented_normal, env_reflect_dir, env_reflection_from_dir, encode_normal } from "../shared/material-core.wgsl";
+import { oriented_normal, env_reflect_dir, env_reflection_from_dir, encode_normal, METALLIC_OPACITY } from "../shared/material-core.wgsl";
 import { Params, WIRE_PASS_THRESHOLD } from "../shared/scene-params.wgsl";
 import { VertexInput, VertexOutput, glass_vs_main } from "../shared/glass-vertex.wgsl";
 import { shade_glass } from "../shared/glass-material.wgsl";
@@ -71,11 +71,7 @@ fn fs_main(input: VertexOutput) -> @location(0) vec4f {
       );
       let edgeFresnel = pow(clamp(1.0 - dot(n, v), 0.0, 1.0), 5.0);
       let metallicReflectance = mix(0.16, 1.0, edgeFresnel);
-      glass = vec4f(max(environment * metallicReflectance, vec3f(0.006)), 0.92);
-      if (params.introLight.w < 1.0) {
-        // Only the existing studio material returns; the intro adds no rim light.
-        glass = vec4f(glass.rgb * params.introLight.w, glass.a);
-      }
+      glass = vec4f(max(environment * metallicReflectance, vec3f(0.006)), METALLIC_OPACITY);
     }
     default: {
       glass = shade_glass(studioCube, studioSampler, n, v, reflected, params.envYaw, params.envPitch, false, params.glassAbsorption);

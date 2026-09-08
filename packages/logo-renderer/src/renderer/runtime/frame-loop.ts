@@ -73,7 +73,6 @@ export function createDrawLoop({
   devicePixelRatioRef,
   onCanvasRevealed,
   onIntroFrame,
-  onIntroComplete,
   onFallback,
   onFatalError,
 }: {
@@ -87,7 +86,6 @@ export function createDrawLoop({
   devicePixelRatioRef: DevicePixelRatioRef;
   onCanvasRevealed: () => void;
   onIntroFrame?: ((time: number) => void) | undefined;
-  onIntroComplete?: (() => void) | undefined;
   onFallback: () => void;
   onFatalError: () => void;
 }) {
@@ -98,7 +96,6 @@ export function createDrawLoop({
   let introTime = 0;
   let introVisibleTime = 0;
   let introRenderedTime = -1;
-  let introCompleted = false;
   let lastAtmosphereFrame = Number.NEGATIVE_INFINITY;
 
   const draw = (frameTime = performance.now()) => {
@@ -116,12 +113,6 @@ export function createDrawLoop({
     }
 
     const introActive = introEnabled && introTime < ATMOSPHERE_INTRO_DURATION;
-    if (introEnabled && !introActive && !introCompleted) {
-      introCompleted = true;
-      // Restore steady resolution before drawing the final frame, never after
-      // presentation (resizing an already-presented canvas would flash blank).
-      onIntroComplete?.();
-    }
     const poseHeld = introEnabled && introVisibleTime < Math.max(INTRO_POSE_HOLD_SECONDS, ATMOSPHERE_INTRO_DURATION);
     if (poseHeld) state.autoRotateStartTime = frameTime;
     // The transient surface lights share the same frame as the volume. Limit
@@ -156,7 +147,7 @@ export function createDrawLoop({
     const rippleActive = rippleAge >= 0 && rippleAge < RIPPLE_DURATION_SECONDS;
     if (
       successfulRenderCount >= CANVAS_REVEAL_RENDER_COUNT &&
-      (!introEnabled || introRenderedTime === ATMOSPHERE_INTRO_DURATION) &&
+      (!introEnabled || introActive || introRenderedTime === ATMOSPHERE_INTRO_DURATION) &&
       !state.renderRequested &&
       !pointerSettling &&
       !openingSettling &&
