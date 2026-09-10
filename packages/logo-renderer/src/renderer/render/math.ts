@@ -68,10 +68,7 @@ export function lookAt(eye: Vec3, target: Vec3, up: Vec3): Mat4 {
 	return m;
 }
 
-export function multiply(
-	a: Readonly<Mat4<Readonly<ArrayBufferLike>>>,
-	b: Readonly<Mat4<Readonly<ArrayBufferLike>>>,
-): Mat4 {
+export function multiply(a: Mat4, b: Mat4): Mat4 {
 	const out = new Float32Array(16);
 	for (let col = 0; col < 4; col += 1) {
 		for (let row = 0; row < 4; row += 1) {

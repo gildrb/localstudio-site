@@ -35,9 +35,10 @@ writeFileSync(
 // Running the packed entry as Node avoids untyped dynamic-import module namespaces.
 const temporaryScripts = join(temporary, "scripts");
 mkdirSync(temporaryScripts);
-for (const name of ["loading-layers-runtime.ts", "snapshot-png.ts"]) {
-	cpSync(join(packageRoot, "scripts", name), join(temporaryScripts, name));
-}
+cpSync(
+	join(packageRoot, "scripts/loading-layers-runtime.ts"),
+	join(temporaryScripts, "loading-layers-runtime.ts"),
+);
 const packed = join(temporary, "dist");
 await build({
 	config: false,

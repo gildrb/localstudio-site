@@ -5,23 +5,6 @@ import { GitBranchIcon } from "../ui/icons";
 
 const numberFormatter = new Intl.NumberFormat("en-US");
 
-type GitSummary = {
-	readonly isRepo: boolean;
-	readonly additions: number;
-	readonly deletions: number;
-	readonly statusCount: number;
-};
-
-type AgentComposerStatusBarProps = {
-	readonly cwd: string;
-	readonly gitBranch?: string;
-	readonly gitSummary?: GitSummary;
-	readonly currentContextTokens: number;
-	readonly contextWindow: number;
-	readonly onOpenStatus: () => void;
-	readonly onOpenDiff: () => void;
-};
-
 export function AgentComposerStatusBar({
 	cwd,
 	gitBranch,
@@ -30,8 +13,21 @@ export function AgentComposerStatusBar({
 	contextWindow,
 	onOpenStatus,
 	onOpenDiff,
-}: AgentComposerStatusBarProps) {
-	const home = cwd.match(/^\/Users\/[^/]+(\/.*)?$/u);
+}: {
+	cwd: string;
+	gitBranch?: string;
+	gitSummary?: {
+		isRepo: boolean;
+		additions: number;
+		deletions: number;
+		statusCount: number;
+	};
+	currentContextTokens: number;
+	contextWindow: number;
+	onOpenStatus: () => void;
+	onOpenDiff: () => void;
+}) {
+	const home = cwd.match(/^\/Users\/[^/]+(\/.*)?$/);
 	const displayCwd = home ? `~${home[1] ?? ""}` : cwd;
 	return (
 		<div {...stylex.props(demoStyles.reset, styles.div28)}>
@@ -39,7 +35,7 @@ export function AgentComposerStatusBar({
 				<span {...stylex.props(demoStyles.reset, styles.span30)} title={cwd}>
 					{displayCwd}
 				</span>
-				{gitBranch !== undefined && gitBranch !== "" ? (
+				{gitBranch ? (
 					<span {...stylex.props(demoStyles.reset, styles.span34)}>
 						<GitBranchIcon
 							{...stylex.props(demoStyles.reset, styles.gitbranchicon35, styles.lucideScale)}
@@ -47,7 +43,21 @@ export function AgentComposerStatusBar({
 						<span {...stylex.props(demoStyles.reset, styles.span36)}>{gitBranch}</span>
 					</span>
 				) : null}
-				<GitChanges gitSummary={gitSummary} onOpenDiff={onOpenDiff} />
+				{gitSummary?.isRepo ? (
+					<button
+						type="button"
+						onClick={onOpenDiff}
+						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button43)}
+						title="View changes"
+					>
+						<span {...stylex.props(demoStyles.reset, styles.span46)}>
+							+{numberFormatter.format(gitSummary.additions)}
+						</span>
+						<span {...stylex.props(demoStyles.reset, styles.span47)}>
+							-{numberFormatter.format(gitSummary.deletions)}
+						</span>
+					</button>
+				) : null}
 			</div>
 			<button
 				type="button"
@@ -61,28 +71,4 @@ export function AgentComposerStatusBar({
 			</button>
 		</div>
 	);
-}
-
-function GitChanges({
-	gitSummary,
-	onOpenDiff,
-}: {
-	readonly gitSummary: GitSummary | undefined;
-	readonly onOpenDiff: () => void;
-}) {
-	return gitSummary?.isRepo === true ? (
-		<button
-			type="button"
-			onClick={onOpenDiff}
-			{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button43)}
-			title="View changes"
-		>
-			<span {...stylex.props(demoStyles.reset, styles.span46)}>
-				+{numberFormatter.format(gitSummary.additions)}
-			</span>
-			<span {...stylex.props(demoStyles.reset, styles.span47)}>
-				-{numberFormatter.format(gitSummary.deletions)}
-			</span>
-		</button>
-	) : null;
 }

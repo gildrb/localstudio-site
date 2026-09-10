@@ -4,10 +4,10 @@ import { styles } from "./diff-preview.styles.ts";
 export type DiffPreviewLineKind = "addition" | "context" | "deletion" | "hunk" | "meta";
 
 type DiffPreviewLine = {
-	readonly content: string;
-	readonly id: string;
-	readonly kind: DiffPreviewLineKind;
-	readonly marker: string;
+	content: string;
+	id: string;
+	kind: DiffPreviewLineKind;
+	marker: string;
 };
 
 const rowStyles = {
@@ -48,9 +48,9 @@ function parseLine(line: string): Omit<DiffPreviewLine, "id"> {
 	return { content: line, kind: "context", marker: "" };
 }
 
-export function DiffPreview({ body }: { readonly body: string }) {
-	const sources = body.replaceAll(/\r\n?/gu, "\n").split("\n");
-	const lines: readonly DiffPreviewLine[] = sources.map((source, position) => ({
+export function DiffPreview({ body }: { body: string }) {
+	const sources = body.replace(/\r\n?/g, "\n").split("\n");
+	const lines = sources.map((source, position) => ({
 		...parseLine(source),
 		id: `${source}:${sources.slice(0, position).filter((candidate) => candidate === source).length}`,
 	}));
@@ -80,7 +80,7 @@ export function DiffPreview({ body }: { readonly body: string }) {
 							{line.marker}
 						</span>
 						<span {...stylex.props(demoStyles.reset, styles.span81)}>
-							{line.content || "\u00A0"}
+							{line.content || "\u00a0"}
 						</span>
 					</div>
 				))}

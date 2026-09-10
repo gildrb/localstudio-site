@@ -5,57 +5,6 @@ import { assets } from "../domain/asset";
 import { styles } from "../styles/sections-styles";
 import Shader from "./shader";
 
-function AtmosphereBackgroundPoster() {
-	return (
-		<div
-			aria-hidden="true"
-			{...stylex.props(styles.heroAtmosphere, styles.heroAtmospherePlaceholder)}
-		>
-			<picture {...stylex.props(styles.heroAtmosphereBackgroundPoster)}>
-				<source media="(prefers-color-scheme: light)" srcSet={assets.heroAtmosphereDay} />
-				<img
-					{...stylex.props(styles.heroAtmosphereImage)}
-					src={assets.heroAtmosphereNight}
-					alt=""
-					draggable={false}
-					decoding="sync"
-					fetchPriority="high"
-				/>
-			</picture>
-		</div>
-	);
-}
-
-function LogoFallback() {
-	return (
-		<>
-			<LogoPoster
-				sx={styles.heroRender}
-				dayUrl={assets.heroRenderDay}
-				nightUrl={assets.heroRenderNight}
-			/>
-			<picture
-				aria-hidden="true"
-				{...stylex.props(
-					styles.heroAtmosphere,
-					styles.heroAtmospherePlaceholder,
-					styles.heroAtmosphereForeground,
-				)}
-			>
-				<source media="(prefers-color-scheme: light)" srcSet={assets.heroAtmosphereForegroundDay} />
-				<img
-					{...stylex.props(styles.heroAtmosphereImage)}
-					src={assets.heroAtmosphereForegroundNight}
-					alt=""
-					draggable={false}
-					decoding="sync"
-					fetchPriority="high"
-				/>
-			</picture>
-		</>
-	);
-}
-
 export function LocalAiLogo() {
 	const [status, setStatus] = useState<"loading" | "ready" | "fallback">("loading");
 	const ready = status === "ready";
@@ -63,7 +12,24 @@ export function LocalAiLogo() {
 	const atmosphereForegroundRef = useRef<HTMLCanvasElement>(null);
 	return (
 		<>
-			{status !== "ready" && <AtmosphereBackgroundPoster />}
+			{status !== "ready" && (
+				<div
+					aria-hidden="true"
+					{...stylex.props(styles.heroAtmosphere, styles.heroAtmospherePlaceholder)}
+				>
+					<picture {...stylex.props(styles.heroAtmosphereBackgroundPoster)}>
+						<source media="(prefers-color-scheme: light)" srcSet={assets.heroAtmosphereDay} />
+						<img
+							{...stylex.props(styles.heroAtmosphereImage)}
+							src={assets.heroAtmosphereNight}
+							alt=""
+							draggable={false}
+							decoding="sync"
+							fetchPriority="high"
+						/>
+					</picture>
+				</div>
+			)}
 			<canvas
 				ref={atmosphereRef}
 				aria-hidden="true"
@@ -72,15 +38,9 @@ export function LocalAiLogo() {
 			<Shader
 				atmosphereRef={atmosphereRef}
 				atmosphereForegroundRef={atmosphereForegroundRef}
-				onPending={() => {
-					setStatus("loading");
-				}}
-				onFirstFrame={() => {
-					setStatus("ready");
-				}}
-				onFallback={() => {
-					setStatus("fallback");
-				}}
+				onPending={() => setStatus("loading")}
+				onFirstFrame={() => setStatus("ready")}
+				onFallback={() => setStatus("fallback")}
 			/>
 			<canvas
 				ref={atmosphereForegroundRef}
@@ -91,7 +51,36 @@ export function LocalAiLogo() {
 					!ready && styles.heroAtmospherePending,
 				)}
 			/>
-			{status !== "ready" && <LogoFallback />}
+			{status !== "ready" && (
+				<>
+					<LogoPoster
+						sx={styles.heroRender}
+						dayUrl={assets.heroRenderDay}
+						nightUrl={assets.heroRenderNight}
+					/>
+					<picture
+						aria-hidden="true"
+						{...stylex.props(
+							styles.heroAtmosphere,
+							styles.heroAtmospherePlaceholder,
+							styles.heroAtmosphereForeground,
+						)}
+					>
+						<source
+							media="(prefers-color-scheme: light)"
+							srcSet={assets.heroAtmosphereForegroundDay}
+						/>
+						<img
+							{...stylex.props(styles.heroAtmosphereImage)}
+							src={assets.heroAtmosphereForegroundNight}
+							alt=""
+							draggable={false}
+							decoding="sync"
+							fetchPriority="high"
+						/>
+					</picture>
+				</>
+			)}
 		</>
 	);
 }

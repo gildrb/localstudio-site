@@ -7,13 +7,7 @@ import { join } from "node:path";
 import assert from "node:assert/strict";
 
 const [captureDir, referenceDir] = process.argv.slice(2);
-assert.ok(
-	captureDir !== undefined &&
-		referenceDir !== undefined &&
-		captureDir !== "" &&
-		referenceDir !== "",
-	"Provide capture and reference directories",
-);
+assert(captureDir && referenceDir, "Provide capture and reference directories");
 const image = PNG.sync.read(readFileSync(join(captureDir, "0.9-intro.png")));
 const reference = PNG.sync.read(readFileSync(join(referenceDir, "0.9-intro.png")));
 assert.equal(image.width, 640);
@@ -30,7 +24,7 @@ for (const [x, y] of [
 	[251, 173],
 	[320, 127],
 	[389, 173],
-] satisfies readonly (readonly [number, number])[]) {
+] satisfies [number, number][]) {
 	const sx = Math.floor((((x + 0.5) / 640 - 0.2073) / 0.5855) * 960);
 	const sy = Math.floor((((y + 0.5) / 551 - 0.0879) / 0.4473) * 643);
 	assert.equal(
@@ -40,7 +34,7 @@ for (const [x, y] of [
 	);
 	const pixel = (y * 640 + x) * 4;
 	for (let channel = 0; channel < 3; channel++) {
-		assert.ok(
+		assert(
 			image.data.readUInt8(pixel + channel) >= 190,
 			"Rear light must remain visible through the aperture",
 		);
@@ -56,14 +50,14 @@ for (const [x, y] of [
 	[959, 0],
 	[0, 642],
 	[959, 642],
-] satisfies readonly (readonly [number, number])[]) {
+] satisfies [number, number][]) {
 	assert.equal(surface[(y * 960 + x) * 4 + 3], 0, "Outside geometry must be transparent");
 }
 for (const [x, y] of [
 	[480, 400],
 	[200, 450],
 	[760, 450],
-] satisfies readonly (readonly [number, number])[]) {
+] satisfies [number, number][]) {
 	assert.equal(surface[(y * 960 + x) * 4 + 3], 1, "Solid material must remain opaque");
 }
 console.log("Intro material coverage and final aperture transmission passed");

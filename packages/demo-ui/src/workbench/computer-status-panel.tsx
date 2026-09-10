@@ -6,9 +6,9 @@ export function ComputerStatusPanel({
 	activeModel,
 	focusedSession,
 }: {
-	readonly activeProject?: { readonly name: string } | null;
-	readonly activeModel?: { readonly name: string } | null;
-	readonly focusedSession?: { readonly title: string; readonly status: string } | null;
+	activeProject?: { name: string } | null;
+	activeModel?: { name: string } | null;
+	focusedSession?: { title: string; status: string } | null;
 }) {
 	return (
 		<section {...stylex.props(demoStyles.reset, styles.section11)}>

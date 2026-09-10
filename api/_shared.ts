@@ -1,36 +1,12 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import * as v from "valibot";
 
 /** The HTTP fields consumed by the public handlers; Vercel supplies the optional parsed body. */
-export type ApiRequest = Readonly<Pick<IncomingMessage, "method">> & {
-	readonly body?: unknown;
-};
-
-/** JSON response data; undefined object fields are omitted by JSON.stringify. */
-export type JsonValue =
-	| null
-	| boolean
-	| number
-	| string
-	| readonly JsonValue[]
-	| { readonly [key: string]: JsonValue | undefined };
-
-/** Decode parsed request JSON before reading its fields. */
-export const jsonValueSchema: v.GenericSchema<JsonValue> = v.lazy(() =>
-	v.union([
-		v.null(),
-		v.boolean(),
-		v.number(),
-		v.string(),
-		v.array(jsonValueSchema),
-		v.record(v.string(), v.optional(jsonValueSchema)),
-	]),
-);
+export type ApiRequest = Pick<IncomingMessage, "method"> & { body?: unknown };
 
 export type ApiResponse = {
 	statusCode: ServerResponse["statusCode"];
-	readonly setHeader: (name: string, value: string) => void;
-	readonly end: (body?: string) => void;
+	setHeader: (name: string, value: string) => void;
+	end: (body?: string) => void;
 };
 
 export type ApiHandler = (request: ApiRequest, response: ApiResponse) => void;
@@ -72,8 +48,8 @@ export const products = {
 export function sendJson(
 	response: ApiResponse,
 	statusCode: number,
-	body: JsonValue,
-	headers: Readonly<Record<string, string>> = {},
+	body: unknown,
+	headers: Record<string, string> = {},
 ): void {
 	response.statusCode = statusCode;
 	response.setHeader("Content-Type", "application/json; charset=utf-8");

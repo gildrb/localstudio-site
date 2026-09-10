@@ -7,11 +7,10 @@ function tokenHex(name: string, scheme: string): string {
 	const match = source.match(
 		new RegExp(
 			`${name}: stylex\\.types\\.color\\(\\{ default: "(#[0-9a-f]{6})", \\[lightScheme\\]: "(#[0-9a-f]{6})"`,
-			"u",
 		),
 	);
 	const color = match?.[scheme === "light" ? 2 : 1];
-	if (color === undefined || color === "") throw new Error("token");
+	if (!color) throw new Error("token");
 	return color;
 }
 
@@ -56,12 +55,11 @@ test("APCA roles", () => {
 		}
 		const ink = tokenHex("selectionInk", scheme);
 		const palette = stops.map((name) => tokenHex(name, scheme));
-		let previous = palette.values().next().value;
-		for (const color of palette.slice(1)) {
-			if (previous !== undefined) {
-				expect(luminance(previous)).toBeGreaterThan(luminance(color));
-			}
-			previous = color;
+		for (let index = 1; index < palette.length; index += 1) {
+			const previous = palette[index - 1];
+			const current = palette[index];
+			if (previous === undefined || current === undefined) throw new Error("palette");
+			expect(luminance(previous)).toBeGreaterThan(luminance(current));
 		}
 		for (const color of palette) {
 			expect(Math.abs(apcaContrast(ink, color))).toBeGreaterThanOrEqual(75);
@@ -73,17 +71,17 @@ test("APCA roles", () => {
 		).toBeGreaterThanOrEqual(75);
 	}
 
-	const layout = readFileSync("src/styles/hero-styles.ts", "utf8");
+	const layout = readFileSync("src/styles/sections-styles.ts", "utf8");
 	const heroRender = layout.slice(layout.indexOf("heroRender:"), layout.indexOf("heroInner:"));
 	const overlayOpacity = Number(
 		heroRender.match(/opacity: \{ default: 1, "@media \(max-width: 1200px\)": ([\d.]+)/u)?.[1],
 	);
 	expect(Number.isFinite(overlayOpacity)).toBe(true);
 	// Small-screen reflections leave copy readable.
-	for (const { scheme, channel } of [
-		{ scheme: "light", channel: 1 - overlayOpacity },
-		{ scheme: "dark", channel: overlayOpacity },
-	]) {
+	for (const [scheme, channel] of [
+		["light", 1 - overlayOpacity],
+		["dark", overlayOpacity],
+	] satisfies [string, number][]) {
 		const hex = `#${Math.round(255 * channel)
 			.toString(16)
 			.padStart(2, "0")

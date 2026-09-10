@@ -1,4 +1,4 @@
-import { readdirSync, type Dirent } from "node:fs";
+import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -6,18 +6,18 @@ import { spawnSync } from "node:child_process";
 const shaderRoot = new URL("../src/renderer/shaders/", import.meta.url);
 const vgpuBin = fileURLToPath(new URL("bin/vgpu.js", import.meta.resolve("vgpu/package.json")));
 
-function collect(directory: string): string[] {
-	return readdirSync(directory, { withFileTypes: true }).flatMap((entry: Readonly<Dirent>) => {
+function collect(directory: string | URL): string[] {
+	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
 		const path = join(entry.parentPath, entry.name);
 		if (entry.isDirectory()) return collect(path);
 		return entry.isFile() && entry.name.endsWith(".wgsl") ? [path] : [];
 	});
 }
 
-const shaders = collect(fileURLToPath(shaderRoot));
+const shaders = collect(shaderRoot);
 for (const shader of shaders) {
 	const result = spawnSync(process.execPath, [vgpuBin, "check", shader], { encoding: "utf8" });
-	if (result.error !== undefined) throw result.error;
+	if (result.error) throw result.error;
 	if (result.status !== 0) {
 		process.stdout.write(result.stdout);
 		process.stderr.write(result.stderr);

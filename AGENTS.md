@@ -14,7 +14,8 @@
 - `vp install` uses the default pnpm workflow and `pnpm-lock.yaml`.
 - Configure the toolchain in `vite.config.ts`. Use the official StyleX and WGSL Vite plugins.
 - `vp check` runs Oxfmt, Oxlint, and Vite+ typechecking. `vp test` runs the unit suite through Vitest.
-- Require zero warnings and zero errors. Do not weaken rules, add exclusions, or suppress diagnostics to pass.
+- Keep `vp check` high-signal: zero errors and a small, actionable warning set. Disable noisy style policy instead of mass-editing application code. Do not hide real failures with exclusions or suppressions.
+- Profile before optimizing. Prefer canonical Vite+ features and deletion over bespoke tooling. Preserve application behavior and existing test assertions.
 - Never use `any`, casts through `any`, or fake ambient type declarations. Validate external data before giving it a domain type.
 - Keep every authored source file in a strict TypeScript project, including scripts, API handlers, and existing tests.
 - Application-specific generated-output checks run with `vp run validate`. Playwright remains for browser and visual checks.

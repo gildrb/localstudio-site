@@ -22,7 +22,7 @@ function setFavicon(href: string, media: string) {
 setFavicon(assets.favicon, "(prefers-color-scheme: light)");
 setFavicon(assets.faviconDark, "(prefers-color-scheme: dark)");
 
-function syncKeyboardMode(event: Readonly<Pick<Event, "type">>) {
+function syncKeyboardMode(event: Event) {
 	if (event.type === "keydown") {
 		document.documentElement.dataset["keyboard"] = "true";
 	} else {
@@ -30,13 +30,12 @@ function syncKeyboardMode(event: Readonly<Pick<Event, "type">>) {
 	}
 }
 
-type ImageActionEvent = Readonly<Pick<Event, "preventDefault">> & {
-	readonly target: Readonly<EventTarget> | null;
-};
+function isSiteImage(target: EventTarget | null) {
+	return target instanceof Element && target.closest("img, picture") !== null;
+}
 
-function preventImageAction(event: ImageActionEvent) {
-	const target = event.target;
-	if (target instanceof Element && target.closest("img, picture") !== null) {
+function preventImageAction(event: Event) {
+	if (isSiteImage(event.target)) {
 		event.preventDefault();
 	}
 }
@@ -47,7 +46,7 @@ document.addEventListener("contextmenu", preventImageAction);
 document.addEventListener("dragstart", preventImageAction);
 document.addEventListener("selectstart", preventImageAction);
 
-const root = document.querySelector<HTMLElement>("#root");
+const root = document.getElementById("root");
 if (root === null) {
 	throw new Error("root");
 }

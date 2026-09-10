@@ -1,14 +1,6 @@
 import { expect, test } from "@playwright/test";
-import type { BrowserFixtures } from "./browser-fixtures";
 
-const brightness = (color: string) =>
-	(
-		color
-			.match(/[\d.]+/gu)
-			?.slice(0, 3)
-			.map(Number) ?? []
-	).reduce((sum, value) => sum + value, 0);
-test("1", async ({ page }: BrowserFixtures) => {
+test("1", async ({ page }) => {
 	for (const scheme of ["dark", "light"] as const) {
 		await page.emulateMedia({ colorScheme: scheme });
 		await page.goto("/");
@@ -21,11 +13,10 @@ test("1", async ({ page }: BrowserFixtures) => {
 			return {
 				colorScheme: getComputedStyle(document.documentElement).colorScheme,
 				demoScheme: demo ? getComputedStyle(demo).colorScheme : null,
-				demoTheme: demo instanceof HTMLElement ? (demo.dataset["theme"] ?? null) : undefined,
+				demoTheme: demo?.getAttribute("data-theme"),
 				themeColor: [
 					...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),
-				].find((meta: Readonly<Pick<HTMLMetaElement, "media">>) => matchMedia(meta.media).matches)
-					?.content,
+				].find((meta) => matchMedia(meta.media).matches)?.content,
 			};
 		});
 		expect(audit).toEqual({
@@ -37,39 +28,41 @@ test("1", async ({ page }: BrowserFixtures) => {
 	}
 });
 
-test("2", async ({ page }: BrowserFixtures) => {
+test("2", async ({ page }) => {
 	await page.emulateMedia({ colorScheme: "dark" });
 	await page.goto("/");
 	const primary = page
 		.locator("main")
-		.getByRole("link", { name: /Download for/u })
+		.getByRole("link", { name: /Download for/ })
 		.first();
 	const primaryStyle = await primary.evaluate((element) => {
 		const style = getComputedStyle(element);
 		return { borderColor: style.borderColor, boxShadow: style.boxShadow };
 	});
-	expect(primaryStyle.boxShadow.match(/rgba?\(|color\(/gu)?.length).toBeGreaterThanOrEqual(2);
-	const borderChannels = primaryStyle.borderColor.match(/[\d.]+/gu)?.map(Number) ?? [];
+	expect(primaryStyle.boxShadow.match(/rgba?\(|color\(/g)?.length).toBeGreaterThanOrEqual(2);
+	const borderChannels = primaryStyle.borderColor.match(/[\d.]+/g)?.map(Number) ?? [];
 	expect(borderChannels[2]).toBeGreaterThanOrEqual(borderChannels[0] ?? 0);
 
 	await page.goto("/setup");
 	const prompt = page.getByRole("region", { name: "Portable setup prompt" });
-	const fade = await prompt.evaluate((element) => {
-		const pre = element.querySelector("pre");
-		if (pre === null) throw new Error("prompt pre");
-		return {
-			backgroundImage: getComputedStyle(element, "::after").backgroundImage,
-			maskImage: getComputedStyle(pre).maskImage,
-		};
-	});
+	const fade = await prompt.evaluate((element) => ({
+		backgroundImage: getComputedStyle(element, "::after").backgroundImage,
+		maskImage: getComputedStyle(element.querySelector("pre")!).maskImage,
+	}));
 	expect(fade.backgroundImage).not.toBe("none");
 	expect(fade.maskImage).toBe("none");
 });
 
-test("3", async ({ page }: BrowserFixtures) => {
+test("3", async ({ page }) => {
 	await page.emulateMedia({ colorScheme: "dark" });
 	await page.goto("/");
-
+	const brightness = (color: string) =>
+		(
+			color
+				.match(/[\d.]+/g)
+				?.slice(0, 3)
+				.map(Number) ?? []
+		).reduce((sum, value) => sum + value, 0);
 	const heading = await page
 		.getByRole("heading", { level: 1 })
 		.evaluate((element) => getComputedStyle(element).color);
@@ -87,19 +80,15 @@ test("3", async ({ page }: BrowserFixtures) => {
 	}
 });
 
-test("4", async ({ page }: BrowserFixtures) => {
+test("4", async ({ page }) => {
 	await page.goto("/#mobile");
 	const card = page.locator("[data-kitty-feature]").first();
 	const media = card.getByRole("region");
 	const image = card.locator("img");
-	const treatment = await media.evaluate((element) => {
-		const imageElement = element.querySelector("img");
-		if (imageElement === null) throw new Error("card img");
-		return {
-			boxShadow: getComputedStyle(element).boxShadow,
-			filter: getComputedStyle(imageElement).filter,
-		};
-	});
+	const treatment = await media.evaluate((element) => ({
+		boxShadow: getComputedStyle(element).boxShadow,
+		filter: getComputedStyle(element.querySelector("img")!).filter,
+	}));
 	expect(treatment.boxShadow).toBe("none");
 	expect(treatment.filter).not.toContain("grayscale");
 	await expect(image).toBeVisible();

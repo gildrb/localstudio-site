@@ -2,11 +2,11 @@
 // INVARIANT: Pure move from render.ts; keep shader ABI, binding order, and pixel output unchanged.
 // Imported by render/renderer.ts and re-exported only through render.ts facade.
 
-import type { Bounds, MeshInput, Vec3 } from "./types";
+import type { Bounds, MeshData, Vec3 } from "./types";
 import { CAMERA_CLIP_PADDING, EVE_THICKNESS_SCALE_MULTIPLIER } from "./constants";
 import { degreesToRadians, dot, sub } from "./math";
 
-export function meshOrbitTarget(mesh: MeshInput): Vec3 {
+export function meshOrbitTarget(mesh: MeshData): Vec3 {
 	return meshOrbitTargetFromBounds(mesh.bounds);
 }
 

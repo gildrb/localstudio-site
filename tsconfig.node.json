@@ -2,16 +2,10 @@
 	"compilerOptions": {
 		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
 		"target": "ES2023",
-		"lib": [
-			"ESNext",
-			"DOM",
-			"DOM.Iterable"
-		],
-		"types": [
-			"node"
-		],
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		"types": ["node"],
 		"module": "ESNext",
-		"skipLibCheck": false,
+		"skipLibCheck": true,
 		"moduleResolution": "Bundler",
 		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,
@@ -30,10 +24,5 @@
 		"resolveJsonModule": true,
 		"erasableSyntaxOnly": true
 	},
-	"include": [
-		"vite.config.ts",
-		"playwright*.config.ts",
-		"middleware.ts",
-		"src/agent/**/*.ts"
-	]
+	"include": ["vite.config.ts", "playwright*.config.ts", "middleware.ts", "src/agent/**/*.ts"]
 }

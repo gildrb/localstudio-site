@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import type { BrowserFixtures } from "../e2e/browser-fixtures";
 import { routePaths } from "../../src/domain/route";
 
 const viewports = [
@@ -9,7 +8,7 @@ const viewports = [
 
 for (const viewport of viewports) {
 	for (const path of routePaths) {
-		test(`${viewport.name} ${path}`, async ({ page }: BrowserFixtures) => {
+		test(`${viewport.name} ${path}`, async ({ page }) => {
 			test.skip(process.platform !== "linux", "visual baselines are recorded on Linux");
 			await page.setViewportSize(viewport);
 			await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });

@@ -31,10 +31,7 @@ const manifest = {
 	assets: Object.keys(assets),
 	motion: Object.keys(motion),
 	tokens: Object.fromEntries(
-		Object.entries(tokenSources).map(([name, rel]: readonly [string, string]) => [
-			name,
-			stylexTokenIds(rel),
-		]),
+		Object.entries(tokenSources).map(([name, rel]) => [name, stylexTokenIds(rel)]),
 	),
 	components: architecture.singleConsumerComponents,
 };

@@ -8,51 +8,6 @@ import { PageShell } from "../components/PageShell";
 import { site } from "../domain/site";
 import { styles } from "../styles/pages-styles";
 
-function MachineMasthead() {
-	return (
-		<>
-			<LocalLink
-				sx={styles.machineBanner}
-				href="/"
-				aria-label={`Back to ${site.products.localStudio.name}`}
-			>
-				<pre {...stylex.props(baseStyles.element, baseStyles.monospace, styles.machineBannerPre)}>
-					{localStudioAscii}
-				</pre>
-			</LocalLink>
-			<h1
-				{...stylex.props(
-					baseStyles.element,
-					baseStyles.heading,
-					baseStyles.headingOne,
-					styles.machineTitle,
-				)}
-				aria-label={routes[machinePath].heading}
-			>
-				<span translate="no" {...stylex.props(baseStyles.element)}>
-					sybil solutions
-				</span>{" "}
-				/{" "}
-				<span translate="no" {...stylex.props(baseStyles.element)}>
-					local studio
-				</span>{" "}
-				:: machine-readable index
-			</h1>
-			<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.machineNote)}>
-				dense plain-text index of the company, products, APIs, and discovery files. agents: prefer
-				/llms.txt or Accept: text/markdown.
-			</p>
-			<nav {...stylex.props(baseStyles.element, styles.machineRoutes)} aria-label="Site routes">
-				{routePaths.map((route) => (
-					<LocalLink sx={styles.machineRoute} href={route} key={route}>
-						{route}
-					</LocalLink>
-				))}
-			</nav>
-		</>
-	);
-}
-
 const sections = machineSections();
 
 export function MachinePage() {
@@ -60,7 +15,46 @@ export function MachinePage() {
 		<PageShell>
 			<div {...stylex.props(baseStyles.element, styles.machine)} data-page-focus>
 				<div {...stylex.props(baseStyles.element, styles.machineInner)}>
-					<MachineMasthead />
+					<LocalLink
+						sx={styles.machineBanner}
+						href="/"
+						aria-label={`Back to ${site.products.localStudio.name}`}
+					>
+						<pre
+							{...stylex.props(baseStyles.element, baseStyles.monospace, styles.machineBannerPre)}
+						>
+							{localStudioAscii}
+						</pre>
+					</LocalLink>
+					<h1
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingOne,
+							styles.machineTitle,
+						)}
+						aria-label={routes[machinePath].heading}
+					>
+						<span translate="no" {...stylex.props(baseStyles.element)}>
+							sybil solutions
+						</span>{" "}
+						/{" "}
+						<span translate="no" {...stylex.props(baseStyles.element)}>
+							local studio
+						</span>{" "}
+						:: machine-readable index
+					</h1>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.machineNote)}>
+						dense plain-text index of the company, products, APIs, and discovery files. agents:
+						prefer /llms.txt or Accept: text/markdown.
+					</p>
+					<nav {...stylex.props(baseStyles.element, styles.machineRoutes)} aria-label="Site routes">
+						{routePaths.map((route) => (
+							<LocalLink sx={styles.machineRoute} href={route} key={route}>
+								{route}
+							</LocalLink>
+						))}
+					</nav>
 					{sections.map(([name, lines]) => (
 						<section key={name} {...stylex.props(baseStyles.element)}>
 							<h2

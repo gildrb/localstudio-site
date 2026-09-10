@@ -7,30 +7,30 @@
 		"./react": "./src/renderer/index.tsx"
 	},
 	"scripts": {
-		"generate": "vp exec node scripts/generate-logo-mesh.ts",
-		"generate:cta": "vp exec node scripts/generate-cta-mesh.ts",
-		"check": "vp exec node scripts/generate-logo-mesh.ts --check && vp exec node scripts/generate-cta-mesh.ts --check",
-		"shader:check": "vp exec node scripts/check-shaders.ts",
-		"intro:coverage:check": "vp exec node scripts/check-intro-coverage.ts"
+		"generate": "node scripts/generate-logo-mesh.ts",
+		"generate:cta": "node scripts/generate-cta-mesh.ts",
+		"check": "node scripts/generate-logo-mesh.ts --check && node scripts/generate-cta-mesh.ts --check",
+		"shader:check": "node scripts/check-shaders.ts",
+		"intro:coverage:check": "node scripts/check-intro-coverage.ts"
 	},
 	"dependencies": {
 		"@stylexjs/stylex": "0.19.0",
 		"@vgpu/wgsl": "0.4.1",
 		"@vgpu/wgsl-std": "0.4.1",
 		"phase": "0.5.4",
-		"vgpu": "0.4.1",
-		"valibot": "1.5.0"
+		"valibot": "1.5.0",
+		"vgpu": "0.4.1"
 	},
 	"devDependencies": {
+		"@types/clipper-lib": "6.4.0",
+		"@types/pngjs": "6.0.5",
 		"@types/react": "19.3.0",
 		"@types/react-dom": "19.3.0",
 		"clipper-lib": "6.4.2",
 		"earcut": "3.2.3",
 		"pngjs": "7.0.0",
 		"vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
-		"vite-plus": "0.3.1",
-		"@types/pngjs": "6.0.5",
-		"@types/clipper-lib": "6.4.0"
+		"vite-plus": "0.3.1"
 	},
 	"peerDependencies": {
 		"react": "19.3.0",

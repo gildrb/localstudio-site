@@ -55,14 +55,8 @@ try {
 	process.exit(1);
 }
 
-interface BundleAsset {
-	readonly name: string;
-	readonly bytes: number;
-	readonly gzip: number;
-}
-
 const files = walk(join(dist, "assets"))
-	.map((path): BundleAsset => ({
+	.map((path) => ({
 		name: relative(dist, path).split("\\").join("/"),
 		bytes: statSync(path).size,
 		gzip: gzipSync(readFileSync(path)).byteLength,
@@ -77,7 +71,7 @@ const sharedCss = css.length === 1 ? css[0] : undefined;
 const entry = manifest["index.html"];
 const eager = new Set<string>();
 const visited = new Set<string>();
-const queue = (entry?.isEntry ?? false) ? ["index.html"] : [];
+const queue = entry?.isEntry ? ["index.html"] : [];
 while (queue.length > 0) {
 	const key = queue.pop();
 	if (key === undefined || visited.has(key)) continue;
@@ -106,7 +100,7 @@ if (sharedCss === undefined) failures.push("missing shared StyleX CSS chunk");
 else if (sharedCss.gzip > budgets.sharedCssGzip) {
 	failures.push(`shared CSS ${sharedCss.gzip} exceeds ${budgets.sharedCssGzip}`);
 }
-if (!(entry?.isEntry ?? false)) failures.push("missing index.html entry in Vite manifest");
+if (!entry?.isEntry) failures.push("missing index.html entry in Vite manifest");
 for (const name of eager) {
 	if (!js.some((file) => file.name === name)) failures.push(`missing critical JS asset: ${name}`);
 }
@@ -123,7 +117,7 @@ for (const source of lazySources) {
 	const chunk = manifest[source];
 	if (
 		chunk === undefined ||
-		!(chunk.isDynamicEntry ?? false) ||
+		!chunk.isDynamicEntry ||
 		!js.some((file) => file.name === chunk.file)
 	) {
 		failures.push(`missing lazy entry: ${source}`);

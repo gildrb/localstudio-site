@@ -1,10 +1,10 @@
-import { readdirSync, readFileSync, type Dirent } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { extname, join } from "node:path";
 import { expect, test } from "vite-plus/test";
 import { site } from "../../src/domain/site";
 
 function sourceFiles(directory: string): string[] {
-	return readdirSync(directory, { withFileTypes: true }).flatMap((entry: Readonly<Dirent>) => {
+	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
 		const path = join(directory, entry.name);
 		if (entry.isDirectory()) return sourceFiles(path);
 		return extname(path) === ".ts" || extname(path) === ".tsx" ? [path] : [];
@@ -46,17 +46,7 @@ test("footer copyright reads year and product name from site facts", () => {
 });
 
 test("header and machine chrome labels read the product name from site facts", () => {
-	const header = [
-		"src/components/Header.tsx",
-		"src/components/HeaderPrimary.tsx",
-		"src/components/HeaderActions.tsx",
-		"src/components/HeaderMenuItems.tsx",
-		"src/components/HeaderDesktopMenu.tsx",
-		"src/components/HeaderMenuTrigger.tsx",
-		"src/components/HeaderMobile.tsx",
-	]
-		.map((path) => readFileSync(path, "utf8"))
-		.join("\n");
+	const header = readFileSync("src/components/Header.tsx", "utf8");
 	expect(header.includes("site.products.localStudio.name")).toBe(true);
 	expect(header.includes('aria-label="Local Studio"')).toBe(false);
 	const machine = readFileSync("src/pages/MachinePage.tsx", "utf8");
@@ -64,14 +54,7 @@ test("header and machine chrome labels read the product name from site facts", (
 	const notFound = readFileSync("src/pages/NotFoundPage.tsx", "utf8");
 	expect(notFound.includes("site.products.localStudio.name")).toBe(true);
 	expect(notFound.includes(">Local Studio<")).toBe(false);
-	const docs = [
-		"src/pages/DocsPage.tsx",
-		"src/pages/docs/installation.tsx",
-		"src/pages/docs/runtime.tsx",
-		"src/pages/docs/operations.tsx",
-	]
-		.map((path) => readFileSync(path, "utf8"))
-		.join("\n");
+	const docs = readFileSync("src/pages/DocsPage.tsx", "utf8");
 	expect(docs.includes("site.products.localStudio.name")).toBe(true);
 	expect(docs.includes(">Local Studio<")).toBe(false);
 });

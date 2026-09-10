@@ -10,9 +10,7 @@ test("prepares exactly six safe inline sponsor SVGs", () => {
 	expect(svgs.every((svg) => svg.includes('width="100%" height="100%"'))).toBe(true);
 
 	const html = svgs.join("");
-	const ids = [...html.matchAll(/\sid="(sponsor-[^"]+)"/gu)].map(
-		([, id]: readonly (string | undefined)[]) => id,
-	);
+	const ids = [...html.matchAll(/\sid="(sponsor-[^"]+)"/gu)].map((match) => match[1]);
 	expect(new Set(ids).size).toBe(ids.length);
 	for (const reference of html.matchAll(/url\(#(sponsor-[^)]+)\)/gu)) {
 		expect(ids).toContain(reference[1]);

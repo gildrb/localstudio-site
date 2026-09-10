@@ -80,7 +80,7 @@ export function DocsLayout({
 	toc: readonly TocEntry[];
 	path: string;
 	label: string;
-	children: Readonly<ReactNode>;
+	children: ReactNode;
 	sx?: PublicStyle;
 }) {
 	return (

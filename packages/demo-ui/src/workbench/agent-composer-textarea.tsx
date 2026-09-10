@@ -12,11 +12,11 @@ export function AgentComposerTextArea({
 	onKeyDown,
 	placeholder = "Ask for follow-up changes",
 }: {
-	readonly inputRef: Readonly<RefObject<HTMLTextAreaElement | null>>;
-	readonly value: string;
-	readonly onChange: ChangeEventHandler<HTMLTextAreaElement>;
-	readonly onKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;
-	readonly placeholder?: string;
+	inputRef: RefObject<HTMLTextAreaElement | null>;
+	value: string;
+	onChange: ChangeEventHandler<HTMLTextAreaElement>;
+	onKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;
+	placeholder?: string;
 }) {
 	return (
 		<textarea

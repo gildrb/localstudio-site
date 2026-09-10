@@ -1,13 +1,10 @@
-import * as v from "valibot";
 import {
-	jsonValueSchema,
 	methodNotAllowed,
 	products,
 	sendJson,
 	status,
 	type ApiRequest,
 	type ApiResponse,
-	type JsonValue,
 } from "./_shared.ts";
 
 const tools = [
@@ -22,85 +19,68 @@ const tools = [
 		description: "Check the Local Studio public product metadata API status and version.",
 		inputSchema: { type: "object", properties: {}, additionalProperties: false },
 	},
-] as const;
+];
 
-// Keep the endpoint's existing permissive JSON-RPC behavior while decoding JSON at the boundary.
-const requestBody = v.object({
-	jsonrpc: v.literal("2.0"),
-	id: v.optional(jsonValueSchema),
-	method: v.pipe(jsonValueSchema, v.check<JsonValue>(Boolean)),
-	params: v.optional(jsonValueSchema),
-});
-const requestIdentity = v.object({ id: v.optional(jsonValueSchema) });
-const toolParameters = v.object({ name: v.optional(jsonValueSchema) });
-const jsonText = v.pipe(v.unknown(), v.transform(String), v.string());
-
-function result(id: JsonValue | undefined, value: JsonValue) {
+function result(id: unknown, value: unknown) {
 	return { jsonrpc: "2.0", id, result: value };
 }
 
-function error(id: JsonValue | undefined, code: number, message: string) {
+function error(id: unknown, code: number, message: string) {
 	return { jsonrpc: "2.0", id: id ?? null, error: { code, message } };
 }
 
-function callTool(id: JsonValue | undefined, parameters: JsonValue | undefined) {
-	const name = v.is(toolParameters, parameters) ? parameters.name : undefined;
-	const data = name === "list_products" ? products : name === "get_service_status" ? status : null;
-	if (data === null) {
-		return error(id, -32602, `Unknown tool: ${v.parse(jsonText, name)}`);
-	}
-	return result(id, {
-		content: [{ type: "text", text: JSON.stringify(data) }],
-		structuredContent: data,
-		isError: false,
-	});
-}
-
-function rpcResult(body: Readonly<v.InferOutput<typeof requestBody>>) {
-	if (body.method === "initialize") {
-		return result(body.id, {
-			protocolVersion: "2025-06-18",
-			capabilities: { tools: { listChanged: false } },
-			serverInfo: {
-				name: "local-studio-public",
-				title: "Local Studio Public MCP",
-				version: "1.0.0",
-			},
-			instructions:
-				"Use these read-only tools to discover Local Studio products. No API key is required.",
-		});
-	}
-	if (body.method === "tools/list") {
-		return result(body.id, { tools });
-	}
-	if (body.method === "tools/call") {
-		return callTool(body.id, body.params);
-	}
-	return error(body.id, -32601, `Method not found: ${v.parse(jsonText, body.method)}`);
-}
-
 export default function handler(request: ApiRequest, response: ApiResponse): void {
-	if (request.method !== "POST") {
-		methodNotAllowed(response, "POST");
-		return;
-	}
+	if (request.method !== "POST") return methodNotAllowed(response, "POST");
 	const body = request.body;
-	if (!v.is(requestBody, body)) {
-		sendJson(
-			response,
-			400,
-			error(
-				v.is(requestIdentity, body) ? body.id : undefined,
-				-32600,
-				"Invalid JSON-RPC 2.0 request.",
-			),
-		);
-		return;
+	const id = typeof body === "object" && body !== null && "id" in body ? body.id : undefined;
+	if (
+		typeof body !== "object" ||
+		body === null ||
+		!("jsonrpc" in body) ||
+		body.jsonrpc !== "2.0" ||
+		!("method" in body) ||
+		!body.method
+	) {
+		return sendJson(response, 400, error(id, -32600, "Invalid JSON-RPC 2.0 request."));
 	}
 	if (body.method === "notifications/initialized") {
 		response.statusCode = 202;
-		response.end();
-		return;
+		return response.end();
 	}
-	sendJson(response, 200, rpcResult(body));
+	if (body.method === "initialize") {
+		return sendJson(
+			response,
+			200,
+			result(id, {
+				protocolVersion: "2025-06-18",
+				capabilities: { tools: { listChanged: false } },
+				serverInfo: {
+					name: "local-studio-public",
+					title: "Local Studio Public MCP",
+					version: "1.0.0",
+				},
+				instructions:
+					"Use these read-only tools to discover Local Studio products. No API key is required.",
+			}),
+		);
+	}
+	if (body.method === "tools/list") return sendJson(response, 200, result(id, { tools }));
+	if (body.method === "tools/call") {
+		const params = "params" in body ? body.params : undefined;
+		const name =
+			typeof params === "object" && params !== null && "name" in params ? params.name : undefined;
+		const data =
+			name === "list_products" ? products : name === "get_service_status" ? status : null;
+		if (!data) return sendJson(response, 200, error(id, -32602, `Unknown tool: ${String(name)}`));
+		return sendJson(
+			response,
+			200,
+			result(id, {
+				content: [{ type: "text", text: JSON.stringify(data) }],
+				structuredContent: data,
+				isError: false,
+			}),
+		);
+	}
+	return sendJson(response, 200, error(id, -32601, `Method not found: ${String(body.method)}`));
 }

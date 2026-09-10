@@ -41,7 +41,8 @@ async function serveApi(pathname: string, request: IncomingMessage, response: Se
 	let source = "";
 	for await (const chunk of request) {
 		const value: unknown = chunk;
-		source += v.parse(v.string(), value);
+		if (typeof value !== "string") throw new TypeError("Expected a UTF-8 request body chunk.");
+		source += value;
 		if (Buffer.byteLength(source) > 1_048_576) {
 			response.statusCode = 413;
 			response.end("Request body too large");
@@ -58,25 +59,6 @@ async function serveApi(pathname: string, request: IncomingMessage, response: Se
 	}
 }
 
-function serveDocument(
-	request: Readonly<Pick<IncomingMessage, "method">>,
-	response: Readonly<Pick<ServerResponse, "setHeader" | "end">>,
-	pathname: string,
-	document: NonNullable<ReturnType<typeof agentDocument>>,
-): void {
-	response.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
-	response.setHeader("Content-Type", document.contentType);
-	response.setHeader("Vary", "Accept");
-	response.setHeader("Content-Signal", "search=yes, ai-input=yes, ai-train=yes");
-	if (document.contentType.includes("text/markdown")) {
-		response.setHeader("x-markdown-tokens", markdownTokenCount(document.body));
-	}
-	if (pathname === "/" || document.path === "/index.md") {
-		response.setHeader("Link", HOMEPAGE_LINK_HEADER);
-	}
-	response.end(request.method === "HEAD" ? undefined : document.body);
-}
-
 function siteMiddleware(development: boolean): Connect.NextHandleFunction {
 	return (request, response, next) => {
 		try {
@@ -91,7 +73,7 @@ function siteMiddleware(development: boolean): Connect.NextHandleFunction {
 			}
 
 			if (pathname.startsWith("/api/") || pathname === "/.well-known/mcp") {
-				void serveApi(pathname, request, response).catch(next);
+				serveApi(pathname, request, response).catch(next);
 				return;
 			}
 
@@ -99,7 +81,17 @@ function siteMiddleware(development: boolean): Connect.NextHandleFunction {
 			const documentPath = markdown ? (markdownPages().get(pathname) ?? pathname) : pathname;
 			const document = agentDocument(documentPath);
 			if (document !== null) {
-				serveDocument(request, response, pathname, document);
+				response.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
+				response.setHeader("Content-Type", document.contentType);
+				response.setHeader("Vary", "Accept");
+				response.setHeader("Content-Signal", "search=yes, ai-input=yes, ai-train=yes");
+				if (document.contentType.includes("text/markdown")) {
+					response.setHeader("x-markdown-tokens", markdownTokenCount(document.body));
+				}
+				if (pathname === "/" || documentPath === "/index.md") {
+					response.setHeader("Link", HOMEPAGE_LINK_HEADER);
+				}
+				response.end(request.method === "HEAD" ? undefined : document.body);
 				return;
 			}
 			if (markdown) {
@@ -135,40 +127,6 @@ const notFoundMiddleware: Connect.NextHandleFunction = (request, response, next)
 	response.end(request.method === "HEAD" ? undefined : notFoundHtml);
 };
 
-const buildApp = {
-	order: "post",
-	async handler(builder) {
-		const client = builder.environments["client"];
-		const ssr = builder.environments["ssr"];
-		if (client === undefined || ssr === undefined) {
-			throw new Error("The site build requires client and ssr environments.");
-		}
-		if (!client.isBuilt) await builder.build(client);
-		if (!ssr.isBuilt) await builder.build(ssr);
-		const entry = path.resolve(ssr.config.root, ssr.config.build.outDir, "entry-server.mjs");
-		const module: unknown = await import(pathToFileURL(entry).href);
-		const { render } = v.parse(siteRenderer, module);
-		const index = path.resolve(client.config.root, client.config.build.outDir, "index.html");
-		const markup: unknown = await render(await readFile(index, "utf8"));
-		await writeFile(index, v.parse(v.string(), markup));
-		client.config.logger.info("prerendered homepage");
-	},
-} satisfies Plugin["buildApp"];
-
-const transformIndexHtml = {
-	order: "post",
-	async handler(html, context) {
-		if (context.server === undefined) return html;
-		const ssr = context.server.environments["ssr"];
-		if (ssr === undefined || !isRunnableDevEnvironment(ssr)) {
-			throw new Error("The site requires Vite's runnable ssr environment.");
-		}
-		const { render } =
-			await ssr.runner.import<typeof import("../src/entry-server.tsx")>("/src/entry-server.tsx");
-		return render(html);
-	},
-} satisfies Plugin["transformIndexHtml"];
-
 export function sitePlugin(): Plugin {
 	return {
 		name: "localstudio-site",
@@ -178,8 +136,39 @@ export function sitePlugin(): Plugin {
 				this.emitFile({ type: "asset", fileName: document.path.slice(1), source: document.body });
 			}
 		},
-		buildApp,
-		transformIndexHtml,
+		buildApp: {
+			order: "post",
+			async handler(builder) {
+				const client = builder.environments["client"];
+				const ssr = builder.environments["ssr"];
+				if (client === undefined || ssr === undefined) {
+					throw new Error("The site build requires client and ssr environments.");
+				}
+				if (!client.isBuilt) await builder.build(client);
+				if (!ssr.isBuilt) await builder.build(ssr);
+				const entry = path.resolve(ssr.config.root, ssr.config.build.outDir, "entry-server.mjs");
+				const module: unknown = await import(pathToFileURL(entry).href);
+				const { render } = v.parse(siteRenderer, module);
+				const index = path.resolve(client.config.root, client.config.build.outDir, "index.html");
+				const markup: unknown = await render(await readFile(index, "utf8"));
+				await writeFile(index, v.parse(v.string(), markup));
+				client.config.logger.info("prerendered homepage");
+			},
+		},
+		transformIndexHtml: {
+			order: "post",
+			async handler(html, context) {
+				if (context.server === undefined) return html;
+				const ssr = context.server.environments["ssr"];
+				if (ssr === undefined || !isRunnableDevEnvironment(ssr)) {
+					throw new Error("The site requires Vite's runnable ssr environment.");
+				}
+				const module: unknown = await ssr.runner.import("/src/entry-server.tsx");
+				const { render } = v.parse(siteRenderer, module);
+				const markup: unknown = await render(html);
+				return v.parse(v.string(), markup);
+			},
+		},
 		configureServer(server) {
 			server.middlewares.use(siteMiddleware(true));
 			return () => {

@@ -10,7 +10,7 @@ overrides:
 
 patchedDependencies:
   '@stylexjs/unplugin@0.19.0': 7f3f8fa98007fc818680964ddb0dc71bcef3b8b8f9cc1dbe6430126030b8abe4
-  vgpu@0.4.1: d75cff00bab4e4a3886b289acb017ea5af4dd2065926ee7c4b2179e97c22ecab
+  vgpu@0.4.1: 383327b490843f50ad783c679a0860b088ff23f0d944b3ce01bc0396d06034de
 
 importers:
 
@@ -41,9 +41,6 @@ importers:
         specifier: 1.5.0
         version: 1.5.0(typescript@7.0.2)
     devDependencies:
-      '@oxlint/plugins':
-        specifier: 1.79.0
-        version: 1.79.0
       '@playwright/test':
         specifier: 1.63.0
         version: 1.63.0
@@ -70,16 +67,13 @@ importers:
         version: 7.0.2
       vgpu:
         specifier: 0.4.1
-        version: 0.4.1(patch_hash=d75cff00bab4e4a3886b289acb017ea5af4dd2065926ee7c4b2179e97c22ecab)
+        version: 0.4.1(patch_hash=383327b490843f50ad783c679a0860b088ff23f0d944b3ce01bc0396d06034de)
       vite:
         specifier: npm:@voidzero-dev/vite-plus-core@0.3.1
         version: '@voidzero-dev/vite-plus-core@0.3.1(@types/node@26.5.1)(esbuild@0.28.2)(tsx@4.23.13)(typescript@7.0.2)(yaml@2.9.0)'
       vite-plus:
         specifier: 0.3.1
         version: 0.3.1(@types/node@26.5.1)(esbuild@0.28.2)(tsx@4.23.13)(typescript@7.0.2)(yaml@2.9.0)
-      yaml:
-        specifier: 2.9.0
-        version: 2.9.0
 
   packages/demo-ui:
     dependencies:
@@ -128,7 +122,7 @@ importers:
         version: 1.5.0(typescript@7.0.2)
       vgpu:
         specifier: 0.4.1
-        version: 0.4.1(patch_hash=d75cff00bab4e4a3886b289acb017ea5af4dd2065926ee7c4b2179e97c22ecab)
+        version: 0.4.1(patch_hash=383327b490843f50ad783c679a0860b088ff23f0d944b3ce01bc0396d06034de)
     devDependencies:
       '@types/clipper-lib':
         specifier: 6.4.0
@@ -2972,7 +2966,7 @@ snapshots:
     optionalDependencies:
       typescript: 7.0.2
 
-  vgpu@0.4.1(patch_hash=d75cff00bab4e4a3886b289acb017ea5af4dd2065926ee7c4b2179e97c22ecab):
+  vgpu@0.4.1(patch_hash=383327b490843f50ad783c679a0860b088ff23f0d944b3ce01bc0396d06034de):
     dependencies:
       '@modelcontextprotocol/server': 2.0.0
       '@vgpu/adapter-mock': 0.4.1(@vgpu/adapter-node@0.4.1)
@@ -3093,7 +3087,8 @@ snapshots:
 
   yallist@3.1.1: {}
 
-  yaml@2.9.0: {}
+  yaml@2.9.0:
+    optional: true
 
   yuku-ast@0.9.5:
     dependencies:

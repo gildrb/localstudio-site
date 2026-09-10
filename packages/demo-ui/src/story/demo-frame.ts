@@ -5,14 +5,14 @@ export const DEMO_HEIGHT = 787;
 const DEMO_MOBILE = 900;
 
 export type DemoCrop = {
-	readonly fit: number;
-	readonly mobileFit?: number | undefined;
-	readonly shiftX?: number | undefined;
-	readonly mobileShiftX?: number | undefined;
-	readonly shiftY?: number | undefined;
-	readonly mobileShiftY?: number | undefined;
-	readonly cropH?: number | undefined;
-	readonly mobileCropH?: number | undefined;
+	fit: number;
+	mobileFit?: number | undefined;
+	shiftX?: number | undefined;
+	mobileShiftX?: number | undefined;
+	shiftY?: number | undefined;
+	mobileShiftY?: number | undefined;
+	cropH?: number | undefined;
+	mobileCropH?: number | undefined;
 };
 
 export const STORY_CROP: DemoCrop = {
@@ -40,38 +40,32 @@ export function useDemoFrame(crop: DemoCrop) {
 
 	useLayoutEffect(() => {
 		const host = hostRef.current;
-		let cleanup: (() => void) | undefined;
-		if (host) {
-			let width = 0;
-			const query = window.matchMedia(mobileStoryQuery());
-			const update = () => {
-				setFrame(
-					resolveFrame(query.matches, width, {
-						fit,
-						mobileFit,
-						shiftX,
-						mobileShiftX,
-						shiftY,
-						mobileShiftY,
-						cropH,
-						mobileCropH,
-					}),
-				);
-			};
-			const observer = new ResizeObserver(
-				([entry]: readonly { readonly contentRect: { readonly width: number } }[]) => {
-					width = entry?.contentRect.width ?? 0;
-					update();
-				},
+		if (!host) return;
+		let width = 0;
+		const query = window.matchMedia(mobileStoryQuery());
+		const update = () =>
+			setFrame(
+				resolveFrame(query.matches, width, {
+					fit,
+					mobileFit,
+					shiftX,
+					mobileShiftX,
+					shiftY,
+					mobileShiftY,
+					cropH,
+					mobileCropH,
+				}),
 			);
-			observer.observe(host);
-			query.addEventListener("change", update);
-			cleanup = () => {
-				query.removeEventListener("change", update);
-				observer.disconnect();
-			};
-		}
-		return cleanup;
+		const observer = new ResizeObserver(([entry]) => {
+			width = entry?.contentRect.width ?? 0;
+			update();
+		});
+		observer.observe(host);
+		query.addEventListener("change", update);
+		return () => {
+			query.removeEventListener("change", update);
+			observer.disconnect();
+		};
 	}, [fit, mobileFit, shiftX, mobileShiftX, shiftY, mobileShiftY, cropH, mobileCropH]);
 
 	return { hostRef, ...frame };

@@ -2,7 +2,6 @@
 import { Buffer } from "node:buffer";
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
-import type { Dirent } from "node:fs";
 import { extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -35,57 +34,36 @@ const TYPE_BY_EXT = new Map([
 ]);
 
 interface Dimensions {
-	readonly width: number;
-	readonly height: number;
+	width: number;
+	height: number;
 }
 
-type AssetBytes = Readonly<
-	Pick<
-		Buffer,
-		number | "length" | "subarray" | "readUInt32BE" | "readUInt16BE" | "readUIntLE" | "toString"
-	>
->;
-
-interface AssetMetadata {
-	readonly path: string;
-	readonly role: string;
-	readonly type: string;
-	readonly dimensions: Dimensions | null;
-	readonly bytes: number;
-	readonly sha256: string;
-}
-
-function jpegDimensions(raw: AssetBytes): Dimensions | null {
-	let offset = 2;
-	while (offset + 8 < raw.length) {
-		if (raw[offset] !== 0xff) {
-			offset += 1;
-			continue;
-		}
-		while (raw[offset] === 0xff) offset += 1;
-		const marker = raw[offset];
-		if (marker === undefined) break;
-		offset += 1;
-		if (marker === 0xd9 || marker === 0xda) break;
-		if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd8)) continue;
-		const length = raw.readUInt16BE(offset);
-		const isStartOfFrame =
-			marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
-		if (isStartOfFrame) {
-			return { width: raw.readUInt16BE(offset + 5), height: raw.readUInt16BE(offset + 3) };
-		}
-		offset += length;
-	}
-	return null;
-}
-
-function dimensionsFor(rel: string, raw: AssetBytes): Dimensions | null {
+function dimensionsFor(rel: string, raw: Buffer): Dimensions | null {
 	const ext = extname(rel).toLowerCase();
 	if (ext === ".png" && raw.subarray(0, 8).equals(Buffer.from("\u0089PNG\r\n\u001A\n", "binary"))) {
 		return { width: raw.readUInt32BE(16), height: raw.readUInt32BE(20) };
 	}
 	if ((ext === ".jpg" || ext === ".jpeg") && raw.readUInt16BE(0) === 0xffd8) {
-		return jpegDimensions(raw);
+		let offset = 2;
+		while (offset + 8 < raw.length) {
+			if (raw[offset] !== 0xff) {
+				offset += 1;
+				continue;
+			}
+			while (raw[offset] === 0xff) offset += 1;
+			const marker = raw[offset];
+			if (marker === undefined) break;
+			offset += 1;
+			if (marker === 0xd9 || marker === 0xda) break;
+			if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd8)) continue;
+			const length = raw.readUInt16BE(offset);
+			const isStartOfFrame =
+				marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
+			if (isStartOfFrame) {
+				return { width: raw.readUInt16BE(offset + 5), height: raw.readUInt16BE(offset + 3) };
+			}
+			offset += length;
+		}
 	}
 	if (
 		ext === ".webp" &&
@@ -114,8 +92,8 @@ function dimensionsFor(rel: string, raw: AssetBytes): Dimensions | null {
 
 function walk(directory: string): string[] {
 	const files: string[] = [];
-	for (const entry of readdirSync(directory, { withFileTypes: true }).toSorted(
-		(a: Readonly<Dirent>, b: Readonly<Dirent>) => a.name.localeCompare(b.name),
+	for (const entry of readdirSync(directory, { withFileTypes: true }).toSorted((a, b) =>
+		a.name.localeCompare(b.name),
 	)) {
 		const path = join(directory, entry.name);
 		if (entry.isDirectory()) {
@@ -139,7 +117,7 @@ function roleFor(rel: string): string {
 }
 
 const files = walk(join(root, "public"))
-	.map((path): AssetMetadata => {
+	.map((path) => {
 		const rel = path
 			.slice(root.length + 1)
 			.split("\\")
@@ -179,7 +157,7 @@ if (command === "write") {
 	}
 	if (duplicateGroups.length > 0) {
 		console.error(
-			`duplicate asset content is not allowlisted:\n${duplicateGroups.map((group: readonly string[]) => group.join(" = ")).join("\n")}`,
+			`duplicate asset content is not allowlisted:\n${duplicateGroups.map((group) => group.join(" = ")).join("\n")}`,
 		);
 		process.exit(1);
 	}

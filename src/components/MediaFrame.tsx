@@ -3,9 +3,9 @@ import * as stylex from "@stylexjs/stylex";
 import { colors, constants, lengths } from "../styles/public-tokens.stylex";
 import type { ImgHTMLAttributes, ReactNode } from "react";
 
-interface MediaFrameProps extends Readonly<Omit<ImgHTMLAttributes<HTMLImageElement>, "className">> {
-	readonly caption?: Readonly<ReactNode> | undefined;
-	readonly sx?: PublicStyle;
+interface MediaFrameProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "className"> {
+	caption?: ReactNode | undefined;
+	sx?: PublicStyle;
 }
 
 const styles = stylex.create({
@@ -47,10 +47,9 @@ const styles = stylex.create({
 });
 
 export function MediaFrame({ caption, sx, ...image }: MediaFrameProps) {
-	const hasCaption = Boolean(caption);
 	return (
 		<figure {...stylex.props(baseStyles.element, styles.frame, sx)}>
-			{hasCaption ? (
+			{caption ? (
 				<figcaption {...stylex.props(baseStyles.element, styles.caption)}>{caption}</figcaption>
 			) : null}
 			<img

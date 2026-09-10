@@ -77,21 +77,19 @@ const styles = stylex.create({
 	},
 });
 
-interface PageCtaProps {
-	readonly id: string;
-	readonly title?: string;
-	readonly actions?: Readonly<ReactNode>;
-	readonly variant?: "page" | "home";
-	readonly sx?: PublicStyle;
-}
-
 export function PageCta({
 	id,
 	title = "AI that stays yours",
 	actions,
 	variant = "page",
 	sx,
-}: PageCtaProps) {
+}: {
+	id: string;
+	title?: string;
+	actions?: ReactNode;
+	variant?: "page" | "home";
+	sx?: PublicStyle;
+}) {
 	const home = variant === "home";
 	return (
 		<section

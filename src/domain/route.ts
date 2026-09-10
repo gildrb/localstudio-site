@@ -109,7 +109,7 @@ function isDocumentPath(pathname: string): pathname is DocumentPath {
 }
 
 export function documentPaths(): readonly DocumentPath[] {
-	return Object.keys(documents).filter((path) => isDocumentPath(path));
+	return Object.keys(documents).filter(isDocumentPath);
 }
 
 export const redirects = {
@@ -128,7 +128,7 @@ export function redirectFor(pathname: string): string | null {
 	return isRedirectPath(pathname) ? redirects[pathname] : null;
 }
 
-export function footerRoutes(): readonly { readonly path: RoutePath; readonly label: string }[] {
+export function footerRoutes(): readonly { path: RoutePath; label: string }[] {
 	return (
 		[
 			["/machine", routes["/machine"].footerLabel],
@@ -140,7 +140,7 @@ export function footerRoutes(): readonly { readonly path: RoutePath; readonly la
 	).flatMap(([path, label]) => (label ? [{ path, label }] : []));
 }
 
-export function resourceNav(): readonly { readonly href: RoutePath; readonly label: string }[] {
+export function resourceNav(): readonly { href: RoutePath; label: string }[] {
 	return [
 		{ href: overviewPath, label: "Overview" },
 		{ href: docsPath, label: "Documentation" },
@@ -163,8 +163,8 @@ export function productNav(): readonly ProductNavItem[] {
 }
 
 export function notFoundSuggestions(): readonly {
-	readonly href: RoutePath;
-	readonly label: string;
+	href: RoutePath;
+	label: string;
 }[] {
 	return [
 		{ href: "/", label: "Home" },
@@ -177,7 +177,7 @@ export function notFoundSuggestions(): readonly {
 export function markdownPages(): ReadonlyMap<string, string> {
 	const entries: [string, string][] = routePaths.map((path) => [path, routes[path].markdown]);
 	for (const path of documentPaths()) {
-		entries.push([path.replace(/\.md$/u, ""), path]);
+		entries.push([path.replace(/\.md$/, ""), path]);
 	}
 	return new Map(entries);
 }

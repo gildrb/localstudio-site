@@ -66,7 +66,7 @@ export const assets = {
 const registered = new Set<string>(Object.values(assets));
 
 export function responsiveSrcSet(path: string) {
-	const base = path.replace(/\.png$/u, "");
+	const base = path.replace(/\.png$/, "");
 	const variants = [`${base}-800.png`, `${base}-1300.png`, `${base}-2600.png`];
 	for (const variant of variants) {
 		if (!registered.has(variant)) {

@@ -9,12 +9,12 @@ import { agentDocument } from "../../src/agent/documents.ts";
 import type { ApiHandler, ApiRequest, ApiResponse } from "../../api/_shared.ts";
 
 type RecordedResponse = ApiResponse & {
-	readonly headers: Partial<Record<string, string>>;
+	headers: Record<string, string>;
 	body: string;
 };
 
 const linkedData = v.object({
-	"@graph": v.array(v.pipe(v.looseObject({ "@type": v.string() }), v.readonly())),
+	"@graph": v.array(v.looseObject({ "@type": v.string() })),
 });
 const organizationData = v.object({
 	name: v.string(),
@@ -23,18 +23,15 @@ const organizationData = v.object({
 	address: v.object({ "@type": v.string() }),
 });
 const serverData = v.object({ url: v.string() });
-const operationData = v.pipe(
-	v.object({
-		operationId: v.string(),
-		description: v.unknown(),
-		responses: v.pipe(v.record(v.string(), v.unknown()), v.readonly()),
-	}),
-	v.readonly(),
-);
+const operationData = v.object({
+	operationId: v.string(),
+	description: v.unknown(),
+	responses: v.record(v.string(), v.unknown()),
+});
 const openApiData = v.object({
 	openapi: v.string(),
 	servers: v.tupleWithRest([serverData], serverData),
-	paths: v.record(v.string(), v.pipe(v.record(v.string(), operationData), v.readonly())),
+	paths: v.record(v.string(), v.record(v.string(), operationData)),
 	components: v.object({
 		schemas: v.object({
 			Error: v.object({
@@ -87,7 +84,7 @@ test("homepage shell has complete metadata and no raw style block", () => {
 	const jsonLd = v.parse(
 		linkedData,
 		JSON.parse(
-			html.match(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/u)?.[1] ?? "null",
+			html.match(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/)?.[1] ?? "null",
 		),
 	);
 	const organization = v.parse(
@@ -122,8 +119,8 @@ test("trust and developer pages are substantial server documents", () => {
 		const document = agentDocument(path);
 		expect(document?.contentType, path).toContain("text/html");
 		const text = (document?.body ?? "")
-			.replaceAll(/<[^>]+>/gu, " ")
-			.replaceAll(/\s+/gu, " ")
+			.replace(/<[^>]+>/g, " ")
+			.replace(/\s+/g, " ")
 			.trim();
 		expect(text.length, path).toBeGreaterThan(500);
 		expect(document?.body, path).toContain("<h1>");

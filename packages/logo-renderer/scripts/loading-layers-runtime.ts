@@ -1,12 +1,10 @@
 // Runs only from the native pack output of render-loading-layers.ts.
 // Static imports keep the shader-masked temporary clone fully type checked.
 import { readFileSync, writeFileSync } from "node:fs";
-import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { PNG } from "pngjs";
 import { init, target, type Target } from "vgpu/node";
-import { decodeGltfMesh } from "../src/renderer/mesh.ts";
-import { parseGltfDocument } from "../src/renderer/gltf.ts";
+import { decodeGltfMesh, parseGltfDocument } from "../src/renderer/mesh.ts";
 import {
 	DEFAULT_CAMERA_FOV,
 	DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
@@ -15,7 +13,6 @@ import {
 	type RenderControls,
 } from "../src/renderer/render.ts";
 import { getCanvasLogicalSize, resizeCanvas } from "../src/renderer/runtime/canvas-sizing.ts";
-import { straightAlphaPng } from "./snapshot-png.ts";
 
 const [output, repositoryRootHref] = process.argv.slice(2);
 if (output === undefined || repositoryRootHref === undefined) {
@@ -41,13 +38,13 @@ const { logicalWidth, logicalHeight } = getCanvasLogicalSize(canvasSize, deviceP
 const gltfUrl = new URL("public/localai/localai-logo.gltf", repositoryRoot);
 const gltf = parseGltfDocument(readFileSync(gltfUrl, "utf8"));
 const mesh = await decodeGltfMesh(gltf, async (uri) => {
-	const bytes = await readFile(new URL(uri, gltfUrl));
+	const bytes = readFileSync(new URL(uri, gltfUrl));
 	return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 });
 
-const planeWidth = 3760;
-const planeHeight = 4000;
-const logoRect: readonly [number, number, number, number] = [
+const planeWidth = 3760,
+	planeHeight = 4000;
+const logoRect: [number, number, number, number] = [
 	1410 / planeWidth,
 	470 / planeHeight,
 	940 / planeWidth,
@@ -97,14 +94,25 @@ try {
 		for (const [name, layer] of [
 			["bg", background],
 			["fg", foreground],
-		] satisfies readonly (readonly [string, Target])[]) {
+		] satisfies [string, Target][]) {
 			const premultiplied = await layer.read();
 			const pixels = new DataView(
 				premultiplied.buffer,
 				premultiplied.byteOffset,
 				premultiplied.byteLength,
 			);
-			const { png, nonzeroAlpha, maxAlpha } = straightAlphaPng(pixels, 1203, 1280);
+			const png = new PNG({ width: 1203, height: 1280 });
+			let nonzeroAlpha = 0,
+				maxAlpha = 0;
+			for (let i = 0; i < 1203 * 1280; i++) {
+				const a = pixels.getUint8(i * 4 + 3);
+				nonzeroAlpha += Number(a > 0);
+				maxAlpha = Math.max(maxAlpha, a);
+				for (let c = 0; c < 3; c++)
+					png.data[i * 4 + c] =
+						a === 0 ? 0 : Math.min(255, Math.round((pixels.getUint8(i * 4 + c) * 255) / a));
+				png.data[i * 4 + 3] = a;
+			}
 			const destination = join(output, `hero-atmosphere-${scheme}-${name}.png`);
 			writeFileSync(destination, PNG.sync.write(png));
 			console.log(JSON.stringify({ destination, nonzeroAlpha, maxAlpha }));

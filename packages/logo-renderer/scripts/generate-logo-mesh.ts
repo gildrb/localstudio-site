@@ -5,6 +5,7 @@
 //
 // Usage: vp run --filter @local-ai/logo-renderer generate
 
+import ClipperLib from "clipper-lib";
 import fs from "node:fs";
 import path from "node:path";
 import {
@@ -12,15 +13,14 @@ import {
 	dedupeContour,
 	signedArea,
 	contourNormals,
-	normalizeContours,
-	insetContours,
+	assertSimpleContour,
+	assertDisjointContours,
+	buildSweptSolid,
+	writeGltf,
 	type Contour,
 	type Point,
 } from "./mesh-generator.lib.ts";
-import { assertSimpleContour, assertDisjointContours } from "./mesh-contour-validation.ts";
-import { buildSweptSolid, type SweptSolid } from "./mesh-sweep.ts";
-import { writeGltf } from "./mesh-gltf.ts";
-import { offsetContour } from "./mesh-clipper.ts";
+
 const ROOT = path.resolve(import.meta.dirname, "../../..");
 const SOURCE_SVG = path.join(ROOT, "public/images/localai_dark.svg");
 const OUT_GLTF = path.join(ROOT, "public/localai/localai-logo.gltf");
@@ -43,46 +43,108 @@ const CLIPPER_SCALE = 100_000_000;
 const CONTACT_CLOSE_RADIUS = 0.001;
 const CONTACT_ARC_TOLERANCE = 0.00002;
 
-function closePointContacts(outline: Contour): Point[][] {
-	const solution = offsetContour(outline, {
-		scale: CLIPPER_SCALE,
-		arcTolerance: CONTACT_ARC_TOLERANCE,
-		radius: CONTACT_CLOSE_RADIUS,
-	});
+function closePointContacts(outline: Contour): Contour[] {
+	const clipperPath = outline.map(([x, y]) => ({
+		X: Math.round(x * CLIPPER_SCALE),
+		Y: Math.round(y * CLIPPER_SCALE),
+	}));
+	const offset = new ClipperLib.ClipperOffset(2, Math.round(CONTACT_ARC_TOLERANCE * CLIPPER_SCALE));
+	offset.AddPath(clipperPath, ClipperLib.JoinType.jtRound, ClipperLib.EndType.etClosedPolygon);
+	const solution: ClipperLib.Paths = [];
+	offset.Execute(solution, Math.round(CONTACT_CLOSE_RADIUS * CLIPPER_SCALE));
 	if (solution.length < 2)
 		throw new Error("Logo contact closing did not preserve its negative spaces");
-	const contours = solution.toSorted(
-		(a: Contour, b: Contour) => Math.abs(signedArea(b)) - Math.abs(signedArea(a)),
-	);
-	for (const [i, contour] of contours.entries()) {
+
+	const contours = solution
+		.map((result) => result.map(({ X, Y }): Point => [X / CLIPPER_SCALE, Y / CLIPPER_SCALE]))
+		.toSorted((a, b) => Math.abs(signedArea(b)) - Math.abs(signedArea(a)));
+	for (let i = 0; i < contours.length; i += 1) {
 		const shouldBePositive = i === 0;
+		const contour = contours[i];
+		if (contour === undefined) throw new Error("Contour is missing");
 		if (signedArea(contour) > 0 !== shouldBePositive) contour.reverse();
 	}
-	return normalizeContours(contours, TARGET_HEIGHT);
+
+	let minX = Infinity;
+	let maxX = -Infinity;
+	let minY = Infinity;
+	let maxY = -Infinity;
+	for (const contour of contours) {
+		for (const [x, y] of contour) {
+			minX = Math.min(minX, x);
+			maxX = Math.max(maxX, x);
+			minY = Math.min(minY, y);
+			maxY = Math.max(maxY, y);
+		}
+	}
+	const scale = TARGET_HEIGHT / (maxY - minY);
+	const cx = (minX + maxX) / 2;
+	const cy = (minY + maxY) / 2;
+	return contours.map((contour) =>
+		contour.map(([x, y]): Point => [(x - cx) * scale, (y - cy) * scale]),
+	);
 }
 
-function sourceOutline(): Point[] {
-	const parsed: readonly Contour[] = parseSubpath(CLOUD_PATH_DATA).map((contour: Contour) =>
-		dedupeContour(contour),
+function buildMesh() {
+	const parsed = parseSubpath(CLOUD_PATH_DATA).map(dedupeContour);
+	const source = parsed.reduce((longest, current) =>
+		current.length > longest.length ? current : longest,
 	);
-	const longest = parsed.reduce((previous: Contour, current: Contour) =>
-		current.length > previous.length ? current : previous,
-	);
-	if (longest.length === 0) throw new Error("No usable contour found in path data");
-	const source = longest.map(([x, y]): Point => [x, -y]);
+	if (!source.length) throw new Error("No usable contour found in path data");
+
+	for (let i = 0; i < source.length; i += 1) {
+		const point = source[i];
+		if (point === undefined) throw new Error("Contour point is missing");
+		source[i] = [point[0], -point[1]];
+	}
 	if (signedArea(source) < 0) source.reverse();
-	const [outline] = normalizeContours([source], TARGET_HEIGHT);
-	if (outline === undefined) throw new Error("No usable contour found in path data");
-	return dedupeContour(outline);
-}
 
-function capIndices(solid: SweptSolid): number[] {
-	const triangles = solid.earcut(solid.capCoordinates, solid.holeStarts, 2);
+	let minX = Infinity;
+	let maxX = -Infinity;
+	let minY = Infinity;
+	let maxY = -Infinity;
+	for (const [x, y] of source) {
+		minX = Math.min(minX, x);
+		maxX = Math.max(maxX, x);
+		minY = Math.min(minY, y);
+		maxY = Math.max(maxY, y);
+	}
+	const sourceScale = TARGET_HEIGHT / (maxY - minY);
+	const sourceCenterX = (minX + maxX) / 2;
+	const sourceCenterY = (minY + maxY) / 2;
+	const sourceOutline = dedupeContour(
+		source.map(([x, y]): Point => [
+			(x - sourceCenterX) * sourceScale,
+			(y - sourceCenterY) * sourceScale,
+		]),
+	);
+	// The SVG uses three point contacts to bridge its holes into one fill path.
+	// Give those joins finite width before extrusion so every 3D edge is smooth.
+	const contours = closePointContacts(sourceOutline);
+	const contourNormals2d = contours.map(contourNormals);
+	const bevelContours = contours.map((contour, contourIndex) =>
+		contour.map((point, i): Point => {
+			const normal = contourNormals2d[contourIndex]?.[i];
+			if (normal === undefined) throw new Error("Contour point normal is missing");
+			return [point[0] - normal[0] * FILLET_RADIUS, point[1] - normal[1] * FILLET_RADIUS];
+		}),
+	);
+	contours.forEach((contour, i) => assertSimpleContour(contour, `logo contour ${i}`));
+	bevelContours.forEach((contour, i) => assertSimpleContour(contour, `logo bevel inset ${i}`));
+	assertDisjointContours(bevelContours, "logo bevel inset");
+
+	const solid = buildSweptSolid(contours, contourNormals2d, bevelContours, {
+		halfThickness: HALF_THICKNESS,
+		filletRadius: FILLET_RADIUS,
+		filletSteps: FILLET_STEPS,
+	});
+
+	const capTriangulation = solid.earcut(solid.capCoordinates, solid.holeStarts, 2);
 	const indices = [...solid.indices];
-	for (let i = 0; i < triangles.length; i += 3) {
-		const a = triangles[i];
-		const b = triangles[i + 1];
-		const c = triangles[i + 2];
+	for (let i = 0; i < capTriangulation.length; i += 3) {
+		const a = capTriangulation[i];
+		const b = capTriangulation[i + 1];
+		const c = capTriangulation[i + 2];
 		if (a === undefined || b === undefined || c === undefined)
 			throw new Error("Incomplete cap triangle");
 		const frontA = solid.frontCapVertices[a];
@@ -102,29 +164,12 @@ function capIndices(solid: SweptSolid): number[] {
 			throw new Error("Cap triangle vertex is missing");
 		indices.push(frontA, frontB, frontC, backC, backB, backA);
 	}
-	return indices;
-}
 
-function buildMesh() {
-	// The SVG uses three point contacts to bridge its holes into one fill path.
-	// Give those joins finite width before extrusion so every 3D edge is smooth.
-	const contours = closePointContacts(sourceOutline());
-	const contourNormals2d = contours.map((contour: Contour) => contourNormals(contour));
-	const bevelContours = insetContours(contours, contourNormals2d, FILLET_RADIUS);
-	for (const [i, contour] of contours.entries()) assertSimpleContour(contour, `logo contour ${i}`);
-	for (const [i, contour] of bevelContours.entries())
-		assertSimpleContour(contour, `logo bevel inset ${i}`);
-	assertDisjointContours(bevelContours, "logo bevel inset");
-	const solid = buildSweptSolid(contours, contourNormals2d, bevelContours, {
-		halfThickness: HALF_THICKNESS,
-		filletRadius: FILLET_RADIUS,
-		filletSteps: FILLET_STEPS,
-	});
 	return {
 		positions: new Float32Array(solid.positions),
 		normals: new Float32Array(solid.normals),
-		indices: new Uint32Array(capIndices(solid)),
-		outlineCount: contours.reduce((sum, contour: Contour) => sum + contour.length, 0),
+		indices: new Uint32Array(indices),
+		outlineCount: contours.reduce((sum, contour) => sum + contour.length, 0),
 	};
 }
 

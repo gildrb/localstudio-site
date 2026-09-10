@@ -1,9 +1,9 @@
 import type { SVGProps } from "react";
 export { Folder, FolderOpen } from "lucide-react";
 
-type IconProps = Readonly<SVGProps<SVGSVGElement>>;
+type IconProps = SVGProps<SVGSVGElement>;
 
-function Svg({ children, className, ...rest }: IconProps & { readonly children: React.ReactNode }) {
+function Svg({ children, className, ...rest }: IconProps & { children: React.ReactNode }) {
 	return (
 		<svg
 			viewBox="0 0 16 16"

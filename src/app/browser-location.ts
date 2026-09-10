@@ -13,29 +13,24 @@ type NavigationListener = () => void;
 
 const navigationListeners = new Set<NavigationListener>();
 const scrollStateKey = "__localStudioScroll";
-const scrollState = v.object({
-	[scrollStateKey]: v.tuple([v.number(), v.number()]),
-});
-const historyRecord = v.record(v.string(), v.unknown());
+const historyStateSchema = v.looseObject({});
+const scrollPositionSchema = v.tuple([v.number(), v.number()]);
 
 export function saveScrollPosition() {
-	const previousState: unknown = window.history.state;
-	const previous = v.safeParse(historyRecord, previousState);
+	const current: unknown = window.history.state;
+	const state = v.safeParse(historyStateSchema, current);
 	window.history.replaceState(
-		{
-			...(previous.success ? previous.output : null),
-			[scrollStateKey]: [window.scrollX, window.scrollY],
-		},
+		{ ...(state.success ? state.output : {}), [scrollStateKey]: [window.scrollX, window.scrollY] },
 		"",
 	);
 }
 
 export function readScrollPosition() {
-	const state: unknown = window.history.state;
-	const result = v.safeParse(scrollState, state);
-	if (!result.success) return null;
-	const [x, y] = result.output[scrollStateKey];
-	return { x, y };
+	const current: unknown = window.history.state;
+	const state = v.safeParse(historyStateSchema, current);
+	if (!state.success) return null;
+	const saved = v.safeParse(scrollPositionSchema, state.output[scrollStateKey]);
+	return saved.success ? { x: saved.output[0], y: saved.output[1] } : null;
 }
 
 export function pushNavigation(next: string) {

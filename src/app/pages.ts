@@ -18,18 +18,10 @@ export const pages = {
 	[docsPath]: DocsPage,
 	[setupPath]: PromptPage,
 	[downloadPath]: lazy(() =>
-		import("../pages/DownloadPage").then(
-			(module: Readonly<typeof import("../pages/DownloadPage")>) => ({
-				default: module.DownloadPage,
-			}),
-		),
+		import("../pages/DownloadPage").then(({ DownloadPage }) => ({ default: DownloadPage })),
 	),
 	[overviewPath]: ResourcesPage,
 	[machinePath]: lazy(() =>
-		import("../pages/MachinePage").then(
-			(module: Readonly<typeof import("../pages/MachinePage")>) => ({
-				default: module.MachinePage,
-			}),
-		),
+		import("../pages/MachinePage").then(({ MachinePage }) => ({ default: MachinePage })),
 	),
 } as const satisfies Record<RoutePath, ComponentType>;

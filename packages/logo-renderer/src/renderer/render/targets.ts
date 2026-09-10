@@ -31,7 +31,35 @@ export function createBloomTargetCache(gpu: Gpu) {
 			] as const;
 
 			if (!targets) {
-				targets = createBloomTargets(gpu, padded, bloomSize, paddingRadius, includeBack);
+				targets = {
+					width: padded.width,
+					height: padded.height,
+					paddingRadius,
+					scene: target(gpu, {
+						size: [padded.width, padded.height],
+						format: SCENE_FORMAT,
+						depth: BACK_DEPTH_FORMAT,
+						msaa: true,
+						clearColor: [0, 0, 0, 0],
+						label: "eve-5-scene-linear-hdr",
+					}),
+					backMaterial: includeBack
+						? createBackTarget(gpu, padded.width, padded.height, "eve-5-back-material")
+						: undefined,
+					backDepth: includeBack
+						? createBackTarget(
+								gpu,
+								padded.width,
+								padded.height,
+								"eve-5-back-depth",
+								BACK_CAMERA_DEPTH_FORMAT,
+							)
+						: undefined,
+					bloom: pingPong(gpu, bloomSize[0], bloomSize[1], {
+						format: SCENE_FORMAT,
+						label: "eve-5-bloom",
+					}),
+				};
 				return targets;
 			}
 
@@ -50,7 +78,19 @@ export function createBloomTargetCache(gpu: Gpu) {
 				targets.paddingRadius = paddingRadius;
 			}
 			if (includeBack && !targets.backMaterial) {
-				createBackTargets(gpu, targets, padded);
+				targets.backMaterial = createBackTarget(
+					gpu,
+					padded.width,
+					padded.height,
+					"eve-5-back-material",
+				);
+				targets.backDepth = createBackTarget(
+					gpu,
+					padded.width,
+					padded.height,
+					"eve-5-back-depth",
+					BACK_CAMERA_DEPTH_FORMAT,
+				);
 			}
 			return targets;
 		},
@@ -60,57 +100,4 @@ export function createBloomTargetCache(gpu: Gpu) {
 			targets = undefined;
 		},
 	};
-}
-
-function createBloomTargets(
-	gpu: Gpu,
-	padded: Readonly<ReturnType<typeof getPaddedRenderSize>>,
-	bloomSize: readonly [number, number],
-	paddingRadius: number,
-	includeBack: boolean,
-) {
-	return {
-		width: padded.width,
-		height: padded.height,
-		paddingRadius,
-		scene: target(gpu, {
-			size: [padded.width, padded.height],
-			format: SCENE_FORMAT,
-			depth: BACK_DEPTH_FORMAT,
-			msaa: true,
-			clearColor: [0, 0, 0, 0],
-			label: "eve-5-scene-linear-hdr",
-		}),
-		backMaterial: includeBack
-			? createBackTarget(gpu, padded.width, padded.height, "eve-5-back-material")
-			: undefined,
-		backDepth: includeBack
-			? createBackTarget(
-					gpu,
-					padded.width,
-					padded.height,
-					"eve-5-back-depth",
-					BACK_CAMERA_DEPTH_FORMAT,
-				)
-			: undefined,
-		bloom: pingPong(gpu, bloomSize[0], bloomSize[1], {
-			format: SCENE_FORMAT,
-			label: "eve-5-bloom",
-		}),
-	};
-}
-
-function createBackTargets(
-	gpu: Gpu,
-	targets: BloomTargets,
-	padded: Readonly<ReturnType<typeof getPaddedRenderSize>>,
-) {
-	targets.backMaterial = createBackTarget(gpu, padded.width, padded.height, "eve-5-back-material");
-	targets.backDepth = createBackTarget(
-		gpu,
-		padded.width,
-		padded.height,
-		"eve-5-back-depth",
-		BACK_CAMERA_DEPTH_FORMAT,
-	);
 }

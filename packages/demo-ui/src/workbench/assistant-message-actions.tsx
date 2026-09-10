@@ -4,7 +4,7 @@ import { styles } from "./assistant-message-actions.styles.ts";
 import { useState } from "react";
 import { Copy } from "../ui/icon-registry";
 
-export function AssistantMessageActions({ copyText }: { readonly copyText: string }) {
+export function AssistantMessageActions({ copyText }: { copyText: string }) {
 	const [copied, setCopied] = useState(false);
 	async function copy() {
 		if (!copyText.trim() || copied) return;
@@ -19,9 +19,7 @@ export function AssistantMessageActions({ copyText }: { readonly copyText: strin
 			textarea.remove();
 		}
 		setCopied(true);
-		window.setTimeout(() => {
-			setCopied(false);
-		}, 1500);
+		window.setTimeout(() => setCopied(false), 1500);
 	}
 	return (
 		<div {...stylex.props(demoStyles.reset, styles.div22)}>

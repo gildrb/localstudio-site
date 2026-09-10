@@ -3,14 +3,11 @@
 // uses for reduced motion, unavailable WebGPU, or renderer failure.
 // Run the root snapshot command: vp pack compiles this entry before Node runs it.
 import { readFileSync, writeFileSync } from "node:fs";
-import { readFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { PNG } from "pngjs";
 
 import { init, target } from "vgpu/node";
-import { decodeGltfMesh } from "../src/renderer/mesh.ts";
-import { parseGltfDocument } from "../src/renderer/gltf.ts";
-import { straightAlphaPng } from "./snapshot-png.ts";
+import { decodeGltfMesh, parseGltfDocument } from "../src/renderer/mesh.ts";
 import {
 	DEFAULT_CAMERA_FOV,
 	DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
@@ -43,7 +40,7 @@ function loadMesh() {
 	const gltfUrl = new URL("public/localai/localai-logo.gltf", repositoryRoot);
 	const gltf = parseGltfDocument(readFileSync(gltfUrl, "utf8"));
 	return decodeGltfMesh(gltf, async (uri) => {
-		const bytes = await readFile(new URL(uri, gltfUrl));
+		const bytes = readFileSync(new URL(uri, gltfUrl));
 		return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 	});
 }
@@ -95,7 +92,16 @@ for (const scheme of ["night", "day"]) {
 		premultiplied.byteOffset,
 		premultiplied.byteLength,
 	);
-	const { png } = straightAlphaPng(pixels, snapshotWidth, snapshotHeight);
+	// Un-premultiply: the canvas composites premultiplied, PNG wants straight alpha.
+	const png = new PNG({ width: snapshotWidth, height: snapshotHeight });
+	for (let i = 0; i < snapshotWidth * snapshotHeight; i++) {
+		const a = pixels.getUint8(i * 4 + 3);
+		for (let c = 0; c < 3; c++) {
+			const v = pixels.getUint8(i * 4 + c);
+			png.data[i * 4 + c] = a === 0 ? 0 : Math.min(255, Math.round((v * 255) / a));
+		}
+		png.data[i * 4 + 3] = a;
+	}
 	const destination = new URL(`public/localai/hero-render-${scheme}.png`, repositoryRoot);
 	writeFileSync(destination, PNG.sync.write(png));
 	console.log(`wrote ${fileURLToPath(destination).split("/").slice(-2).join("/")}`);

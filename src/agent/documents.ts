@@ -43,19 +43,9 @@ export const HOMEPAGE_LINK_HEADER = [
 	`<${site.origin}/>; rel="canonical"; type="text/html"`,
 ].join(", ");
 
-const htmlDocuments = [
-	{ path: "/developers", body: developerHtml, contentType: "text/html; charset=utf-8" },
-	{ path: "/developers.html", body: developerHtml, contentType: "text/html; charset=utf-8" },
-	{ path: "/about", body: aboutHtml, contentType: "text/html; charset=utf-8" },
-	{ path: "/about.html", body: aboutHtml, contentType: "text/html; charset=utf-8" },
-	{ path: "/contact", body: contactHtml, contentType: "text/html; charset=utf-8" },
-	{ path: "/contact.html", body: contactHtml, contentType: "text/html; charset=utf-8" },
-	{ path: "/privacy", body: privacyHtml, contentType: "text/html; charset=utf-8" },
-	{ path: "/privacy.html", body: privacyHtml, contentType: "text/html; charset=utf-8" },
-	{ path: "/404.html", body: notFoundHtml, contentType: "text/html; charset=utf-8" },
-] as const satisfies readonly AgentDocument[];
-
-function discoveryDocuments(): readonly AgentDocument[] {
+export function agentDocuments(): readonly AgentDocument[] {
+	const markdown = "text/markdown; charset=utf-8";
+	const llms = llmsTxt();
 	return [
 		{
 			path: "/robots.txt",
@@ -67,17 +57,17 @@ function discoveryDocuments(): readonly AgentDocument[] {
 			body: sitemapXml(),
 			contentType: "application/xml; charset=utf-8",
 		},
-	];
-}
-
-export function agentDocuments(): readonly AgentDocument[] {
-	const markdown = "text/markdown; charset=utf-8";
-	const llms = llmsTxt();
-	return [
-		...discoveryDocuments(),
 		{ path: "/sitemap.md", body: sitemapMarkdown(), contentType: markdown },
 		{ path: "/openapi.json", body: openApiSpec(), contentType: "application/json; charset=utf-8" },
-		...htmlDocuments,
+		{ path: "/developers", body: developerHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/developers.html", body: developerHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/about", body: aboutHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/about.html", body: aboutHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/contact", body: contactHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/contact.html", body: contactHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/privacy", body: privacyHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/privacy.html", body: privacyHtml, contentType: "text/html; charset=utf-8" },
+		{ path: "/404.html", body: notFoundHtml, contentType: "text/html; charset=utf-8" },
 		{ path: "/llms.txt", body: llms, contentType: markdown },
 		{ path: "/llms-full.txt", body: llmsFull(), contentType: markdown },
 		{ path: "/index.md", body: indexMarkdown(), contentType: markdown },

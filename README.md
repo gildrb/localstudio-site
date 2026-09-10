@@ -24,7 +24,11 @@ vp preview
 
 `vp check` runs Oxfmt, Oxlint, and native TypeScript checks. Use `vp fmt` to format
 and `vp check --fix` for safe fixes. Vitest runs the existing unit suite.
-`vp run validate` checks domain manifests, architecture, assets, and shaders.
+`vp run validate` checks generated domain/deployment files, assets, meshes, and every authored shader.
+After a build, `vp run styles:check --dist` checks the StyleX source/output contract.
+`vp check` keeps correctness/type failures fatal and a small review-only warning set;
+it does not enforce broad readonly, line-count, or stylistic refactors.
+See [the tooling audit](docs/tooling-audit.md) for measured timings and validation limits.
 
 `vite.config.ts` owns the frontend toolchain. The official StyleX Vite plugin
 extracts atomic CSS; the official WGSL Vite plugin resolves shader imports.

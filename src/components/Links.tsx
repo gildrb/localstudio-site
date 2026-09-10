@@ -5,23 +5,24 @@ import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { downloadLabel, downloadPath } from "../domain/route";
 import { LocalLink } from "./LocalLink";
 
-interface TextLinkProps extends Readonly<
-	Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className" | "style">
+interface TextLinkProps extends Omit<
+	AnchorHTMLAttributes<HTMLAnchorElement>,
+	"className" | "style"
 > {
-	readonly children: Readonly<ReactNode>;
-	readonly href: string;
-	readonly sx?: PublicStyle;
+	children: ReactNode;
+	href: string;
+	sx?: PublicStyle;
 }
 
 interface Cta {
-	readonly href: string;
-	readonly label: Readonly<ReactNode>;
+	href: string;
+	label: ReactNode;
 }
 
 interface CtaPairProps {
-	readonly primary?: Cta;
-	readonly secondary: Cta;
-	readonly sx?: PublicStyle;
+	primary?: Cta;
+	secondary: Cta;
+	sx?: PublicStyle;
 }
 
 const downloadCta = {
@@ -152,7 +153,7 @@ function TextLink({ children, href, sx, ...props }: TextLinkProps) {
 	);
 }
 
-export function DownloadButton({ sx }: { readonly sx?: PublicStyle }) {
+export function DownloadButton({ sx }: { sx?: PublicStyle }) {
 	return (
 		<LocalLink sx={[styles.button, sx]} href={downloadCta.href}>
 			{downloadCta.label}

@@ -7,14 +7,17 @@ import { useLightScheme } from "../hooks/use-light-scheme";
 import { DEMO_HEIGHT, useDemoFrame, type DemoCrop } from "./demo-frame";
 import type { FeatureScene } from "./scenes";
 
-type DemoShellProps = {
-	readonly label: string;
-	readonly scene: FeatureScene;
-	readonly crop: DemoCrop;
-	readonly children: ReactNode;
-};
-
-export function DemoShell({ label, scene, crop, children }: DemoShellProps) {
+export function DemoShell({
+	label,
+	scene,
+	crop,
+	children,
+}: {
+	label: string;
+	scene: FeatureScene;
+	crop: DemoCrop;
+	children: ReactNode;
+}) {
 	const { hostRef, mobile, scale, shiftX, shiftY, cropH } = useDemoFrame(crop);
 	const lightScheme = useLightScheme();
 	useDemoTabBoundary(hostRef);

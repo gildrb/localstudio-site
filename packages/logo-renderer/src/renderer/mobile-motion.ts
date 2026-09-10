@@ -1,8 +1,8 @@
 export const MOBILE_AUTO_ROTATE_SPEED = 0.15;
 
 export type EvePointerInteractionMode = {
-	readonly paintEnabled: boolean;
-	readonly autoRotateEnvYaw: boolean;
+	paintEnabled: boolean;
+	autoRotateEnvYaw: boolean;
 };
 
 export function evePointerInteractionMode(isCoarsePointer: boolean): EvePointerInteractionMode {

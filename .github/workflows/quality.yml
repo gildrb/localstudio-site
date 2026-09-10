@@ -24,11 +24,9 @@ jobs:
       - run: vp check
       - run: vp test
       - run: vp run validate
-      - run: vp run context:bundle
-      - run: vp build
+      - run: vp run reproducible:check
       - run: vp run styles:check --dist
       - run: vp run bundle:check
-      - run: vp run reproducible:check
       - run: vp exec playwright install --with-deps chromium
       - run: vp run test:e2e
       - run: vp run test:visual

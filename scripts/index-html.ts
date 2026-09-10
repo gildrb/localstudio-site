@@ -11,9 +11,7 @@ const { company, products } = site;
 const studio = products.localStudio.name;
 const kitty = products.kittyLitter.name;
 // Preserve the optional legacy registry lookup, including the current missing wordmark value.
-const wordmark = Object.entries(assets).find(
-	([name]: readonly [string, string]) => name === "wordmark",
-)?.[1];
+const wordmark = Object.entries(assets).find(([name]) => name === "wordmark")?.[1];
 const org = {
 	"@type": "Organization",
 	name: company.name,
@@ -35,18 +33,18 @@ const org = {
 	sameAs: [company.alias, company.github, company.x],
 };
 interface SoftwareApplicationDetails {
-	readonly operatingSystem: string;
-	readonly description?: string;
-	readonly license?: string;
-	readonly downloadUrl?: string;
-	readonly publisher?: {
-		readonly "@type": "Organization";
-		readonly name: string;
-		readonly url: string;
+	operatingSystem: string;
+	description?: string;
+	license?: string;
+	downloadUrl?: string;
+	publisher?: {
+		"@type": "Organization";
+		name: string;
+		url: string;
 	};
-	readonly isRelatedTo?: {
-		readonly "@type": "SoftwareApplication";
-		readonly name: string;
+	isRelatedTo?: {
+		"@type": "SoftwareApplication";
+		name: string;
 	};
 }
 

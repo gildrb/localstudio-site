@@ -1,20 +1,17 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "vite-plus/test";
-import { decodeGltfMesh } from "../../packages/logo-renderer/src/renderer/mesh";
-import { parseGltfDocument } from "../../packages/logo-renderer/src/renderer/gltf";
+import { decodeGltfMesh, parseGltfDocument } from "../../packages/logo-renderer/src/renderer/mesh";
 import { extractApertures } from "../../packages/logo-renderer/src/renderer/render/apertures";
 import type { MeshData } from "../../packages/logo-renderer/src/renderer/render/types";
 
 const logoUrl = new URL("../../public/localai/localai-logo.gltf", import.meta.url);
-const logo = await decodeGltfMesh(
-	parseGltfDocument(await readFile(logoUrl, "utf8")),
-	async (uri) => {
-		const bytes = await readFile(new URL(uri, logoUrl));
-		return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-	},
+const logo = await decodeGltfMesh(parseGltfDocument(await readFile(logoUrl, "utf8")), (uri) =>
+	readFile(new URL(uri, logoUrl)).then((bytes) =>
+		bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+	),
 );
 
-function quadWithHole() {
+function quadWithHole(): MeshData {
 	const positions = new Float32Array([
 		-2, -2, 1, 2, -2, 1, 2, 2, 1, -2, 2, 1, -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1,
 	]);
@@ -27,7 +24,7 @@ function quadWithHole() {
 			0, 1, 5, 0, 5, 4, 1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 0, 4, 3, 4, 7,
 		]),
 		bounds: { min: [-2, -2, 1], max: [2, 2, 1] },
-	} satisfies MeshData;
+	};
 }
 
 test("actual glTF front cap contains three exact clockwise aperture loops", () => {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync, rmSync, type Dirent } from "node:fs";
+import { readdirSync, readFileSync, rmSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,8 +9,8 @@ const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/u, "");
 
 function walk(directory: string): string[] {
 	const files: string[] = [];
-	for (const entry of readdirSync(directory, { withFileTypes: true }).toSorted(
-		(a: Readonly<Dirent>, b: Readonly<Dirent>) => a.name.localeCompare(b.name),
+	for (const entry of readdirSync(directory, { withFileTypes: true }).toSorted((a, b) =>
+		a.name.localeCompare(b.name),
 	)) {
 		const path = join(directory, entry.name);
 		if (entry.isDirectory()) {
@@ -22,15 +22,9 @@ function walk(directory: string): string[] {
 	return files;
 }
 
-interface OutputFile {
-	readonly path: string;
-	readonly bytes: number;
-	readonly sha256: string;
-}
-
-function manifest(): OutputFile[] {
+function manifest() {
 	return walk(join(root, "dist"))
-		.map<OutputFile>((path) => {
+		.map((path) => {
 			const rel = path
 				.slice(join(root, "dist").length + 1)
 				.split("\\")
@@ -77,4 +71,4 @@ if (left !== right) {
 	}
 	process.exit(1);
 }
-console.log(`reproducible:check passed (${String(first.length)} files)`);
+console.log(`reproducible:check passed (${first.length} files)`);

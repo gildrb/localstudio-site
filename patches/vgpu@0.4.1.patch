@@ -1,3 +1,15 @@
+diff --git a/dist/node.d.ts b/dist/node.d.ts
+index c7b92ed4fba8ab1d0641d585d80c85e49bb6a6f9..ca382e5e24f3c61acfda9e0d13aad23c9073c589 100644
+--- a/dist/node.d.ts
++++ b/dist/node.d.ts
+@@ -37,6 +37,7 @@ export { geometry } from "./scene/geometry-descriptor.ts";
+ export type { GeometryRecipe, GeometryRecipeOf } from "./scene/geometry-recipe.ts";
+ export type NodeInitOptions = Omit<InitOptions, "adapter"> & {
+     readonly adapter?: NodeAdapterMode | VGPUAdapter;
++    readonly backend?: "opengl" | "webgpu";
+ };
+ export interface NodeGpu extends Gpu {
+     readonly adapter: NodeAdapterInfo;
 diff --git a/dist/target.d.ts b/dist/target.d.ts
 index f642ba8b4a9ba90b3d3aff09484779766564f86a..025fae3d889ec641834c0bed89f798c5a95d3acc 100644
 --- a/dist/target.d.ts

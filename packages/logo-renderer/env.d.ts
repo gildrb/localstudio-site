@@ -1,1 +1,1 @@
-import "vite-plus/client";
+/// <reference types="vite-plus/client" />

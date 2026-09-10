@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vite-plus/test";
-import manifest from "../../design-manifest.json";
+import manifest from "../../design-manifest.json" with { type: "json" };
 import {
 	decideSameOriginNavigation,
 	downloadLabel,

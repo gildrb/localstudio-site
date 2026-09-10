@@ -5,7 +5,7 @@ import { GitBranchIcon } from "../ui/icons";
 import { DEMO_DIFF } from "../scenario/sequence";
 import { DiffPreview } from "../workbench/diff-preview";
 
-export function HeroReviewPanel({ ready }: { readonly ready: boolean }) {
+export function HeroReviewPanel({ ready }: { ready: boolean }) {
 	return (
 		<section {...stylex.props(demoStyles.reset, styles.section7)}>
 			<div {...stylex.props(demoStyles.reset, styles.div8)}>
