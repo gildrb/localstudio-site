@@ -83,7 +83,7 @@ const styles = stylex.create({
 	},
 });
 
-export function Footer({ sx }: { sx?: PublicStyle }) {
+export function Footer({ sx }: { readonly sx?: PublicStyle }) {
 	return (
 		<footer {...stylex.props(baseStyles.element, styles.root, sx)}>
 			<nav {...stylex.props(baseStyles.element, styles.links)} aria-label="Footer navigation">

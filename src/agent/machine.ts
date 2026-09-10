@@ -16,7 +16,7 @@ function routeLine(path: RoutePath): string {
 
 type MachineSection = readonly [name: string, lines: readonly string[]];
 
-export function machineSections(): readonly MachineSection[] {
+function companySections(): readonly MachineSection[] {
 	return [
 		[
 			"COMPANY",
@@ -44,6 +44,12 @@ export function machineSections(): readonly MachineSection[] {
 				`${site.products.codexShim.name} - local Responses API shim for Codex Desktop`,
 			],
 		],
+	];
+}
+
+export function machineSections(): readonly MachineSection[] {
+	return [
+		...companySections(),
 		[
 			"LOCAL_STUDIO",
 			[
@@ -66,7 +72,7 @@ export function machineSections(): readonly MachineSection[] {
 				"Native iOS and Android client. Connect over LAN, SSH, or Alleycat; work stays on the Mac or server.",
 			],
 		],
-		["ROUTES", routePaths.map(routeLine)],
+		["ROUTES", routePaths.map((path) => routeLine(path))],
 		[
 			"DISCOVERY",
 			[

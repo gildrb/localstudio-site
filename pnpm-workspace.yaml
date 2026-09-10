@@ -5,11 +5,21 @@ allowBuilds:
   esbuild: true
   phase: false
   webgpu: true
+minimumReleaseAgeExclude:
+  - react-dom@19.3.0
+  - react@19.3.0
+  - scheduler@0.28.0
+  - '@types/node@26.5.1'
+  - '@types/react-dom@19.3.0'
+  - '@types/react@19.3.0'
+  - lucide-react@1.44.0
+  - valibot@1.5.0
 overrides:
   vite@*: npm:@voidzero-dev/vite-plus-core@0.3.1
   vitest@*: 4.1.11
 patchedDependencies:
-  vgpu@0.3.1: patches/vgpu@0.3.1.patch
+  '@stylexjs/unplugin@0.19.0': patches/@stylexjs__unplugin@0.19.0.patch
+  vgpu@0.4.1: patches/vgpu@0.4.1.patch
 peerDependencyRules:
   allowedVersions:
     vite: "0.3.1"

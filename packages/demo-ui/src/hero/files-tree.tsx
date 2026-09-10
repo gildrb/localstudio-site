@@ -5,9 +5,15 @@ import { ChevronDown, ChevronRight, File } from "../ui/icon-registry";
 import { Folder } from "../ui/icons";
 import { fileTone } from "../files/filesystem-tree-model";
 
-type FsEntry = { name: string; path: string; rel: string; kind: string; size?: number };
+type FsEntry = {
+	readonly name: string;
+	readonly path: string;
+	readonly rel: string;
+	readonly kind: string;
+	readonly size?: number;
+};
 
-const entries: FsEntry[] = [
+const entries: readonly FsEntry[] = [
 	{
 		name: "Family",
 		path: "/Users/sero/Home/Family",
@@ -62,8 +68,8 @@ export function HeroFilesystemTree({
 	openFile,
 	onOpenFile,
 }: {
-	openFile: string | null;
-	onOpenFile: (rel: string) => void;
+	readonly openFile: string | null;
+	readonly onOpenFile: (rel: string) => void;
 }) {
 	return (
 		<section {...stylex.props(demoStyles.reset, styles.section58)}>
@@ -71,57 +77,75 @@ export function HeroFilesystemTree({
 				<span {...stylex.props(demoStyles.reset, styles.span60)}>Home</span>
 			</div>
 			<div {...stylex.props(demoStyles.reset, styles.div64)}>
-				{entries.map((entry) => {
-					const isDir = entry.kind === "directory";
-					const isActive = openFile === entry.rel;
-					return (
-						<div
-							key={entry.path}
-							{...stylex.props(
-								demoStyles.reset,
-								styles.treeRow,
-								isActive ? styles.treeRowActive : styles.treeRowIdle,
-								styles.treeIndent(isDir),
-							)}
-						>
-							{isActive ? <span {...stylex.props(demoStyles.reset, styles.span78)} /> : null}
-							{isDir ? (
-								<span {...stylex.props(demoStyles.reset, styles.span81)}>
-									<ChevronDown
-										{...stylex.props(demoStyles.reset, styles.chevrondown82, styles.lucideScale)}
-									/>
-								</span>
-							) : (
-								<span {...stylex.props(demoStyles.reset, styles.span81)}>
-									<ChevronRight
-										{...stylex.props(demoStyles.reset, styles.chevronright86, styles.lucideScale)}
-									/>
-								</span>
-							)}
-							<button
-								type="button"
-								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button91)}
-								onClick={() => {
-									if (!isDir) onOpenFile(entry.rel);
-								}}
-							>
-								{isDir ? (
-									<Folder {...stylex.props(demoStyles.reset, styles.folder97)} />
-								) : (
-									<File
-										{...stylex.props(
-											demoStyles.reset,
-											styles.fileIcon,
-											fileToneStyles[fileTone(entry.name)],
-										)}
-									/>
-								)}
-								<span {...stylex.props(demoStyles.reset, styles.span103)}>{entry.name}</span>
-							</button>
-						</div>
-					);
-				})}
+				{entries.map((entry) => (
+					<FilesystemEntry
+						key={entry.path}
+						entry={entry}
+						openFile={openFile}
+						onOpenFile={onOpenFile}
+					/>
+				))}
 			</div>
 		</section>
+	);
+}
+
+function FilesystemEntry({
+	entry,
+	openFile,
+	onOpenFile,
+}: {
+	readonly entry: FsEntry;
+	readonly openFile: string | null;
+	readonly onOpenFile: (rel: string) => void;
+}) {
+	const isDir = entry.kind === "directory";
+	const isActive = openFile === entry.rel;
+	return (
+		<div
+			{...stylex.props(
+				demoStyles.reset,
+				styles.treeRow,
+				isActive ? styles.treeRowActive : styles.treeRowIdle,
+				styles.treeIndent(isDir),
+			)}
+		>
+			{isActive ? <span {...stylex.props(demoStyles.reset, styles.span78)} /> : null}
+			<EntryChevron directory={isDir} />
+			<button
+				type="button"
+				{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button91)}
+				onClick={() => {
+					if (!isDir) onOpenFile(entry.rel);
+				}}
+			>
+				{isDir ? (
+					<Folder {...stylex.props(demoStyles.reset, styles.folder97)} />
+				) : (
+					<File
+						{...stylex.props(
+							demoStyles.reset,
+							styles.fileIcon,
+							fileToneStyles[fileTone(entry.name)],
+						)}
+					/>
+				)}
+				<span {...stylex.props(demoStyles.reset, styles.span103)}>{entry.name}</span>
+			</button>
+		</div>
+	);
+}
+
+function EntryChevron({ directory: isDir }: { readonly directory: boolean }) {
+	return isDir ? (
+		<span {...stylex.props(demoStyles.reset, styles.span81)}>
+			<ChevronDown {...stylex.props(demoStyles.reset, styles.chevrondown82, styles.lucideScale)} />
+		</span>
+	) : (
+		<span {...stylex.props(demoStyles.reset, styles.span81)}>
+			<ChevronRight
+				{...stylex.props(demoStyles.reset, styles.chevronright86, styles.lucideScale)}
+			/>
+		</span>
 	);
 }

@@ -11,11 +11,11 @@ import { EVE_DARK_ENV_LIGHTS, EVE_LIGHT_ENV_LIGHTS } from "./env-lights";
 import { meshOrbitTarget, meshThicknessScale } from "./camera";
 import { createGpuMesh } from "./mesh-gpu";
 import { createPipelines } from "./pipelines";
-import type { MeshData } from "./types";
+import type { MeshInput } from "./types";
 
 export function createResources(
 	gpu: Gpu,
-	mesh: MeshData,
+	mesh: MeshInput,
 	options: {
 		thicknessScale?: number;
 		theme?: "light" | "dark";
@@ -39,6 +39,37 @@ export function createResources(
 		);
 	const gpuMesh = createGpuMesh(gpu, mesh);
 	const pipelines = createPipelines(gpu, gpuMesh);
+	const fallbacks = createFallbackTargets(gpu);
+	return {
+		studioCubemap,
+		isLight,
+		orbitTarget: meshOrbitTarget(mesh),
+		thicknessScale: options.thicknessScale ?? meshThicknessScale(mesh.bounds),
+		paddingRadius: options.paddingRadius ?? BLOOM_RADIUS,
+		bloomEnabled: options.bloom ?? true,
+		pipelines,
+		gpuMesh,
+		sampler: sampler(gpu, {
+			magFilter: "linear",
+			minFilter: "linear",
+			addressModeU: "clamp-to-edge",
+			addressModeV: "clamp-to-edge",
+		}),
+		fallbacks,
+	};
+}
+export type RendererResources = ReturnType<typeof createResources>;
+export function disposeResources(r: RendererResources) {
+	r.gpuMesh.lines.destroy();
+	r.gpuMesh.triangles.destroy();
+	r.studioCubemap.texture.destroy();
+	for (const t of Object.values(r.fallbacks)) {
+		t.color.destroy();
+		t.depth?.destroy();
+	}
+}
+
+function createFallbackTargets(gpu: Gpu) {
 	const fallbackBackMaterial = target(gpu, {
 		size: [1, 1],
 		format: SCENE_FORMAT,
@@ -65,36 +96,10 @@ export function createResources(
 		label: "eve-5-empty-voronoi-edge",
 	});
 	return {
-		studioCubemap,
-		isLight,
-		orbitTarget: meshOrbitTarget(mesh),
-		thicknessScale: options.thicknessScale ?? meshThicknessScale(mesh.bounds),
-		paddingRadius: options.paddingRadius ?? BLOOM_RADIUS,
-		bloomEnabled: options.bloom ?? true,
-		pipelines,
-		gpuMesh,
-		sampler: sampler(gpu, {
-			magFilter: "linear",
-			minFilter: "linear",
-			addressModeU: "clamp-to-edge",
-			addressModeV: "clamp-to-edge",
-		}),
-		fallbacks: {
-			fallbackBackMaterial,
-			fallbackBackDepth,
-			fallbackPaint,
-			fallbackVoronoiValue,
-			fallbackVoronoiEdge,
-		},
+		fallbackBackMaterial,
+		fallbackBackDepth,
+		fallbackPaint,
+		fallbackVoronoiValue,
+		fallbackVoronoiEdge,
 	};
-}
-export type RendererResources = ReturnType<typeof createResources>;
-export function disposeResources(r: RendererResources) {
-	r.gpuMesh.lines.destroy();
-	r.gpuMesh.triangles.destroy();
-	r.studioCubemap.texture.destroy();
-	for (const t of Object.values(r.fallbacks)) {
-		t.color.destroy();
-		t.depth?.destroy();
-	}
 }

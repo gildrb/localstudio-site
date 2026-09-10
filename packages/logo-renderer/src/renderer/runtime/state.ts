@@ -1,4 +1,4 @@
-import type { MutableRefObject } from "react";
+import type { RefObject } from "react";
 import type { MeshData, RenderControls } from "../render";
 
 // Mutable animation state owned by index.tsx's renderer lifecycle.
@@ -42,4 +42,4 @@ export type HeroRuntimeState = {
 	staticPose: boolean;
 };
 
-export type ControlsRef = MutableRefObject<RenderControls>;
+export type ControlsRef = RefObject<RenderControls>;

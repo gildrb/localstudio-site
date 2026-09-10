@@ -7,7 +7,7 @@ type AtmosphereSurface = {
 	dispose: () => void;
 };
 
-type AtmosphereResolution = { scale: number; maxEdge: number };
+type AtmosphereResolution = { readonly scale: number; readonly maxEdge: number };
 const DEFAULT_RESOLUTION: AtmosphereResolution = { scale: 0.5, maxEdge: 768 };
 const INTRO_RESOLUTION: AtmosphereResolution = { scale: 1, maxEdge: 1280 };
 
@@ -29,17 +29,15 @@ export function atmosphereLayout(logo: Rect, hero: Rect, resolution = DEFAULT_RE
 	};
 }
 
-export function createAtmosphereSurface(
+function createAtmosphereTargets(
 	gpu: Gpu,
 	canvas: HTMLCanvasElement,
 	logo: HTMLCanvasElement,
-	requestRender: () => void,
-	foreground?: HTMLCanvasElement,
-	resolution = DEFAULT_RESOLUTION,
-	introCanvas?: HTMLCanvasElement,
+	foreground: HTMLCanvasElement | undefined,
+	introCanvas: HTMLCanvasElement | undefined,
+	heroRect: Rect,
+	layout: Readonly<ReturnType<typeof atmosphereLayout>>,
 ) {
-	const heroRect = canvas.getBoundingClientRect();
-	const layout = atmosphereLayout(logo.getBoundingClientRect(), heroRect, resolution);
 	const target = surface(gpu, canvas, {
 		autoResize: false,
 		size: layout.size,
@@ -62,28 +60,17 @@ export function createAtmosphereSurface(
 				label: "hero-atmosphere-intro",
 			})
 		: undefined;
-	const atmosphere: AtmosphereSurface = {
-		current: {
-			target,
-			logoRect: layout.logoRect,
-			pixelScale: layout.size[0] / Math.max(1, heroRect.width),
-		},
-		dispose() {
-			observer.disconnect();
-			window.removeEventListener("resize", resize);
-			introTarget?.dispose();
-			foregroundTarget?.dispose();
-			target.dispose();
-		},
-	};
-	if (foregroundTarget) atmosphere.current.foregroundTarget = foregroundTarget;
-	if (introTarget) {
-		atmosphere.current.introTarget = introTarget;
-		atmosphere.current.introPresentation = {
-			logoRect: layout.logoRect,
-			logoOpacity: Number(window.getComputedStyle(logo.parentElement ?? logo).opacity),
-		};
-	}
+	return { target, foregroundTarget, introTarget };
+}
+
+function observeAtmosphere(
+	canvas: HTMLCanvasElement,
+	logo: HTMLCanvasElement,
+	resolution: AtmosphereResolution,
+	atmosphere: AtmosphereSurface,
+	requestRender: () => void,
+) {
+	const { target, foregroundTarget, introTarget } = atmosphere.current;
 	const resize = () => {
 		const nextHeroRect = canvas.getBoundingClientRect();
 		const next = atmosphereLayout(logo.getBoundingClientRect(), nextHeroRect, resolution);
@@ -107,5 +94,53 @@ export function createAtmosphereSurface(
 	observer.observe(canvas);
 	observer.observe(logo);
 	window.addEventListener("resize", resize, { passive: true });
+	return () => {
+		observer.disconnect();
+		window.removeEventListener("resize", resize);
+	};
+}
+
+export function createAtmosphereSurface(
+	gpu: Gpu,
+	canvas: HTMLCanvasElement,
+	logo: HTMLCanvasElement,
+	requestRender: () => void,
+	foreground?: HTMLCanvasElement,
+	resolution = DEFAULT_RESOLUTION,
+	introCanvas?: HTMLCanvasElement,
+) {
+	const heroRect = canvas.getBoundingClientRect();
+	const layout = atmosphereLayout(logo.getBoundingClientRect(), heroRect, resolution);
+	const { target, foregroundTarget, introTarget } = createAtmosphereTargets(
+		gpu,
+		canvas,
+		logo,
+		foreground,
+		introCanvas,
+		heroRect,
+		layout,
+	);
+	const atmosphere: AtmosphereSurface = {
+		current: {
+			target,
+			logoRect: layout.logoRect,
+			pixelScale: layout.size[0] / Math.max(1, heroRect.width),
+		},
+		dispose() {
+			stopObserving();
+			introTarget?.dispose();
+			foregroundTarget?.dispose();
+			target.dispose();
+		},
+	};
+	if (foregroundTarget) atmosphere.current.foregroundTarget = foregroundTarget;
+	if (introTarget) {
+		atmosphere.current.introTarget = introTarget;
+		atmosphere.current.introPresentation = {
+			logoRect: layout.logoRect,
+			logoOpacity: Number(window.getComputedStyle(logo.parentElement ?? logo).opacity),
+		};
+	}
+	const stopObserving = observeAtmosphere(canvas, logo, resolution, atmosphere, requestRender);
 	return atmosphere;
 }

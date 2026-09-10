@@ -1,3 +1,4 @@
+import * as v from "valibot";
 import { hashAnchor } from "../domain/route";
 
 export {
@@ -12,18 +13,29 @@ type NavigationListener = () => void;
 
 const navigationListeners = new Set<NavigationListener>();
 const scrollStateKey = "__localStudioScroll";
+const scrollState = v.object({
+	[scrollStateKey]: v.tuple([v.number(), v.number()]),
+});
+const historyRecord = v.record(v.string(), v.unknown());
 
 export function saveScrollPosition() {
+	const previousState: unknown = window.history.state;
+	const previous = v.safeParse(historyRecord, previousState);
 	window.history.replaceState(
-		{ ...window.history.state, [scrollStateKey]: [window.scrollX, window.scrollY] },
+		{
+			...(previous.success ? previous.output : null),
+			[scrollStateKey]: [window.scrollX, window.scrollY],
+		},
 		"",
 	);
 }
 
 export function readScrollPosition() {
-	// SAFETY: This history field is exclusively written by this module as an x/y tuple.
-	const saved = window.history.state?.[scrollStateKey] as readonly [number, number] | undefined;
-	return saved ? { x: saved[0], y: saved[1] } : null;
+	const state: unknown = window.history.state;
+	const result = v.safeParse(scrollState, state);
+	if (!result.success) return null;
+	const [x, y] = result.output[scrollStateKey];
+	return { x, y };
 }
 
 export function pushNavigation(next: string) {

@@ -59,10 +59,10 @@ export function createUploadTarget(
 				"length" in clear ? { r: clear[0], g: clear[1], b: clear[2], a: clear[3] } : clear;
 			const attachment: GPURenderPassColorAttachment = {
 				view: color.createView(),
-				loadOp: opts.preserve ? "load" : "clear",
+				loadOp: opts.preserve === true ? "load" : "clear",
 				storeOp: "store",
 			};
-			if (!opts.preserve) attachment.clearValue = clearValue;
+			if (opts.preserve !== true) attachment.clearValue = clearValue;
 			return { colorAttachments: [attachment] };
 		},
 	};

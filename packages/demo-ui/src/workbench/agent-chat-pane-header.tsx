@@ -4,17 +4,36 @@ import { styles } from "./agent-chat-pane-header.styles.ts";
 import { useState } from "react";
 import { Menu, PanelRightFilled, PanelRightHollow } from "../ui/icon-registry";
 
+type AgentChatPaneHeaderProps = {
+	readonly title: string;
+	readonly rightPanelOpen: boolean;
+	readonly onRename: (title: string) => void;
+	readonly onToggleRightPanel: () => void;
+};
+
+type TitleControlProps = {
+	readonly title: string;
+	readonly draftTitle: string;
+	readonly renaming: boolean;
+	readonly setDraftTitle: (title: string) => void;
+	readonly setRenaming: (renaming: boolean) => void;
+	readonly finishRename: () => void;
+};
+
+type TitleFocusEvent = {
+	readonly currentTarget: Readonly<Pick<HTMLInputElement, "select">>;
+};
+
+type TitleChangeEvent = {
+	readonly target: Readonly<Pick<HTMLInputElement, "value">>;
+};
+
 export function AgentChatPaneHeader({
 	title,
 	rightPanelOpen,
 	onRename,
 	onToggleRightPanel,
-}: {
-	title: string;
-	rightPanelOpen: boolean;
-	onRename: (title: string) => void;
-	onToggleRightPanel: () => void;
-}) {
+}: AgentChatPaneHeaderProps) {
 	const [renaming, setRenaming] = useState(false);
 	const [draftTitle, setDraftTitle] = useState(title);
 	const RightPanelIcon = rightPanelOpen ? PanelRightFilled : PanelRightHollow;
@@ -33,39 +52,9 @@ export function AgentChatPaneHeader({
 				>
 					<Menu {...stylex.props(demoStyles.reset, styles.menu31, styles.lucideScale)} />
 				</button>
-				{renaming ? (
-					<input
-						autoFocus
-						name="session-title"
-						autoComplete="off"
-						value={draftTitle}
-						onFocus={(event) => event.currentTarget.select()}
-						onChange={(event) => setDraftTitle(event.target.value)}
-						onBlur={finishRename}
-						onKeyDown={(event) => {
-							if (event.key === "Enter") finishRename();
-							if (event.key === "Escape") {
-								setDraftTitle(title);
-								setRenaming(false);
-							}
-						}}
-						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element47)}
-						aria-label="Rename session"
-					/>
-				) : (
-					<button
-						type="button"
-						onClick={() => {
-							setDraftTitle(title);
-							setRenaming(true);
-						}}
-						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element57)}
-						title={title}
-						aria-label={`Rename session: ${title}`}
-					>
-						{title}
-					</button>
-				)}
+				<TitleControl
+					{...{ title, draftTitle, renaming, setDraftTitle, setRenaming, finishRename }}
+				/>
 			</div>
 			<button
 				type="button"
@@ -85,5 +74,52 @@ export function AgentChatPaneHeader({
 				/>
 			</button>
 		</div>
+	);
+}
+
+function TitleControl({
+	title,
+	draftTitle,
+	renaming,
+	setDraftTitle,
+	setRenaming,
+	finishRename,
+}: TitleControlProps) {
+	return renaming ? (
+		<input
+			autoFocus
+			name="session-title"
+			autoComplete="off"
+			value={draftTitle}
+			onFocus={(event: TitleFocusEvent) => {
+				event.currentTarget.select();
+			}}
+			onChange={(event: TitleChangeEvent) => {
+				setDraftTitle(event.target.value);
+			}}
+			onBlur={finishRename}
+			onKeyDown={(event: Readonly<Pick<React.KeyboardEvent<HTMLInputElement>, "key">>) => {
+				if (event.key === "Enter") finishRename();
+				if (event.key === "Escape") {
+					setDraftTitle(title);
+					setRenaming(false);
+				}
+			}}
+			{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element47)}
+			aria-label="Rename session"
+		/>
+	) : (
+		<button
+			type="button"
+			onClick={() => {
+				setDraftTitle(title);
+				setRenaming(true);
+			}}
+			{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element57)}
+			title={title}
+			aria-label={`Rename session: ${title}`}
+		>
+			{title}
+		</button>
 	);
 }

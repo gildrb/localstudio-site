@@ -30,11 +30,11 @@ export function storyPosition({
 	scrollRange,
 	sceneCount,
 }: {
-	scrollY: number;
-	navHeight: number;
-	showcaseTop: number;
-	scrollRange: number;
-	sceneCount: number;
+	readonly scrollY: number;
+	readonly navHeight: number;
+	readonly showcaseTop: number;
+	readonly scrollRange: number;
+	readonly sceneCount: number;
 }) {
 	if (sceneCount <= 1) return 0;
 	const safeRange = Number.isFinite(scrollRange) ? Math.max(1, scrollRange) : 1;
@@ -70,11 +70,33 @@ export function storyOptionsTime(position: number, sceneCount: number) {
 	return clamp(position / (sceneCount - 1), 0, 1);
 }
 
-export function storySceneStates(activeIndex: number, sceneCount: number) {
+export interface StorySceneState {
+	readonly index: number;
+	readonly selected: boolean;
+}
+
+export function storySceneStates(
+	activeIndex: number,
+	sceneCount: number,
+): readonly StorySceneState[] {
 	if (sceneCount <= 0) return [];
 	const selectedIndex = clamp(Math.round(activeIndex), 0, sceneCount - 1);
 	return Array.from({ length: sceneCount }, (_, index) => ({
 		index,
 		selected: index === selectedIndex,
 	}));
+}
+
+export function storyOptionAnimation(
+	index: number,
+	activeIndex: number,
+	mobile: boolean | null,
+	reducedMotion: boolean,
+) {
+	if (mobile === null) return false;
+	const selected = index === activeIndex;
+	return {
+		opacity: !mobile || selected ? 1 : 0,
+		y: !mobile || selected || reducedMotion ? 0 : index < activeIndex ? -10 : 10,
+	};
 }

@@ -10,8 +10,8 @@ import { Header } from "./Header";
 import { LocalLink } from "./LocalLink";
 
 interface PageShellProps {
-	backHref?: string;
-	children: ReactNode;
+	readonly backHref?: string;
+	readonly children: Readonly<ReactNode>;
 }
 
 export function PageShell({ backHref, children }: PageShellProps) {
@@ -26,7 +26,7 @@ export function PageShell({ backHref, children }: PageShellProps) {
 			<LocalLink sx={shellStyles.skipLink} href="#content">
 				Skip to content
 			</LocalLink>
-			{backHref ? (
+			{backHref !== undefined && backHref.length > 0 ? (
 				<header {...stylex.props(baseStyles.element, shellStyles.backNav)}>
 					<LocalLink
 						sx={shellStyles.brand}
@@ -54,7 +54,9 @@ export function PageShell({ backHref, children }: PageShellProps) {
 			>
 				{children}
 			</main>
-			<Footer sx={backHref ? shellStyles.backFooter : undefined} />
+			<Footer
+				sx={backHref !== undefined && backHref.length > 0 ? shellStyles.backFooter : undefined}
+			/>
 		</div>
 	);
 }

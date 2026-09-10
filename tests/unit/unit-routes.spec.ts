@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vite-plus/test";
+import manifest from "../../design-manifest.json";
 import {
 	decideSameOriginNavigation,
 	downloadLabel,
@@ -70,7 +71,6 @@ test("every HTML route has a page module", () => {
 });
 
 test("design-manifest routes match the canonical route model", () => {
-	const manifest = JSON.parse(readFileSync("design-manifest.json", "utf8"));
 	expect(manifest.routes).toEqual([...routePaths]);
 	expect(manifest.redirects).toEqual(["/product", "/mobile", "/agents"]);
 	expect(manifest.motion).toEqual(["ease", "heroEnter", "featureEntry", "featureSwap"]);

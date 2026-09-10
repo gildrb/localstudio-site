@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
+import type { BrowserFixtures } from "./browser-fixtures";
 
-test("header uses the standard LocalAI mark", async ({ page }) => {
+test("header uses the standard LocalAI mark", async ({ page }: BrowserFixtures) => {
 	await page.goto("/");
 	const logo = page
 		.getByRole("banner")
@@ -14,7 +15,7 @@ test("header uses the standard LocalAI mark", async ({ page }) => {
 	expect(source).toContain('viewBox="0 0 525 525"');
 });
 
-test("hero uses the local standalone mark", async ({ page }) => {
+test("hero uses the local standalone mark", async ({ page }: BrowserFixtures) => {
 	await page.goto("/");
 	const mark = page
 		.getByRole("link", { name: "Machine-readable page" })
@@ -27,13 +28,15 @@ test("hero uses the local standalone mark", async ({ page }) => {
 	expect(source).toContain('viewBox="0 0 525 525"');
 });
 
-test("footer no longer renders the outline mark", async ({ page }) => {
+test("footer no longer renders the outline mark", async ({ page }: BrowserFixtures) => {
 	await page.goto("/");
 	await expect(page.getByRole("contentinfo").locator("img")).toHaveCount(0);
 	await expect(page.locator('footer img[src="/images/optimized-outline.svg"]')).toHaveCount(0);
 });
 
-test("document uses transparent light and dark favicon assets", async ({ page }) => {
+test("document uses transparent light and dark favicon assets", async ({
+	page,
+}: BrowserFixtures) => {
 	await page.goto("/");
 	const lightFavicon = page.locator('link[rel="icon"][media="(prefers-color-scheme: light)"]');
 	const darkFavicon = page.locator('link[rel="icon"][media="(prefers-color-scheme: dark)"]');
@@ -47,7 +50,9 @@ test("document uses transparent light and dark favicon assets", async ({ page })
 	}
 });
 
-test("navbar uses compact text and an accessible GitHub icon", async ({ page }) => {
+test("navbar uses compact text and an accessible GitHub icon", async ({
+	page,
+}: BrowserFixtures) => {
 	await page.goto("/");
 	const mobile = page
 		.getByRole("navigation", { name: "Landing navigation" })
@@ -67,7 +72,7 @@ test("navbar uses compact text and an accessible GitHub icon", async ({ page }) 
 	await expect(github.locator("svg")).toBeVisible();
 });
 
-test("site images cannot be copied, dragged, or saved", async ({ page }) => {
+test("site images cannot be copied, dragged, or saved", async ({ page }: BrowserFixtures) => {
 	for (const route of ["/", "/docs"]) {
 		await page.goto(route);
 		await page.locator("img").first().waitFor();

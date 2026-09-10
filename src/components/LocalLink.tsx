@@ -4,10 +4,12 @@ import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from "react";
 import { pushNavigation, scrollToHash } from "../app/browser-location";
 import { decideSameOriginNavigation } from "../domain/route";
 
-type LocalLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className" | "style"> & {
-	children: ReactNode;
-	href: string;
-	sx?: PublicStyle;
+type LocalLinkProps = Readonly<
+	Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className" | "style">
+> & {
+	readonly children: Readonly<ReactNode>;
+	readonly href: string;
+	readonly sx?: PublicStyle;
 };
 
 export function LocalLink({ children, href, onClick, sx, ...props }: LocalLinkProps) {
@@ -20,7 +22,7 @@ export function LocalLink({ children, href, onClick, sx, ...props }: LocalLinkPr
 			event.ctrlKey ||
 			event.shiftKey ||
 			event.altKey ||
-			props.target
+			(props.target !== undefined && props.target.length > 0)
 		) {
 			return;
 		}

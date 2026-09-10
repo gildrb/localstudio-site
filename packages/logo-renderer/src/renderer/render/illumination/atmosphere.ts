@@ -14,7 +14,7 @@ import { renderAtmosphere } from "../passes/atmosphere-pass";
 import { createPrismPostprocess } from "../prism-post";
 import type { RendererResources } from "../resources";
 import { shaders } from "../shaders";
-import type { ImprintRenderOptions, MeshData, RenderControls } from "../types";
+import type { ImprintRenderOptions, MeshInput, RenderControls } from "../types";
 import { illuminationSourceView } from "./source-view";
 
 type SceneParams = ReturnType<typeof writeParams>;
@@ -24,7 +24,7 @@ type Atmosphere = NonNullable<ImprintRenderOptions["atmosphere"]>;
 export function createIlluminationAtmosphere(
 	gpu: Gpu,
 	r: RendererResources,
-	mesh: MeshData,
+	mesh: MeshInput,
 	outputs: Atmosphere,
 ) {
 	// Match the exact policy used by resources.ts for the chrome's cubemap bake.
@@ -98,7 +98,7 @@ export function createIlluminationAtmosphere(
 			scene: Texture,
 			depth: Texture,
 			params: SceneParams,
-			controls: RenderControls,
+			controls: Readonly<RenderControls>,
 			imprint: ImprintRenderOptions,
 			day: boolean,
 		) {

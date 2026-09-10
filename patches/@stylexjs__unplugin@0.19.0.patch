@@ -1,0 +1,17 @@
+diff --git a/lib/vite.d.ts b/lib/vite.d.ts
+index 1b5e6a86144833e01e7b1010b3916ec8dc20d723..0ff73987e0c66cae404e96fadea608534e567d0d 100644
+--- a/lib/vite.d.ts
++++ b/lib/vite.d.ts
+@@ -5,8 +5,11 @@
+  * LICENSE file in the root directory of this source tree.
+  */
+ 
++import type { UnpluginInstance } from 'unplugin';
+ import type { UserOptions } from './core';
+ 
+-declare const plugin: (options?: Partial<UserOptions>) => any;
++declare const plugin: (options?: Partial<UserOptions>) => ReturnType<
++  UnpluginInstance<Partial<UserOptions>, false>['vite']
++>;
+ 
+ export default plugin;

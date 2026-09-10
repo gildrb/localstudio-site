@@ -1,0 +1,105 @@
+import * as stylex from "@stylexjs/stylex";
+import { constants, tokens } from "../styles/tokens.stylex.ts";
+
+export const styles = stylex.create({
+	div127: {
+		minWidth: "0px",
+		overflowX: "hidden",
+		overflowY: "hidden",
+	},
+	dt128: {
+		overflowX: "hidden",
+		overflowY: "hidden",
+		textOverflow: "ellipsis",
+		whiteSpace: "nowrap",
+		fontSize: constants.fsXs,
+		color: tokens.dim,
+	},
+	span136: {
+		fontSize: constants.fsXs,
+		fontWeight: 400,
+		color: tokens.dim,
+	},
+	dd142: {
+		marginTop: "0.25rem",
+		overflowX: "hidden",
+		overflowY: "hidden",
+		textOverflow: "ellipsis",
+		whiteSpace: "nowrap",
+		fontSize: constants.fsXs,
+		color: tokens.dim75,
+	},
+	section152: {
+		minWidth: "0px",
+	},
+	div153: {
+		display: "flex",
+		alignItems: "baseline",
+		justifyContent: "space-between",
+		rowGap: "calc(0.25rem * 2)",
+		columnGap: "calc(0.25rem * 2)",
+	},
+	span154: {
+		fontSize: constants.fsXs,
+		fontWeight: 400,
+		color: tokens.dim50,
+	},
+	span155: {
+		fontFamily: constants.fontMono,
+		fontSize: constants.fsXs,
+		color: tokens.dim,
+	},
+	div157: {
+		position: "relative",
+		marginTop: "calc(0.25rem * 2)",
+		display: "grid",
+		height: "calc(0.25rem * 24)",
+		gridTemplateRows: "repeat(3, minmax(0, 1fr))",
+		borderBottomStyle: "solid",
+		borderBottomWidth: "1px",
+		borderTopColor: tokens.fg75,
+		borderRightColor: tokens.fg75,
+		borderBottomColor: tokens.fg75,
+		borderLeftColor: tokens.fg75,
+	},
+	span158: {
+		borderTopStyle: "solid",
+		borderTopWidth: "1px",
+		borderTopColor: tokens.border40,
+		borderRightColor: tokens.border40,
+		borderBottomColor: tokens.border40,
+		borderLeftColor: tokens.border40,
+	},
+	svg159: {
+		position: "absolute",
+		top: "0px",
+		right: "0px",
+		bottom: "0px",
+		left: "0px",
+		height: "100%",
+		width: "100%",
+		overflowX: "visible",
+		overflowY: "visible",
+		color: tokens.uiAccent,
+	},
+	p161: {
+		marginTop: "0.25rem",
+		fontSize: constants.fs2xs,
+		color: tokens.dim55,
+	},
+	metric: {
+		marginTop: "0.25rem",
+		display: "flex",
+		alignItems: "baseline",
+		rowGap: "0.25rem",
+		columnGap: "0.25rem",
+		fontWeight: 600,
+		lineHeight: 1,
+	},
+	metricQuiet: {
+		fontSize: constants.fsLg,
+	},
+	metricLoud: {
+		fontSize: constants.fs2xl,
+	},
+});

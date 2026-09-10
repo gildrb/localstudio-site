@@ -14,7 +14,7 @@ const styles = stylex.create({
 	},
 });
 
-export function BrandLogo({ sx }: { sx?: PublicStyle }) {
+export function BrandLogo({ sx }: { readonly sx?: PublicStyle }) {
 	return (
 		<img
 			{...stylex.props(baseStyles.element, baseStyles.image, styles.logo, sx)}

@@ -14,14 +14,9 @@ function escapeHtml(value: string): string {
 function renderInline(content: readonly InfoInline[]): string {
 	return content
 		.map((part) => {
-			switch (part.kind) {
-				case "text":
-					return escapeHtml(part.text);
-				case "code":
-					return `<code>${escapeHtml(part.code)}</code>`;
-				case "link":
-					return `<a href="${escapeHtml(part.href)}">${escapeHtml(part.label)}</a>`;
-			}
+			if (part.kind === "text") return escapeHtml(part.text);
+			if (part.kind === "code") return `<code>${escapeHtml(part.code)}</code>`;
+			return `<a href="${escapeHtml(part.href)}">${escapeHtml(part.label)}</a>`;
 		})
 		.join("");
 }

@@ -36,6 +36,7 @@ export type {
 	EveMaterial,
 	ImprintRenderOptions,
 	MeshData,
+	MeshInput,
 	PaintPointerMapping,
 	PaintPointerMappingInput,
 	PaintPointerRect,

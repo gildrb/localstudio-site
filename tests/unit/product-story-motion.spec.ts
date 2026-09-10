@@ -11,6 +11,16 @@ import {
 import { motion } from "../../src/domain/motion";
 
 const sceneCount = 5;
+const componentPaths = [
+	"src/sections/ProductStory.tsx",
+	"src/sections/StoryOption.tsx",
+	"src/sections/StoryOptions.tsx",
+	"src/sections/StoryVisual.tsx",
+];
+const controllerPaths = [
+	"src/sections/use-product-story-motion.ts",
+	"src/sections/product-story-session.ts",
+];
 
 test("entries and images transition in 300ms", () => {
 	expect(motion.featureEntry.duration).toBe(0.3);
@@ -86,16 +96,20 @@ test("all scenes mount; one is selected", () => {
 	for (const activeIndex of [-100, -1, 0, 1, 2, 3, 4, 5, 100]) {
 		const states = storySceneStates(activeIndex, sceneCount);
 		expect(states).toHaveLength(sceneCount);
-		expect(states.filter(({ selected }) => selected)).toHaveLength(1);
-		expect(states.map(({ index }) => index)).toEqual([0, 1, 2, 3, 4]);
+		expect(
+			states.filter(({ selected }: Readonly<(typeof states)[number]>) => selected),
+		).toHaveLength(1);
+		expect(states.map(({ index }: Readonly<(typeof states)[number]>) => index)).toEqual([
+			0, 1, 2, 3, 4,
+		]);
 	}
 	expect(storySceneStates(0, 0)).toEqual([]);
 });
 
 test("Motion owns transitions; demos stay mounted", () => {
-	const component = readFileSync("src/sections/ProductStory.tsx", "utf8");
-	const controller = readFileSync("src/sections/use-product-story-motion.ts", "utf8");
-	const styles = readFileSync("src/styles/sections-styles.ts", "utf8");
+	const component = componentPaths.map((path) => readFileSync(path, "utf8")).join("\n");
+	const controller = controllerPaths.map((path) => readFileSync(path, "utf8")).join("\n");
+	const styles = readFileSync("src/styles/story-styles.ts", "utf8");
 	const story = styles.slice(styles.indexOf("\tstory:"), styles.indexOf("\tscreenReaderOnly:"));
 	for (const text of [
 		'import { FeatureDemo } from "@local-studio/demo-ui/story"',
@@ -116,7 +130,7 @@ test("Motion owns transitions; demos stay mounted", () => {
 		expect(component).not.toContain(text);
 	for (const text of ["layerAnimations", "registerLayer", "opacity:"])
 		expect(controller).not.toContain(text);
-	for (const text of ["requestAnimationFrame(update)", "{ passive: true }"])
+	for (const text of ["requestAnimationFrame(this.update)", "{ passive: true }"])
 		expect(controller).toContain(text);
 	for (const text of ['visibility: "hidden"', 'visibility: "visible"'])
 		expect(story).toContain(text);
@@ -129,8 +143,8 @@ test("Motion owns transitions; demos stay mounted", () => {
 	);
 	expect(sceneStyles).not.toContain("transform:");
 	for (const text of [
-		"storyIndex(position, currentIndex, sceneCount)",
-		"syncMotion(reducedMotion ? currentIndex : position)",
+		"storyIndex(position, this.#currentIndex, sceneCount)",
+		"syncMotion(reducedMotion ? this.#currentIndex : position)",
 	])
 		expect(controller).toContain(text);
 	expect(controller).not.toContain("useSpring");

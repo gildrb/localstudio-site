@@ -2,11 +2,11 @@ import type { Frame } from "vgpu";
 import { PASS_INSIDE } from "../constants";
 import { writeParams } from "../params";
 import type { RendererResources } from "../resources";
-import type { MeshData, RenderControls } from "../types";
+import type { MeshInput, RenderControls } from "../types";
 const args = (
 	r: RendererResources,
-	m: MeshData,
-	c: RenderControls,
+	m: MeshInput,
+	c: Readonly<RenderControls>,
 	w: number,
 	h: number,
 	pad: number,
@@ -24,9 +24,9 @@ const args = (
 export function renderBackMaterial(
 	f: Frame,
 	r: RendererResources,
-	m: MeshData,
+	m: MeshInput,
 	target: import("vgpu").Target,
-	c: RenderControls,
+	c: Readonly<RenderControls>,
 	w: number,
 	h: number,
 	pad = r.paddingRadius,
@@ -45,9 +45,9 @@ export function renderBackMaterial(
 export function renderBackDepth(
 	f: Frame,
 	r: RendererResources,
-	m: MeshData,
+	m: MeshInput,
 	target: import("vgpu").Target,
-	c: RenderControls,
+	c: Readonly<RenderControls>,
 	w: number,
 	h: number,
 	pad = r.paddingRadius,

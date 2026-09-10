@@ -16,11 +16,11 @@ import {
 type ToolStatus = "done" | "running";
 type ToolKind = "edit" | "search" | "read" | "exec" | "browser" | "generic";
 export type ToolBlock = {
-	id: string;
-	name: string;
-	status: ToolStatus;
-	args: DemoToolArgs;
-	resultText?: string | undefined;
+	readonly id: string;
+	readonly name: string;
+	readonly status: ToolStatus;
+	readonly args: DemoToolArgs;
+	readonly resultText?: string | undefined;
 };
 
 const writeTools = new Set([
@@ -98,20 +98,20 @@ function toolArg(block: ToolBlock, keys: readonly ToolStringKey[]): string | nul
 
 function humanizeToolName(name: string): string {
 	return name
-		.replace(/^functions[._-]/, "")
-		.replace(/^mcp__[a-z0-9_-]+__/i, "")
-		.replace(/[_-]+/g, " ")
-		.replace(/\b\w/g, (match) => match.toUpperCase());
+		.replace(/^functions[._-]/u, "")
+		.replace(/^mcp__[a-z0-9_-]+__/iu, "")
+		.replaceAll(/[_-]+/gu, " ")
+		.replaceAll(/\b\w/gu, (match) => match.toUpperCase());
 }
 
 function compact(value: string | null, limit = 88): string | null {
-	if (!value) return null;
-	const oneLine = value.replace(/\s+/g, " ").trim();
+	if (value === null || value.length === 0) return null;
+	const oneLine = value.replaceAll(/\s+/gu, " ").trim();
 	if (oneLine.length <= limit) return oneLine;
 	return `${oneLine.slice(0, limit - 1).trimEnd()}…`;
 }
 
-type ToolMeta = { verb: string; detail: string | null };
+type ToolMeta = { readonly verb: string; readonly detail: string | null };
 
 function toolMeta(block: ToolBlock): ToolMeta {
 	const name = block.name.toLowerCase();
@@ -133,11 +133,13 @@ function toolMeta(block: ToolBlock): ToolMeta {
 			};
 		case "read":
 			return { verb: running ? "Reading" : "Read", detail: path };
-		case "search":
+		case "search": {
+			const detail = compact(query);
 			return {
 				verb: running ? "Searching" : "Searched",
-				detail: compact(query) ? `for ${compact(query)}` : path,
+				detail: detail !== null && detail !== "" ? `for ${detail}` : path,
 			};
+		}
 		case "exec":
 			return { verb: running ? "Running" : "Ran", detail: null };
 		case "browser":
@@ -147,10 +149,12 @@ function toolMeta(block: ToolBlock): ToolMeta {
 				verb: running ? "Calling" : "Called",
 				detail: humanizeToolName(block.name),
 			};
+		default:
+			throw new Error("Invalid tool kind");
 	}
 }
 
-export function ToolBlockView({ block }: { block: ToolBlock }) {
+export function ToolBlockView({ block }: { readonly block: ToolBlock }) {
 	const [userOpen, setUserOpen] = useState<boolean | null>(null);
 	const open = userOpen ?? block.status === "running";
 	const kind = classifyTool(block.name);
@@ -164,7 +168,7 @@ export function ToolBlockView({ block }: { block: ToolBlock }) {
 		>
 			<summary
 				{...stylex.props(demoStyles.reset, styles.summary162)}
-				onClick={(event) => {
+				onClick={(event: Readonly<Pick<React.MouseEvent<HTMLElement>, "preventDefault">>) => {
 					event.preventDefault();
 					setUserOpen(!open);
 				}}
@@ -182,7 +186,7 @@ export function ToolBlockView({ block }: { block: ToolBlock }) {
 				>
 					{meta.verb}
 				</span>
-				{meta.detail ? (
+				{meta.detail !== null && meta.detail !== "" ? (
 					<span {...stylex.props(demoStyles.reset, styles.span177)}>{meta.detail}</span>
 				) : (
 					<span {...stylex.props(demoStyles.reset, styles.span181)} />
@@ -192,7 +196,7 @@ export function ToolBlockView({ block }: { block: ToolBlock }) {
 					strokeWidth={1.7}
 				/>
 			</summary>
-			{open && block.resultText ? (
+			{open && block.resultText !== undefined && block.resultText !== "" ? (
 				<pre {...stylex.props(demoStyles.reset, styles.pre189)}>{block.resultText}</pre>
 			) : null}
 		</details>

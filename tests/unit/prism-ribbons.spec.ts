@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "vite-plus/test";
 import { decodeGltfMesh } from "../../packages/logo-renderer/src/renderer/mesh";
+import { parseGltfDocument } from "../../packages/logo-renderer/src/renderer/gltf";
 import { extractApertures } from "../../packages/logo-renderer/src/renderer/render/apertures";
 import {
 	createPrismRibbonVertices,
@@ -9,10 +10,12 @@ import {
 import type { MeshData } from "../../packages/logo-renderer/src/renderer/render/types";
 
 const logoUrl = new URL("../../public/localai/localai-logo.gltf", import.meta.url);
-const logo = await decodeGltfMesh(JSON.parse(await readFile(logoUrl, "utf8")), (uri) =>
-	readFile(new URL(uri, logoUrl)).then((bytes) =>
-		bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
-	),
+const logo = await decodeGltfMesh(
+	parseGltfDocument(await readFile(logoUrl, "utf8")),
+	async (uri) => {
+		const bytes = await readFile(new URL(uri, logoUrl));
+		return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+	},
 );
 const stride = 5;
 const verticesPerSlice = 12;

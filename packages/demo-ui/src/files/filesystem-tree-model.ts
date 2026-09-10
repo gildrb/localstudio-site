@@ -1,6 +1,6 @@
 export type FileTone = "code" | "data" | "document" | "media" | "neutral" | "script";
 
-const TONE_GROUPS: [FileTone, string[]][] = [
+const TONE_GROUPS: readonly (readonly [FileTone, readonly string[]])[] = [
 	[
 		"code",
 		[

@@ -1,16 +1,17 @@
-import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite-plus";
+import type { ConfigEnv, UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import stylex from "@stylexjs/unplugin/vite";
 import { wgslVitePlugin } from "@vgpu/wgsl/loader-vite";
 import { sitePlugin } from "./scripts/site-plugin";
 
-const root = fileURLToPath(new URL(".", import.meta.url));
+const root = import.meta.dirname;
+const unitTests = process.env["VITEST"] !== undefined && process.env["VITEST"] !== "";
 
-export default defineConfig(({ command }) => ({
-	appType: "mpa",
+export default defineConfig(({ command }: Readonly<ConfigEnv>) => ({
+	...configuration,
 	plugins: [
-		!process.env["VITEST"] &&
+		!unitTests &&
 			stylex({
 				dev: command === "serve",
 				runtimeInjection: false,
@@ -18,9 +19,14 @@ export default defineConfig(({ command }) => ({
 				unstable_moduleResolution: { type: "commonJS", rootDir: root },
 			}),
 		wgslVitePlugin(),
-		!process.env["VITEST"] && react(),
-		!process.env["VITEST"] && sitePlugin(),
+		!unitTests && react(),
+		!unitTests && sitePlugin(),
 	],
+}));
+
+const configuration = {
+	appType: "mpa",
+	check: { fmt: true, lint: true },
 	server: { host: "127.0.0.1", port: 5173 },
 	preview: { host: "127.0.0.1", port: 4173 },
 	builder: {},
@@ -45,14 +51,14 @@ export default defineConfig(({ command }) => ({
 	},
 	pack: {
 		entry: [
-			"packages/logo-renderer/scripts/render-snapshot.mjs",
-			"packages/logo-renderer/scripts/render-atmosphere.mjs",
+			"packages/logo-renderer/scripts/render-snapshot.ts",
+			"packages/logo-renderer/scripts/render-atmosphere.ts",
 		],
 		outDir: "packages/logo-renderer/node_modules/.cache/render",
 		format: ["esm"],
 		platform: "node",
 		dts: false,
-		deps: { neverBundle: [/^vgpu(?:\/|$)/, "pngjs"] },
+		deps: { neverBundle: [/^vgpu(?:\/|$)/u, "pngjs"] },
 		plugins: [wgslVitePlugin({ minify: false })],
 	},
 	test: {
@@ -66,7 +72,7 @@ export default defineConfig(({ command }) => ({
 			".playwright-mcp/**",
 			"tools/oxlint/anti-slop/**",
 			"index.html",
-			"middleware.js",
+			"middleware.ts",
 			"vercel.json",
 			"asset-manifest.json",
 			"design-manifest.json",
@@ -78,10 +84,15 @@ export default defineConfig(({ command }) => ({
 		categories: {
 			correctness: "error",
 			suspicious: "error",
-			pedantic: "warn",
+			pedantic: "error",
 		},
 		plugins: ["typescript", "react", "unicorn", "oxc", "import"],
-		options: { typeAware: true, typeCheck: true },
+		options: {
+			typeAware: true,
+			typeCheck: true,
+			denyWarnings: true,
+			reportUnusedDisableDirectives: "error",
+		},
 		ignorePatterns: [
 			"node_modules/**",
 			"dist/**",
@@ -100,23 +111,24 @@ export default defineConfig(({ command }) => ({
 		],
 		jsPlugins: [{ name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" }],
 		rules: {
-			// These checks are new; keep compiler errors fatal without changing application behavior.
-			"typescript/consistent-return": "warn",
-			"typescript/no-unsafe-type-assertion": "warn",
-			"typescript/no-unnecessary-type-assertion": "warn",
-			"typescript/no-unnecessary-type-conversion": "warn",
-			"typescript/no-unnecessary-boolean-literal-compare": "warn",
-			"typescript/no-base-to-string": "warn",
-			"typescript/restrict-template-expressions": "warn",
+			// Keep type-safety diagnostics fatal across all authored source.
+			"typescript/no-explicit-any": "error",
+			"typescript/consistent-return": "error",
+			"typescript/no-unsafe-type-assertion": "error",
+			"typescript/no-unnecessary-type-assertion": "error",
+			"typescript/no-unnecessary-type-conversion": "error",
+			"typescript/no-unnecessary-boolean-literal-compare": "error",
+			"typescript/no-base-to-string": "error",
+			"typescript/restrict-template-expressions": "error",
 			// automatic JSX runtime (jsx: react-jsx) makes React-in-scope moot
 			"react/react-in-jsx-scope": "off",
 			// side-effect imports (css entry, plugin registration) are intentional
 			"import/no-unassigned-import": "off",
-			// parity with the previous eslint policy (warn in react-hooks recommended)
-			"react-hooks/exhaustive-deps": "warn",
-			"react/exhaustive-effect-dependencies": "warn",
-			// placement advice, not correctness; surfaced as warnings
-			"unicorn/consistent-function-scoping": "warn",
+			// Hook dependency diagnostics are correctness failures.
+			"react-hooks/exhaustive-deps": "error",
+			"react/exhaustive-effect-dependencies": "error",
+			// Keep scope and structure diagnostics fatal.
+			"unicorn/consistent-function-scoping": "error",
 			"anti-slop/no-chained-type-assertions": "error",
 			"anti-slop/no-conditional-empty-object-spread": "error",
 			"anti-slop/no-known-value-widening": "error",
@@ -142,4 +154,4 @@ export default defineConfig(({ command }) => ({
 			},
 		],
 	},
-}));
+} satisfies UserConfig;

@@ -106,10 +106,10 @@ function faceTarget(texture: Texture, face: number): Target {
 				"length" in clear ? { r: clear[0], g: clear[1], b: clear[2], a: clear[3] } : clear;
 			const attachment: GPURenderPassColorAttachment = {
 				view,
-				loadOp: opts.preserve ? "load" : "clear",
+				loadOp: opts.preserve === true ? "load" : "clear",
 				storeOp: "store",
 			};
-			if (!opts.preserve) attachment.clearValue = clearValue;
+			if (opts.preserve !== true) attachment.clearValue = clearValue;
 			return { colorAttachments: [attachment] };
 		},
 	};
@@ -199,8 +199,8 @@ export function lightColorLinear(light: EnvLightConfig): Vec3 {
 	return srgbHexToLinear(light.color);
 }
 export function srgbHexToLinear(hex: string): Vec3 {
-	const n = hex.replace(/^#/, "");
-	if (!/^[0-9a-fA-F]{6}$/.test(n))
+	const n = hex.replace(/^#/u, "");
+	if (!/^[0-9a-fA-F]{6}$/u.test(n))
 		throw new Error(`Expected a 6-digit sRGB hex color, received ${hex}`);
 	const c = (o: number) => {
 		const x = Number.parseInt(n.slice(o, o + 2), 16) / 255;

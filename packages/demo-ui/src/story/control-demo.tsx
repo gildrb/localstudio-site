@@ -50,7 +50,7 @@ export function ControlDemo() {
 	);
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { readonly label: string; readonly value: string }) {
 	return (
 		<div {...stylex.props(demoStyles.reset, styles.div58)}>
 			<dd {...stylex.props(demoStyles.reset, styles.dd59)}>{value}</dd>

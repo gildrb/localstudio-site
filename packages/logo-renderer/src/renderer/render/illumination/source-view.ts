@@ -6,10 +6,14 @@ import type { Bounds, RenderControls, Vec3 } from "../types";
 /** Fit every closed-mesh caster; outside-projector rays can then be truly open. */
 export function illuminationSourceView(
 	bounds: Bounds,
-	controls: RenderControls,
+	controls: Readonly<RenderControls>,
 	orbitTarget: Vec3,
 	depthScale: number,
 ) {
+			readonly position: Vec3;
+			readonly viewProj: ReturnType<typeof multiply>;
+	  })
+	| undefined {
 	const [x, y, z] = STUDIO_BACKLIGHT_POSITION;
 	const cy = Math.cos(controls.envYaw),
 		sy = Math.sin(controls.envYaw);
@@ -20,9 +24,10 @@ export function illuminationSourceView(
 	const position: Vec3 = [x * cy + pz * sy, py, -x * sy + pz * cy];
 	const basis = cameraBasis(position, orbitTarget);
 	const normalized = normalizedMeshBounds(bounds);
-	let slope = 0,
-		near = Infinity,
-		far = 0;
+	let outside = true;
+	let slope = 0;
+	let near = Infinity;
+	let far = 0;
 	for (let corner = 0; corner < 8; corner++) {
 		const point: Vec3 = [
 			(corner & 1 ? normalized.max : normalized.min)[0],
@@ -33,7 +38,10 @@ export function illuminationSourceView(
 		const distance = dot(relative, basis.forward);
 		// No dishonest unshadowed fallback if the source is inside an unsupported
 		// model's bounds. This optional light fails closed; the approved base stays.
-		if (distance <= 0.005) return undefined;
+		if (distance <= 0.005) {
+			outside = false;
+			break;
+		}
 		near = Math.min(near, distance);
 		far = Math.max(far, distance);
 		slope = Math.max(
@@ -42,6 +50,10 @@ export function illuminationSourceView(
 			Math.abs(dot(relative, basis.up)) / distance,
 		);
 	}
+	return outside ? sourceProjection(position, basis, orbitTarget, slope, near, far) : undefined;
+}
+
+function sourceProjection(position: Vec3, basis: Readonly<ReturnType<typeof cameraBasis>>, orbitTarget: Vec3, slope: number, near: number, far: number) {
 	const fov = 2 * Math.atan(Math.max(0.01, slope) * 1.05);
 	return {
 		position,

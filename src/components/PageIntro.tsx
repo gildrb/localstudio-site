@@ -4,14 +4,14 @@ import { colors, constants, lengths } from "../styles/public-tokens.stylex";
 import type { ReactNode } from "react";
 
 interface PageIntroProps {
-	actions?: ReactNode | undefined;
-	aside?: ReactNode | undefined;
-	children?: ReactNode | undefined;
-	description: ReactNode;
-	id: string;
-	layout?: "centered" | "left" | "split";
-	sx?: PublicStyle;
-	title: ReactNode;
+	readonly actions?: Readonly<ReactNode> | undefined;
+	readonly aside?: Readonly<ReactNode> | undefined;
+	readonly children?: Readonly<ReactNode> | undefined;
+	readonly description: Readonly<ReactNode>;
+	readonly id: string;
+	readonly layout?: "centered" | "left" | "split";
+	readonly sx?: PublicStyle;
+	readonly title: Readonly<ReactNode>;
 }
 
 const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
@@ -125,16 +125,35 @@ const styles = stylex.create({
 	},
 });
 
-export function PageIntro({
-	actions,
-	aside,
-	children,
-	description,
+function PageIntroTitle({
 	id,
-	layout = "centered",
-	sx,
 	title,
-}: PageIntroProps) {
+	layout,
+}: Readonly<Pick<PageIntroProps, "id" | "title" | "layout">>) {
+	const alignedLeft = layout !== "centered";
+	return (
+		<h1
+			id={id}
+			tabIndex={-1}
+			{...stylex.props(
+				baseStyles.element,
+				baseStyles.heading,
+				baseStyles.headingOne,
+				baseStyles.focusable,
+				styles.title,
+				alignedLeft && styles.titleLeft,
+				layout === "left" && styles.titleLeftWidth,
+			)}
+		>
+			{title}
+		</h1>
+	);
+}
+
+export function PageIntro(props: PageIntroProps) {
+	const layout = props.layout ?? "centered";
+	const hasActions = Boolean(props.actions);
+	const hasAside = Boolean(props.aside);
 	const alignedLeft = layout !== "centered";
 	return (
 		<section
@@ -143,26 +162,12 @@ export function PageIntro({
 				styles.root,
 				layout === "left" && styles.left,
 				layout === "split" && styles.split,
-				sx,
+				props.sx,
 			)}
-			aria-labelledby={id}
+			aria-labelledby={props.id}
 		>
 			<div {...stylex.props(baseStyles.element, styles.content, alignedLeft && styles.contentWide)}>
-				<h1
-					id={id}
-					tabIndex={-1}
-					{...stylex.props(
-						baseStyles.element,
-						baseStyles.heading,
-						baseStyles.headingOne,
-						baseStyles.focusable,
-						styles.title,
-						alignedLeft && styles.titleLeft,
-						layout === "left" && styles.titleLeftWidth,
-					)}
-				>
-					{title}
-				</h1>
+				<PageIntroTitle id={props.id} title={props.title} layout={layout} />
 				<p
 					{...stylex.props(
 						baseStyles.element,
@@ -171,9 +176,9 @@ export function PageIntro({
 						alignedLeft && styles.descriptionLeft,
 					)}
 				>
-					{description}
+					{props.description}
 				</p>
-				{actions ? (
+				{hasActions ? (
 					<div
 						{...stylex.props(
 							baseStyles.element,
@@ -181,12 +186,12 @@ export function PageIntro({
 							alignedLeft && styles.actionsSplit,
 						)}
 					>
-						{actions}
+						{props.actions}
 					</div>
 				) : null}
-				{children}
+				{props.children}
 			</div>
-			{aside ? <div {...stylex.props(baseStyles.element)}>{aside}</div> : null}
+			{hasAside ? <div {...stylex.props(baseStyles.element)}>{props.aside}</div> : null}
 		</section>
 	);
 }

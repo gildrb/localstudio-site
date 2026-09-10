@@ -21,9 +21,58 @@ const fastClock = {
 };
 
 function useHeroClock() {
-	const location = globalThis.window?.location;
-	if (!location) return undefined;
-	return new URLSearchParams(location.search).has("demoClock") ? fastClock : undefined;
+	return "window" in globalThis && new URLSearchParams(window.location.search).has("demoClock")
+		? fastClock
+		: undefined;
+}
+
+function HeroHeading() {
+	return (
+		<h1
+			id="landing-title"
+			tabIndex={-1}
+			{...stylex.props(
+				baseStyles.element,
+				baseStyles.heading,
+				baseStyles.focusable,
+				styles.heroHeading,
+			)}
+		>
+			Intelligence Should Be{" "}
+			<span {...stylex.props(baseStyles.element, styles.heroTitleEnd)}>
+				Owned
+				<LocalLink sx={styles.heroMarkButton} href={machinePath} aria-label="Machine-readable page">
+					<img
+						{...stylex.props(baseStyles.element, baseStyles.image, styles.heroMark)}
+						src={assets.mark}
+						alt=""
+						width="525"
+						height="525"
+						aria-hidden="true"
+						draggable={false}
+					/>
+				</LocalLink>
+			</span>
+		</h1>
+	);
+}
+
+function HeroCopy() {
+	return (
+		<div data-hero-copy {...stylex.props(baseStyles.element, styles.heroCopy)}>
+			<div>
+				<HeroHeading />
+			</div>
+			<div>
+				<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.heroThesis)}>
+					Private AI that works for you, not the cloud.
+				</p>
+			</div>
+			<div {...stylex.props(baseStyles.element, styles.heroActions)}>
+				<CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />
+			</div>
+		</div>
+	);
 }
 
 export function Hero() {
@@ -38,48 +87,7 @@ export function Hero() {
 				<LocalAiLogo />
 			</div>
 			<div {...stylex.props(baseStyles.element, styles.heroInner)}>
-				<div data-hero-copy {...stylex.props(baseStyles.element, styles.heroCopy)}>
-					<div>
-						<h1
-							id="landing-title"
-							tabIndex={-1}
-							{...stylex.props(
-								baseStyles.element,
-								baseStyles.heading,
-								baseStyles.focusable,
-								styles.heroHeading,
-							)}
-						>
-							Intelligence Should Be{" "}
-							<span {...stylex.props(baseStyles.element, styles.heroTitleEnd)}>
-								Owned
-								<LocalLink
-									sx={styles.heroMarkButton}
-									href={machinePath}
-									aria-label="Machine-readable page"
-								>
-									<img
-										{...stylex.props(baseStyles.element, baseStyles.image, styles.heroMark)}
-										src={assets.mark}
-										alt=""
-										width="525"
-										height="525"
-										aria-hidden="true"
-										draggable={false}
-									/>
-								</LocalLink>
-							</span>
-						</h1>
-					</div>
-					<div>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.heroThesis)}>
-							Private AI that works for you, not the cloud.
-						</p>
-					</div>
-					<div {...stylex.props(baseStyles.element, styles.heroActions)}>
-						<CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />
-					</div>
-				</div>
+				<HeroCopy />
 			</div>
 			<div
 				id="product"

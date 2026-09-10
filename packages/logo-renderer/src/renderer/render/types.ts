@@ -6,10 +6,19 @@ import type { Geometry, PingPongTargets, Target } from "vgpu";
 import type { Texture } from "vgpu/core";
 
 export type Bounds = {
-	min: [number, number, number];
-	max: [number, number, number];
+	readonly min: readonly [number, number, number];
+	readonly max: readonly [number, number, number];
 };
 
+/** Read access shared by geometry upload, projection, and aperture extraction. */
+export type MeshInput = {
+	readonly positions: Readonly<Float32Array<Readonly<ArrayBufferLike>>>;
+	readonly normals: Readonly<Float32Array<Readonly<ArrayBufferLike>>>;
+	readonly indices: Readonly<Uint32Array<Readonly<ArrayBufferLike>>>;
+	readonly bounds: Bounds;
+};
+
+/** Decoded typed arrays remain available to mesh producers and asset tools. */
 export type MeshData = {
 	positions: Float32Array;
 	normals: Float32Array;
@@ -28,33 +37,33 @@ export type EveMaterial =
 	| "paint-debug";
 
 export type PaintSeed = {
-	width: number;
-	height: number;
-	values: Float32Array;
+	readonly width: number;
+	readonly height: number;
+	readonly values: Readonly<Float32Array<Readonly<ArrayBufferLike>>>;
 };
 
 export type PaintStroke = {
-	fromCell: readonly [number, number];
-	toCell: readonly [number, number];
-	duration?: number;
-	movementGated?: boolean;
+	readonly fromCell: readonly [number, number];
+	readonly toCell: readonly [number, number];
+	readonly duration?: number;
+	readonly movementGated?: boolean;
 };
 
 export type PaintRenderOptions = {
-	seed?: PaintSeed | undefined;
-	steps?: number | undefined;
-	dt?: number | undefined;
-	brushCell?: readonly [number, number];
-	brushPreviousCell?: readonly [number, number];
-	brushRadius?: number;
-	brushStrength?: number;
-	brushActive?: boolean;
-	decayRate?: number;
-	diffusionRate?: number;
-	diffusionJitter?: number;
-	stroke?: PaintStroke | undefined;
-	decaySteps?: number | undefined;
-	ripple?:
+	readonly seed?: PaintSeed | undefined;
+	readonly steps?: number | undefined;
+	readonly dt?: number | undefined;
+	readonly brushCell?: readonly [number, number];
+	readonly brushPreviousCell?: readonly [number, number];
+	readonly brushRadius?: number;
+	readonly brushStrength?: number;
+	readonly brushActive?: boolean;
+	readonly decayRate?: number;
+	readonly diffusionRate?: number;
+	readonly diffusionJitter?: number;
+	readonly stroke?: PaintStroke | undefined;
+	readonly decaySteps?: number | undefined;
+	readonly ripple?:
 		| {
 				readonly center: readonly [number, number];
 				readonly age: number;
@@ -63,7 +72,7 @@ export type PaintRenderOptions = {
 		| undefined;
 };
 
-export type ImprintRenderOptions = {
+export type ImprintRenderOptions<TargetResource = Target> = {
 	progress?: number;
 	gridScaleMultiplier?: number;
 	glyphScale?: number;
@@ -74,13 +83,13 @@ export type ImprintRenderOptions = {
 	/** Separate full-hero surface. Rect maps the padded logo canvas into hero UV. */
 	atmosphere?:
 		| {
-				target: Target;
-				foregroundTarget?: Target | undefined;
+				target: TargetResource;
+				foregroundTarget?: TargetResource | undefined;
 				logoRect: readonly [number, number, number, number];
 				/** One-shot actual-hole lighting time in seconds. Omitted preserves the approved atmosphere. */
 				introTime?: number;
 				/** Optional opaque intro presentation. Visibility changes only after the settled frame. */
-				introTarget?: Target | undefined;
+				introTarget?: TargetResource | undefined;
 				/** Actual unpadded host canvas framing and its fixed presentation opacity. */
 				introPresentation?: {
 					logoRect: readonly [number, number, number, number];
@@ -160,17 +169,17 @@ export type StudioCubemap = {
 	sampler: GPUSampler;
 };
 
-export type Mat4 = Float32Array;
-export type Vec3 = [number, number, number];
+export type Mat4<Buffer extends ArrayBufferLike = ArrayBufferLike> = Float32Array<Buffer>;
+export type Vec3 = readonly [number, number, number];
 
 export type EnvLightConfig = {
-	name: string;
-	position: readonly [number, number, number];
-	color: string;
-	intensity: number;
-	radius: number;
-	softness: number;
-	luminance: number;
+	readonly name: string;
+	readonly position: readonly [number, number, number];
+	readonly color: string;
+	readonly intensity: number;
+	readonly radius: number;
+	readonly softness: number;
+	readonly luminance: number;
 };
 
 export type BloomTargets = {

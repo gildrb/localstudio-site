@@ -9,14 +9,14 @@
  */
 import type { SVGProps } from "react";
 
-type PanelToggleProps = SVGProps<SVGSVGElement> & { strokeWidth?: number };
+type PanelToggleProps = Readonly<SVGProps<SVGSVGElement>> & { readonly strokeWidth?: number };
 
 function PanelToggle({
 	side,
 	filled,
 	strokeWidth = 1.75,
 	...rest
-}: PanelToggleProps & { side: "left" | "right"; filled: boolean }) {
+}: PanelToggleProps & { readonly side: "left" | "right"; readonly filled: boolean }) {
 	// The filled strip is a path rather than a rect so it follows the frame's
 	// rounded outer corners instead of squaring them off.
 	const divider = side === "left" ? "M9 3v18" : "M15 3v18";

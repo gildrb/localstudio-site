@@ -1,4 +1,5 @@
-import type { MeshData } from "./types";
+import { normalizePositionForGpu } from "./camera";
+import type { Bounds, MeshInput, Vec3 } from "./types";
 
 type Point = readonly [number, number, number];
 export type Aperture = {
@@ -9,30 +10,69 @@ export type Aperture = {
 	readonly signedArea: number;
 };
 
+export type ApertureSection = {
+	readonly center: Vec3;
+	readonly points: readonly Vec3[];
+};
+
+/** A centroid outside a concave kernel cannot emit a valid fan or beam section. */
+export function normalizeAperture(aperture: Aperture, bounds: Bounds): ApertureSection | null {
+	const center = normalizePositionForGpu(aperture.centroid, bounds);
+	const points = aperture.points.map((point) => normalizePositionForGpu(point, bounds));
+	for (const [index, a] of points.entries()) {
+		const b = points[(index + 1) % points.length];
+		if (b === undefined) return null;
+		if ((a[0] - center[0]) * (b[1] - center[1]) - (a[1] - center[1]) * (b[0] - center[0]) > 1e-10)
+			return null;
+	}
+	return { center, points };
+}
+
 /** Extract only enclosed openings. Invalid or ambiguous cap topology fails closed. */
-export function extractApertures(mesh: MeshData): readonly Aperture[] {
+export function extractApertures(mesh: MeshInput): readonly Aperture[] {
 	const { positions, normals, indices, bounds } = mesh;
-	const scale = Math.max(...bounds.max.map((value, axis) => value - bounds.min[axis]!));
+	const scale = Math.max(
+		bounds.max[0] - bounds.min[0],
+		bounds.max[1] - bounds.min[1],
+		bounds.max[2] - bounds.min[2],
+	);
 	if (
 		!Number.isFinite(scale) ||
 		scale <= 0 ||
 		!Number.isFinite(bounds.max[2]) ||
-		positions.length % 3 ||
+		positions.length % 3 !== 0 ||
 		normals.length !== positions.length ||
-		indices.length % 3
+		indices.length % 3 !== 0
 	)
 		return [];
 	const tolerance = scale * 1e-6;
 	const areaTolerance = scale * scale * 1e-12;
 	const cap = frontCap(mesh, tolerance);
-	if (!cap) return [];
+	if (cap === null) return [];
 	const { points, capVertices } = cap;
 	const next = capBoundary(mesh, points, capVertices, areaTolerance);
-	if (!next) return [];
+	if (next === null) return [];
+	const loops = traceCapLoops(points, next, areaTolerance);
+	if (loops === null) return [];
+
+	const outer = loops.filter((loop) => loop.signedArea > 0);
+	const holes = loops.filter((loop) => loop.signedArea < 0);
+	for (const hole of holes) {
+		if (outer.filter((loop) => containsPoint(loop.points, hole.points[0]!)).length !== 1) return [];
+		if (holes.some((other) => other !== hole && containsPoint(other.points, hole.points[0]!)))
+			return [];
+	}
+	return holes.sort((a, b) => a.centroid[0] - b.centroid[0] || a.centroid[1] - b.centroid[1]);
+}
+
+function traceCapLoops(
+	points: readonly Point[],
+	next: Readonly<ReadonlyMap<number, number>>,
+	areaTolerance: number,
+) {
 	const loops: Aperture[] = [];
 	const visited = new Set<number>();
 	// Coordinate ordering makes results independent of triangle submission order.
-	// eslint-disable-next-line unicorn/no-array-sort -- Sort a fresh local array; this package targets ES2022.
 	const starts = [...next.keys()].sort(
 		(a, b) =>
 			points[a]![0] - points[b]![0] ||
@@ -44,30 +84,22 @@ export function extractApertures(mesh: MeshData): readonly Aperture[] {
 		const boundary: Point[] = [];
 		let vertex = start;
 		do {
-			if (visited.has(vertex)) return [];
+			if (visited.has(vertex)) return null;
 			visited.add(vertex);
 			boundary.push(points[vertex]!);
 			const successor = next.get(vertex);
-			if (successor === undefined) return [];
+			if (successor === undefined) return null;
 			vertex = successor;
 		} while (vertex !== start);
-		if (boundary.length < 3) return [];
+		if (boundary.length < 3) return null;
 		const polygon = aperturePolygon(boundary);
-		if (Math.abs(polygon.signedArea) <= areaTolerance) return [];
+		if (Math.abs(polygon.signedArea) <= areaTolerance) return null;
 		loops.push(polygon);
 	}
-	const outer = loops.filter((loop) => loop.signedArea > 0);
-	const holes = loops.filter((loop) => loop.signedArea < 0);
-	for (const hole of holes) {
-		if (outer.filter((loop) => containsPoint(loop.points, hole.points[0]!)).length !== 1) return [];
-		if (holes.some((other) => other !== hole && containsPoint(other.points, hole.points[0]!)))
-			return [];
-	}
-	// eslint-disable-next-line unicorn/no-array-sort -- The filtered array is local; this package targets ES2022.
-	return holes.sort((a, b) => a.centroid[0] - b.centroid[0] || a.centroid[1] - b.centroid[1]);
+	return loops;
 }
 
-function frontCap(mesh: MeshData, tolerance: number) {
+function frontCap(mesh: MeshInput, tolerance: number) {
 	const { positions, normals, bounds } = mesh;
 	const points: Point[] = [];
 	const canonical = new Map<string, number>();
@@ -81,7 +113,7 @@ function frontCap(mesh: MeshData, tolerance: number) {
 				Number.isFinite(value),
 			)
 		)
-			return;
+			return null;
 		if (
 			Math.abs(z - bounds.max[2]) > tolerance ||
 			Math.abs(normals[offset]!) > 1e-5 ||
@@ -103,23 +135,23 @@ function frontCap(mesh: MeshData, tolerance: number) {
 }
 
 function capBoundary(
-	mesh: MeshData,
+	mesh: MeshInput,
 	points: readonly Point[],
-	capVertices: ReadonlyMap<number, number>,
+	capVertices: Readonly<ReadonlyMap<number, number>>,
 	areaTolerance: number,
 ) {
 	const { positions, indices } = mesh;
 	const edges = new Map<string, { from: number; to: number; count: number }>();
 	for (let offset = 0; offset < indices.length; offset += 3) {
 		const triangle = [indices[offset]!, indices[offset + 1]!, indices[offset + 2]!];
-		if (triangle.some((vertex) => vertex >= positions.length / 3)) return;
+		if (triangle.some((vertex) => vertex >= positions.length / 3)) return null;
 		const [a, b, c] = triangle.map((vertex) => capVertices.get(vertex));
 		if (a === undefined || b === undefined || c === undefined) continue;
 		const pa = points[a]!,
 			pb = points[b]!,
 			pc = points[c]!;
 		const cross = (pb[0] - pa[0]) * (pc[1] - pa[1]) - (pb[1] - pa[1]) * (pc[0] - pa[0]);
-		if (cross <= areaTolerance) return;
+		if (cross <= areaTolerance) return null;
 		for (const [from, to] of [
 			[a, b],
 			[b, c],
@@ -128,7 +160,7 @@ function capBoundary(
 			const key = `${Math.min(from, to)},${Math.max(from, to)}`;
 			const edge = edges.get(key);
 			if (edge) {
-				if (edge.count !== 1 || edge.from !== to || edge.to !== from) return;
+				if (edge.count !== 1 || edge.from !== to || edge.to !== from) return null;
 				edge.count += 1;
 			} else edges.set(key, { from, to, count: 1 });
 		}
@@ -137,11 +169,11 @@ function capBoundary(
 	const incoming = new Set<number>();
 	for (const { from, to, count } of edges.values()) {
 		if (count !== 1) continue;
-		if (next.has(from) || incoming.has(to)) return;
+		if (next.has(from) || incoming.has(to)) return null;
 		next.set(from, to);
 		incoming.add(to);
 	}
-	if ([...next.keys()].some((vertex) => !incoming.has(vertex))) return;
+	if ([...next.keys()].some((vertex) => !incoming.has(vertex))) return null;
 	return next;
 }
 

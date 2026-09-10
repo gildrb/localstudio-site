@@ -1,4 +1,4 @@
-import type { MutableRefObject } from "react";
+import type { RefObject } from "react";
 import { DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO, bloomRadiusForDevicePixelRatio } from "../render";
 
 // Owns canvas and hero-logo sizing math for the browser renderer.
@@ -15,12 +15,12 @@ const MAX_DEVICE_PIXEL_RATIO = DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO;
 const MAX_RENDER_PIXELS = 2_500_000;
 
 export type CanvasLayout = {
-	width: number;
-	height: number;
+	readonly width: number;
+	readonly height: number;
 };
 
-export type CanvasLayoutRef = MutableRefObject<CanvasLayout>;
-export type DevicePixelRatioRef = MutableRefObject<number>;
+export type CanvasLayoutRef = RefObject<CanvasLayout>;
+export type DevicePixelRatioRef = RefObject<number>;
 
 export function getLogicalRenderSize(aspect: number) {
 	return {
@@ -48,9 +48,9 @@ export function getEffectiveDevicePixelRatio(
 }
 
 export function resizeCanvas(
-	canvas: HTMLCanvasElement | null,
-	canvasLayoutRef: CanvasLayoutRef,
-	devicePixelRatioRef: DevicePixelRatioRef,
+	canvas: Pick<HTMLCanvasElement, "width" | "height"> | null,
+	canvasLayoutRef: Readonly<CanvasLayoutRef>,
+	devicePixelRatioRef: Readonly<DevicePixelRatioRef>,
 ) {
 	const { width: cssWidth, height: cssHeight } = canvasLayoutRef.current;
 	const dpr = getEffectiveDevicePixelRatio(cssWidth, cssHeight, devicePixelRatioRef.current);
@@ -64,7 +64,10 @@ export function resizeCanvas(
 	return dpr;
 }
 
-export function getCanvasLogicalSize(canvas: HTMLCanvasElement, devicePixelRatio: number) {
+export function getCanvasLogicalSize(
+	canvas: Readonly<Pick<HTMLCanvasElement, "width" | "height">>,
+	devicePixelRatio: number,
+) {
 	// The renderer pads the logical scene size by a DPR-scaled bloom radius on each side before
 	// allocating its offscreen back/depth targets. The canvas itself is that padded physical render
 	// target, so subtract the same physical padding here. Passing CSS/logical logo dimensions would

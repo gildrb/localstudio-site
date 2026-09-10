@@ -5,15 +5,15 @@ import { PASS_OUTSIDE, PREVIEW_BACK_ALBEDO, PREVIEW_BACK_DEPTH } from "../consta
 import { cameraBasis, orbitEye } from "../math";
 import { writeParams } from "../params";
 import type { RendererResources } from "../resources";
-import type { MeshData, RenderControls } from "../types";
+import type { MeshInput, RenderControls } from "../types";
 export function renderTargetPreview(
 	f: Frame,
 	r: RendererResources,
-	m: MeshData,
+	m: MeshInput,
 	target: Target,
 	backMaterial: Texture,
 	backDepth: Texture,
-	c: RenderControls,
+	c: Readonly<RenderControls>,
 ) {
 	const basis = cameraBasis(orbitEye(r.orbitTarget, c.radius, c.yaw, c.pitch), r.orbitTarget),
 		range = cameraAxisDepthRange(m.bounds, basis.forward);
@@ -33,12 +33,12 @@ export function renderTargetPreview(
 export function renderThicknessDebug(
 	f: Frame,
 	r: RendererResources,
-	m: MeshData,
+	m: MeshInput,
 	target: Target,
 	backMaterial: Texture,
 	backDepth: Texture,
 	paint: Texture,
-	c: RenderControls,
+	c: Readonly<RenderControls>,
 	w: number,
 	h: number,
 	pad = r.paddingRadius,

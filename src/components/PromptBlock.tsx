@@ -5,9 +5,9 @@ import { useId, useState } from "react";
 import { CopyButton } from "./CopyButton";
 
 interface PromptBlockProps {
-	label: string;
-	sx?: PublicStyle;
-	text: string;
+	readonly label: string;
+	readonly sx?: PublicStyle;
+	readonly text: string;
 }
 
 const styles = stylex.create({
@@ -140,7 +140,9 @@ export function PromptBlock({ label, sx, text }: PromptBlockProps) {
 				type="button"
 				aria-expanded={expanded}
 				aria-controls={contentId}
-				onClick={() => setExpanded((value) => !value)}
+				onClick={() => {
+					setExpanded((value) => !value);
+				}}
 			>
 				{expanded ? "Show Less" : "Show More"}
 			</button>

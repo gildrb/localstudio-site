@@ -1,3 +1,4 @@
+import { styles as cardStyles } from "./serve-cards.styles.ts";
 import { demoStyles } from "../styles/demo-root.styles.ts";
 import * as stylex from "@stylexjs/stylex";
 import { styles } from "./serve-demo.styles.ts";
@@ -11,10 +12,17 @@ import {
 	Sparkles,
 	Zap,
 } from "../ui/icon-registry";
+import type { ComponentProps, ExoticComponent } from "react";
+import type { LucideIcon } from "../ui/icon-registry";
 import { STORY_CROP } from "./demo-frame";
 import { DemoShell } from "./demo-shell";
 
-const MODEL_TABS = [
+type ModelTab = {
+	readonly label: string;
+	readonly icon: ExoticComponent<ComponentProps<LucideIcon>>;
+};
+
+const MODEL_TABS: readonly ModelTab[] = [
 	{ label: "Recommended", icon: Sparkles },
 	{ label: "Search Hugging Face", icon: Search },
 	{ label: "Your servers", icon: Server },
@@ -22,17 +30,17 @@ const MODEL_TABS = [
 ] as const;
 
 type FeaturedModel = {
-	id: string;
-	name: string;
-	owner: string;
-	role: string | null;
-	description: string;
-	params: string;
-	contextTokens: number;
-	multimodal: boolean;
-	formats: number;
+	readonly id: string;
+	readonly name: string;
+	readonly owner: string;
+	readonly role: string | null;
+	readonly description: string;
+	readonly params: string;
+	readonly contextTokens: number;
+	readonly multimodal: boolean;
+	readonly formats: number;
 };
-const FEATURED_MODELS: FeaturedModel[] = [
+const FEATURED_MODELS: readonly FeaturedModel[] = [
 	{
 		id: "qwen3.5-9b",
 		name: "Qwen3.5-9B",
@@ -81,135 +89,146 @@ export function ServeDemo() {
 					</p>
 				</header>
 
-				<nav {...stylex.props(demoStyles.reset, styles.nav84)} aria-label="Model sections">
-					{MODEL_TABS.map(({ label, icon: Icon }, index) => (
-						<button
-							key={label}
-							type="button"
-							aria-current={index === 0 ? "page" : undefined}
-							{...stylex.props(
-								demoStyles.reset,
-								demoStyles.controlReset,
-								styles.tab,
-								index === 0 ? styles.tabActive : styles.tabIdle,
-							)}
-						>
-							<Icon {...stylex.props(demoStyles.reset, styles.icon94, styles.lucideScale)} />
-							<span {...stylex.props(demoStyles.reset)}>{label}</span>
-						</button>
-					))}
-				</nav>
+				<ModelTabs />
 
-				<div {...stylex.props(demoStyles.reset, styles.div100)}>
-					<div {...stylex.props(demoStyles.reset)}>
-						<span {...stylex.props(demoStyles.reset, styles.span102)}>64 GB unified memory</span>
-						<span {...stylex.props(demoStyles.reset, styles.span105)}>
-							Recommended for this Mac Studio
-						</span>
-					</div>
-					<span {...stylex.props(demoStyles.reset, styles.span109)}>Hardware matched</span>
-				</div>
+				<ModelHardware />
 
 				<section {...stylex.props(demoStyles.reset, styles.section114)}>
-					<div {...stylex.props(demoStyles.reset, styles.div115)}>
-						<div {...stylex.props(demoStyles.reset)}>
-							<h4 {...stylex.props(demoStyles.reset, styles.h4117)}>Fits This Machine</h4>
-							<p {...stylex.props(demoStyles.reset, styles.p120)}>
-								Ready-to-run weights selected from the bundled model index.
-							</p>
-						</div>
-						<button
-							type="button"
-							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button126)}
-						>
-							<Search {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} />{" "}
-							Browse All
-						</button>
-					</div>
+					<ModelListHeader />
 
-					<div {...stylex.props(demoStyles.reset, styles.div132)}>
-						{FEATURED_MODELS.map((model) => {
-							const owner = model.owner;
-							const formats = model.formats;
-							return (
-								<button
-									key={model.id}
-									type="button"
-									aria-label={`Open ${model.name} details`}
-									{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element141)}
-								>
-									<span {...stylex.props(demoStyles.reset, styles.span143)} />
-									<span {...stylex.props(demoStyles.reset, styles.span144)}>
-										<span {...stylex.props(demoStyles.reset, styles.span145)}>
-											<span {...stylex.props(demoStyles.reset, styles.span146)}>
-												{owner.slice(0, 1).toUpperCase()}
-											</span>
-											<span {...stylex.props(demoStyles.reset, styles.span149)}>
-												<span {...stylex.props(demoStyles.reset, styles.span150)}>{owner}</span>
-												<strong {...stylex.props(demoStyles.reset, styles.strong153)}>
-													{model.name}
-												</strong>
-											</span>
-										</span>
-										<ChevronRight
-											{...stylex.props(
-												demoStyles.reset,
-												styles.chevronright158,
-												styles.lucideScale,
-											)}
-										/>
-									</span>
-									<span {...stylex.props(demoStyles.reset, styles.span160)}>
-										{model.description}
-									</span>
-									<span {...stylex.props(demoStyles.reset, styles.span163)}>
-										<span {...stylex.props(demoStyles.reset)}>{model.params}</span>
-										<span {...stylex.props(demoStyles.reset)}>
-											{Math.round(model.contextTokens / 1024)}K ctx
-										</span>
-										<span {...stylex.props(demoStyles.reset)}>{formats} formats</span>
-										{model.role ? (
-											<span {...stylex.props(demoStyles.reset, styles.span168)}>
-												{model.role === "fast" ? (
-													<Zap
-														{...stylex.props(
-															demoStyles.reset,
-															styles.search128,
-															styles.lucideScale,
-														)}
-													/>
-												) : (
-													<Brain
-														{...stylex.props(
-															demoStyles.reset,
-															styles.search128,
-															styles.lucideScale,
-														)}
-													/>
-												)}
-												{model.role}
-											</span>
-										) : model.multimodal ? (
-											<span {...stylex.props(demoStyles.reset, styles.span168)}>
-												<Eye
-													{...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)}
-												/>{" "}
-												vision
-											</span>
-										) : null}
-									</span>
-									<span {...stylex.props(demoStyles.reset, styles.span182)}>
-										<Download
-											{...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)}
-										/>{" "}
-										Choose weights
-									</span>
-								</button>
-							);
-						})}
-					</div>
+					<FeaturedModels />
 				</section>
 			</div>
 		</DemoShell>
 	);
+}
+
+function ModelTabs() {
+	return (
+		<nav {...stylex.props(demoStyles.reset, styles.nav84)} aria-label="Model sections">
+			{MODEL_TABS.map(({ label, icon: Icon }, index) => (
+				<button
+					key={label}
+					type="button"
+					aria-current={index === 0 ? "page" : undefined}
+					{...stylex.props(
+						demoStyles.reset,
+						demoStyles.controlReset,
+						styles.tab,
+						index === 0 ? styles.tabActive : styles.tabIdle,
+					)}
+				>
+					<Icon {...stylex.props(demoStyles.reset, styles.icon94, styles.lucideScale)} />
+					<span {...stylex.props(demoStyles.reset)}>{label}</span>
+				</button>
+			))}
+		</nav>
+	);
+}
+
+function ModelHardware() {
+	return (
+		<div {...stylex.props(demoStyles.reset, styles.div100)}>
+			<div {...stylex.props(demoStyles.reset)}>
+				<span {...stylex.props(demoStyles.reset, styles.span102)}>64 GB unified memory</span>
+				<span {...stylex.props(demoStyles.reset, styles.span105)}>
+					Recommended for this Mac Studio
+				</span>
+			</div>
+			<span {...stylex.props(demoStyles.reset, styles.span109)}>Hardware matched</span>
+		</div>
+	);
+}
+
+function ModelListHeader() {
+	return (
+		<div {...stylex.props(demoStyles.reset, styles.div115)}>
+			<div {...stylex.props(demoStyles.reset)}>
+				<h4 {...stylex.props(demoStyles.reset, styles.h4117)}>Fits This Machine</h4>
+				<p {...stylex.props(demoStyles.reset, styles.p120)}>
+					Ready-to-run weights selected from the bundled model index.
+				</p>
+			</div>
+			<button
+				type="button"
+				{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button126)}
+			>
+				<Search {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} /> Browse
+				All
+			</button>
+		</div>
+	);
+}
+
+function FeaturedModels() {
+	return (
+		<div {...stylex.props(demoStyles.reset, styles.div132)}>
+			{FEATURED_MODELS.map((model) => {
+				return (
+					<button
+						key={model.id}
+						type="button"
+						aria-label={`Open ${model.name} details`}
+						{...stylex.props(demoStyles.reset, demoStyles.controlReset, cardStyles.element141)}
+					>
+						<span {...stylex.props(demoStyles.reset, cardStyles.span143)} />
+						<ModelIdentity model={model} />
+						<span {...stylex.props(demoStyles.reset, cardStyles.span160)}>{model.description}</span>
+						<ModelMetadata model={model} />
+						<span {...stylex.props(demoStyles.reset, cardStyles.span182)}>
+							<Download {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} />{" "}
+							Choose weights
+						</span>
+					</button>
+				);
+			})}
+		</div>
+	);
+}
+
+function ModelIdentity({ model }: { readonly model: FeaturedModel }) {
+	return (
+		<span {...stylex.props(demoStyles.reset, cardStyles.span144)}>
+			<span {...stylex.props(demoStyles.reset, cardStyles.span145)}>
+				<span {...stylex.props(demoStyles.reset, cardStyles.span146)}>
+					{model.owner.slice(0, 1).toUpperCase()}
+				</span>
+				<span {...stylex.props(demoStyles.reset, cardStyles.span149)}>
+					<span {...stylex.props(demoStyles.reset, cardStyles.span150)}>{model.owner}</span>
+					<strong {...stylex.props(demoStyles.reset, cardStyles.strong153)}>{model.name}</strong>
+				</span>
+			</span>
+			<ChevronRight
+				{...stylex.props(demoStyles.reset, cardStyles.chevronright158, styles.lucideScale)}
+			/>
+		</span>
+	);
+}
+
+function ModelMetadata({ model }: { readonly model: FeaturedModel }) {
+	return (
+		<span {...stylex.props(demoStyles.reset, cardStyles.span163)}>
+			<span {...stylex.props(demoStyles.reset)}>{model.params}</span>
+			<span {...stylex.props(demoStyles.reset)}>{Math.round(model.contextTokens / 1024)}K ctx</span>
+			<span {...stylex.props(demoStyles.reset)}>{model.formats} formats</span>
+			<ModelCapabilities model={model} />
+		</span>
+	);
+}
+
+function ModelCapabilities({ model }: { readonly model: FeaturedModel }) {
+	return model.role !== null && model.role !== "" ? (
+		<span {...stylex.props(demoStyles.reset, cardStyles.span168)}>
+			{model.role === "fast" ? (
+				<Zap {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} />
+			) : (
+				<Brain {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} />
+			)}
+			{model.role}
+		</span>
+	) : model.multimodal ? (
+		<span {...stylex.props(demoStyles.reset, cardStyles.span168)}>
+			<Eye {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} /> vision
+		</span>
+	) : null;
 }

@@ -34,7 +34,7 @@ export function prepareInlineSvg(source: string, prefix: string): string {
 		.replaceAll(/\s(?:width|height)="[^"]*"/gu, "")
 		.replace("<svg", '<svg width="100%" height="100%" aria-hidden="true" focusable="false"');
 	let svg = `${opening}${source.slice(openingEnd + 1)}`;
-	const ids = [...svg.matchAll(/\sid="([^"]+)"/gu)].map((match) => match[1]);
+	const ids = [...svg.matchAll(/\sid="([^"]+)"/gu)].map((match: readonly string[]) => match[1]);
 	for (const id of ids) {
 		svg = svg.replaceAll(`id="${id}"`, `id="${prefix}-${id}"`);
 		svg = svg.replaceAll(`#${id}`, `#${prefix}-${id}`);

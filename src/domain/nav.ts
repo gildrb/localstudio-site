@@ -35,6 +35,8 @@ export function reduceNav(state: NavSurface, event: NavEvent): NavSurface {
 			return state.kind === "mobile" ? closedNav : state;
 		case "close":
 			return closedNav;
+		default:
+			throw new Error("Unknown navigation event");
 	}
 }
 

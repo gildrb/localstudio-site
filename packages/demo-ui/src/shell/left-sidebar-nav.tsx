@@ -11,10 +11,10 @@ export function NavItemDesktop({
 	Icon,
 	active,
 }: {
-	href: string;
-	label: string;
-	Icon: IconComponent;
-	active: boolean;
+	readonly href: string;
+	readonly label: string;
+	readonly Icon: IconComponent;
+	readonly active: boolean;
 }) {
 	return (
 		<a

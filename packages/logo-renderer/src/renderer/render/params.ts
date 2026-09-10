@@ -11,32 +11,38 @@ import { cameraClipPlanes } from "./camera";
 import { cameraBasis, degreesToRadians, lookAt, multiply, orbitEye, perspective } from "./math";
 import { getPaddedRenderSize } from "./textures";
 import { paintMappingMetrics } from "./pointer-mapping";
-import type { Bounds, ImprintRenderOptions, RenderControls, Vec3 } from "./types";
+import type { Bounds, ImprintRenderOptions, Mat4, RenderControls, Vec3 } from "./types";
+
+type SceneImprint = Readonly<
+	Pick<
+		ImprintRenderOptions,
+		"progress" | "gridScaleMultiplier" | "glyphScale" | "time" | "mouse" | "devicePixelRatio"
+	>
+>;
 
 // ABI: must match shaders/shared/scene-params.wgsl (192 B / 48 f32).
-export function writeParams(args: {
-	controls: RenderControls;
+type SceneParametersInput = {
+	controls: Readonly<RenderControls>;
 	logicalWidth: number;
 	logicalHeight: number;
 	passKind: number;
 	projectionPaddingRadius: number;
-	imprint?: ImprintRenderOptions;
+	imprint?: SceneImprint;
 	meshBounds: Bounds;
 	orbitTarget: Vec3;
 	thicknessScale: number;
 	isLight: boolean;
-}) {
+};
+
+export function writeParams(args: Readonly<SceneParametersInput>) {
 	const {
 		controls,
 		logicalWidth,
 		logicalHeight,
-		passKind,
 		projectionPaddingRadius,
 		imprint = {},
 		meshBounds,
 		orbitTarget,
-		thicknessScale,
-		isLight,
 	} = args;
 	const padded = getPaddedRenderSize(logicalWidth, logicalHeight, projectionPaddingRadius);
 	const fovRad = degreesToRadians(controls.fov);
@@ -58,34 +64,49 @@ export function writeParams(args: {
 		projectionPaddingRadius,
 		imprint.devicePixelRatio,
 	);
-	const ascii0 = [
-		Math.max(0, Math.min(1, imprint.progress ?? 0)),
-		metrics.gridScale,
-		Math.max(0.1, imprint.glyphScale ?? DEFAULT_IMPRINT_GLYPH_SCALE),
-		imprint.time ?? 0,
-	];
-	const ascii1 = [
-		imprint.mouse?.[0] ?? 0,
-		imprint.mouse?.[1] ?? 0,
-		metrics.originCell[0],
-		metrics.originCell[1],
-	];
+	return uniformData(args, viewProj, eye, basis, fovEff, aspect, metrics, imprint);
+}
+
+function uniformData(
+	args: Readonly<SceneParametersInput>,
+	viewProj: Readonly<Mat4<Readonly<ArrayBufferLike>>>,
+	eye: Vec3,
+	basis: Readonly<ReturnType<typeof cameraBasis>>,
+	fovEff: number,
+	aspect: number,
+	metrics: Readonly<ReturnType<typeof paintMappingMetrics>>,
+	imprint: SceneImprint,
+) {
+	const { controls } = args;
 	return {
 		viewProj,
 		cameraPos: eye,
-		passKind,
+		passKind: args.passKind,
 		cameraRight: basis.right,
 		fov: fovEff,
 		cameraUp: basis.up,
 		aspect,
 		cameraForward: basis.forward,
 		materialKind: MATERIAL_KIND[controls.material],
-		thicknessScale,
+		thicknessScale: args.thicknessScale,
 		envYaw: controls.envYaw,
 		envPitch: controls.envPitch,
-		glassAbsorption: isLight ? 0 : 1,
-		ascii0,
-		ascii1,
+		glassAbsorption: args.isLight ? 0 : 1,
+		ascii0: imprintStyle(imprint, metrics.gridScale),
+		ascii1: imprintPointer(imprint, metrics.originCell),
 		depthTransform: [1 + Math.max(0, Math.min(1, controls.depthOpening ?? 0)) * 0.12, 0, 0, 0],
 	};
+}
+
+function imprintStyle(imprint: SceneImprint, gridScale: number) {
+	return [
+		Math.max(0, Math.min(1, imprint.progress ?? 0)),
+		gridScale,
+		Math.max(0.1, imprint.glyphScale ?? DEFAULT_IMPRINT_GLYPH_SCALE),
+		imprint.time ?? 0,
+	];
+}
+
+function imprintPointer(imprint: SceneImprint, originCell: readonly [number, number]) {
+	return [imprint.mouse?.[0] ?? 0, imprint.mouse?.[1] ?? 0, originCell[0], originCell[1]];
 }

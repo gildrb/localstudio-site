@@ -12,9 +12,9 @@ export function mapPointerToLocalEnvironment({
 	clientY,
 	rect,
 }: {
-	clientX: number;
-	clientY: number;
-	rect: Pick<DOMRectReadOnly, "left" | "top" | "width" | "height">;
+	readonly clientX: number;
+	readonly clientY: number;
+	readonly rect: Pick<DOMRectReadOnly, "left" | "top" | "width" | "height">;
 }) {
 	const centerX = rect.left + rect.width / 2;
 	const centerY = rect.top + rect.height / 2;

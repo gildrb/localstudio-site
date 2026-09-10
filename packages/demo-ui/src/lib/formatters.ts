@@ -7,7 +7,7 @@
  */
 function safeNumber(value: number | null | undefined, defaultValue = 0): number {
 	if (value === null || value === undefined) return defaultValue;
-	const num = Number(value);
+	const num = value;
 	if (!Number.isFinite(num) || Number.isNaN(num) || num < 0) return defaultValue;
 	return num;
 }
@@ -50,7 +50,7 @@ function formatNumber(value: number | null | undefined): string {
  * Format bytes into a human-readable string (B, KB, MB, GB, TB).
  */
 function formatBytes(bytes: number | null): string {
-	if (!bytes || bytes <= 0) return "-";
+	if (bytes === null || bytes <= 0 || Number.isNaN(bytes)) return "-";
 	const units = ["B", "KB", "MB", "GB", "TB"];
 	let value = bytes;
 	let unitIndex = 0;

@@ -1,8 +1,8 @@
 // Public vgpu geometry creation plus normalization and line-index generation.
 import { geometry, type Gpu } from "vgpu";
-import type { Bounds, GpuMesh, MeshData } from "./types";
+import type { Bounds, GpuMesh, MeshInput } from "./types";
 
-export function createGpuMesh(gpu: Gpu, mesh: MeshData): GpuMesh {
+export function createGpuMesh(gpu: Gpu, mesh: MeshInput): GpuMesh {
 	const vertices = normalizeMeshForGpu(mesh);
 	const triangles = geometry(gpu, {
 		label: "eve-5-logo-triangles",
@@ -51,7 +51,7 @@ export function normalizedMeshBounds(bounds: Bounds): Bounds {
 	};
 }
 
-function normalizeMeshForGpu(mesh: MeshData) {
+function normalizeMeshForGpu(mesh: MeshInput) {
 	const height = mesh.bounds.max[1] - mesh.bounds.min[1];
 	const centerX = (mesh.bounds.min[0] + mesh.bounds.max[0]) * 0.5;
 	const centerY = (mesh.bounds.min[1] + mesh.bounds.max[1]) * 0.5;
@@ -67,7 +67,7 @@ function normalizeMeshForGpu(mesh: MeshData) {
 	}
 	return data;
 }
-function triangleIndicesToLineIndices(indices: Uint32Array) {
+function triangleIndicesToLineIndices(indices: ArrayLike<number>) {
 	const lines = new Uint32Array(indices.length * 2);
 	for (let i = 0, j = 0; i < indices.length; i += 3, j += 6) {
 		const a = indices[i]!,

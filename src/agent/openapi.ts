@@ -54,136 +54,135 @@ export const jsonMethodNotAllowed = {
 	},
 } as const;
 
-export function openApiSpec(): string {
-	return `${JSON.stringify(
-		{
-			openapi: "3.1.0",
-			info: {
-				title: "Local Studio Public API",
-				version: "1.0.0",
-				description:
-					"Read-only public product metadata for Local Studio by Sybil Solutions. The desktop controller API runs on the user's machine and is documented separately.",
-				contact: { name: site.company.name, email: site.company.contact, url: site.company.url },
-				license: { name: "Apache-2.0", identifier: "Apache-2.0" },
-			},
-			servers: [
-				{ url: "/", description: "Current origin" },
-				{ url: site.origin, description: "Canonical production service" },
-			],
-			externalDocs: {
-				description: "Local Studio developer portal",
-				url: `${site.origin}/developers`,
-			},
-			paths: {
-				"/api/v1/status": {
-					get: {
-						operationId: "getPublicApiStatus",
-						description: "Check whether the public Local Studio product metadata API is reachable.",
-						tags: ["Discovery"],
-						responses: {
-							"200": {
-								description: "The service is available.",
-								content: {
-									"application/json": { schema: { $ref: "#/components/schemas/Status" } },
-								},
-							},
-							"405": { $ref: "#/components/responses/MethodNotAllowed" },
-						},
-					},
-				},
-				"/api/v1/products": {
-					get: {
-						operationId: "listLocalStudioProducts",
-						description:
-							"List public Sybil Solutions products associated with Local Studio and their canonical resources.",
-						tags: ["Products"],
-						responses: {
-							"200": {
-								description: "A typed product collection.",
-								content: {
-									"application/json": {
-										schema: { $ref: "#/components/schemas/ProductCollection" },
-									},
-								},
-							},
-							"405": { $ref: "#/components/responses/MethodNotAllowed" },
-						},
-					},
-				},
-			},
-			components: {
-				schemas: {
-					Status: {
-						type: "object",
-						required: ["status", "service", "version", "documentation"],
-						properties: {
-							status: { type: "string", const: "ok", description: "Current service state." },
-							service: { type: "string", description: "Human-readable service name." },
-							version: {
-								type: "string",
-								pattern: "^\\d+\\.\\d+\\.\\d+$",
-								description: "API semantic version.",
-							},
-							documentation: {
-								type: "string",
-								format: "uri",
-								description: "Developer portal URL.",
-							},
-						},
-					},
-					Product: {
-						type: "object",
-						required: ["id", "name", "description", "url", "repository"],
-						properties: {
-							id: {
-								type: "string",
-								pattern: "^[a-z0-9-]+$",
-								description: "Stable product identifier.",
-							},
-							name: { type: "string", description: "Public product name." },
-							description: { type: "string", description: "Short product purpose." },
-							url: { type: "string", format: "uri", description: "Canonical product URL." },
-							repository: {
-								type: "string",
-								format: "uri",
-								description: "Public source repository.",
-							},
-						},
-					},
-					ProductCollection: {
-						type: "object",
-						required: ["products"],
-						properties: {
-							products: { type: "array", items: { $ref: "#/components/schemas/Product" } },
-						},
-					},
-					Error: {
-						type: "object",
-						required: ["error"],
-						properties: {
-							error: {
-								type: "object",
-								required: ["code", "message", "resolution", "documentation"],
-								properties: {
-									code: { type: "string" },
-									message: { type: "string" },
-									resolution: { type: "string" },
-									hint: { type: "string" },
-									documentation: { type: "string", format: "uri" },
-								},
-							},
-						},
-					},
-				},
+const openApiDefinition = {
+	openapi: "3.1.0",
+	info: {
+		title: "Local Studio Public API",
+		version: "1.0.0",
+		description:
+			"Read-only public product metadata for Local Studio by Sybil Solutions. The desktop controller API runs on the user's machine and is documented separately.",
+		contact: { name: site.company.name, email: site.company.contact, url: site.company.url },
+		license: { name: "Apache-2.0", identifier: "Apache-2.0" },
+	},
+	servers: [
+		{ url: "/", description: "Current origin" },
+		{ url: site.origin, description: "Canonical production service" },
+	],
+	externalDocs: {
+		description: "Local Studio developer portal",
+		url: `${site.origin}/developers`,
+	},
+	paths: {
+		"/api/v1/status": {
+			get: {
+				operationId: "getPublicApiStatus",
+				description: "Check whether the public Local Studio product metadata API is reachable.",
+				tags: ["Discovery"],
 				responses: {
-					MethodNotAllowed: {
-						description: "The HTTP method is not supported.",
-						content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+					"200": {
+						description: "The service is available.",
+						content: {
+							"application/json": { schema: { $ref: "#/components/schemas/Status" } },
+						},
+					},
+					"405": { $ref: "#/components/responses/MethodNotAllowed" },
+				},
+			},
+		},
+		"/api/v1/products": {
+			get: {
+				operationId: "listLocalStudioProducts",
+				description:
+					"List public Sybil Solutions products associated with Local Studio and their canonical resources.",
+				tags: ["Products"],
+				responses: {
+					"200": {
+						description: "A typed product collection.",
+						content: {
+							"application/json": {
+								schema: { $ref: "#/components/schemas/ProductCollection" },
+							},
+						},
+					},
+					"405": { $ref: "#/components/responses/MethodNotAllowed" },
+				},
+			},
+		},
+	},
+	components: {
+		schemas: {
+			Status: {
+				type: "object",
+				required: ["status", "service", "version", "documentation"],
+				properties: {
+					status: { type: "string", const: "ok", description: "Current service state." },
+					service: { type: "string", description: "Human-readable service name." },
+					version: {
+						type: "string",
+						pattern: "^\\d+\\.\\d+\\.\\d+$",
+						description: "API semantic version.",
+					},
+					documentation: {
+						type: "string",
+						format: "uri",
+						description: "Developer portal URL.",
+					},
+				},
+			},
+			Product: {
+				type: "object",
+				required: ["id", "name", "description", "url", "repository"],
+				properties: {
+					id: {
+						type: "string",
+						pattern: "^[a-z0-9-]+$",
+						description: "Stable product identifier.",
+					},
+					name: { type: "string", description: "Public product name." },
+					description: { type: "string", description: "Short product purpose." },
+					url: { type: "string", format: "uri", description: "Canonical product URL." },
+					repository: {
+						type: "string",
+						format: "uri",
+						description: "Public source repository.",
+					},
+				},
+			},
+			ProductCollection: {
+				type: "object",
+				required: ["products"],
+				properties: {
+					products: { type: "array", items: { $ref: "#/components/schemas/Product" } },
+				},
+			},
+			Error: {
+				type: "object",
+				required: ["error"],
+				properties: {
+					error: {
+						type: "object",
+						required: ["code", "message", "resolution", "documentation"],
+						properties: {
+							code: { type: "string" },
+							message: { type: "string" },
+							resolution: { type: "string" },
+							hint: { type: "string" },
+							documentation: { type: "string", format: "uri" },
+						},
 					},
 				},
 			},
 		},
-		null,
-		2,
-	)}\n`;
+		responses: {
+			MethodNotAllowed: {
+				description: "The HTTP method is not supported.",
+				content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+			},
+		},
+	},
+};
+
+export function openApiSpec(): string {
+	const document = JSON.stringify(openApiDefinition, null, 2);
+	return `${document}\n`;
 }
