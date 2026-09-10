@@ -121,7 +121,7 @@ export const styles = stylex.create({
 		color: tokens.colorSkillNode,
 	},
 	chevronOpen: {},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

@@ -94,7 +94,7 @@ export function ServeDemo() {
 								index === 0 ? styles.tabActive : styles.tabIdle,
 							)}
 						>
-							<Icon {...stylex.props(demoStyles.reset, styles.icon94, styles.lucideScale)} />
+							<Icon {...stylex.props(demoStyles.reset, styles.icon94, styles.iconScale)} />
 							<span {...stylex.props(demoStyles.reset)}>{label}</span>
 						</button>
 					))}
@@ -122,7 +122,7 @@ export function ServeDemo() {
 							type="button"
 							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button126)}
 						>
-							<Search {...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)} />{" "}
+							<Search {...stylex.props(demoStyles.reset, styles.search128, styles.iconScale)} />{" "}
 							Browse All
 						</button>
 					</div>
@@ -152,11 +152,7 @@ export function ServeDemo() {
 											</span>
 										</span>
 										<ChevronRight
-											{...stylex.props(
-												demoStyles.reset,
-												styles.chevronright158,
-												styles.lucideScale,
-											)}
+											{...stylex.props(demoStyles.reset, styles.chevronright158, styles.iconScale)}
 										/>
 									</span>
 									<span {...stylex.props(demoStyles.reset, styles.span160)}>
@@ -172,19 +168,11 @@ export function ServeDemo() {
 											<span {...stylex.props(demoStyles.reset, styles.span168)}>
 												{model.role === "fast" ? (
 													<Zap
-														{...stylex.props(
-															demoStyles.reset,
-															styles.search128,
-															styles.lucideScale,
-														)}
+														{...stylex.props(demoStyles.reset, styles.search128, styles.iconScale)}
 													/>
 												) : (
 													<Brain
-														{...stylex.props(
-															demoStyles.reset,
-															styles.search128,
-															styles.lucideScale,
-														)}
+														{...stylex.props(demoStyles.reset, styles.search128, styles.iconScale)}
 													/>
 												)}
 												{model.role}
@@ -192,7 +180,7 @@ export function ServeDemo() {
 										) : model.multimodal ? (
 											<span {...stylex.props(demoStyles.reset, styles.span168)}>
 												<Eye
-													{...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)}
+													{...stylex.props(demoStyles.reset, styles.search128, styles.iconScale)}
 												/>{" "}
 												vision
 											</span>
@@ -200,7 +188,7 @@ export function ServeDemo() {
 									</span>
 									<span {...stylex.props(demoStyles.reset, styles.span182)}>
 										<Download
-											{...stylex.props(demoStyles.reset, styles.search128, styles.lucideScale)}
+											{...stylex.props(demoStyles.reset, styles.search128, styles.iconScale)}
 										/>{" "}
 										Choose weights
 									</span>

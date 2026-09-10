@@ -45,7 +45,7 @@ export const styles = stylex.create({
 	iconIdle: {
 		opacity: "70%",
 	},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

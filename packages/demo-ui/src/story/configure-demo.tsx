@@ -34,14 +34,14 @@ export function ConfigureDemo() {
 							aria-current="page"
 							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button35)}
 						>
-							<Monitor {...stylex.props(demoStyles.reset, styles.monitor37, styles.lucideScale)} />{" "}
+							<Monitor {...stylex.props(demoStyles.reset, styles.monitor37, styles.iconScale)} />{" "}
 							Machines
 						</button>
 						<button
 							type="button"
 							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button41)}
 						>
-							<Server {...stylex.props(demoStyles.reset, styles.monitor37, styles.lucideScale)} />{" "}
+							<Server {...stylex.props(demoStyles.reset, styles.monitor37, styles.iconScale)} />{" "}
 							Server
 						</button>
 					</nav>
@@ -63,7 +63,7 @@ export function ConfigureDemo() {
 								type="button"
 								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button65)}
 							>
-								<Plus {...stylex.props(demoStyles.reset, styles.plus67, styles.lucideScale)} /> Add
+								<Plus {...stylex.props(demoStyles.reset, styles.plus67, styles.iconScale)} /> Add
 							</button>
 						</div>
 					</header>
@@ -84,11 +84,11 @@ export function ConfigureDemo() {
 									<span {...stylex.props(demoStyles.reset, styles.span80)}>
 										{index === 0 ? (
 											<Monitor
-												{...stylex.props(demoStyles.reset, styles.monitor82, styles.lucideScale)}
+												{...stylex.props(demoStyles.reset, styles.monitor82, styles.iconScale)}
 											/>
 										) : (
 											<Server
-												{...stylex.props(demoStyles.reset, styles.monitor82, styles.lucideScale)}
+												{...stylex.props(demoStyles.reset, styles.monitor82, styles.iconScale)}
 											/>
 										)}
 									</span>
@@ -118,7 +118,7 @@ export function ConfigureDemo() {
 										{machine.status}
 									</span>
 									<SquarePen
-										{...stylex.props(demoStyles.reset, styles.squarepen110, styles.lucideScale)}
+										{...stylex.props(demoStyles.reset, styles.squarepen110, styles.iconScale)}
 									/>
 								</span>
 							</button>
@@ -139,7 +139,7 @@ export function ConfigureDemo() {
 					<div {...stylex.props(demoStyles.reset, styles.div131)}>
 						<div {...stylex.props(demoStyles.reset, styles.div132)}>
 							<span {...stylex.props(demoStyles.reset, styles.span133)}>
-								<Cpu {...stylex.props(demoStyles.reset, styles.plus67, styles.lucideScale)} />{" "}
+								<Cpu {...stylex.props(demoStyles.reset, styles.plus67, styles.iconScale)} />{" "}
 								Capacity
 							</span>
 							<strong {...stylex.props(demoStyles.reset, styles.strong136)}>112 GB</strong>

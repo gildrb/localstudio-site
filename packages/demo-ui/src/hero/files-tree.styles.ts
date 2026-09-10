@@ -156,7 +156,7 @@ export const styles = stylex.create({
 		paddingLeft: directory ? "8px" : "20px",
 		paddingRight: "8px",
 	}),
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

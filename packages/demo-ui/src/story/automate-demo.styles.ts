@@ -693,7 +693,7 @@ export const styles = stylex.create({
 	statusDotIdle: {
 		backgroundColor: tokens.uiMuted45,
 	},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

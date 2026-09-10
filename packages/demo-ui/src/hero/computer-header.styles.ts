@@ -263,7 +263,7 @@ export const styles = stylex.create({
 	launcherIcon: {
 		color: "inherit",
 	},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

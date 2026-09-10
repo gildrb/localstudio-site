@@ -10,7 +10,7 @@ import {
 	Search,
 	SquarePen,
 	TerminalSquare,
-	type LucideIcon,
+	type TablerIcon,
 } from "../ui/icon-registry";
 
 type ToolStatus = "done" | "running";
@@ -42,7 +42,7 @@ const toolIcons = {
 	exec: TerminalSquare,
 	browser: Globe2,
 	generic: TerminalSquare,
-} satisfies Record<ToolKind, LucideIcon>;
+} satisfies Record<ToolKind, TablerIcon>;
 
 const toolColors = {
 	edit: styles.fileTone,
@@ -170,7 +170,7 @@ export function ToolBlockView({ block }: { block: ToolBlock }) {
 				}}
 			>
 				<Icon
-					{...stylex.props(demoStyles.reset, styles.icon168, styles.lucideScale)}
+					{...stylex.props(demoStyles.reset, styles.icon168, styles.iconScale)}
 					strokeWidth={1.7}
 				/>
 				<span

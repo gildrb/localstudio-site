@@ -38,7 +38,7 @@ export function AgentComposerStatusBar({
 				{gitBranch ? (
 					<span {...stylex.props(demoStyles.reset, styles.span34)}>
 						<GitBranchIcon
-							{...stylex.props(demoStyles.reset, styles.gitbranchicon35, styles.lucideScale)}
+							{...stylex.props(demoStyles.reset, styles.gitbranchicon35, styles.iconScale)}
 						/>
 						<span {...stylex.props(demoStyles.reset, styles.span36)}>{gitBranch}</span>
 					</span>

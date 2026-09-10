@@ -1,6 +1,6 @@
 import { baseStyles } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { IconArrowRight, IconArrowUpRight } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { CtaPair } from "../components/Links";
 import { LocalLink } from "../components/LocalLink";
@@ -310,7 +310,7 @@ const sourceRows: readonly OverviewEntry[] = [
 ];
 
 function arrow(entry: OverviewEntry) {
-	const Icon = entry.external ? ArrowUpRight : ArrowRight;
+	const Icon = entry.external ? IconArrowUpRight : IconArrowRight;
 	return (
 		<Icon {...stylex.props(styles.overviewArrow)} aria-hidden="true" size={14} strokeWidth={1.25} />
 	);

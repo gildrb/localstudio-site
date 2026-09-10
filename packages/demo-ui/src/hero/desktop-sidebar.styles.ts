@@ -240,7 +240,7 @@ export const styles = stylex.create({
 			":hover": tokens.hover,
 		},
 	},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

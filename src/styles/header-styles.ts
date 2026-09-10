@@ -9,6 +9,7 @@ const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))
 
 export const headerStyles = stylex.create({
 	nav: {
+		fontSize: "14px",
 		position: { default: "sticky", [mobile]: "sticky" },
 		zIndex: 30,
 		top: 0,
@@ -107,7 +108,7 @@ export const headerStyles = stylex.create({
 			"@media (max-width: 620px)": "7px",
 		},
 		borderRadius: lengths.radiusControl,
-		fontSize: "16px",
+		fontSize: "14px",
 		fontWeight: 400,
 		lineHeight: "24px",
 		textDecoration: "none",
@@ -148,7 +149,10 @@ export const headerStyles = stylex.create({
 		alignItems: "center",
 		justifyContent: "center",
 		borderRadius: lengths.radiusControl,
-		color: colors.foreground,
+		color: {
+			default: colors.foreground,
+			":hover": { default: colors.foreground, [canHover]: colors.chrome },
+		},
 		textDecoration: "none",
 		transitionProperty: "color",
 		transitionDuration: times.fast,
@@ -209,7 +213,7 @@ export const headerStyles = stylex.create({
 			},
 		},
 		fontFamily: constants.fontSans,
-		fontSize: "16px",
+		fontSize: "14px",
 		fontWeight: 400,
 		lineHeight: "24px",
 		cursor: "pointer",

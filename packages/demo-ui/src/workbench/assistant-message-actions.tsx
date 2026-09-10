@@ -31,7 +31,7 @@ export function AssistantMessageActions({ copyText }: { copyText: string }) {
 				aria-label={copied ? "Copied" : "Copy response"}
 			>
 				<Copy
-					{...stylex.props(demoStyles.reset, styles.copy30, styles.lucideScale)}
+					{...stylex.props(demoStyles.reset, styles.copy30, styles.iconScale)}
 					strokeWidth={1.5}
 				/>
 			</button>

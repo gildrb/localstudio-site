@@ -1,5 +1,5 @@
 import type { SVGProps } from "react";
-export { Folder, FolderOpen } from "lucide-react";
+export { IconFolder as Folder, IconFolderOpen as FolderOpen } from "@tabler/icons-react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 

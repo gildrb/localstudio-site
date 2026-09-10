@@ -1,6 +1,6 @@
 import { baseStyles } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
-import { ArrowLeft } from "lucide-react";
+import { IconArrowLeft } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { site } from "../domain/site";
 import { shellStyles } from "../styles/shell-styles";
@@ -36,7 +36,7 @@ export function PageShell({ backHref, children }: PageShellProps) {
 						<BrandLogo />
 					</LocalLink>
 					<LocalLink sx={shellStyles.backLink} href={backHref}>
-						<ArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" />
+						<IconArrowLeft size={16} strokeWidth={1.5} aria-hidden="true" />
 						Back
 					</LocalLink>
 				</header>

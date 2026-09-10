@@ -30,7 +30,7 @@ export {
 	SquarePen,
 	TerminalSquare,
 	Zap,
-	type LucideIcon,
+	type TablerIcon,
 } from "./ui/icon-registry";
 export { CloseIcon, Folder, FolderOpen, GitBranchIcon } from "./ui/icons";
 export { NavItemDesktop } from "./shell/left-sidebar-nav";

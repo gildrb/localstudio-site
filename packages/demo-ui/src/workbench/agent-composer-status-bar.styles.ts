@@ -112,7 +112,7 @@ export const styles = stylex.create({
 		},
 	},
 	span57: {},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

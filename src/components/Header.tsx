@@ -1,6 +1,6 @@
 import { baseStyles, type PublicStyle } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
-import { ChevronDown, Equal, X } from "lucide-react";
+import { IconChevronDown, IconEqual, IconX } from "@tabler/icons-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { site } from "../domain/site";
 import { downloadLabel, downloadPath, homePath, productNav, resourceNav } from "../domain/route";
@@ -51,7 +51,7 @@ const mobileQuery = "(max-width: 900px)";
 
 function Chevron({ open }: ChevronProps) {
 	return (
-		<ChevronDown
+		<IconChevronDown
 			size={14}
 			strokeWidth={1.25}
 			aria-hidden="true"
@@ -196,7 +196,7 @@ function MobileMenuGroup({
 				)}
 			>
 				{label}
-				<ChevronDown
+				<IconChevronDown
 					{...stylex.props(headerStyles.sheetChevron, open && headerStyles.chevronOpen)}
 					size={20}
 					strokeWidth={1.25}
@@ -451,9 +451,9 @@ export function Header() {
 					onClick={() => setSheetOpen(!mobileOpen)}
 				>
 					{mobileOpen ? (
-						<X size={22} strokeWidth={1.5} aria-hidden="true" />
+						<IconX size={22} strokeWidth={1.5} aria-hidden="true" />
 					) : (
-						<Equal size={22} strokeWidth={1.5} aria-hidden="true" />
+						<IconEqual size={22} strokeWidth={1.5} aria-hidden="true" />
 					)}
 				</button>
 				<dialog

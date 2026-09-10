@@ -31,7 +31,7 @@ export function AgentChatPaneHeader({
 					{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button28)}
 					aria-label="Open navigation menu"
 				>
-					<Menu {...stylex.props(demoStyles.reset, styles.menu31, styles.lucideScale)} />
+					<Menu {...stylex.props(demoStyles.reset, styles.menu31, styles.iconScale)} />
 				</button>
 				{renaming ? (
 					<input
@@ -81,7 +81,7 @@ export function AgentChatPaneHeader({
 				aria-label={rightPanelOpen ? "Hide right sidebar" : "Show right sidebar"}
 			>
 				<RightPanelIcon
-					{...stylex.props(demoStyles.reset, styles.rightpanelicon79, styles.lucideScale)}
+					{...stylex.props(demoStyles.reset, styles.rightpanelicon79, styles.iconScale)}
 				/>
 			</button>
 		</div>

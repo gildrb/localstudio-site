@@ -27,7 +27,7 @@ const styles = stylex.create({
 		paddingLeft: "0",
 		color: colors.chrome,
 		fontFamily: constants.fontSans,
-		fontSize: "16px",
+		fontSize: "14px",
 		fontWeight: 400,
 		lineHeight: "24px",
 	},

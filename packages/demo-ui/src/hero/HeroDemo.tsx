@@ -621,11 +621,7 @@ function HeroDemoView(model: HeroDemoViewModel) {
 														title="Attach files (or paste/drop into composer)"
 													>
 														<Plus
-															{...stylex.props(
-																demoStyles.reset,
-																styles.plus618,
-																styles.lucideScale,
-															)}
+															{...stylex.props(demoStyles.reset, styles.plus618, styles.iconScale)}
 															strokeWidth={1.75}
 														/>
 													</button>
@@ -650,7 +646,7 @@ function HeroDemoView(model: HeroDemoViewModel) {
 																{...stylex.props(
 																	demoStyles.reset,
 																	styles.chevrondown635,
-																	styles.lucideScale,
+																	styles.iconScale,
 																)}
 															/>
 														</button>
@@ -669,7 +665,7 @@ function HeroDemoView(model: HeroDemoViewModel) {
 																{...stylex.props(
 																	demoStyles.reset,
 																	styles.arrowup644,
-																	styles.lucideScale,
+																	styles.iconScale,
 																)}
 															/>
 														</button>

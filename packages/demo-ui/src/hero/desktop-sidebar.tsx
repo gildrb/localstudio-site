@@ -70,7 +70,7 @@ export function HeroDesktopSidebar({
 						aria-label="Go back"
 					>
 						<ChevronLeft
-							{...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.lucideScale)}
+							{...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.iconScale)}
 							strokeWidth={1.75}
 						/>
 					</button>
@@ -81,7 +81,7 @@ export function HeroDesktopSidebar({
 						aria-label="Go forward"
 					>
 						<ChevronRight
-							{...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.lucideScale)}
+							{...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.iconScale)}
 							strokeWidth={1.75}
 						/>
 					</button>
@@ -92,7 +92,7 @@ export function HeroDesktopSidebar({
 						aria-label="Search sessions"
 					>
 						<SearchIcon
-							{...stylex.props(demoStyles.reset, styles.searchicon74, styles.lucideScale)}
+							{...stylex.props(demoStyles.reset, styles.searchicon74, styles.iconScale)}
 							strokeWidth={1.75}
 						/>
 					</button>
@@ -111,7 +111,7 @@ export function HeroDesktopSidebar({
 						title="New task"
 					>
 						<SquarePen
-							{...stylex.props(demoStyles.reset, styles.squarepen84, styles.lucideScale)}
+							{...stylex.props(demoStyles.reset, styles.squarepen84, styles.iconScale)}
 							strokeWidth={1.6}
 						/>
 						<span {...stylex.props(demoStyles.reset, styles.span87)}>New task</span>
@@ -156,13 +156,13 @@ function HeroProfileFooter() {
 				aria-hidden="true"
 			>
 				<Smartphone
-					{...stylex.props(demoStyles.reset, styles.smartphone132, styles.lucideScale)}
+					{...stylex.props(demoStyles.reset, styles.smartphone132, styles.iconScale)}
 					strokeWidth={1.75}
 				/>
 			</span>
 			<span title="Settings" {...stylex.props(demoStyles.reset, styles.span128)} aria-hidden="true">
 				<Settings
-					{...stylex.props(demoStyles.reset, styles.smartphone132, styles.lucideScale)}
+					{...stylex.props(demoStyles.reset, styles.smartphone132, styles.iconScale)}
 					strokeWidth={1.75}
 				/>
 			</span>

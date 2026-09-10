@@ -10,7 +10,7 @@ export function HeroReviewPanel({ ready }: { ready: boolean }) {
 		<section {...stylex.props(demoStyles.reset, styles.section7)}>
 			<div {...stylex.props(demoStyles.reset, styles.div8)}>
 				<GitBranchIcon
-					{...stylex.props(demoStyles.reset, styles.gitbranchicon9, styles.lucideScale)}
+					{...stylex.props(demoStyles.reset, styles.gitbranchicon9, styles.iconScale)}
 				/>
 				<span {...stylex.props(demoStyles.reset)}>{ready ? "Review" : "No changes"}</span>
 			</div>

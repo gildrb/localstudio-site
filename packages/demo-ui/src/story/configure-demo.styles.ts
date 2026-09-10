@@ -397,7 +397,7 @@ export const styles = stylex.create({
 		backgroundColor: tokens.uiActive,
 		color: tokens.uiMuted,
 	},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

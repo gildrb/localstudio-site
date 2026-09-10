@@ -79,14 +79,14 @@ export function AutomateDemo() {
 							type="button"
 							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button84)}
 						>
-							<Plus {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> New
+							<Plus {...stylex.props(demoStyles.reset, styles.plus86, styles.iconScale)} /> New
 						</button>
 					</header>
 
 					<div {...stylex.props(demoStyles.reset, styles.div90)}>
 						<label {...stylex.props(demoStyles.reset, styles.label91)}>
 							<span {...stylex.props(demoStyles.reset, styles.span92)}>Search automations</span>
-							<Search {...stylex.props(demoStyles.reset, styles.search93, styles.lucideScale)} />
+							<Search {...stylex.props(demoStyles.reset, styles.search93, styles.iconScale)} />
 							<input
 								type="search"
 								name="automation-search"
@@ -154,7 +154,7 @@ export function AutomateDemo() {
 												</span>
 												<span {...stylex.props(demoStyles.reset, styles.span134)}>
 													<Clock
-														{...stylex.props(demoStyles.reset, styles.clock135, styles.lucideScale)}
+														{...stylex.props(demoStyles.reset, styles.clock135, styles.iconScale)}
 													/>
 													{automation.schedule}
 												</span>
@@ -185,14 +185,13 @@ export function AutomateDemo() {
 								type="button"
 								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button165)}
 							>
-								<Pause {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} />{" "}
-								Pause
+								<Pause {...stylex.props(demoStyles.reset, styles.plus86, styles.iconScale)} /> Pause
 							</button>
 							<button
 								type="button"
 								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button171)}
 							>
-								<Play {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> Run
+								<Play {...stylex.props(demoStyles.reset, styles.plus86, styles.iconScale)} /> Run
 								Now
 							</button>
 						</div>
@@ -222,7 +221,7 @@ export function AutomateDemo() {
 							</label>
 							<section {...stylex.props(demoStyles.reset, styles.section201)}>
 								<div {...stylex.props(demoStyles.reset, styles.div202)}>
-									<Clock {...stylex.props(demoStyles.reset, styles.clock203, styles.lucideScale)} />
+									<Clock {...stylex.props(demoStyles.reset, styles.clock203, styles.iconScale)} />
 									<div {...stylex.props(demoStyles.reset)}>
 										<h4 {...stylex.props(demoStyles.reset, styles.h3205)}>Schedule</h4>
 										<p {...stylex.props(demoStyles.reset, styles.p78)}>{selected.schedule}</p>
@@ -248,9 +247,7 @@ export function AutomateDemo() {
 								<h4 {...stylex.props(demoStyles.reset, styles.h3205)}>Recent Runs</h4>
 								<div {...stylex.props(demoStyles.reset, styles.div243)}>
 									<span {...stylex.props(demoStyles.reset, styles.div202)}>
-										<Check
-											{...stylex.props(demoStyles.reset, styles.check245, styles.lucideScale)}
-										/>
+										<Check {...stylex.props(demoStyles.reset, styles.check245, styles.iconScale)} />
 										<span {...stylex.props(demoStyles.reset)}>
 											<strong {...stylex.props(demoStyles.reset, styles.strong247)}>
 												Completed

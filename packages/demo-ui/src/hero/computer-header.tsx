@@ -12,7 +12,7 @@ import {
 	PanelRightFilled,
 	Plus,
 	TerminalSquare,
-	type LucideIcon,
+	type TablerIcon,
 } from "../ui/icon-registry";
 import { CloseIcon } from "../ui/icons";
 export type ComputerTab =
@@ -42,7 +42,7 @@ const TAB_OPTIONS: Array<{
 	tab: ComputerTab;
 	label: string;
 	description: string;
-	icon?: LucideIcon;
+	icon?: TablerIcon;
 }> = [
 	{
 		tab: "side-chat",
@@ -93,7 +93,7 @@ function TabPill({
 	onSelect,
 	onClose,
 }: {
-	icon?: LucideIcon;
+	icon?: TablerIcon;
 	label: string;
 	selected: boolean;
 	shortcut?: string | undefined;
@@ -119,7 +119,7 @@ function TabPill({
 				{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button113)}
 			>
 				{Icon ? (
-					<Icon {...stylex.props(demoStyles.reset, styles.icon116, styles.lucideScale)} />
+					<Icon {...stylex.props(demoStyles.reset, styles.icon116, styles.iconScale)} />
 				) : null}
 				<span {...stylex.props(demoStyles.reset, styles.span118)}>{label}</span>
 				{shortcut ? (
@@ -174,7 +174,7 @@ function HeaderIconButton({
 			aria-label={label}
 			aria-pressed={active}
 		>
-			<Icon {...stylex.props(demoStyles.reset, styles.icon171, styles.lucideScale)} />
+			<Icon {...stylex.props(demoStyles.reset, styles.icon171, styles.iconScale)} />
 		</button>
 	);
 }

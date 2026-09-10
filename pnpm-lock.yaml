@@ -10,6 +10,7 @@ overrides:
 
 patchedDependencies:
   '@stylexjs/unplugin@0.19.0': 7f3f8fa98007fc818680964ddb0dc71bcef3b8b8f9cc1dbe6430126030b8abe4
+  '@tabler/icons-react@3.46.0': 50d8579de7f1d238b981da02da7f790bb1699cc651bf45a70bc8c4d8ae52fc7e
   vgpu@0.4.1: 383327b490843f50ad783c679a0860b088ff23f0d944b3ce01bc0396d06034de
 
 importers:
@@ -25,9 +26,9 @@ importers:
       '@stylexjs/stylex':
         specifier: 0.19.0
         version: 0.19.0
-      lucide-react:
-        specifier: 1.44.0
-        version: 1.44.0(react@19.3.0)
+      '@tabler/icons-react':
+        specifier: 3.46.0
+        version: 3.46.0(patch_hash=50d8579de7f1d238b981da02da7f790bb1699cc651bf45a70bc8c4d8ae52fc7e)(react@19.3.0)
       motion:
         specifier: 13.2.0
         version: 13.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -80,9 +81,9 @@ importers:
       '@stylexjs/stylex':
         specifier: 0.19.0
         version: 0.19.0
-      lucide-react:
-        specifier: 1.44.0
-        version: 1.44.0(react@19.3.0)
+      '@tabler/icons-react':
+        specifier: 3.46.0
+        version: 3.46.0(patch_hash=50d8579de7f1d238b981da02da7f790bb1699cc651bf45a70bc8c4d8ae52fc7e)(react@19.3.0)
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -745,6 +746,14 @@ packages:
     resolution: {integrity: sha512-2QwNYovSwarC/M8DLD78857F6MEi4eQ3UYzgdmyg/K7562M/rV1KWptiATxcKgujlUT6ToNy778SOXf4bGK+Bw==}
     peerDependencies:
       unplugin: ^2.3.11
+
+  '@tabler/icons-react@3.46.0':
+    resolution: {integrity: sha512-CCm7xJWhDT2PH4ZIFkP6AgYKtVhq0gpYkjUN+GVh1AzmIQaa77OW0bQPBPQiTE0PsXMR9oSxFqA3qBglzPyrVQ==}
+    peerDependencies:
+      react: '>= 16'
+
+  '@tabler/icons@3.46.0':
+    resolution: {integrity: sha512-f2RYFl3fzPwj5WO82x6en0dmkjefxEfOm16D1ByM6cj/McNiwOkL4VaPUoP9VVIrXAD9WnTSVFr70px703b//A==}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -1463,11 +1472,6 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
-
-  lucide-react@1.44.0:
-    resolution: {integrity: sha512-2egNApH4hX4j/qdCgRublh88+9u3mEhz9iSlW5ckm4kaQEqZbXbMr0l5u5JZLy8nmWRx2dbHGQkEDYz6C9aCgw==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
@@ -2209,6 +2213,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@tabler/icons-react@3.46.0(patch_hash=50d8579de7f1d238b981da02da7f790bb1699cc651bf45a70bc8c4d8ae52fc7e)(react@19.3.0)':
+    dependencies:
+      '@tabler/icons': 3.46.0
+      react: 19.3.0
+
+  '@tabler/icons@3.46.0': {}
+
   '@testing-library/dom@10.4.1':
     dependencies:
       '@babel/code-frame': 7.29.7
@@ -2742,10 +2753,6 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
-
-  lucide-react@1.44.0(react@19.3.0):
-    dependencies:
-      react: 19.3.0
 
   lz-string@1.5.0: {}
 

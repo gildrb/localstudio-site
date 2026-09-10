@@ -41,7 +41,7 @@ export const styles = stylex.create({
 		height: "calc(0.25rem * 4)",
 		width: "calc(0.25rem * 4)",
 	},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

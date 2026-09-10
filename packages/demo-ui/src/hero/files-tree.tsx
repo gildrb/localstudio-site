@@ -88,13 +88,13 @@ export function HeroFilesystemTree({
 							{isDir ? (
 								<span {...stylex.props(demoStyles.reset, styles.span81)}>
 									<ChevronDown
-										{...stylex.props(demoStyles.reset, styles.chevrondown82, styles.lucideScale)}
+										{...stylex.props(demoStyles.reset, styles.chevrondown82, styles.iconScale)}
 									/>
 								</span>
 							) : (
 								<span {...stylex.props(demoStyles.reset, styles.span81)}>
 									<ChevronRight
-										{...stylex.props(demoStyles.reset, styles.chevronright86, styles.lucideScale)}
+										{...stylex.props(demoStyles.reset, styles.chevronright86, styles.iconScale)}
 									/>
 								</span>
 							)}

@@ -26,11 +26,6 @@ const styles = stylex.create({
 	home: {
 		minHeight: "650px",
 		paddingBlock: 0,
-		alignItems: "flex-start",
-		textAlign: "left",
-	},
-	homeActions: {
-		justifyContent: "flex-start",
 	},
 	child: {
 		width: "100%",
@@ -116,14 +111,7 @@ export function PageCta({
 			>
 				{title}
 			</h2>
-			<div
-				{...stylex.props(
-					baseStyles.element,
-					styles.child,
-					styles.actions,
-					home && styles.homeActions,
-				)}
-			>
+			<div {...stylex.props(baseStyles.element, styles.child, styles.actions)}>
 				{actions ?? <CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />}
 			</div>
 		</section>

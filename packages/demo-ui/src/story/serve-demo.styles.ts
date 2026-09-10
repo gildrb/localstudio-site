@@ -348,7 +348,7 @@ export const styles = stylex.create({
 		borderLeftColor: "transparent",
 		color: tokens.uiMuted,
 	},
-	lucideScale: {
+	iconScale: {
 		display: "block",
 		verticalAlign: "middle",
 		scale: constants.iconScale,

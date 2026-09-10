@@ -1,0 +1,1315 @@
+{
+	"baseline_revision": "ce2a5c4ac6811f77185b42f257f5e158eef58ff5",
+	"runtime": {
+		"node": "24.21.0",
+		"vite_plus": "0.3.1",
+		"pnpm": "12.3.4"
+	},
+	"dependencies": {
+		"package.json": {
+			"name": "localstudio-landing",
+			"version": "0.1.0",
+			"private": true,
+			"type": "module",
+			"scripts": {
+				"generated:check": "vp run design:manifest:check && vp run assets:check && vp run vercel:check && vp run index:html:check && vp run logo:check",
+				"design:manifest": "node scripts/design-manifest.ts write",
+				"design:manifest:check": "node scripts/design-manifest.ts check",
+				"reproducible:check": "node scripts/reproducible.ts",
+				"assets:manifest": "node scripts/assets.ts write",
+				"assets:check": "node scripts/assets.ts check",
+				"bundle:check": "node scripts/bundle.ts check",
+				"bundle:report": "node scripts/bundle.ts report",
+				"vercel:manifest": "node scripts/vercel.ts write",
+				"vercel:check": "node scripts/vercel.ts check",
+				"index:html": "node scripts/index-html.ts write",
+				"index:html:check": "node scripts/index-html.ts check",
+				"test:e2e": "playwright test",
+				"test:visual": "playwright test --config playwright.visual.config.ts",
+				"styles:check": "node scripts/check-styles.ts",
+				"validate": "vp run generated:check && vp run --filter @local-ai/logo-renderer shader:check",
+				"logo:check": "vp run --filter @local-ai/logo-renderer check",
+				"snapshot": "vp pack && node packages/logo-renderer/node_modules/.cache/render/render-snapshot.mjs",
+				"snapshot:atmosphere": "vp pack && node packages/logo-renderer/node_modules/.cache/render/render-atmosphere.mjs",
+				"snapshot:loading-layers": "node packages/logo-renderer/scripts/render-loading-layers.ts"
+			},
+			"dependencies": {
+				"@local-ai/logo-renderer": "workspace:*",
+				"@local-studio/demo-ui": "workspace:*",
+				"@stylexjs/stylex": "0.19.0",
+				"lucide-react": "1.44.0",
+				"motion": "13.2.0",
+				"react": "19.3.0",
+				"react-dom": "19.3.0",
+				"valibot": "1.5.0"
+			},
+			"devDependencies": {
+				"@playwright/test": "1.63.0",
+				"@stylexjs/unplugin": "0.19.0",
+				"@types/node": "26.5.1",
+				"@types/react": "19.3.0",
+				"@types/react-dom": "19.3.0",
+				"@vgpu/wgsl": "0.4.1",
+				"@vitejs/plugin-react": "6.1.1",
+				"typescript": "7.0.2",
+				"vgpu": "0.4.1",
+				"vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
+				"vite-plus": "0.3.1"
+			},
+			"engines": {
+				"node": ">=24.11.0"
+			}
+		},
+		"packages/logo-renderer/package.json": {
+			"name": "@local-ai/logo-renderer",
+			"version": "0.1.0",
+			"private": true,
+			"type": "module",
+			"exports": {
+				"./react": "./src/renderer/index.tsx"
+			},
+			"scripts": {
+				"generate": "node scripts/generate-logo-mesh.ts",
+				"generate:cta": "node scripts/generate-cta-mesh.ts",
+				"check": "node scripts/generate-logo-mesh.ts --check && node scripts/generate-cta-mesh.ts --check",
+				"shader:check": "node scripts/check-shaders.ts",
+				"intro:coverage:check": "node scripts/check-intro-coverage.ts"
+			},
+			"dependencies": {
+				"@stylexjs/stylex": "0.19.0",
+				"@vgpu/wgsl": "0.4.1",
+				"@vgpu/wgsl-std": "0.4.1",
+				"phase": "0.5.4",
+				"valibot": "1.5.0",
+				"vgpu": "0.4.1"
+			},
+			"devDependencies": {
+				"@types/clipper-lib": "6.4.0",
+				"@types/pngjs": "6.0.5",
+				"@types/react": "19.3.0",
+				"@types/react-dom": "19.3.0",
+				"clipper-lib": "6.4.2",
+				"earcut": "3.2.3",
+				"pngjs": "7.0.0",
+				"vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
+				"vite-plus": "0.3.1"
+			},
+			"peerDependencies": {
+				"react": "19.3.0",
+				"react-dom": "19.3.0"
+			}
+		},
+		"packages/demo-ui/package.json": {
+			"name": "@local-studio/demo-ui",
+			"version": "0.1.0",
+			"private": true,
+			"type": "module",
+			"exports": {
+				".": "./src/index.ts",
+				"./hero": "./src/hero/HeroDemo.tsx",
+				"./story": "./src/story/FeatureDemo.tsx"
+			},
+			"dependencies": {
+				"@stylexjs/stylex": "0.19.0",
+				"lucide-react": "1.44.0"
+			},
+			"devDependencies": {
+				"@types/react": "19.3.0",
+				"@types/react-dom": "19.3.0"
+			},
+			"peerDependencies": {
+				"react": "19.3.0",
+				"react-dom": "19.3.0"
+			},
+			"demoPackage": {
+				"product": "Local Studio",
+				"contractVersion": 1,
+				"scenario": "src/scenario/sequence.ts",
+				"source": "https://github.com/sybil-solutions/local-studio"
+			}
+		}
+	},
+	"matched_method": {
+		"samples_per_cell": 5,
+		"order": "alternating before/after, serial operations",
+		"baseline": "completed migration source, common dependencies upgraded to current versions; same vendor declaration patches",
+		"after": "final source including native sponsor alias",
+		"install": "fresh root/workspace node_modules; package store warm",
+		"cold_project": "clear project Vite/TS/SSR caches and build dist; not OS/global caches",
+		"warm": "reuse project caches",
+		"load_1m_range": [1.2919921875, 7.91357421875],
+		"fail_fast": "expected exit0 for install/check/build; unit98passed/5baseline failures"
+	},
+	"matched_summary": {
+		"before:install:fresh-warm-cache": {
+			"n": 5,
+			"median": 0.35381122599937953,
+			"min": 0.2913100720033981,
+			"max": 0.43456197099294513
+		},
+		"after:install:fresh-warm-cache": {
+			"n": 5,
+			"median": 0.3190510910062585,
+			"min": 0.2977235550060868,
+			"max": 0.46870816400041804
+		},
+		"before:check:cold-project": {
+			"n": 5,
+			"median": 3.4447147580212913,
+			"min": 3.3306729909963906,
+			"max": 3.570306720008375
+		},
+		"after:check:cold-project": {
+			"n": 5,
+			"median": 2.4975114300032146,
+			"min": 2.442554123001173,
+			"max": 2.5874875980080105
+		},
+		"before:test:cold-project": {
+			"n": 5,
+			"median": 2.043929373001447,
+			"min": 1.9698975100181997,
+			"max": 2.777394529985031
+		},
+		"after:test:cold-project": {
+			"n": 5,
+			"median": 1.9304928539786488,
+			"min": 1.8647588109888602,
+			"max": 1.989788070000941
+		},
+		"before:build:cold-project": {
+			"n": 5,
+			"median": 7.119730670994613,
+			"min": 7.017194029991515,
+			"max": 7.323050493985647
+		},
+		"after:build:cold-project": {
+			"n": 5,
+			"median": 7.0881737990130205,
+			"min": 6.9340786050015595,
+			"max": 7.172974613989936
+		},
+		"before:check:warm": {
+			"n": 5,
+			"median": 3.448196323006414,
+			"min": 3.343757421011105,
+			"max": 3.5171507300110534
+		},
+		"after:check:warm": {
+			"n": 5,
+			"median": 2.551846664020559,
+			"min": 2.49915194400819,
+			"max": 2.583892440015916
+		},
+		"before:test:warm": {
+			"n": 5,
+			"median": 2.05301285799942,
+			"min": 2.0098438439890742,
+			"max": 2.1152748670137953
+		},
+		"after:test:warm": {
+			"n": 5,
+			"median": 1.9138497110106982,
+			"min": 1.8777092120144516,
+			"max": 2.704868126020301
+		},
+		"before:build:warm": {
+			"n": 5,
+			"median": 7.090673936996609,
+			"min": 6.888695336005185,
+			"max": 7.16734248099965
+		},
+		"after:build:warm": {
+			"n": 5,
+			"median": 7.179390688019339,
+			"min": 7.003175290010404,
+			"max": 7.183651816012571
+		}
+	},
+	"matched_samples": [
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 1,
+			"variant": "before",
+			"duration": 0.35381122599937953,
+			"exit_code": 0,
+			"load_before": [1.31787109375, 1.48095703125, 1.64208984375],
+			"load_after": [1.31787109375, 1.48095703125, 1.64208984375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 1,
+			"variant": "after",
+			"duration": 0.3190510910062585,
+			"exit_code": 0,
+			"load_before": [1.31787109375, 1.48095703125, 1.64208984375],
+			"load_after": [1.31787109375, 1.48095703125, 1.64208984375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 2,
+			"variant": "after",
+			"duration": 0.46870816400041804,
+			"exit_code": 0,
+			"load_before": [1.31787109375, 1.48095703125, 1.64208984375],
+			"load_after": [1.31787109375, 1.48095703125, 1.64208984375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 2,
+			"variant": "before",
+			"duration": 0.2913100720033981,
+			"exit_code": 0,
+			"load_before": [1.2919921875, 1.47265625, 1.63818359375],
+			"load_after": [1.2919921875, 1.47265625, 1.63818359375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 3,
+			"variant": "before",
+			"duration": 0.43456197099294513,
+			"exit_code": 0,
+			"load_before": [1.2919921875, 1.47265625, 1.63818359375],
+			"load_after": [1.2919921875, 1.47265625, 1.63818359375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 3,
+			"variant": "after",
+			"duration": 0.2977235550060868,
+			"exit_code": 0,
+			"load_before": [1.2919921875, 1.47265625, 1.63818359375],
+			"load_after": [1.2919921875, 1.47265625, 1.63818359375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 4,
+			"variant": "after",
+			"duration": 0.3747798959957436,
+			"exit_code": 0,
+			"load_before": [1.2919921875, 1.47265625, 1.63818359375],
+			"load_after": [1.2919921875, 1.47265625, 1.63818359375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 4,
+			"variant": "before",
+			"duration": 0.3197613270021975,
+			"exit_code": 0,
+			"load_before": [1.2919921875, 1.47265625, 1.63818359375],
+			"load_after": [1.2919921875, 1.47265625, 1.63818359375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 5,
+			"variant": "before",
+			"duration": 0.3827183760004118,
+			"exit_code": 0,
+			"load_before": [1.2919921875, 1.47265625, 1.63818359375],
+			"load_after": [1.2919921875, 1.47265625, 1.63818359375]
+		},
+		{
+			"operation": "install",
+			"mode": "fresh-warm-cache",
+			"sample": 5,
+			"variant": "after",
+			"duration": 0.30754620098741725,
+			"exit_code": 0,
+			"load_before": [1.2919921875, 1.47265625, 1.63818359375],
+			"load_after": [1.2919921875, 1.47265625, 1.63818359375]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 1,
+			"variant": "before",
+			"duration": 3.4447147580212913,
+			"exit_code": 0,
+			"load_before": [1.2919921875, 1.47265625, 1.63818359375],
+			"load_after": [1.66943359375, 1.5478515625, 1.66162109375]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 1,
+			"variant": "after",
+			"duration": 2.4963583420030773,
+			"exit_code": 0,
+			"load_before": [1.66943359375, 1.5478515625, 1.66162109375],
+			"load_after": [2.0166015625, 1.6220703125, 1.68505859375]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 2,
+			"variant": "after",
+			"duration": 2.508330565004144,
+			"exit_code": 0,
+			"load_before": [2.0166015625, 1.6220703125, 1.68505859375],
+			"load_after": [2.0166015625, 1.6220703125, 1.68505859375]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 2,
+			"variant": "before",
+			"duration": 3.349105079018045,
+			"exit_code": 0,
+			"load_before": [2.0166015625, 1.6220703125, 1.68505859375],
+			"load_after": [2.255859375, 1.67822265625, 1.703125]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 3,
+			"variant": "before",
+			"duration": 3.457842766016256,
+			"exit_code": 0,
+			"load_before": [2.255859375, 1.67822265625, 1.703125],
+			"load_after": [2.255859375, 1.67822265625, 1.703125]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 3,
+			"variant": "after",
+			"duration": 2.4975114300032146,
+			"exit_code": 0,
+			"load_before": [2.255859375, 1.67822265625, 1.703125],
+			"load_after": [2.79638671875, 1.7998046875, 1.74267578125]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 4,
+			"variant": "after",
+			"duration": 2.5874875980080105,
+			"exit_code": 0,
+			"load_before": [2.79638671875, 1.7998046875, 1.74267578125],
+			"load_after": [2.79638671875, 1.7998046875, 1.74267578125]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 4,
+			"variant": "before",
+			"duration": 3.3306729909963906,
+			"exit_code": 0,
+			"load_before": [2.79638671875, 1.7998046875, 1.74267578125],
+			"load_after": [3.13330078125, 1.88623046875, 1.77099609375]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 5,
+			"variant": "before",
+			"duration": 3.570306720008375,
+			"exit_code": 0,
+			"load_before": [3.13330078125, 1.88623046875, 1.77099609375],
+			"load_after": [4.1640625, 2.12060546875, 1.84765625]
+		},
+		{
+			"operation": "check",
+			"mode": "cold-project",
+			"sample": 5,
+			"variant": "after",
+			"duration": 2.442554123001173,
+			"exit_code": 0,
+			"load_before": [4.1640625, 2.12060546875, 1.84765625],
+			"load_after": [4.1640625, 2.12060546875, 1.84765625]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 1,
+			"variant": "before",
+			"duration": 2.023742614983348,
+			"exit_code": 1,
+			"load_before": [4.1640625, 2.12060546875, 1.84765625],
+			"load_after": [5.7529296875, 2.48388671875, 1.966796875],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 1,
+			"variant": "after",
+			"duration": 1.9826046559901442,
+			"exit_code": 1,
+			"load_before": [5.7529296875, 2.48388671875, 1.966796875],
+			"load_after": [5.7529296875, 2.48388671875, 1.966796875],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 2,
+			"variant": "after",
+			"duration": 1.8647588109888602,
+			"exit_code": 1,
+			"load_before": [5.7529296875, 2.48388671875, 1.966796875],
+			"load_after": [5.5322265625, 2.49267578125, 1.97265625],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 2,
+			"variant": "before",
+			"duration": 1.9698975100181997,
+			"exit_code": 1,
+			"load_before": [5.5322265625, 2.49267578125, 1.97265625],
+			"load_after": [5.5322265625, 2.49267578125, 1.97265625],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 3,
+			"variant": "before",
+			"duration": 2.777394529985031,
+			"exit_code": 1,
+			"load_before": [5.5322265625, 2.49267578125, 1.97265625],
+			"load_after": [7.73193359375, 2.99951171875, 2.1396484375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 3,
+			"variant": "after",
+			"duration": 1.8969554840005003,
+			"exit_code": 1,
+			"load_before": [7.73193359375, 2.99951171875, 2.1396484375],
+			"load_after": [7.73193359375, 2.99951171875, 2.1396484375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 4,
+			"variant": "after",
+			"duration": 1.989788070000941,
+			"exit_code": 1,
+			"load_before": [7.73193359375, 2.99951171875, 2.1396484375],
+			"load_after": [7.73193359375, 2.99951171875, 2.1396484375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 4,
+			"variant": "before",
+			"duration": 2.051934282993898,
+			"exit_code": 1,
+			"load_before": [7.73193359375, 2.99951171875, 2.1396484375],
+			"load_after": [7.91357421875, 3.1162109375, 2.18212890625],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 5,
+			"variant": "before",
+			"duration": 2.043929373001447,
+			"exit_code": 1,
+			"load_before": [7.91357421875, 3.1162109375, 2.18212890625],
+			"load_after": [7.91357421875, 3.1162109375, 2.18212890625],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "cold-project",
+			"sample": 5,
+			"variant": "after",
+			"duration": 1.9304928539786488,
+			"exit_code": 1,
+			"load_before": [7.91357421875, 3.1162109375, 2.18212890625],
+			"load_after": [7.68017578125, 3.14794921875, 2.197265625],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 1,
+			"variant": "before",
+			"duration": 7.119730670994613,
+			"exit_code": 0,
+			"load_before": [7.68017578125, 3.14794921875, 2.197265625],
+			"load_after": [7.54541015625, 3.1953125, 2.2177734375]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 1,
+			"variant": "after",
+			"duration": 6.959036610001931,
+			"exit_code": 0,
+			"load_before": [7.54541015625, 3.1953125, 2.2177734375],
+			"load_after": [7.42138671875, 3.2421875, 2.23828125]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 2,
+			"variant": "after",
+			"duration": 7.0881737990130205,
+			"exit_code": 0,
+			"load_before": [7.42138671875, 3.2421875, 2.23828125],
+			"load_after": [6.50732421875, 3.18408203125, 2.22998046875]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 2,
+			"variant": "before",
+			"duration": 7.323050493985647,
+			"exit_code": 0,
+			"load_before": [6.50732421875, 3.18408203125, 2.22998046875],
+			"load_after": [7.587890625, 3.46337890625, 2.32568359375]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 3,
+			"variant": "before",
+			"duration": 7.2029385789937805,
+			"exit_code": 0,
+			"load_before": [7.587890625, 3.46337890625, 2.32568359375],
+			"load_after": [7.349609375, 3.5478515625, 2.36572265625]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 3,
+			"variant": "after",
+			"duration": 7.172974613989936,
+			"exit_code": 0,
+			"load_before": [7.349609375, 3.5478515625, 2.36572265625],
+			"load_after": [7.0009765625, 3.53857421875, 2.369140625]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 4,
+			"variant": "after",
+			"duration": 6.9340786050015595,
+			"exit_code": 0,
+			"load_before": [7.0009765625, 3.53857421875, 2.369140625],
+			"load_after": [6.60009765625, 3.5126953125, 2.36669921875]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 4,
+			"variant": "before",
+			"duration": 7.066311637987383,
+			"exit_code": 0,
+			"load_before": [6.60009765625, 3.5126953125, 2.36669921875],
+			"load_after": [6.8603515625, 3.662109375, 2.42724609375]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 5,
+			"variant": "before",
+			"duration": 7.017194029991515,
+			"exit_code": 0,
+			"load_before": [6.8603515625, 3.662109375, 2.42724609375],
+			"load_after": [6.630859375, 3.66796875, 2.43603515625]
+		},
+		{
+			"operation": "build",
+			"mode": "cold-project",
+			"sample": 5,
+			"variant": "after",
+			"duration": 7.1402199330041185,
+			"exit_code": 0,
+			"load_before": [6.630859375, 3.66796875, 2.43603515625],
+			"load_after": [5.9248046875, 3.61279296875, 2.431640625]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 1,
+			"variant": "before",
+			"duration": 3.394437839015154,
+			"exit_code": 0,
+			"load_before": [5.9248046875, 3.61279296875, 2.431640625],
+			"load_after": [5.9248046875, 3.61279296875, 2.431640625]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 1,
+			"variant": "after",
+			"duration": 2.555130388995167,
+			"exit_code": 0,
+			"load_before": [5.9248046875, 3.61279296875, 2.431640625],
+			"load_after": [5.93115234375, 3.65283203125, 2.451171875]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 2,
+			"variant": "after",
+			"duration": 2.583892440015916,
+			"exit_code": 0,
+			"load_before": [5.93115234375, 3.65283203125, 2.451171875],
+			"load_after": [5.93115234375, 3.65283203125, 2.451171875]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 2,
+			"variant": "before",
+			"duration": 3.5171507300110534,
+			"exit_code": 0,
+			"load_before": [5.93115234375, 3.65283203125, 2.451171875],
+			"load_after": [5.7763671875, 3.65869140625, 2.4599609375]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 3,
+			"variant": "before",
+			"duration": 3.473653296008706,
+			"exit_code": 0,
+			"load_before": [5.7763671875, 3.65869140625, 2.4599609375],
+			"load_after": [5.95458984375, 3.73095703125, 2.48974609375]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 3,
+			"variant": "after",
+			"duration": 2.49915194400819,
+			"exit_code": 0,
+			"load_before": [5.95458984375, 3.73095703125, 2.48974609375],
+			"load_after": [5.95458984375, 3.73095703125, 2.48974609375]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 4,
+			"variant": "after",
+			"duration": 2.5163858880114276,
+			"exit_code": 0,
+			"load_before": [5.95458984375, 3.73095703125, 2.48974609375],
+			"load_after": [5.6376953125, 3.7021484375, 2.48681640625]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 4,
+			"variant": "before",
+			"duration": 3.343757421011105,
+			"exit_code": 0,
+			"load_before": [5.6376953125, 3.7021484375, 2.48681640625],
+			"load_after": [5.26611328125, 3.6572265625, 2.478515625]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 5,
+			"variant": "before",
+			"duration": 3.448196323006414,
+			"exit_code": 0,
+			"load_before": [5.26611328125, 3.6572265625, 2.478515625],
+			"load_after": [5.26611328125, 3.6572265625, 2.478515625]
+		},
+		{
+			"operation": "check",
+			"mode": "warm",
+			"sample": 5,
+			"variant": "after",
+			"duration": 2.551846664020559,
+			"exit_code": 0,
+			"load_before": [5.26611328125, 3.6572265625, 2.478515625],
+			"load_after": [5.00439453125, 3.62939453125, 2.4755859375]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 1,
+			"variant": "before",
+			"duration": 2.0098438439890742,
+			"exit_code": 1,
+			"load_before": [5.00439453125, 3.62939453125, 2.4755859375],
+			"load_after": [5.00439453125, 3.62939453125, 2.4755859375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 1,
+			"variant": "after",
+			"duration": 1.968299826985458,
+			"exit_code": 1,
+			"load_before": [5.00439453125, 3.62939453125, 2.4755859375],
+			"load_after": [4.68359375, 3.58544921875, 2.46728515625],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 2,
+			"variant": "after",
+			"duration": 2.704868126020301,
+			"exit_code": 1,
+			"load_before": [4.68359375, 3.58544921875, 2.46728515625],
+			"load_after": [4.68359375, 3.58544921875, 2.46728515625],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 2,
+			"variant": "before",
+			"duration": 2.05301285799942,
+			"exit_code": 1,
+			"load_before": [4.68359375, 3.58544921875, 2.46728515625],
+			"load_after": [4.68359375, 3.58544921875, 2.46728515625],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 3,
+			"variant": "before",
+			"duration": 2.0785200600221287,
+			"exit_code": 1,
+			"load_before": [4.68359375, 3.58544921875, 2.46728515625],
+			"load_after": [4.54833984375, 3.57568359375, 2.47021484375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 3,
+			"variant": "after",
+			"duration": 1.888314176001586,
+			"exit_code": 1,
+			"load_before": [4.54833984375, 3.57568359375, 2.47021484375],
+			"load_after": [4.54833984375, 3.57568359375, 2.47021484375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 4,
+			"variant": "after",
+			"duration": 1.9138497110106982,
+			"exit_code": 1,
+			"load_before": [4.54833984375, 3.57568359375, 2.47021484375],
+			"load_after": [4.9052734375, 3.666015625, 2.50537109375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 4,
+			"variant": "before",
+			"duration": 2.0341784060001373,
+			"exit_code": 1,
+			"load_before": [4.9052734375, 3.666015625, 2.50537109375],
+			"load_after": [4.9052734375, 3.666015625, 2.50537109375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 5,
+			"variant": "before",
+			"duration": 2.1152748670137953,
+			"exit_code": 1,
+			"load_before": [4.9052734375, 3.666015625, 2.50537109375],
+			"load_after": [4.9052734375, 3.666015625, 2.50537109375],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "test",
+			"mode": "warm",
+			"sample": 5,
+			"variant": "after",
+			"duration": 1.8777092120144516,
+			"exit_code": 1,
+			"load_before": [4.9052734375, 3.666015625, 2.50537109375],
+			"load_after": [4.75244140625, 3.65478515625, 2.50830078125],
+			"test_summary": ["Tests  5 failed | 98 passed (103)"]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 1,
+			"variant": "before",
+			"duration": 7.090673936996609,
+			"exit_code": 0,
+			"load_before": [4.75244140625, 3.65478515625, 2.50830078125],
+			"load_after": [5.0126953125, 3.72705078125, 2.5380859375]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 1,
+			"variant": "after",
+			"duration": 7.103716384997824,
+			"exit_code": 0,
+			"load_before": [5.0126953125, 3.72705078125, 2.5380859375],
+			"load_after": [4.47509765625, 3.6533203125, 2.52685546875]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 2,
+			"variant": "after",
+			"duration": 7.183651816012571,
+			"exit_code": 0,
+			"load_before": [4.47509765625, 3.6533203125, 2.52685546875],
+			"load_after": [4.677734375, 3.708984375, 2.55126953125]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 2,
+			"variant": "before",
+			"duration": 7.16734248099965,
+			"exit_code": 0,
+			"load_before": [4.677734375, 3.708984375, 2.55126953125],
+			"load_after": [4.185546875, 3.63525390625, 2.5390625]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 3,
+			"variant": "before",
+			"duration": 6.888695336005185,
+			"exit_code": 0,
+			"load_before": [4.185546875, 3.63525390625, 2.5390625],
+			"load_after": [3.93017578125, 3.59130859375, 2.53076171875]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 3,
+			"variant": "after",
+			"duration": 7.003175290010404,
+			"exit_code": 0,
+			"load_before": [3.93017578125, 3.59130859375, 2.53076171875],
+			"load_after": [3.775390625, 3.564453125, 2.52783203125]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 4,
+			"variant": "after",
+			"duration": 7.1821765930217225,
+			"exit_code": 0,
+			"load_before": [3.775390625, 3.564453125, 2.52783203125],
+			"load_after": [3.87060546875, 3.59423828125, 2.548828125]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 4,
+			"variant": "before",
+			"duration": 7.161861920001684,
+			"exit_code": 0,
+			"load_before": [3.87060546875, 3.59423828125, 2.548828125],
+			"load_after": [3.640625, 3.55078125, 2.5400390625]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 5,
+			"variant": "before",
+			"duration": 7.0529577159904875,
+			"exit_code": 0,
+			"load_before": [3.640625, 3.55078125, 2.5400390625],
+			"load_after": [3.6962890625, 3.56640625, 2.55615234375]
+		},
+		{
+			"operation": "build",
+			"mode": "warm",
+			"sample": 5,
+			"variant": "after",
+			"duration": 7.179390688019339,
+			"exit_code": 0,
+			"load_before": [3.6962890625, 3.56640625, 2.55615234375],
+			"load_after": [3.47998046875, 3.5234375, 2.54736328125]
+		}
+	],
+	"warning_counts": {
+		"original_migration": {
+			"eslint/max-lines-per-function": 98,
+			"eslint/sort-vars": 17,
+			"unicorn/no-useless-undefined": 5,
+			"import/max-dependencies": 13,
+			"unicorn/prefer-query-selector": 2,
+			"eslint/require-unicode-regexp": 105,
+			"unicorn/prefer-code-point": 1,
+			"eslint/no-inline-comments": 3,
+			"unicorn/consistent-assert": 26,
+			"unicorn/consistent-function-scoping": 7,
+			"eslint/max-lines": 25,
+			"eslint/no-negated-condition": 3,
+			"unicorn/no-negated-condition": 3,
+			"unicorn/no-array-callback-reference": 9,
+			"unicorn/explicit-length-check": 15,
+			"eslint/no-loop-func": 1,
+			"unicorn/prefer-at": 4,
+			"eslint/max-depth": 22,
+			"unicorn/prefer-dom-node-dataset": 4,
+			"unicorn/prefer-string-replace-all": 15,
+			"eslint/array-callback-return": 2,
+			"react/exhaustive-effect-dependencies": 3,
+			"unicorn/prefer-number-coercion": 7,
+			"react-hooks/exhaustive-deps": 1,
+			"unicorn/escape-case": 2,
+			"unicorn/prefer-import-meta-properties": 1,
+			"unicorn/no-hex-escape": 1,
+			"unicorn/no-lonely-if": 1,
+			"eslint/require-await": 1,
+			"react/no-unescaped-entities": 2,
+			"typescript/prefer-readonly-parameter-types": 611,
+			"typescript/strict-boolean-expressions": 181,
+			"typescript/consistent-return": 28,
+			"typescript/no-confusing-void-expression": 78,
+			"typescript/no-deprecated": 6,
+			"typescript/no-unsafe-argument": 109,
+			"typescript/no-unsafe-type-assertion": 9,
+			"typescript/no-unsafe-member-access": 847,
+			"typescript/prefer-nullish-coalescing": 2,
+			"typescript/no-misused-promises": 1,
+			"typescript/strict-void-return": 2,
+			"typescript/no-unnecessary-type-conversion": 1,
+			"typescript/no-unnecessary-boolean-literal-compare": 1,
+			"typescript/no-unsafe-assignment": 342,
+			"typescript/no-unsafe-call": 595,
+			"typescript/no-unsafe-return": 83,
+			"typescript/no-base-to-string": 1,
+			"typescript/restrict-template-expressions": 1
+		},
+		"upgraded_before": {
+			"eslint/max-lines-per-function": 98,
+			"eslint/sort-vars": 17,
+			"unicorn/no-useless-undefined": 5,
+			"import/max-dependencies": 13,
+			"eslint/no-inline-comments": 3,
+			"eslint/no-negated-condition": 3,
+			"unicorn/no-negated-condition": 3,
+			"eslint/require-unicode-regexp": 105,
+			"unicorn/prefer-code-point": 1,
+			"eslint/max-lines": 25,
+			"unicorn/consistent-assert": 26,
+			"unicorn/consistent-function-scoping": 7,
+			"unicorn/no-array-callback-reference": 9,
+			"unicorn/explicit-length-check": 15,
+			"eslint/no-loop-func": 1,
+			"unicorn/prefer-at": 4,
+			"eslint/max-depth": 22,
+			"unicorn/prefer-dom-node-dataset": 4,
+			"unicorn/prefer-string-replace-all": 15,
+			"eslint/array-callback-return": 2,
+			"react/exhaustive-effect-dependencies": 3,
+			"unicorn/prefer-number-coercion": 7,
+			"unicorn/escape-case": 2,
+			"react-hooks/exhaustive-deps": 1,
+			"unicorn/prefer-query-selector": 2,
+			"unicorn/prefer-import-meta-properties": 1,
+			"unicorn/no-hex-escape": 1,
+			"unicorn/no-lonely-if": 1,
+			"eslint/require-await": 1,
+			"react/no-unescaped-entities": 2,
+			"typescript/prefer-readonly-parameter-types": 611,
+			"typescript/strict-boolean-expressions": 181,
+			"typescript/consistent-return": 28,
+			"typescript/no-confusing-void-expression": 78,
+			"typescript/no-deprecated": 6,
+			"typescript/no-unsafe-argument": 109,
+			"typescript/no-unnecessary-type-conversion": 1,
+			"typescript/no-unnecessary-boolean-literal-compare": 1,
+			"typescript/no-unsafe-type-assertion": 9,
+			"typescript/no-unsafe-member-access": 847,
+			"typescript/prefer-nullish-coalescing": 2,
+			"typescript/no-misused-promises": 1,
+			"typescript/strict-void-return": 2,
+			"typescript/no-unsafe-assignment": 341,
+			"typescript/no-unsafe-call": 595,
+			"typescript/no-unsafe-return": 83,
+			"typescript/no-base-to-string": 1,
+			"typescript/restrict-template-expressions": 1
+		},
+		"after": {
+			"react-hooks/exhaustive-deps": 1,
+			"typescript/no-unsafe-type-assertion": 8,
+			"typescript/no-misused-promises": 1
+		}
+	},
+	"lazy_plugins_experiment": {
+		"test:baseline": {
+			"n": 5,
+			"median": 2.0068065079976805,
+			"range": [1.9309701300226152, 2.212339110992616]
+		},
+		"test:lazy": {
+			"n": 5,
+			"median": 1.826781668991316,
+			"range": [1.7609396890038624, 2.2920688750164118]
+		},
+		"check:baseline": {
+			"n": 5,
+			"median": 3.434937579993857,
+			"range": [3.3766839889867697, 3.4602443180046976]
+		},
+		"check:lazy": {
+			"n": 5,
+			"median": 2.890256432001479,
+			"range": [2.8630098790163174, 2.9135872590122744]
+		},
+		"build:baseline": {
+			"n": 5,
+			"median": 6.877280784014147,
+			"range": [6.79750385900843, 6.986545468971599]
+		},
+		"build:lazy": {
+			"n": 5,
+			"median": 6.842355614004191,
+			"range": [6.797565734013915, 6.916035597008886]
+		}
+	},
+	"rejected_direct_import_experiment": {
+		"barrel": {
+			"median": 1.7910441650019493,
+			"range": [1.764873128006002, 2.328530998027418]
+		},
+		"direct": {
+			"median": 1.7648476809845306,
+			"range": [1.7214073530049063, 1.8226172869908623]
+		}
+	},
+	"removed_original_tooling": [
+		{
+			"path": "tools/oxlint/anti-slop/index.ts",
+			"lines": 41,
+			"bytes": 2281
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-chained-type-assertions.ts",
+			"lines": 77,
+			"bytes": 2538
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-conditional-empty-object-spread.ts",
+			"lines": 49,
+			"bytes": 1552
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-known-value-widening.ts",
+			"lines": 247,
+			"bytes": 7817
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-module-mocking.ts",
+			"lines": 91,
+			"bytes": 3121
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-object-parameters.ts",
+			"lines": 126,
+			"bytes": 4263
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-reflect-apply.ts",
+			"lines": 28,
+			"bytes": 926
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-reflect-get.ts",
+			"lines": 28,
+			"bytes": 939
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-runtime-typeof.ts",
+			"lines": 67,
+			"bytes": 1866
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-shape-in-symbol-names.ts",
+			"lines": 39,
+			"bytes": 1239
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-unknown-parameters.ts",
+			"lines": 83,
+			"bytes": 2983
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-unknown-returns.ts",
+			"lines": 115,
+			"bytes": 4088
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-unknown-type-aliases.ts",
+			"lines": 70,
+			"bytes": 2366
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-unsafe-dictionary-type.ts",
+			"lines": 134,
+			"bytes": 3986
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/no-widen-then-assert.ts",
+			"lines": 366,
+			"bytes": 12336
+		},
+		{
+			"path": "tools/oxlint/anti-slop/rules/require-safety-comment-for-type-assertion.ts",
+			"lines": 62,
+			"bytes": 1921
+		},
+		{
+			"path": "tools/oxlint/anti-slop/shared/dictionary-types.ts",
+			"lines": 502,
+			"bytes": 17100
+		},
+		{
+			"path": "tools/oxlint/anti-slop/shared/lexical-type-parameters.ts",
+			"lines": 61,
+			"bytes": 1817
+		},
+		{
+			"path": "tools/oxlint/anti-slop/shared/reflect-method.ts",
+			"lines": 35,
+			"bytes": 1368
+		},
+		{
+			"path": "scripts/context.mjs",
+			"lines": 367,
+			"bytes": 10771
+		},
+		{
+			"path": "scripts/graph.mjs",
+			"lines": 238,
+			"bytes": 7876
+		},
+		{
+			"path": "scripts/verify-generated.mjs",
+			"lines": 109,
+			"bytes": 3117
+		}
+	],
+	"validation": {
+		"frozen_install": "passed",
+		"vp_check": {
+			"errors": 0,
+			"warnings": 10,
+			"authored_files": 223
+		},
+		"forced_typescript_build": "passed across eight referenced projects",
+		"unit": {
+			"passed": 98,
+			"failed": 5,
+			"total": 103
+		},
+		"generated_and_shaders": "passed: six generator checks, 55 WGSL entries",
+		"production_reproducibility": "passed: 106 files match within the same checkout",
+		"stylex_source_and_output": "passed",
+		"native_headless_pack": "passed",
+		"gpu_doctor": "blocked: missing libvulkan.so.1 and Vulkan ICD; VGPU-NODE-NO-ADAPTER",
+		"bundle_budget": {
+			"actual_gzip_bytes": 292567,
+			"limit_gzip_bytes": 122880,
+			"status": "existing failure"
+		},
+		"browser_HMR_preview_Poros_deployment": "not verified; user-started server or CI required",
+		"optional_intro_capture": "not verified; capture/reference inputs absent"
+	},
+	"preservation": {
+		"common_output_paths": 103,
+		"byte_identical_common_outputs": 101,
+		"changed_common_outputs": [".vite/manifest.json", "index.html"],
+		"same_ssr_element_sequence": true,
+		"ssr_element_count": 1485,
+		"same_69_inline_svgs": true,
+		"css_and_public_assets": "byte-identical across matched-version before/after",
+		"checkout_path_limit": "native WGSL output embeds checkout paths; cross-directory JS hashes are not expected identical"
+	},
+	"review": {
+		"structured_findings": 0,
+		"confidence": 0.73,
+		"sponsor_alias_followup_findings": 0
+	},
+	"rejected_measurement_batches": [
+		"loaded-host initial35samples: not used as before/after gain",
+		"first matched70samples: baseline formatting short-circuit and sponsor integration failures; retained in temporary raw evidence, excluded from final table"
+	],
+	"post_audit_user_change": {
+		"request": "14px footer and actual navbar only; dropdown/mobile menu sizes unchanged; GitHub foreground-to-chrome hover",
+		"files": ["src/components/Footer.tsx", "src/styles/header-styles.ts"],
+		"measurement_boundary": "All final70samples and SVG/CSS comparisons precede these separately requested typography, hover, icon-library and CTA changes.",
+		"tests_or_snapshots_changed": false,
+		"icon_library": {
+			"removed": "lucide-react",
+			"added": "@tabler/icons-react@3.46.0",
+			"custom_panel_glyphs_preserved": true,
+			"declaration_patch": "Replace removed ReactSVG type with keyof SVGElementTagNameMap; no runtime changes or skipLibCheck relaxation."
+		},
+		"layout": "Center homepage AI that stays yours heading and CTA buttons using existing centered PageCta styles"
+	},
+	"authored_coverage": {
+		"uncovered_authored_files": [],
+		"project_primary_file_counts": {
+			"tsconfig.app.json": 57,
+			"tsconfig.node.json": 11,
+			"packages/demo-ui/tsconfig.json": 62,
+			"packages/logo-renderer/tsconfig.json": 49,
+			"tests/tsconfig.json": 30,
+			"scripts/tsconfig.json": 9,
+			"api/tsconfig.json": 5,
+			"packages/logo-renderer/scripts/tsconfig.json": 11
+		},
+		"no_authored_js": true,
+		"frozen_audit_source_matched_benchmark": true,
+		"current_source_matches_benchmark": false,
+		"scope": "Project coverage is unchanged; later requested UI/icon changes intentionally differ from the frozen benchmark source."
+	},
+	"post_audit_validation": {
+		"check": {
+			"errors": 0,
+			"warnings": 10,
+			"authored_files": 223
+		},
+		"forced_types": "passed",
+		"unit": {
+			"passed": 98,
+			"failed": 5,
+			"total": 103
+		},
+		"reproducible_files": 106,
+		"frozen_install": "passed",
+		"stylex_source_and_output": "passed",
+		"bundle_budget": {
+			"actual_gzip_bytes": 290375,
+			"limit_gzip_bytes": 122880,
+			"status": "existing budget remains exceeded"
+		},
+		"final_structured_review": {
+			"findings": 0,
+			"confidence": 0.78
+		},
+		"no_executable_lucide_references": true,
+		"no_lucide_lock_entries": true,
+		"browser_or_GPU_rendering_verified": false
+	}
+}

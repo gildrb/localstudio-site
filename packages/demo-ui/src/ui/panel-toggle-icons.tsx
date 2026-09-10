@@ -1,11 +1,10 @@
 /**
  * Sidebar toggle glyphs.
  *
- * Lucide ships `Panel{Left,Right}{Open,Close}`, but at 14px the chevron inside
- * the box turns to mush and the open/closed states are nearly indistinguishable.
- * These say the same thing with fill instead: the panel's strip is solid when it
- * is open, hollow when it is closed. Stroked 24px geometry so they sit correctly
- * beside the lucide icons that share the same toolbars.
+ * At 14px, a chevron inside the panel box makes the open/closed states
+ * nearly indistinguishable. These use fill instead: the panel's strip is solid
+ * when it is open, hollow when it is closed. Stroked 24px geometry keeps them
+ * aligned with the Tabler icons that share the same toolbars.
  */
 import type { SVGProps } from "react";
 
