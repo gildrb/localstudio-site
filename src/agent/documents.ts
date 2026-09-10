@@ -111,10 +111,7 @@ export function agentDocument(path: string): AgentDocument | null {
 export { markdownPathFor };
 
 export function wantsMarkdown(acceptHeader: string): boolean {
-	return (
-		acceptHeader.includes("text/markdown") &&
-		!acceptHeader.includes("text/html")
-	);
+	return acceptHeader.includes("text/markdown") && !acceptHeader.includes("text/html");
 }
 
 export function markdownTokenCount(body: string): string {

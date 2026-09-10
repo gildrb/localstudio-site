@@ -22,14 +22,10 @@ function selectionPosition(position: number) {
 	};
 }
 
-const segmentClassNames = selectionStops.map(
-	(style) => stylex.props(style).className ?? "",
-);
+const segmentClassNames = selectionStops.map((style) => stylex.props(style).className ?? "");
 const darkInkClassName = stylex.props(selectionStyles.darkInk).className ?? "";
 const selectionClasses = new Set(
-	[...segmentClassNames, darkInkClassName].flatMap(
-		(className) => className.split(" "),
-	),
+	[...segmentClassNames, darkInkClassName].flatMap((className) => className.split(" ")),
 );
 
 function clearSelectionClass(owner: HTMLElement) {
@@ -55,15 +51,9 @@ function applySelectionClass(owner: HTMLElement, position: number) {
 function selectedTextOwners(selection: Selection) {
 	const owners = new Set<HTMLElement>();
 	const include = (node: Node, range: Range) => {
-		if (
-			!(node instanceof Text) ||
-			!node.data.trim() ||
-			!range.intersectsNode(node)
-		)
-			return;
+		if (!(node instanceof Text) || !node.data.trim() || !range.intersectsNode(node)) return;
 		const parent = node.parentElement;
-		if (parent && !parent.closest('[aria-hidden="true"], [inert]'))
-			owners.add(parent);
+		if (parent && !parent.closest('[aria-hidden="true"], [inert]')) owners.add(parent);
 	};
 
 	for (let index = 0; index < selection.rangeCount; index += 1) {
@@ -72,12 +62,8 @@ function selectedTextOwners(selection: Selection) {
 			include(range.commonAncestorContainer, range);
 			continue;
 		}
-		const walker = document.createTreeWalker(
-			range.commonAncestorContainer,
-			NodeFilter.SHOW_TEXT,
-		);
-		for (let node = walker.nextNode(); node; node = walker.nextNode())
-			include(node, range);
+		const walker = document.createTreeWalker(range.commonAncestorContainer, NodeFilter.SHOW_TEXT);
+		for (let node = walker.nextNode(); node; node = walker.nextNode()) include(node, range);
 	}
 	return owners;
 }
@@ -95,8 +81,7 @@ export function useSkySelection() {
 			frame = 0;
 			clear();
 			const selection = document.getSelection();
-			if (!selection || selection.isCollapsed || selection.rangeCount === 0)
-				return;
+			if (!selection || selection.isCollapsed || selection.rangeCount === 0) return;
 			owners = selectedTextOwners(selection);
 			for (const owner of owners) {
 				const bounds = owner.getBoundingClientRect();

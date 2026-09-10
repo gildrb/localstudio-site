@@ -22,9 +22,7 @@ export function saveScrollPosition() {
 
 export function readScrollPosition() {
 	// SAFETY: This history field is exclusively written by this module as an x/y tuple.
-	const saved = window.history.state?.[scrollStateKey] as
-		| readonly [number, number]
-		| undefined;
+	const saved = window.history.state?.[scrollStateKey] as readonly [number, number] | undefined;
 	return saved ? { x: saved[0], y: saved[1] } : null;
 }
 
@@ -57,15 +55,9 @@ export function scrollToHash(hash: string) {
 	}
 	if (!target) return false;
 	target.scrollIntoView({ block: "start", behavior: "instant" });
-	const heading = target.matches("h1, h2, h3")
-		? target
-		: target.querySelector("h1, h2, h3");
+	const heading = target.matches("h1, h2, h3") ? target : target.querySelector("h1, h2, h3");
 	const focusTarget =
-		heading instanceof HTMLElement
-			? heading
-			: target instanceof HTMLElement
-				? target
-				: null;
+		heading instanceof HTMLElement ? heading : target instanceof HTMLElement ? target : null;
 	if (focusTarget === null) return true;
 	if (!focusTarget.hasAttribute("tabindex")) {
 		focusTarget.tabIndex = -1;

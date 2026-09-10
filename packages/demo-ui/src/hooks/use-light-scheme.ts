@@ -9,5 +9,9 @@ function subscribe(change: () => void) {
 }
 
 export function useLightScheme() {
-	return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches, () => false);
+	return useSyncExternalStore(
+		subscribe,
+		() => window.matchMedia(query).matches,
+		() => false,
+	);
 }

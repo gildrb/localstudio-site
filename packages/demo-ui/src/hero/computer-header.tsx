@@ -106,7 +106,11 @@ function TabPill({
 		<div
 			onMouseEnter={() => setHovered(true)}
 			onMouseLeave={() => setHovered(false)}
-			{...stylex.props(demoStyles.reset, styles.tab, selected ? styles.selectedTab : styles.idleTab)}
+			{...stylex.props(
+				demoStyles.reset,
+				styles.tab,
+				selected ? styles.selectedTab : styles.idleTab,
+			)}
 			title={title}
 		>
 			<button
@@ -117,13 +121,9 @@ function TabPill({
 				{Icon ? (
 					<Icon {...stylex.props(demoStyles.reset, styles.icon116, styles.lucideScale)} />
 				) : null}
-				<span {...stylex.props(demoStyles.reset, styles.span118)}>
-					{label}
-				</span>
+				<span {...stylex.props(demoStyles.reset, styles.span118)}>{label}</span>
 				{shortcut ? (
-					<span {...stylex.props(demoStyles.reset, styles.span122)}>
-						{shortcut}
-					</span>
+					<span {...stylex.props(demoStyles.reset, styles.span122)}>{shortcut}</span>
 				) : null}
 			</button>
 			{onClose ? (
@@ -133,7 +133,12 @@ function TabPill({
 						event.stopPropagation();
 						onClose();
 					}}
-					{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.closeButton, (hovered || selected) && styles.closeHovered)}
+					{...stylex.props(
+						demoStyles.reset,
+						demoStyles.controlReset,
+						styles.closeButton,
+						(hovered || selected) && styles.closeHovered,
+					)}
 					aria-label={`Close ${label}`}
 					title={`Close ${label}`}
 				>
@@ -159,7 +164,12 @@ function HeaderIconButton({
 		<button
 			type="button"
 			onClick={onClick}
-			{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.headerButton, active ? styles.headerButtonActive : styles.headerButtonIdle)}
+			{...stylex.props(
+				demoStyles.reset,
+				demoStyles.controlReset,
+				styles.headerButton,
+				active ? styles.headerButtonActive : styles.headerButtonIdle,
+			)}
 			title={label}
 			aria-label={label}
 			aria-pressed={active}
@@ -194,8 +204,7 @@ export function ComputerHeader({
 }) {
 	const visibleTabs = openTabs.filter(
 		(openTab) =>
-			openTab !== "tools" &&
-			(openTab !== "terminal" || terminalState.owners.length === 0),
+			openTab !== "tools" && (openTab !== "terminal" || terminalState.owners.length === 0),
 	);
 	return (
 		<div {...stylex.props(demoStyles.reset, styles.div205)}>
@@ -210,21 +219,15 @@ export function ComputerHeader({
 							title={meta.label}
 							selected={tab === openTab}
 							onSelect={() =>
-								openTab === "terminal"
-									? onOpenCurrentTerminal()
-									: onSelectTab(openTab)
+								openTab === "terminal" ? onOpenCurrentTerminal() : onSelectTab(openTab)
 							}
-							onClose={
-								openTab === "status" ? undefined : () => onCloseTab(openTab)
-							}
+							onClose={openTab === "status" ? undefined : () => onCloseTab(openTab)}
 						/>
 					);
 				})}
 				{terminalState.owners.map((owner, index) => {
 					const label = terminalOwnerLabel(owner, index);
-					const selected =
-						tab === "terminal" &&
-						terminalState.activeOwnerKey === owner.mountKey;
+					const selected = tab === "terminal" && terminalState.activeOwnerKey === owner.mountKey;
 					const shortcut = index < 9 ? `⌘⌥${index + 1}` : undefined;
 					return (
 						<TabPill
@@ -316,16 +319,17 @@ export function ComputerLauncherPanel({
 							key={card.key}
 							type="button"
 							onClick={card.onClick}
-							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.launcherCard, selected ? styles.launcherSelected : styles.launcherIdle)}
+							{...stylex.props(
+								demoStyles.reset,
+								demoStyles.controlReset,
+								styles.launcherCard,
+								selected ? styles.launcherSelected : styles.launcherIdle,
+							)}
 						>
 							<Icon {...stylex.props(demoStyles.reset, styles.icon329, styles.launcherIcon)} />
 							<span {...stylex.props(demoStyles.reset, styles.span330)}>
-								<span {...stylex.props(demoStyles.reset, styles.span331)}>
-									{card.title}
-								</span>
-								<span {...stylex.props(demoStyles.reset, styles.span334)}>
-									{card.description}
-								</span>
+								<span {...stylex.props(demoStyles.reset, styles.span331)}>{card.title}</span>
+								<span {...stylex.props(demoStyles.reset, styles.span334)}>{card.description}</span>
 							</span>
 						</button>
 					);

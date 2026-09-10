@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 import { readFileSync } from "node:fs";
 
 const hero = readFileSync("src/sections/Hero.tsx", "utf8");
@@ -6,7 +6,14 @@ const styles = readFileSync("src/styles/sections-styles.ts", "utf8");
 const renderer = readFileSync("packages/logo-renderer/src/renderer/index.tsx", "utf8");
 
 test("hero copy and demo mount fully visible without entrance effects", () => {
-	for (const token of ["HeroEntrance", "useAnimationControls", "useLayoutEffect", "motion/react", "Suspense", "lazy("]) {
+	for (const token of [
+		"HeroEntrance",
+		"useAnimationControls",
+		"useLayoutEffect",
+		"motion/react",
+		"Suspense",
+		"lazy(",
+	]) {
 		expect(hero).not.toContain(token);
 	}
 	expect(hero).toContain('import { HeroDemo } from "@local-studio/demo-ui/hero"');
@@ -36,8 +43,10 @@ test("live logo stays hidden until the poster handoff and starts without depth d
 	expect(renderer).not.toContain("depthOpening: depthReveal ? 1 : 0");
 });
 
-
 test("intro material clears empty apertures transparently", () => {
-  const material = readFileSync("packages/logo-renderer/src/renderer/render/intro-material.ts", "utf8");
-  expect(material).toContain("clearColor: [0, 0, 0, 0]");
+	const material = readFileSync(
+		"packages/logo-renderer/src/renderer/render/intro-material.ts",
+		"utf8",
+	);
+	expect(material).toContain("clearColor: [0, 0, 0, 0]");
 });

@@ -1,9 +1,9 @@
-import factorySvg from "../../public/images/sponsors/factory.svg" with { type: "text" };
-import hotAisleSvg from "../../public/images/sponsors/hot-aisle.svg" with { type: "text" };
-import lambdaSvg from "../../public/images/sponsors/lambda.svg" with { type: "text" };
-import nvidiaSvg from "../../public/images/sponsors/nvidia.svg" with { type: "text" };
-import primeIntellectSvg from "../../public/images/sponsors/prime-intellect.svg" with { type: "text" };
-import tngSvg from "../../public/images/sponsors/tng.svg" with { type: "text" };
+import factorySvg from "../../public/images/sponsors/factory.svg?raw";
+import hotAisleSvg from "../../public/images/sponsors/hot-aisle.svg?raw";
+import lambdaSvg from "../../public/images/sponsors/lambda.svg?raw";
+import nvidiaSvg from "../../public/images/sponsors/nvidia.svg?raw";
+import primeIntellectSvg from "../../public/images/sponsors/prime-intellect.svg?raw";
+import tngSvg from "../../public/images/sponsors/tng.svg?raw";
 
 export const sponsors = [
 	{ name: "NVIDIA", svg: nvidiaSvg, width: 112, height: 21 },
@@ -32,10 +32,7 @@ export function prepareInlineSvg(source: string, prefix: string): string {
 	const opening = source
 		.slice(start, openingEnd + 1)
 		.replaceAll(/\s(?:width|height)="[^"]*"/gu, "")
-		.replace(
-			"<svg",
-			'<svg width="100%" height="100%" aria-hidden="true" focusable="false"',
-		);
+		.replace("<svg", '<svg width="100%" height="100%" aria-hidden="true" focusable="false"');
 	let svg = `${opening}${source.slice(openingEnd + 1)}`;
 	const ids = [...svg.matchAll(/\sid="([^"]+)"/gu)].map((match) => match[1]);
 	for (const id of ids) {

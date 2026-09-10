@@ -1,8 +1,7 @@
 import * as stylex from "@stylexjs/stylex";
 import { colors, constants, lengths, times } from "./public-tokens.stylex";
 
-const pageWidth =
-	`min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
+const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 
 export const styles = stylex.create({
 	sectionWidth: {

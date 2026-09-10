@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 import {
 	DEMO_PROMPT,
 	DEMO_TOOLS,
@@ -10,9 +10,7 @@ import {
 } from "../../packages/demo-ui/src/scenario/sequence";
 
 test("finish jumps to the terminal demonstration state", () => {
-	expect(demoReducer(initialDemoState, { type: "finish" })).toEqual(
-		finishedDemoState,
-	);
+	expect(demoReducer(initialDemoState, { type: "finish" })).toEqual(finishedDemoState);
 	expect(finishedDemoState.playing).toBe(false);
 	expect(finishedDemoState.phase).toBe("done");
 	expect(finishedDemoState.resultVisible).toBe(true);

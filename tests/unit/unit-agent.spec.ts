@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 import {
 	HOMEPAGE_LINK_HEADER,
 	agentDocument,
@@ -65,15 +65,9 @@ test("discovery documents and Accept negotiation are shared", () => {
 	expect(llms?.body).toContain("## When to use Local Studio");
 	expect(llms?.body).toContain("/developers");
 	expect(llms?.body).toContain("/openapi.json");
-	expect(agentDocument("/.well-known/api-catalog")?.contentType).toMatch(
-		/linkset\+json/,
-	);
-	expect(agentDocument("/.well-known/agent-card.json")?.body).toContain(
-		"Sybil Solutions",
-	);
-	expect(agentDocuments().map((document) => document.path)).toContain(
-		"/machine.md",
-	);
+	expect(agentDocument("/.well-known/api-catalog")?.contentType).toMatch(/linkset\+json/);
+	expect(agentDocument("/.well-known/agent-card.json")?.body).toContain("Sybil Solutions");
+	expect(agentDocuments().map((document) => document.path)).toContain("/machine.md");
 });
 
 test("machine routes derive from the canonical HTML route model", () => {
@@ -107,9 +101,7 @@ test("vercel headers match agent document content types", () => {
 	expect(body).toContain(`"value": "${agentDocument("/robots.txt")?.contentType}"`);
 	expect(body).toContain(`"value": "${agentDocument("/sitemap.xml")?.contentType}"`);
 	expect(body).toContain(`"value": "${agentDocument("/llms.txt")?.contentType}"`);
-	expect(body).toContain(
-		`"value": "${agentDocument("/.well-known/api-catalog")?.contentType}"`,
-	);
+	expect(body).toContain(`"value": "${agentDocument("/.well-known/api-catalog")?.contentType}"`);
 	expect(body).toContain(
 		`"value": "${agentDocument("/.well-known/agent-card.json")?.contentType}"`,
 	);
@@ -140,7 +132,9 @@ test("agent documents use canonical site facts", () => {
 });
 
 test("release URLs are derived from the Local Studio repository", () => {
-	expect(release.url.startsWith(`${site.products.localStudio.repository}/releases/download/`)).toBe(true);
+	expect(release.url.startsWith(`${site.products.localStudio.repository}/releases/download/`)).toBe(
+		true,
+	);
 	expect(release.releases).toBe(`${site.products.localStudio.repository}/releases`);
 	expect(release.latestAlias).toBe(
 		`${site.products.localStudio.repository}/releases/latest/download/${release.artifact}`,

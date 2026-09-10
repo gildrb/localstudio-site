@@ -71,13 +71,18 @@ export function AgentChatPaneHeader({
 				type="button"
 				onClick={onToggleRightPanel}
 				aria-pressed={rightPanelOpen}
-				{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.panelToggle, rightPanelOpen ? styles.panelToggleOpen : styles.panelToggleClosed)}
+				{...stylex.props(
+					demoStyles.reset,
+					demoStyles.controlReset,
+					styles.panelToggle,
+					rightPanelOpen ? styles.panelToggleOpen : styles.panelToggleClosed,
+				)}
 				title={rightPanelOpen ? "Hide right sidebar" : "Show right sidebar"}
-				aria-label={
-					rightPanelOpen ? "Hide right sidebar" : "Show right sidebar"
-				}
+				aria-label={rightPanelOpen ? "Hide right sidebar" : "Show right sidebar"}
 			>
-				<RightPanelIcon {...stylex.props(demoStyles.reset, styles.rightpanelicon79, styles.lucideScale)} />
+				<RightPanelIcon
+					{...stylex.props(demoStyles.reset, styles.rightpanelicon79, styles.lucideScale)}
+				/>
 			</button>
 		</div>
 	);

@@ -24,20 +24,35 @@ export function DemoShell({
 	return (
 		<section
 			ref={hostRef}
-			{...stylex.props(demoStyles.reset, demoStyles.root, lightScheme && lightTheme, lightScheme && demoStyles.lightScheme, mobile && demoStyles.mobile)}
+			{...stylex.props(
+				demoStyles.reset,
+				demoStyles.root,
+				lightScheme && lightTheme,
+				lightScheme && demoStyles.lightScheme,
+				mobile && demoStyles.mobile,
+			)}
 			data-theme={lightScheme ? "zai-light" : "zai-dark"}
 			data-scene={scene}
 			aria-label={label}
 		>
 			<div
-				{...stylex.props(demoStyles.reset, styles.demoViewport, demoStyles.viewport, demoStyles.mobileViewport, demoStyles.viewportHeight(mobile ? cropH * scale : DEMO_HEIGHT * Math.min(scale, 1)))}
+				{...stylex.props(
+					demoStyles.reset,
+					styles.demoViewport,
+					demoStyles.viewport,
+					demoStyles.mobileViewport,
+					demoStyles.viewportHeight(mobile ? cropH * scale : DEMO_HEIGHT * Math.min(scale, 1)),
+				)}
 			>
 				<div
-					{...stylex.props(demoStyles.reset, styles.demoApp, demoStyles.app, demoStyles.storyAppTransform(scale, shiftX, shiftY))}
+					{...stylex.props(
+						demoStyles.reset,
+						styles.demoApp,
+						demoStyles.app,
+						demoStyles.storyAppTransform(scale, shiftX, shiftY),
+					)}
 				>
-					<div {...stylex.props(demoStyles.reset, styles.div42)}>
-						{children}
-					</div>
+					<div {...stylex.props(demoStyles.reset, styles.div42)}>{children}</div>
 				</div>
 			</div>
 		</section>

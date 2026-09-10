@@ -5,8 +5,7 @@ import { footerRoutes } from "../domain/route";
 import { site } from "../domain/site";
 import { LocalLink } from "./LocalLink";
 
-const pageWidth =
-	`min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
+const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 
 const styles = stylex.create({
 	root: {
@@ -22,10 +21,10 @@ const styles = stylex.create({
 		gap: "32px",
 		marginTop: "auto",
 		marginInline: "auto",
-		paddingTop: '80px',
-		paddingRight: '0',
-		paddingBottom: 'calc(48px + env(safe-area-inset-bottom,0px))',
-		paddingLeft: '0',
+		paddingTop: "80px",
+		paddingRight: "0",
+		paddingBottom: "calc(48px + env(safe-area-inset-bottom,0px))",
+		paddingLeft: "0",
 		color: colors.chrome,
 		fontFamily: constants.fontSans,
 		fontSize: "16px",
@@ -93,16 +92,34 @@ export function Footer({ sx }: { sx?: PublicStyle }) {
 						{label}
 					</LocalLink>
 				))}
-				<a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.link)} href="/developers">
+				<a
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.interactive,
+						baseStyles.focusable,
+						styles.link,
+					)}
+					href="/developers"
+				>
 					Developers
 				</a>
-				<a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.link)} href="/openapi.json">
+				<a
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.interactive,
+						baseStyles.focusable,
+						styles.link,
+					)}
+					href="/openapi.json"
+				>
 					API
 				</a>
 			</nav>
 			<span {...stylex.props(baseStyles.element, styles.copyright)}>
 				© {site.copyrightYear}{" "}
-				<span translate="no" {...stylex.props(baseStyles.element)}>{site.products.localStudio.name}</span>
+				<span translate="no" {...stylex.props(baseStyles.element)}>
+					{site.products.localStudio.name}
+				</span>
 			</span>
 		</footer>
 	);

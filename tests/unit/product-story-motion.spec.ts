@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 import { readFileSync } from "node:fs";
 import {
 	storyIndex,
@@ -28,7 +28,13 @@ function positionAt(scrollY: number, scrollRange = 1000) {
 }
 
 test("position clamps and spaces scenes equally", () => {
-	for (const [scroll, expected] of [[-100, 0], [0, 0], [500, 2], [1000, 4], [2000, 4]] as const) {
+	for (const [scroll, expected] of [
+		[-100, 0],
+		[0, 0],
+		[500, 2],
+		[1000, 4],
+		[2000, 4],
+	] as const) {
 		expect(positionAt(scroll)).toBe(expected);
 	}
 	expect(positionAt(10, 0)).toBe(4);
@@ -60,8 +66,14 @@ test("position is monotonic both ways", () => {
 
 test("hysteresis rejects jitter and permits jumps", () => {
 	for (const [position, current, expected] of [
-		[0.519, 0, 0], [0.521, 0, 1], [0.481, 1, 1], [0.479, 1, 0], [4, 0, 4], [0, 4, 0],
-	] as const) expect(storyIndex(position, current, sceneCount)).toBe(expected);
+		[0.519, 0, 0],
+		[0.521, 0, 1],
+		[0.481, 1, 1],
+		[0.479, 1, 0],
+		[4, 0, 4],
+		[0, 4, 0],
+	] as const)
+		expect(storyIndex(position, current, sceneCount)).toBe(expected);
 });
 
 test("desktop scrub is continuous", () => {
@@ -87,26 +99,40 @@ test("Motion owns transitions; demos stay mounted", () => {
 	const story = styles.slice(styles.indexOf("\tstory:"), styles.indexOf("\tscreenReaderOnly:"));
 	for (const text of [
 		'import { FeatureDemo } from "@local-studio/demo-ui/story"',
-		"sceneStates.map(({ index, selected })", "selected && styles.storySelectedDemo",
-		"aria-hidden={!selected}", "inert={!selected}", "<m.div", "<m.li", "<m.span",
+		"sceneStates.map(({ index, selected })",
+		"selected && styles.storySelectedDemo",
+		"aria-hidden={!selected}",
+		"inert={!selected}",
+		"<m.div",
+		"<m.li",
+		"<m.span",
 		"{...storySceneAnimation(index, activeIndex, reducedMotion)}",
 		"y: selected || reducedMotion ? 0 : 6",
 		"animate={{ opacity: selected ? 1 : 0.55 }}",
 		"duration: reducedMotion ? 0 : motion.featureEntry.duration",
-	]) expect(component).toContain(text);
-	for (const text of ["Suspense", "lazy(", "mountedSceneIndexes"]) expect(component).not.toContain(text);
-	for (const text of ["layerAnimations", "registerLayer", "opacity:"]) expect(controller).not.toContain(text);
-	for (const text of ["requestAnimationFrame(update)", '{ passive: true }']) expect(controller).toContain(text);
-	for (const text of ['visibility: "hidden"', 'visibility: "visible"']) expect(story).toContain(text);
+	])
+		expect(component).toContain(text);
+	for (const text of ["Suspense", "lazy(", "mountedSceneIndexes"])
+		expect(component).not.toContain(text);
+	for (const text of ["layerAnimations", "registerLayer", "opacity:"])
+		expect(controller).not.toContain(text);
+	for (const text of ["requestAnimationFrame(update)", "{ passive: true }"])
+		expect(controller).toContain(text);
+	for (const text of ['visibility: "hidden"', 'visibility: "visible"'])
+		expect(story).toContain(text);
 	expect(story).not.toContain("transitionProperty:");
 	expect(component).not.toContain("styles.storySelectedOptionTitle");
 	expect(component).not.toContain("styles.storyLayerOffset");
-	const sceneStyles = story.slice(story.indexOf("	storyDemoTransition:"), story.indexOf("	storyScrollTrack:"));
+	const sceneStyles = story.slice(
+		story.indexOf("	storyDemoTransition:"),
+		story.indexOf("	storyScrollTrack:"),
+	);
 	expect(sceneStyles).not.toContain("transform:");
 	for (const text of [
 		"storyIndex(position, currentIndex, sceneCount)",
 		"syncMotion(reducedMotion ? currentIndex : position)",
-	]) expect(controller).toContain(text);
+	])
+		expect(controller).toContain(text);
 	expect(controller).not.toContain("useSpring");
 });
 

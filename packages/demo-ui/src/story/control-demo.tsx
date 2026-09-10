@@ -34,9 +34,7 @@ export function ControlDemo() {
 		<DemoShell scene="control" label="Usage controller" crop={STORY_CROP}>
 			<div {...stylex.props(demoStyles.reset, styles.div32)}>
 				<h3 {...stylex.props(demoStyles.reset, styles.h333)}>Usage</h3>
-				<p {...stylex.props(demoStyles.reset, styles.p34)}>
-					Proxied through this controller
-				</p>
+				<p {...stylex.props(demoStyles.reset, styles.p34)}>Proxied through this controller</p>
 				<p {...stylex.props(demoStyles.reset, styles.p37)}>1.28M</p>
 				<dl {...stylex.props(demoStyles.reset, styles.dl40)}>
 					<Stat label="Requests" value="2.3K" />
@@ -44,9 +42,7 @@ export function ControlDemo() {
 					<Stat label="Active days" value="86" />
 				</dl>
 				<section {...stylex.props(demoStyles.reset, styles.section45)}>
-					<h4 {...stylex.props(demoStyles.reset, styles.h446)}>
-						Token Activity
-					</h4>
+					<h4 {...stylex.props(demoStyles.reset, styles.h446)}>Token Activity</h4>
 					<TokenActivityHeatmap daily={DAYS} period="daily" />
 				</section>
 			</div>

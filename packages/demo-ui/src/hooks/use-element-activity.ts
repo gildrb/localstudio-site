@@ -2,9 +2,7 @@ import { useEffect, useState, type RefObject } from "react";
 
 const MIN_VISIBLE_RATIO = 0.1;
 
-export function useElementActive<T extends HTMLElement>(
-	ref: RefObject<T | null>,
-): boolean {
+export function useElementActive<T extends HTMLElement>(ref: RefObject<T | null>): boolean {
 	const [active, setActive] = useState(false);
 
 	useEffect(() => {

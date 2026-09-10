@@ -32,14 +32,14 @@ export const PASS_INSIDE = 0;
 export const PASS_OUTSIDE = 1;
 export const PASS_WIREFRAME = 2;
 export const MATERIAL_KIND = {
-  glass: 0,
-  normal: 1,
-  "camera reflected normal": 2,
-  metallic: 3,
-  "back-albedo": 0,
-  "back-depth": 0,
-  thickness: 4,
-  "paint-debug": 0,
+	glass: 0,
+	normal: 1,
+	"camera reflected normal": 2,
+	metallic: 3,
+	"back-albedo": 0,
+	"back-depth": 0,
+	thickness: 4,
+	"paint-debug": 0,
 } satisfies Record<EveMaterial, number>;
 export const CAMERA_CLIP_PADDING = 0.02;
 export const BASELINE_CAMERA_RADIUS = 1.9;
@@ -69,56 +69,55 @@ export const DEFAULT_PAINT_DT = 1 / 60;
 export const PAINT_STROKE_MOVEMENT_EPSILON_CELLS = 0.05;
 
 function safeDevicePixelRatioOrDefault(devicePixelRatio: number | undefined) {
-  const ratio =
-    devicePixelRatio !== undefined && Number.isFinite(devicePixelRatio)
-      ? devicePixelRatio
-      : DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO;
+	const ratio =
+		devicePixelRatio !== undefined && Number.isFinite(devicePixelRatio)
+			? devicePixelRatio
+			: DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO;
 
-  return Math.max(0.001, ratio);
+	return Math.max(0.001, ratio);
 }
 
 export function imprintCellSizeForLogicalHeight(logicalHeight: number) {
-  const safeLogicalHeight =
-    Number.isFinite(logicalHeight)
-      ? logicalHeight
-      : REFERENCE_IMPRINT_LOGICAL_HEIGHT;
+	const safeLogicalHeight = Number.isFinite(logicalHeight)
+		? logicalHeight
+		: REFERENCE_IMPRINT_LOGICAL_HEIGHT;
 
-  return (
-    DEFAULT_IMPRINT_CELL_SIZE * (Math.max(1, safeLogicalHeight) / REFERENCE_IMPRINT_LOGICAL_HEIGHT)
-  );
+	return (
+		DEFAULT_IMPRINT_CELL_SIZE * (Math.max(1, safeLogicalHeight) / REFERENCE_IMPRINT_LOGICAL_HEIGHT)
+	);
 }
 
 export function imprintGridSizeForLogicalSize(
-  logicalWidth: number,
-  logicalHeight: number,
-  gridScaleMultiplier = DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
+	logicalWidth: number,
+	logicalHeight: number,
+	gridScaleMultiplier = DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER,
 ) {
-  const cellSize = imprintCellSizeForLogicalHeight(logicalHeight);
-  const multiplierScale =
-    Math.max(0.001, gridScaleMultiplier) / DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER;
-  return {
-    cols: Math.max(1, Math.ceil((logicalWidth / cellSize) * multiplierScale)),
-    rows: Math.max(1, Math.ceil((logicalHeight / cellSize) * multiplierScale)),
-  };
+	const cellSize = imprintCellSizeForLogicalHeight(logicalHeight);
+	const multiplierScale =
+		Math.max(0.001, gridScaleMultiplier) / DEFAULT_IMPRINT_GRID_SCALE_MULTIPLIER;
+	return {
+		cols: Math.max(1, Math.ceil((logicalWidth / cellSize) * multiplierScale)),
+		rows: Math.max(1, Math.ceil((logicalHeight / cellSize) * multiplierScale)),
+	};
 }
 
 export function imprintCellSizeForDevicePixelRatio(
-  devicePixelRatio = DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO,
+	devicePixelRatio = DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO,
 ) {
-  return (
-    DEFAULT_IMPRINT_CELL_SIZE *
-    (safeDevicePixelRatioOrDefault(devicePixelRatio) / DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO)
-  );
+	return (
+		DEFAULT_IMPRINT_CELL_SIZE *
+		(safeDevicePixelRatioOrDefault(devicePixelRatio) / DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO)
+	);
 }
 
 export function bloomRadiusForDevicePixelRatio(
-  devicePixelRatio = DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO,
+	devicePixelRatio = DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO,
 ) {
-  return Math.max(
-    0,
-    Math.round(
-      BLOOM_RADIUS *
-        (safeDevicePixelRatioOrDefault(devicePixelRatio) / DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO),
-    ),
-  );
+	return Math.max(
+		0,
+		Math.round(
+			BLOOM_RADIUS *
+				(safeDevicePixelRatioOrDefault(devicePixelRatio) / DEFAULT_IMPRINT_DEVICE_PIXEL_RATIO),
+		),
+	);
 }

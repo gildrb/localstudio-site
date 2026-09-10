@@ -16,14 +16,15 @@ visible pyramid /2,/4,/8, half-kernel taps 6/10/14, factors 1/.8/.55;
 independent unthresholded /16 dust light, 8x8 area filter and 18-tap half-kernel;
 2200 particles with original populations, lifecycle, response 82, falloff 5.5,
 and dust exposure .72. Optional host pixelScale (framebuffer/CSS pixels, default
-1) scales billboard diameters without changing those source populations or their
-inverse-size energy response. Subpixel grains additionally receive
-min(1, framebufferDiameter²) coverage because a pixel-centered quad otherwise
-covers a whole raster sample regardless of its area. Coverage multiplies final
-display opacity after the unchanged particle tone mapping, not HDR energy. This corrects downsampled
-display sizing; it is not an authored grain/exposure retune.
-Beam opacity .72 is supplied by the host BEFORE this postprocess.
-The dust .72 is a distinct upstream constant, not a second beam-opacity application.
+
+1. scales billboard diameters without changing those source populations or their
+   inverse-size energy response. Subpixel grains additionally receive
+   min(1, framebufferDiameter²) coverage because a pixel-centered quad otherwise
+   covers a whole raster sample regardless of its area. Coverage multiplies final
+   display opacity after the unchanged particle tone mapping, not HDR energy. This corrects downsampled
+   display sizing; it is not an authored grain/exposure retune.
+   Beam opacity .72 is supplied by the host BEFORE this postprocess.
+   The dust .72 is a distinct upstream constant, not a second beam-opacity application.
 
 Adaptations: only white beam HDR enters the combined light target. The chrome
 material, existing SDR fog and room color never enter this pipeline. One shared

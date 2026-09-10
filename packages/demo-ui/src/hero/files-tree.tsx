@@ -50,14 +50,13 @@ const entries: FsEntry[] = [
 	},
 ];
 const fileToneStyles = {
-  code: styles.fileCode,
-  data: styles.fileData,
-  document: styles.fileDocument,
-  media: styles.fileMedia,
-  neutral: styles.fileNeutral,
-  script: styles.fileScript,
+	code: styles.fileCode,
+	data: styles.fileData,
+	document: styles.fileDocument,
+	media: styles.fileMedia,
+	neutral: styles.fileNeutral,
+	script: styles.fileScript,
 };
-
 
 export function HeroFilesystemTree({
 	openFile,
@@ -69,9 +68,7 @@ export function HeroFilesystemTree({
 	return (
 		<section {...stylex.props(demoStyles.reset, styles.section58)}>
 			<div {...stylex.props(demoStyles.reset, styles.div59)}>
-				<span {...stylex.props(demoStyles.reset, styles.span60)}>
-					Home
-				</span>
+				<span {...stylex.props(demoStyles.reset, styles.span60)}>Home</span>
 			</div>
 			<div {...stylex.props(demoStyles.reset, styles.div64)}>
 				{entries.map((entry) => {
@@ -80,18 +77,25 @@ export function HeroFilesystemTree({
 					return (
 						<div
 							key={entry.path}
-							{...stylex.props(demoStyles.reset, styles.treeRow, isActive ? styles.treeRowActive : styles.treeRowIdle, styles.treeIndent(isDir))}
+							{...stylex.props(
+								demoStyles.reset,
+								styles.treeRow,
+								isActive ? styles.treeRowActive : styles.treeRowIdle,
+								styles.treeIndent(isDir),
+							)}
 						>
-							{isActive ? (
-								<span {...stylex.props(demoStyles.reset, styles.span78)} />
-							) : null}
+							{isActive ? <span {...stylex.props(demoStyles.reset, styles.span78)} /> : null}
 							{isDir ? (
 								<span {...stylex.props(demoStyles.reset, styles.span81)}>
-									<ChevronDown {...stylex.props(demoStyles.reset, styles.chevrondown82, styles.lucideScale)} />
+									<ChevronDown
+										{...stylex.props(demoStyles.reset, styles.chevrondown82, styles.lucideScale)}
+									/>
 								</span>
 							) : (
 								<span {...stylex.props(demoStyles.reset, styles.span81)}>
-									<ChevronRight {...stylex.props(demoStyles.reset, styles.chevronright86, styles.lucideScale)} />
+									<ChevronRight
+										{...stylex.props(demoStyles.reset, styles.chevronright86, styles.lucideScale)}
+									/>
 								</span>
 							)}
 							<button
@@ -105,7 +109,11 @@ export function HeroFilesystemTree({
 									<Folder {...stylex.props(demoStyles.reset, styles.folder97)} />
 								) : (
 									<File
-										{...stylex.props(demoStyles.reset, styles.fileIcon, fileToneStyles[fileTone(entry.name)])}
+										{...stylex.props(
+											demoStyles.reset,
+											styles.fileIcon,
+											fileToneStyles[fileTone(entry.name)],
+										)}
 									/>
 								)}
 								<span {...stylex.props(demoStyles.reset, styles.span103)}>{entry.name}</span>

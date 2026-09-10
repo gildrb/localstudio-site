@@ -1,0 +1,15 @@
+packages:
+  - packages/*
+allowBuilds:
+  "@vgpu/adapter-node": true
+  esbuild: true
+  phase: false
+  webgpu: true
+overrides:
+  vite@*: npm:@voidzero-dev/vite-plus-core@0.3.1
+  vitest@*: 4.1.11
+patchedDependencies:
+  vgpu@0.3.1: patches/vgpu@0.3.1.patch
+peerDependencyRules:
+  allowedVersions:
+    vite: "0.3.1"

@@ -14,10 +14,13 @@ for (const viewport of viewports) {
 			await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
 			await page.goto(path);
 			await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-			await expect(page).toHaveScreenshot(`${viewport.name}${path === "/" ? "-home" : path.replaceAll("/", "-")}.png`, {
-				fullPage: true,
-				animations: "disabled",
-			});
+			await expect(page).toHaveScreenshot(
+				`${viewport.name}${path === "/" ? "-home" : path.replaceAll("/", "-")}.png`,
+				{
+					fullPage: true,
+					animations: "disabled",
+				},
+			);
 		});
 	}
 }

@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 import {
 	decideSameOriginNavigation,
 	downloadLabel,
@@ -36,9 +36,10 @@ test("redirects preserve compatibility paths", () => {
 });
 
 test("same-origin link decisions stay pure", () => {
-	expect(
-		decideSameOriginNavigation("/docs", "https://localstudio.ai", "/"),
-	).toEqual({ kind: "push", next: "/docs" });
+	expect(decideSameOriginNavigation("/docs", "https://localstudio.ai", "/")).toEqual({
+		kind: "push",
+		next: "/docs",
+	});
 	expect(
 		decideSameOriginNavigation(
 			"https://github.com/sybil-solutions/local-studio",
@@ -46,12 +47,11 @@ test("same-origin link decisions stay pure", () => {
 			"/",
 		),
 	).toEqual({ kind: "external" });
-	expect(
-		decideSameOriginNavigation("/#mobile", "https://localstudio.ai", "/#mobile"),
-	).toEqual({ kind: "hash", hash: "#mobile" });
-	expect(
-		decideSameOriginNavigation("/", "https://localstudio.ai", "/"),
-	).toEqual({ kind: "top" });
+	expect(decideSameOriginNavigation("/#mobile", "https://localstudio.ai", "/#mobile")).toEqual({
+		kind: "hash",
+		hash: "#mobile",
+	});
+	expect(decideSameOriginNavigation("/", "https://localstudio.ai", "/")).toEqual({ kind: "top" });
 });
 
 test("every HTML route has a page module", () => {

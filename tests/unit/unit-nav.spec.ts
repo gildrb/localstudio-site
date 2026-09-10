@@ -1,10 +1,5 @@
-import { expect, test } from "bun:test";
-import {
-	closedNav,
-	desktopMenu,
-	isMobileOpen,
-	reduceNav,
-} from "../../src/domain/nav";
+import { expect, test } from "vite-plus/test";
+import { closedNav, desktopMenu, isMobileOpen, reduceNav } from "../../src/domain/nav";
 
 test("desktop and mobile menus cannot be open together", () => {
 	const desktop = reduceNav(closedNav, { type: "openDesktop", menu: "products" });

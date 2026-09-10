@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parse } from "yaml";
 
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const command = process.argv[2] ?? "report";
@@ -23,13 +24,14 @@ const INCLUDE_EXT = new Set([
 const EXCLUDE_DIRS = new Set([
 	"node_modules",
 	"dist",
-	"dist-dev",
+	".vite",
+	".vite-plus",
 	".git",
 	"test-results",
 	"playwright-report",
 	".context",
 ]);
-const EXCLUDE_FILES = new Set(["bun.lock"]);
+const EXCLUDE_FILES = new Set(["pnpm-lock.yaml"]);
 const GENERATED_FILES = new Set([
 	"asset-manifest.json",
 	"design-manifest.json",
@@ -84,10 +86,11 @@ function workspacePackageMetadata() {
 }
 
 function validateWorkspacePackages() {
-	const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+	const workspace = parse(readFileSync(join(root, "pnpm-workspace.yaml"), "utf8"));
+	const tsconfig = JSON.parse(readFileSync(join(root, "tsconfig.json"), "utf8"));
 	const failures = [];
-	if (!manifest.workspaces?.some((entry) => entry === "packages/*")) {
-		failures.push("package.json workspaces must include packages/*");
+	if (!workspace.packages?.includes("packages/*")) {
+		failures.push("pnpm-workspace.yaml packages must include packages/*");
 	}
 	for (const workspacePackage of workspacePackageMetadata()) {
 		if (!workspacePackage.name) {
@@ -96,8 +99,13 @@ function validateWorkspacePackages() {
 		if (!workspacePackage.version || workspacePackage.version === "0.0.0") {
 			failures.push(`${workspacePackage.root} must have an explicit package version`);
 		}
-		if (!workspacePackage.scripts?.typecheck) {
-			failures.push(`${workspacePackage.root} must expose a typecheck script`);
+		if (
+			!tsconfig.references?.some(
+				({ path }) =>
+					path.replace(/^\.\//, "").replace(/\/tsconfig\.json$/, "") === workspacePackage.root,
+			)
+		) {
+			failures.push(`${workspacePackage.root} must be referenced by the root tsconfig.json`);
 		}
 	}
 	if (failures.length > 0) throw new Error(failures.join("\n"));
@@ -116,9 +124,7 @@ function walk(directory) {
 		}
 		const rel = relative(root, path).split("\\").join("/");
 		if (EXCLUDE_FILES.has(entry.name)) continue;
-		const ext = entry.name.includes(".")
-			? `.${entry.name.split(".").pop().toLowerCase()}`
-			: "";
+		const ext = entry.name.includes(".") ? `.${entry.name.split(".").pop().toLowerCase()}` : "";
 		if (!INCLUDE_EXT.has(ext)) continue;
 		files.push(rel);
 	}
@@ -167,7 +173,8 @@ function classify(rel) {
 		rel.startsWith("tools/") ||
 		rel.startsWith(".github/") ||
 		[
-			"oxlint.config.ts",
+			"vite.config.ts",
+			"pnpm-workspace.yaml",
 			"playwright.config.ts",
 			"middleware.js",
 			"tsconfig.json",
@@ -248,7 +255,9 @@ function printReport(rows) {
 		"",
 		"categories",
 	];
-	for (const [category, stats] of Object.entries(all).toSorted((a, b) => b[1].tokens - a[1].tokens)) {
+	for (const [category, stats] of Object.entries(all).toSorted(
+		(a, b) => b[1].tokens - a[1].tokens,
+	)) {
 		const budget = CATEGORY_BUDGETS[category];
 		lines.push(
 			`  ${category.padEnd(32)} ${String(stats.tokens).padStart(7)} tokens  ${stats.files} files  target ${budget.target} hard ${Number.isFinite(budget.hard) ? budget.hard : "inf"}`,
@@ -262,7 +271,7 @@ function printReport(rows) {
 		"exclusion basis",
 		...workspacePackageMetadata().map(
 			({ root: packageRoot, name, version, category }) =>
-				`  ${name}@${version}  ${packageRoot}  (${category}; package typecheck runs in bun check)`,
+				`  ${name}@${version}  ${packageRoot}  (${category}; package typecheck runs in vp check)`,
 		),
 		`  generated files: ${[...GENERATED_FILES].join(", ")}`,
 		`  excluded directories: ${[...EXCLUDE_DIRS].join(", ")}`,

@@ -54,10 +54,19 @@ export function ProductStory() {
 									return (
 										<m.li
 											initial={false}
-											animate={mobile === null ? false : {
-												opacity: !mobile || selected ? 1 : 0,
-												y: !mobile || selected || reducedMotion ? 0 : index < activeIndex ? -10 : 10,
-											}}
+											animate={
+												mobile === null
+													? false
+													: {
+															opacity: !mobile || selected ? 1 : 0,
+															y:
+																!mobile || selected || reducedMotion
+																	? 0
+																	: index < activeIndex
+																		? -10
+																		: 10,
+														}
+											}
 											transition={transition}
 											{...stylex.props(
 												baseStyles.element,
@@ -74,10 +83,7 @@ export function ProductStory() {
 													initial={false}
 													animate={{ opacity: selected ? 1 : 0.55 }}
 													transition={transition}
-													{...stylex.props(
-														baseStyles.element,
-														styles.storyOptionTitle,
-													)}
+													{...stylex.props(baseStyles.element, styles.storyOptionTitle)}
 												>
 													{feature.storyTitle}
 												</m.span>

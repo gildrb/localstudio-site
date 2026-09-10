@@ -58,10 +58,7 @@ function includesAny(value: string, needles: readonly string[]): boolean {
 }
 function classifyTool(name: string): ToolKind {
 	const normalized = name.toLowerCase();
-	if (
-		writeTools.has(normalized) ||
-		includesAny(normalized, ["edit", "write", "patch"])
-	) {
+	if (writeTools.has(normalized) || includesAny(normalized, ["edit", "write", "patch"])) {
 		return "edit";
 	}
 	if (includesAny(normalized, ["search", "grep", "find"])) return "search";
@@ -160,7 +157,11 @@ export function ToolBlockView({ block }: { block: ToolBlock }) {
 	const Icon = toolIcons[kind];
 	const meta = toolMeta(block);
 	return (
-		<details {...stylex.props(demoStyles.reset, styles.details160)} data-tool-call={block.id} open={open}>
+		<details
+			{...stylex.props(demoStyles.reset, styles.details160)}
+			data-tool-call={block.id}
+			open={open}
+		>
 			<summary
 				{...stylex.props(demoStyles.reset, styles.summary162)}
 				onClick={(event) => {
@@ -168,16 +169,21 @@ export function ToolBlockView({ block }: { block: ToolBlock }) {
 					setUserOpen(!open);
 				}}
 			>
-				<Icon {...stylex.props(demoStyles.reset, styles.icon168, styles.lucideScale)} strokeWidth={1.7} />
+				<Icon
+					{...stylex.props(demoStyles.reset, styles.icon168, styles.lucideScale)}
+					strokeWidth={1.7}
+				/>
 				<span
-					{...stylex.props(demoStyles.reset, styles.toolLabel, block.status === "running" ? demoStyles.shimmerText : toolColors[kind])}
+					{...stylex.props(
+						demoStyles.reset,
+						styles.toolLabel,
+						block.status === "running" ? demoStyles.shimmerText : toolColors[kind],
+					)}
 				>
 					{meta.verb}
 				</span>
 				{meta.detail ? (
-					<span {...stylex.props(demoStyles.reset, styles.span177)}>
-						{meta.detail}
-					</span>
+					<span {...stylex.props(demoStyles.reset, styles.span177)}>{meta.detail}</span>
 				) : (
 					<span {...stylex.props(demoStyles.reset, styles.span181)} />
 				)}
@@ -187,9 +193,7 @@ export function ToolBlockView({ block }: { block: ToolBlock }) {
 				/>
 			</summary>
 			{open && block.resultText ? (
-				<pre {...stylex.props(demoStyles.reset, styles.pre189)}>
-					{block.resultText}
-				</pre>
+				<pre {...stylex.props(demoStyles.reset, styles.pre189)}>{block.resultText}</pre>
 			) : null}
 		</details>
 	);

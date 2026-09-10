@@ -1,17 +1,13 @@
 {
-  "settings": {
-    "scriptMode": false
-  },
-  "mcpServers": {
-    "chrome-devtools": {
-      "command": "bunx",
-      "args": [
-        "-y",
-        "chrome-devtools-mcp@1.6.0",
-        "--isolated"
-      ],
-      "lifecycle": "lazy",
-      "directTools": true
-    }
-  }
+	"settings": {
+		"scriptMode": false
+	},
+	"mcpServers": {
+		"chrome-devtools": {
+			"command": "vp",
+			"args": ["dlx", "chrome-devtools-mcp@1.6.0", "--isolated"],
+			"lifecycle": "lazy",
+			"directTools": true
+		}
+	}
 }

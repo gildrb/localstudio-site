@@ -22,9 +22,7 @@ export function PromptPage() {
 				id="prompt-title"
 				title={routes[setupPath].heading}
 				description={`It will inspect the machine, choose the right runtime, install ${site.products.localStudio.name}, and prove a real inference request works.`}
-				actions={
-					<CtaPair secondary={{ href: overviewPath, label: "Go to overview" }} />
-				}
+				actions={<CtaPair secondary={{ href: overviewPath, label: "Go to overview" }} />}
 			/>
 			<section
 				{...stylex.props(baseStyles.element, styles.sectionWidth, styles.pageBottom)}

@@ -14,13 +14,18 @@ import { NavItemDesktop } from "../shell/left-sidebar-nav";
 import { isRouteActive, tabs } from "../shell/left-sidebar-nav-model";
 const DEFAULT_SIDEBAR_WIDTH = 244;
 function ProfileAvatar({ profile }: { profile: { name: string } }) {
-	return <span {...stylex.props(demoStyles.reset, styles.span14)} aria-hidden="true" title={profile.name} />;
+	return (
+		<span
+			{...stylex.props(demoStyles.reset, styles.span14)}
+			aria-hidden="true"
+			title={profile.name}
+		/>
+	);
 }
 function useLocalProfile(): [{ name: string }] {
 	return [{ name: "Sero" }];
 }
 import { HeroProjectsNav, type HeroTaskId } from "./projects-nav";
-
 
 export function HeroDesktopSidebar({
 	mobile = false,
@@ -39,7 +44,11 @@ export function HeroDesktopSidebar({
 }) {
 	return (
 		<aside
-			{...stylex.props(demoStyles.reset, styles.aside39, demoStyles.fixedWidth(DEFAULT_SIDEBAR_WIDTH))}
+			{...stylex.props(
+				demoStyles.reset,
+				styles.aside39,
+				demoStyles.fixedWidth(DEFAULT_SIDEBAR_WIDTH),
+			)}
 		>
 			<div {...stylex.props(demoStyles.reset, styles.div42)}>
 				<div {...stylex.props(demoStyles.reset, styles.div43)}>
@@ -49,7 +58,10 @@ export function HeroDesktopSidebar({
 						title="Collapse sidebar"
 						aria-label="Collapse sidebar"
 					>
-						<PanelLeftFilled {...stylex.props(demoStyles.reset, styles.panelleftfilled50)} strokeWidth={1.75} />
+						<PanelLeftFilled
+							{...stylex.props(demoStyles.reset, styles.panelleftfilled50)}
+							strokeWidth={1.75}
+						/>
 					</button>
 					<button
 						type="button"
@@ -57,7 +69,10 @@ export function HeroDesktopSidebar({
 						title="Go back"
 						aria-label="Go back"
 					>
-						<ChevronLeft {...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.lucideScale)} strokeWidth={1.75} />
+						<ChevronLeft
+							{...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.lucideScale)}
+							strokeWidth={1.75}
+						/>
 					</button>
 					<button
 						type="button"
@@ -65,7 +80,10 @@ export function HeroDesktopSidebar({
 						title="Go forward"
 						aria-label="Go forward"
 					>
-						<ChevronRight {...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.lucideScale)} strokeWidth={1.75} />
+						<ChevronRight
+							{...stylex.props(demoStyles.reset, styles.panelleftfilled50, styles.lucideScale)}
+							strokeWidth={1.75}
+						/>
 					</button>
 					<button
 						type="button"
@@ -73,10 +91,20 @@ export function HeroDesktopSidebar({
 						title="Search sessions (⌘K)"
 						aria-label="Search sessions"
 					>
-						<SearchIcon {...stylex.props(demoStyles.reset, styles.searchicon74, styles.lucideScale)} strokeWidth={1.75} />
+						<SearchIcon
+							{...stylex.props(demoStyles.reset, styles.searchicon74, styles.lucideScale)}
+							strokeWidth={1.75}
+						/>
 					</button>
 				</div>
-				<nav {...stylex.props(demoStyles.reset, styles.sidebarScroller, demoStyles.sidebarScroller, mobile && demoStyles.hiddenOverflow)}>
+				<nav
+					{...stylex.props(
+						demoStyles.reset,
+						styles.sidebarScroller,
+						demoStyles.sidebarScroller,
+						mobile && demoStyles.hiddenOverflow,
+					)}
+				>
 					<button
 						type="button"
 						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button80)}
@@ -86,9 +114,7 @@ export function HeroDesktopSidebar({
 							{...stylex.props(demoStyles.reset, styles.squarepen84, styles.lucideScale)}
 							strokeWidth={1.6}
 						/>
-						<span {...stylex.props(demoStyles.reset, styles.span87)}>
-							New task
-						</span>
+						<span {...stylex.props(demoStyles.reset, styles.span87)}>New task</span>
 					</button>
 					{tabs.map((tab) => (
 						<NavItemDesktop
@@ -122,23 +148,23 @@ function HeroProfileFooter() {
 		<div {...stylex.props(demoStyles.reset, styles.div120)}>
 			<div {...stylex.props(demoStyles.reset, styles.div121)}>
 				<ProfileAvatar profile={profile} />
-				<span {...stylex.props(demoStyles.reset, styles.span123)}>
-					{profile.name}
-				</span>
+				<span {...stylex.props(demoStyles.reset, styles.span123)}>{profile.name}</span>
 			</div>
 			<span
 				{...stylex.props(demoStyles.reset, styles.span128)}
 				title="Connect phone"
 				aria-hidden="true"
 			>
-				<Smartphone {...stylex.props(demoStyles.reset, styles.smartphone132, styles.lucideScale)} strokeWidth={1.75} />
+				<Smartphone
+					{...stylex.props(demoStyles.reset, styles.smartphone132, styles.lucideScale)}
+					strokeWidth={1.75}
+				/>
 			</span>
-			<span
-				title="Settings"
-				{...stylex.props(demoStyles.reset, styles.span128)}
-				aria-hidden="true"
-			>
-				<Settings {...stylex.props(demoStyles.reset, styles.smartphone132, styles.lucideScale)} strokeWidth={1.75} />
+			<span title="Settings" {...stylex.props(demoStyles.reset, styles.span128)} aria-hidden="true">
+				<Settings
+					{...stylex.props(demoStyles.reset, styles.smartphone132, styles.lucideScale)}
+					strokeWidth={1.75}
+				/>
 			</span>
 		</div>
 	);

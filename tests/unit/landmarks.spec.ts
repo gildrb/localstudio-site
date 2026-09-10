@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 
 function sourceFiles(directory: string): string[] {
 	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -11,10 +11,7 @@ function sourceFiles(directory: string): string[] {
 }
 
 test("site pages own exactly one main landmark and one content id", () => {
-	const files = [
-		...sourceFiles("src/pages"),
-		...sourceFiles("src/components"),
-	];
+	const files = [...sourceFiles("src/pages"), ...sourceFiles("src/components")];
 	const mains: string[] = [];
 	const contentIds: string[] = [];
 	for (const path of files) {

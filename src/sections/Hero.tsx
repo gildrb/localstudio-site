@@ -23,9 +23,7 @@ const fastClock = {
 function useHeroClock() {
 	const location = globalThis.window?.location;
 	if (!location) return undefined;
-	return new URLSearchParams(location.search).has("demoClock")
-		? fastClock
-		: undefined;
+	return new URLSearchParams(location.search).has("demoClock") ? fastClock : undefined;
 }
 
 export function Hero() {
@@ -45,7 +43,12 @@ export function Hero() {
 						<h1
 							id="landing-title"
 							tabIndex={-1}
-							{...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.focusable, styles.heroHeading)}
+							{...stylex.props(
+								baseStyles.element,
+								baseStyles.heading,
+								baseStyles.focusable,
+								styles.heroHeading,
+							)}
 						>
 							Intelligence Should Be{" "}
 							<span {...stylex.props(baseStyles.element, styles.heroTitleEnd)}>
@@ -56,14 +59,14 @@ export function Hero() {
 									aria-label="Machine-readable page"
 								>
 									<img
-									{...stylex.props(baseStyles.element, baseStyles.image, styles.heroMark)}
-									src={assets.mark}
-									alt=""
-									width="525"
-									height="525"
-									aria-hidden="true"
-									draggable={false}
-								/>
+										{...stylex.props(baseStyles.element, baseStyles.image, styles.heroMark)}
+										src={assets.mark}
+										alt=""
+										width="525"
+										height="525"
+										aria-hidden="true"
+										draggable={false}
+									/>
 								</LocalLink>
 							</span>
 						</h1>
@@ -78,15 +81,20 @@ export function Hero() {
 					</div>
 				</div>
 			</div>
-			<div id="product" {...stylex.props(baseStyles.element, baseStyles.sectionAnchor, styles.sectionWidth, styles.heroStage)}>
-					{clock ? (
-						<HeroDemo
-							clock={clock}
-							repositoryUrl={site.products.localStudio.repository}
-						/>
-					) : (
-						<HeroDemo repositoryUrl={site.products.localStudio.repository} />
-					)}
+			<div
+				id="product"
+				{...stylex.props(
+					baseStyles.element,
+					baseStyles.sectionAnchor,
+					styles.sectionWidth,
+					styles.heroStage,
+				)}
+			>
+				{clock ? (
+					<HeroDemo clock={clock} repositoryUrl={site.products.localStudio.repository} />
+				) : (
+					<HeroDemo repositoryUrl={site.products.localStudio.repository} />
+				)}
 			</div>
 		</section>
 	);

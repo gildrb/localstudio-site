@@ -1,9 +1,6 @@
 import * as stylex from "@stylexjs/stylex";
 import { init, surface } from "vgpu";
-import {
-	createDevicePixelRatio,
-	prefersReducedMotion as prefersReducedMotionSync,
-} from "phase";
+import { createDevicePixelRatio, prefersReducedMotion as prefersReducedMotionSync } from "phase";
 import {
 	useLifecycle,
 	useMediaQuery,
@@ -28,10 +25,7 @@ import { rendererTimes } from "./renderer-tokens.stylex";
 import { createDrawLoop, type DrawLoop } from "./runtime/frame-loop";
 import { loadMesh } from "./runtime/load-mesh";
 import { createAtmosphereSurface } from "./runtime/atmosphere-surface";
-import {
-	createPointerController,
-	syncPointerInteractionMode,
-} from "./runtime/pointer-input";
+import { createPointerController, syncPointerInteractionMode } from "./runtime/pointer-input";
 import type { HeroRuntimeState } from "./runtime/state";
 
 const LOGO_VIEWPORT_ASPECT = 1.52;
@@ -127,7 +121,11 @@ export type LogoRendererAssets = {
 
 // Static first-frame poster on the exact canvas stage. The site shows it until
 // the live renderer reports its first frame (see onFirstFrame).
-export function LogoPoster({ dayUrl, nightUrl, sx }: {
+export function LogoPoster({
+	dayUrl,
+	nightUrl,
+	sx,
+}: {
 	dayUrl: string;
 	nightUrl: string;
 	sx?: stylex.StyleXStyles | undefined;
@@ -151,7 +149,10 @@ export function LogoPoster({ dayUrl, nightUrl, sx }: {
 	);
 }
 
-type AtmosphereSettings = Pick<NonNullable<ImprintRenderOptions["atmosphere"]>, "prism" | "beamOpacity" | "dayRoom">;
+type AtmosphereSettings = Pick<
+	NonNullable<ImprintRenderOptions["atmosphere"]>,
+	"prism" | "beamOpacity" | "dayRoom"
+>;
 
 export type LocalAiLogoShaderProps = LogoRendererAssets & {
 	/** One-shot actual-aperture entrance; omission preserves the steady renderer. */
@@ -359,8 +360,7 @@ export function LocalAiLogoShader({
 			devicePixelRatioRef,
 			requestRender,
 		});
-		invalidatePointerCanvasRectRef.current =
-			pointerController.invalidateCanvasRect;
+		invalidatePointerCanvasRectRef.current = pointerController.invalidateCanvasRect;
 
 		const cleanupSetup = () => {
 			state.cancelled = true;
@@ -385,10 +385,7 @@ export function LocalAiLogoShader({
 				handleFallback();
 				return;
 			}
-			const [meshResult, gpuResult] = await Promise.allSettled([
-				loadMesh(modelUrl),
-				init(),
-			]);
+			const [meshResult, gpuResult] = await Promise.allSettled([loadMesh(modelUrl), init()]);
 			if (meshResult.status === "rejected") {
 				if (gpuResult.status === "fulfilled") gpuResult.value.dispose();
 				throw meshResult.reason;
@@ -421,13 +418,20 @@ export function LocalAiLogoShader({
 				alphaMode: "premultiplied",
 			});
 			const atmosphere = atmosphereRef?.current
-				? createAtmosphereSurface(gpu, atmosphereRef.current, activeCanvas, requestRender, atmosphereForegroundRef?.current ?? undefined,
-					prismAtmosphere ? { scale: 1, maxEdge: 1280 } : undefined)
+				? createAtmosphereSurface(
+						gpu,
+						atmosphereRef.current,
+						activeCanvas,
+						requestRender,
+						atmosphereForegroundRef?.current ?? undefined,
+						prismAtmosphere ? { scale: 1, maxEdge: 1280 } : undefined,
+					)
 				: undefined;
 			if (atmosphere) {
 				if (atmosphereIntro) atmosphere.current.introTime = 0;
 				atmosphere.current.prism = prismAtmosphere;
-				if (atmosphereBeamOpacity !== undefined) atmosphere.current.beamOpacity = atmosphereBeamOpacity;
+				if (atmosphereBeamOpacity !== undefined)
+					atmosphere.current.beamOpacity = atmosphereBeamOpacity;
 				if (atmosphereDayRoom !== undefined) atmosphere.current.dayRoom = atmosphereDayRoom;
 			}
 			let environmentAtlas: ImageBitmap | undefined;
@@ -504,14 +508,17 @@ export function LocalAiLogoShader({
 				canvasLayoutRef,
 				devicePixelRatioRef,
 				onCanvasRevealed: () => {
-					void gpu.device.queue.flush().then(() => {
-						if (!state.cancelled && !disposed) handleCanvasRevealed();
-					}).catch(() => {
-						if (state.cancelled || disposed) return;
-						handleFallback();
-						state.cancelled = true;
-						dispose();
-					});
+					void gpu.device.queue
+						.flush()
+						.then(() => {
+							if (!state.cancelled && !disposed) handleCanvasRevealed();
+						})
+						.catch(() => {
+							if (state.cancelled || disposed) return;
+							handleFallback();
+							state.cancelled = true;
+							dispose();
+						});
 				},
 				onFallback: handleFallback,
 				onFatalError: handleFatalError,

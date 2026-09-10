@@ -5,28 +5,10 @@ import App from "./app/App";
 import { assets } from "./domain/asset";
 import "./styles/stylex-entry.css";
 import { baseStyles } from "./styles/base-styles";
-import { constants } from "./styles/public-tokens.stylex";
 
-
-
-const fontFaces = [
-	new FontFace(constants.fontSansName, 'url("/fonts/geist-sans.woff2") format("woff2")', { style: "normal", weight: "100 900", display: "swap" }),
-	new FontFace(constants.fontMonoName, 'url("/fonts/geist-mono.woff2") format("woff2")', { style: "normal", weight: "100 900", display: "swap" }),
-];
-for (const face of fontFaces) {
-	document.fonts.add(face);
-	void face.load();
-}
 document.documentElement.className =
-	stylex.props(
-		baseStyles.element,
-		baseStyles.html,
-	).className ?? "";
-document.body.className =
-	stylex.props(
-		baseStyles.element,
-		baseStyles.body,
-	).className ?? "";
+	stylex.props(baseStyles.element, baseStyles.html).className ?? "";
+document.body.className = stylex.props(baseStyles.element, baseStyles.body).className ?? "";
 
 function setFavicon(href: string, media: string) {
 	const link = document.createElement("link");
@@ -68,11 +50,7 @@ const root = document.getElementById("root");
 if (root === null) {
 	throw new Error("root");
 }
-root.className =
-	stylex.props(
-		baseStyles.element,
-		baseStyles.root,
-	).className ?? "";
+root.className = stylex.props(baseStyles.element, baseStyles.root).className ?? "";
 const app = (
 	<StrictMode>
 		<App />

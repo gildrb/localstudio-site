@@ -1,14 +1,7 @@
 import { baseStyles } from "../styles/base-styles";
 import * as stylex from "@stylexjs/stylex";
 import { assets } from "../domain/asset";
-import {
-	memo,
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState,
-} from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { LazyMotion, domAnimation, useReducedMotion } from "motion/react";
 import { animate } from "motion";
 import { motion } from "../domain/motion";
@@ -148,12 +141,25 @@ const FeatureCard = memo(function FeatureCard({
 				{...stylex.props(baseStyles.element, styles.kittyFeatureBody)}
 				data-kitty-drag-interactive=""
 			>
-				<span data-kitty-feature-trigger {...stylex.props(baseStyles.element, styles.kittyFeatureTrigger)}>{feature.title}</span>
+				<span
+					data-kitty-feature-trigger
+					{...stylex.props(baseStyles.element, styles.kittyFeatureTrigger)}
+				>
+					{feature.title}
+				</span>
 				<div
 					data-kitty-feature-description
 					{...stylex.props(baseStyles.element, styles.kittyFeatureDescription)}
 				>
-					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.kittyFeatureDescriptionText)}>{feature.text}</p>
+					<p
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.paragraph,
+							styles.kittyFeatureDescriptionText,
+						)}
+					>
+						{feature.text}
+					</p>
 				</div>
 			</div>
 		</article>
@@ -166,21 +172,19 @@ function measureCarousel(carousel: HTMLDivElement) {
 	if (!card || !grid) return null;
 	const gap = Number.parseFloat(getComputedStyle(grid).columnGap) || 0;
 	const stride = card.getBoundingClientRect().width + gap;
-	const cards = Array.from(
-		grid.querySelectorAll<HTMLElement>("[data-kitty-feature]"),
-	);
+	const cards = Array.from(grid.querySelectorAll<HTMLElement>("[data-kitty-feature]"));
 	const maxScroll = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
 	const targets = cards.map((_, index) =>
-		index === cards.length - 1
-			? maxScroll
-			: Math.min(index * stride, maxScroll),
+		index === cards.length - 1 ? maxScroll : Math.min(index * stride, maxScroll),
 	);
 	const carouselBounds = carousel.getBoundingClientRect();
 	const centerTargets = cards.map((item) => {
 		const itemBounds = item.getBoundingClientRect();
 		return Math.min(
 			Math.max(
-				carousel.scrollLeft + itemBounds.left + itemBounds.width / 2 -
+				carousel.scrollLeft +
+					itemBounds.left +
+					itemBounds.width / 2 -
 					(carouselBounds.left + carouselBounds.width / 2),
 				0,
 			),
@@ -207,12 +211,20 @@ function nearestTargetIndex(targets: readonly number[], position: number) {
 	return nearestIndex;
 }
 
-function isolateCarouselDrag(carousel: HTMLDivElement, dragging: boolean, origin: HTMLElement | null = null) {
+function isolateCarouselDrag(
+	carousel: HTMLDivElement,
+	dragging: boolean,
+	origin: HTMLElement | null = null,
+) {
 	if (dragging) window.getSelection()?.removeAllRanges();
 	carousel.querySelectorAll<HTMLElement>("[data-kitty-drag-interactive]").forEach((element) => {
 		element.inert = dragging && element !== origin;
 	});
-	if (dragging && document.activeElement instanceof HTMLElement && document.activeElement !== origin) {
+	if (
+		dragging &&
+		document.activeElement instanceof HTMLElement &&
+		document.activeElement !== origin
+	) {
 		document.activeElement.blur();
 	}
 }
@@ -299,14 +311,30 @@ export function KittyLitter() {
 				{...stylex.props(baseStyles.element, baseStyles.sectionAnchor, styles.kitty)}
 				aria-labelledby="kittylitter-title"
 			>
-				<div data-kitty-intro {...stylex.props(baseStyles.element, styles.sectionWidth, styles.kittyIntro)}>
-					<h2 id="kittylitter-title" {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.kittyHeading)}>
+				<div
+					data-kitty-intro
+					{...stylex.props(baseStyles.element, styles.sectionWidth, styles.kittyIntro)}
+				>
+					<h2
+						id="kittylitter-title"
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.kittyHeading,
+						)}
+					>
 						Your Session, Anywhere
 					</h2>
 				</div>
 				<div
 					ref={carouselRef}
-					{...stylex.props(baseStyles.element, baseStyles.focusable, styles.kittyCarousel, dragging && styles.kittyCarouselDragging)}
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.focusable,
+						styles.kittyCarousel,
+						dragging && styles.kittyCarouselDragging,
+					)}
 					data-carousel-index={carouselIndex}
 					role="region"
 					aria-label="KittyLitter features"
@@ -361,16 +389,11 @@ export function KittyLitter() {
 						const delta = event.clientX - dragState.current.startX;
 						if (Math.abs(delta) > 6 && !dragState.current.moved) {
 							dragState.current.moved = true;
-							isolateCarouselDrag(
-								event.currentTarget,
-								true,
-								dragOrigin.current,
-							);
+							isolateCarouselDrag(event.currentTarget, true, dragOrigin.current);
 							setDragging(true);
 							highlightCard(null);
 						}
-						event.currentTarget.scrollLeft =
-							dragState.current.startScroll - delta;
+						event.currentTarget.scrollLeft = dragState.current.startScroll - delta;
 					}}
 					onPointerUp={(event) => {
 						if (dragState.current.pointerId !== event.pointerId) return;
@@ -381,17 +404,13 @@ export function KittyLitter() {
 						event.currentTarget.releasePointerCapture(event.pointerId);
 						const metrics = measureCarousel(event.currentTarget);
 						if (!metrics) return;
-						let nextIndex = nearestTargetIndex(
-							metrics.targets,
-							event.currentTarget.scrollLeft,
-						);
+						let nextIndex = nearestTargetIndex(metrics.targets, event.currentTarget.scrollLeft);
 						const direction = Math.sign(startX - event.clientX);
 						if (moved && direction > 0) {
 							const forwardIndex = metrics.targets.findIndex(
 								(target) => target >= event.currentTarget.scrollLeft,
 							);
-							nextIndex =
-								forwardIndex === -1 ? metrics.targets.length - 1 : forwardIndex;
+							nextIndex = forwardIndex === -1 ? metrics.targets.length - 1 : forwardIndex;
 						} else if (moved && direction < 0) {
 							for (let index = metrics.targets.length - 1; index >= 0; index -= 1) {
 								if ((metrics.targets[index] ?? 0) <= event.currentTarget.scrollLeft) {
@@ -410,9 +429,7 @@ export function KittyLitter() {
 						setDragging(false);
 						const metrics = measureCarousel(event.currentTarget);
 						if (!metrics) return;
-						animateToIndex(
-							nearestTargetIndex(metrics.targets, event.currentTarget.scrollLeft),
-						);
+						animateToIndex(nearestTargetIndex(metrics.targets, event.currentTarget.scrollLeft));
 					}}
 					onLostPointerCapture={(event) => {
 						dragState.current.pointerId = -1;

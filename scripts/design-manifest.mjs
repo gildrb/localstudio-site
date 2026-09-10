@@ -18,9 +18,7 @@ function stylexTokenIds(rel) {
 	const source = readFileSync(`${root}/${rel}`, "utf8");
 	return [
 		...new Set(
-			[...source.matchAll(/^(?:\t| {2})([A-Za-z_$][\w$]*)\s*:/gm)].map(
-				(match) => match[1],
-			),
+			[...source.matchAll(/^(?:\t| {2})([A-Za-z_$][\w$]*)\s*:/gm)].map((match) => match[1]),
 		),
 	];
 }
@@ -52,7 +50,7 @@ if (command === "write") {
 } else if (command === "check") {
 	const current = readFileSync(dest, "utf8");
 	if (current !== body) {
-		console.error("design-manifest.json is stale; run bun run design:manifest");
+		console.error("design-manifest.json is stale; run vp run design:manifest");
 		process.exit(1);
 	}
 	console.log(`design-manifest.json ${hash}`);

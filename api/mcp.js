@@ -3,7 +3,8 @@ import { methodNotAllowed, products, sendJson, status } from "./_shared.js";
 const tools = [
 	{
 		name: "list_products",
-		description: "List Local Studio, KittyLitter, and Codex Shim with canonical URLs and source repositories.",
+		description:
+			"List Local Studio, KittyLitter, and Codex Shim with canonical URLs and source repositories.",
 		inputSchema: { type: "object", properties: {}, additionalProperties: false },
 	},
 	{
@@ -33,23 +34,38 @@ export default function handler(request, response) {
 		return response.end();
 	}
 	if (body.method === "initialize") {
-		return sendJson(response, 200, result(body.id, {
-			protocolVersion: "2025-06-18",
-			capabilities: { tools: { listChanged: false } },
-			serverInfo: { name: "local-studio-public", title: "Local Studio Public MCP", version: "1.0.0" },
-			instructions: "Use these read-only tools to discover Local Studio products. No API key is required.",
-		}));
+		return sendJson(
+			response,
+			200,
+			result(body.id, {
+				protocolVersion: "2025-06-18",
+				capabilities: { tools: { listChanged: false } },
+				serverInfo: {
+					name: "local-studio-public",
+					title: "Local Studio Public MCP",
+					version: "1.0.0",
+				},
+				instructions:
+					"Use these read-only tools to discover Local Studio products. No API key is required.",
+			}),
+		);
 	}
 	if (body.method === "tools/list") return sendJson(response, 200, result(body.id, { tools }));
 	if (body.method === "tools/call") {
 		const name = body.params?.name;
-		const data = name === "list_products" ? products : name === "get_service_status" ? status : null;
-		if (!data) return sendJson(response, 200, error(body.id, -32602, `Unknown tool: ${String(name)}`));
-		return sendJson(response, 200, result(body.id, {
-			content: [{ type: "text", text: JSON.stringify(data) }],
-			structuredContent: data,
-			isError: false,
-		}));
+		const data =
+			name === "list_products" ? products : name === "get_service_status" ? status : null;
+		if (!data)
+			return sendJson(response, 200, error(body.id, -32602, `Unknown tool: ${String(name)}`));
+		return sendJson(
+			response,
+			200,
+			result(body.id, {
+				content: [{ type: "text", text: JSON.stringify(data) }],
+				structuredContent: data,
+				isError: false,
+			}),
+		);
 	}
 	return sendJson(response, 200, error(body.id, -32601, `Method not found: ${body.method}`));
 }

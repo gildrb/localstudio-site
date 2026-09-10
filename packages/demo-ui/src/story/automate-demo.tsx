@@ -26,8 +26,7 @@ const AUTOMATIONS = [
 	{
 		id: "daily-brief",
 		name: "Daily brief",
-		prompt:
-			"Review my recent work and summarize priorities, blockers, and next actions.",
+		prompt: "Review my recent work and summarize priorities, blockers, and next actions.",
 		schedule: "Weekdays at 08:00",
 		nextRun: "Tomorrow at 08:00",
 		status: "active",
@@ -35,8 +34,7 @@ const AUTOMATIONS = [
 	{
 		id: "weekly-review",
 		name: "Weekly review",
-		prompt:
-			"Review what I worked on this week and draft a concise status update.",
+		prompt: "Review what I worked on this week and draft a concise status update.",
 		schedule: "Fridays at 16:00",
 		nextRun: "Friday at 16:00",
 		status: "active",
@@ -58,8 +56,7 @@ export function AutomateDemo() {
 	const [filter, setFilter] = useState<AutomationFilter>("all");
 	const [selectedId, setSelectedId] = useState(DEFAULT_AUTOMATION.id);
 	const selected =
-		AUTOMATIONS.find((automation) => automation.id === selectedId) ??
-		DEFAULT_AUTOMATION;
+		AUTOMATIONS.find((automation) => automation.id === selectedId) ?? DEFAULT_AUTOMATION;
 	const visible = useMemo(() => {
 		const needle = query.trim().toLowerCase();
 		return AUTOMATIONS.filter(
@@ -75,12 +72,8 @@ export function AutomateDemo() {
 				<section {...stylex.props(demoStyles.reset, styles.section72)}>
 					<header {...stylex.props(demoStyles.reset, styles.header73)}>
 						<div {...stylex.props(demoStyles.reset, styles.div74)}>
-							<h2 {...stylex.props(demoStyles.reset, styles.h175)}>
-								Automations
-							</h2>
-							<p {...stylex.props(demoStyles.reset, styles.p78)}>
-								3 scheduled tasks
-							</p>
+							<h2 {...stylex.props(demoStyles.reset, styles.h175)}>Automations</h2>
+							<p {...stylex.props(demoStyles.reset, styles.p78)}>3 scheduled tasks</p>
 						</div>
 						<button
 							type="button"
@@ -111,7 +104,12 @@ export function AutomateDemo() {
 									type="button"
 									onClick={() => setFilter(item.id)}
 									aria-pressed={filter === item.id}
-									{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.filter, filter === item.id ? styles.filterActive : styles.filterIdle)}
+									{...stylex.props(
+										demoStyles.reset,
+										demoStyles.controlReset,
+										styles.filter,
+										filter === item.id ? styles.filterActive : styles.filterIdle,
+									)}
 								>
 									{item.label}
 								</button>
@@ -123,22 +121,41 @@ export function AutomateDemo() {
 						{visible.map((automation, index) => {
 							const active = automation.id === selected.id;
 							return (
-								<li key={automation.id} {...stylex.props(demoStyles.reset, index < visible.length - 1 && styles.automationDivider)}>
+								<li
+									key={automation.id}
+									{...stylex.props(
+										demoStyles.reset,
+										index < visible.length - 1 && styles.automationDivider,
+									)}
+								>
 									<button
 										type="button"
 										onClick={() => setSelectedId(automation.id)}
-										{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.automationRow, active ? styles.automationActive : styles.automationIdle)}
+										{...stylex.props(
+											demoStyles.reset,
+											demoStyles.controlReset,
+											styles.automationRow,
+											active ? styles.automationActive : styles.automationIdle,
+										)}
 									>
 										<span {...stylex.props(demoStyles.reset, styles.span126)}>
 											<span
-												{...stylex.props(demoStyles.reset, styles.statusDot, automation.status === "active" ? styles.statusDotActive : styles.statusDotIdle)}
+												{...stylex.props(
+													demoStyles.reset,
+													styles.statusDot,
+													automation.status === "active"
+														? styles.statusDotActive
+														: styles.statusDotIdle,
+												)}
 											/>
 											<span {...stylex.props(demoStyles.reset, styles.span130)}>
 												<span {...stylex.props(demoStyles.reset, styles.span131)}>
 													{automation.name}
 												</span>
 												<span {...stylex.props(demoStyles.reset, styles.span134)}>
-													<Clock {...stylex.props(demoStyles.reset, styles.clock135, styles.lucideScale)} />
+													<Clock
+														{...stylex.props(demoStyles.reset, styles.clock135, styles.lucideScale)}
+													/>
 													{automation.schedule}
 												</span>
 												<span {...stylex.props(demoStyles.reset, styles.span138)}>
@@ -158,9 +175,7 @@ export function AutomateDemo() {
 				<section {...stylex.props(demoStyles.reset, styles.section152)}>
 					<header {...stylex.props(demoStyles.reset, styles.header153)}>
 						<div {...stylex.props(demoStyles.reset, styles.div74)}>
-							<h3 {...stylex.props(demoStyles.reset, styles.h2155)}>
-								{selected.name}
-							</h3>
+							<h3 {...stylex.props(demoStyles.reset, styles.h2155)}>{selected.name}</h3>
 							<p {...stylex.props(demoStyles.reset, styles.p78)}>
 								{selected.status === "active" ? selected.schedule : "Paused"}
 							</p>
@@ -170,13 +185,15 @@ export function AutomateDemo() {
 								type="button"
 								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button165)}
 							>
-								<Pause {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> Pause
+								<Pause {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} />{" "}
+								Pause
 							</button>
 							<button
 								type="button"
 								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button171)}
 							>
-								<Play {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> Run Now
+								<Play {...stylex.props(demoStyles.reset, styles.plus86, styles.lucideScale)} /> Run
+								Now
 							</button>
 						</div>
 					</header>
@@ -200,65 +217,50 @@ export function AutomateDemo() {
 									{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.textarea194)}
 								/>
 								<span {...stylex.props(demoStyles.reset, styles.span196)}>
-									Local Studio sends this instruction to the selected model on
-									every run.
+									Local Studio sends this instruction to the selected model on every run.
 								</span>
 							</label>
 							<section {...stylex.props(demoStyles.reset, styles.section201)}>
 								<div {...stylex.props(demoStyles.reset, styles.div202)}>
 									<Clock {...stylex.props(demoStyles.reset, styles.clock203, styles.lucideScale)} />
 									<div {...stylex.props(demoStyles.reset)}>
-										<h4 {...stylex.props(demoStyles.reset, styles.h3205)}>
-											Schedule
-										</h4>
-										<p {...stylex.props(demoStyles.reset, styles.p78)}>
-											{selected.schedule}
-										</p>
+										<h4 {...stylex.props(demoStyles.reset, styles.h3205)}>Schedule</h4>
+										<p {...stylex.props(demoStyles.reset, styles.p78)}>{selected.schedule}</p>
 									</div>
 								</div>
 								<div {...stylex.props(demoStyles.reset, styles.div213)}>
-									<span {...stylex.props(demoStyles.reset, styles.span214)}>
-										Daily
-									</span>
-									<span {...stylex.props(demoStyles.reset, styles.span217)}>
-										08:00
-									</span>
-									<span {...stylex.props(demoStyles.reset, styles.span217)}>
-										Weekdays only
-									</span>
+									<span {...stylex.props(demoStyles.reset, styles.span214)}>Daily</span>
+									<span {...stylex.props(demoStyles.reset, styles.span217)}>08:00</span>
+									<span {...stylex.props(demoStyles.reset, styles.span217)}>Weekdays only</span>
 								</div>
 							</section>
 							<div {...stylex.props(demoStyles.reset, styles.div225)}>
 								<div {...stylex.props(demoStyles.reset)}>
 									<p {...stylex.props(demoStyles.reset, styles.p227)}>Model</p>
-									<p {...stylex.props(demoStyles.reset, styles.p228)}>
-										Qwen3.8-27B
-									</p>
+									<p {...stylex.props(demoStyles.reset, styles.p228)}>Qwen3.8-27B</p>
 								</div>
 								<div {...stylex.props(demoStyles.reset)}>
 									<p {...stylex.props(demoStyles.reset, styles.p227)}>Working directory</p>
-									<p {...stylex.props(demoStyles.reset, styles.p234)}>
-										~/Projects/local-studio
-									</p>
+									<p {...stylex.props(demoStyles.reset, styles.p234)}>~/Projects/local-studio</p>
 								</div>
 							</div>
 							<section {...stylex.props(demoStyles.reset, styles.section239)}>
-								<h4 {...stylex.props(demoStyles.reset, styles.h3205)}>
-									Recent Runs
-								</h4>
+								<h4 {...stylex.props(demoStyles.reset, styles.h3205)}>Recent Runs</h4>
 								<div {...stylex.props(demoStyles.reset, styles.div243)}>
 									<span {...stylex.props(demoStyles.reset, styles.div202)}>
-										<Check {...stylex.props(demoStyles.reset, styles.check245, styles.lucideScale)} />
+										<Check
+											{...stylex.props(demoStyles.reset, styles.check245, styles.lucideScale)}
+										/>
 										<span {...stylex.props(demoStyles.reset)}>
-											<strong {...stylex.props(demoStyles.reset, styles.strong247)}>Completed</strong>
+											<strong {...stylex.props(demoStyles.reset, styles.strong247)}>
+												Completed
+											</strong>
 											<span {...stylex.props(demoStyles.reset, styles.span248)}>
 												Today at 08:00 · 42 seconds
 											</span>
 										</span>
 									</span>
-									<span {...stylex.props(demoStyles.reset, styles.span253)}>
-										8.4K tokens
-									</span>
+									<span {...stylex.props(demoStyles.reset, styles.span253)}>8.4K tokens</span>
 								</div>
 							</section>
 						</div>

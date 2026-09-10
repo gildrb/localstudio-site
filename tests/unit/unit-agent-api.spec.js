@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 import mcpHandler from "../../api/mcp.js";
 import productsHandler from "../../api/v1/products.js";
 import statusHandler from "../../api/v1/status.js";
@@ -11,8 +11,12 @@ function responseRecorder() {
 		statusCode: 200,
 		headers: {},
 		body: "",
-		setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
-		end(body = "") { this.body = body; },
+		setHeader(name, value) {
+			this.headers[name.toLowerCase()] = value;
+		},
+		end(body = "") {
+			this.body = body;
+		},
 	};
 }
 
@@ -28,7 +32,9 @@ test("homepage shell has complete metadata and no raw style block", () => {
 	expect(html).not.toContain("<style");
 	expect(html).toContain('property="og:image"');
 	expect(html).toContain('property="og:type" content="website"');
-	const jsonLd = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/)?.[1] ?? "null");
+	const jsonLd = JSON.parse(
+		html.match(/<script type="application\/ld\+json">([\s\S]+?)<\/script>/)?.[1] ?? "null",
+	);
 	const organization = jsonLd["@graph"].find((entry) => entry["@type"] === "Organization");
 	expect(organization.name).toBe("Sybil Solutions");
 	expect(organization.description).toBeTruthy();
@@ -57,7 +63,10 @@ test("trust and developer pages are substantial server documents", () => {
 	for (const path of ["/developers", "/about", "/contact", "/privacy"]) {
 		const document = agentDocument(path);
 		expect(document?.contentType, path).toContain("text/html");
-		const text = (document?.body ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+		const text = (document?.body ?? "")
+			.replace(/<[^>]+>/g, " ")
+			.replace(/\s+/g, " ")
+			.trim();
 		expect(text.length, path).toBeGreaterThan(500);
 		expect(document?.body, path).toContain("<h1>");
 	}
@@ -79,11 +88,34 @@ test("REST handlers return typed success and JSON errors", () => {
 });
 
 test("MCP supports initialize, tools/list, and tools/call", () => {
-	const initialize = call(mcpHandler, { method: "POST", body: { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test", version: "1" } } } });
+	const initialize = call(mcpHandler, {
+		method: "POST",
+		body: {
+			jsonrpc: "2.0",
+			id: 1,
+			method: "initialize",
+			params: {
+				protocolVersion: "2025-06-18",
+				capabilities: {},
+				clientInfo: { name: "test", version: "1" },
+			},
+		},
+	});
 	expect(initialize.statusCode).toBe(200);
 	expect(JSON.parse(initialize.body).result.protocolVersion).toBe("2025-06-18");
-	const list = call(mcpHandler, { method: "POST", body: { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} } });
+	const list = call(mcpHandler, {
+		method: "POST",
+		body: { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
+	});
 	expect(JSON.parse(list.body).result.tools.map((tool) => tool.name)).toContain("list_products");
-	const invoke = call(mcpHandler, { method: "POST", body: { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "list_products", arguments: {} } } });
+	const invoke = call(mcpHandler, {
+		method: "POST",
+		body: {
+			jsonrpc: "2.0",
+			id: 3,
+			method: "tools/call",
+			params: { name: "list_products", arguments: {} },
+		},
+	});
 	expect(JSON.parse(invoke.body).result.structuredContent.products).toHaveLength(3);
 });

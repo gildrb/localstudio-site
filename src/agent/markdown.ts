@@ -1,9 +1,4 @@
-import {
-	infoPages,
-	infoPaths,
-	type InfoInline,
-	type InfoPath,
-} from "../content/info-pages.ts";
+import { infoPages, infoPaths, type InfoInline, type InfoPath } from "../content/info-pages.ts";
 import { site } from "../domain/site.ts";
 import { release } from "../domain/release.ts";
 import {
@@ -457,8 +452,7 @@ export function markdownDocument(path: DocumentPath): string {
 
 export function sitemapMarkdown(): string {
 	const rows = routePaths.map(
-		(path) =>
-			`- [${path}](${SITE_ORIGIN}${path}) - ${routes[path].summary}`,
+		(path) => `- [${path}](${SITE_ORIGIN}${path}) - ${routes[path].summary}`,
 	);
 	return markdownPage("Sitemap", rows.join("\n"));
 }
@@ -571,4 +565,3 @@ export function llmsFull(): string {
 		sitemapMarkdown(),
 	].join("\n");
 }
-

@@ -13,16 +13,16 @@ import paintDebug from "../shaders/paint/paint-debug.wgsl";
 import voronoiNoiseUpdate from "../shaders/paint/voronoi-noise-update.wgsl";
 
 export const shaders = {
-  glassBack,
-  glassFront,
-  glassBackDepth,
-  bloomBlur,
-  bloomComposite,
-  lightComposite,
-  heroAtmosphere,
-  envBg,
-  preview,
-  paintUpdate,
-  paintDebug,
-  voronoiNoiseUpdate,
+	glassBack,
+	glassFront,
+	glassBackDepth,
+	bloomBlur,
+	bloomComposite,
+	lightComposite,
+	heroAtmosphere,
+	envBg,
+	preview,
+	paintUpdate,
+	paintDebug,
+	voronoiNoiseUpdate,
 };

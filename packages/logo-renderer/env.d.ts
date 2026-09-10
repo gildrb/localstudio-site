@@ -1,11 +1,4 @@
-declare interface ImportMetaEnv {
-	readonly DEV: boolean;
-	readonly PROD: boolean;
-}
-
-declare interface ImportMeta {
-	readonly env: ImportMetaEnv;
-}
+/// <reference types="vite-plus/client" />
 
 declare const GPUTextureUsage: {
 	readonly COPY_SRC: number;
@@ -14,4 +7,3 @@ declare const GPUTextureUsage: {
 	readonly STORAGE_BINDING: number;
 	readonly RENDER_ATTACHMENT: number;
 };
-

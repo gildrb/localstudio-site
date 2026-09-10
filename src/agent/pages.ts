@@ -1,8 +1,4 @@
-import {
-	infoPages,
-	type InfoInline,
-	type InfoPageModel,
-} from "../content/info-pages.ts";
+import { infoPages, type InfoInline, type InfoPageModel } from "../content/info-pages.ts";
 import { site } from "../domain/site.ts";
 
 const navigation = `<nav aria-label="Primary"><a href="/">Local Studio</a><a href="/developers">Developers</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a></nav>`;
@@ -40,12 +36,7 @@ function renderBlocks(model: InfoPageModel): string {
 		.join("\n");
 }
 
-function page(
-	title: string,
-	description: string,
-	path: string,
-	content: string,
-): string {
+function page(title: string, description: string, path: string, content: string): string {
 	return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${escapeHtml(description)}"><link rel="canonical" href="${site.origin}${path}"><title>${escapeHtml(title)} - Local Studio by Sybil Solutions</title></head><body>${navigation}<main><h1>${escapeHtml(title)}</h1>${content}</main><footer>Local Studio by <a href="${site.company.url}">Sybil Solutions</a> · <a href="/llms.txt">Agent reference</a> · <a href="/sitemap.xml">Sitemap</a></footer></body></html>
 `;
 }

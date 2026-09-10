@@ -11,7 +11,8 @@ const SOURCE_EXT = new Set([".ts", ".tsx", ".js", ".mjs", ".css", ".wgsl", ".txt
 const EXCLUDE_DIRS = new Set([
 	"node_modules",
 	"dist",
-	"dist-dev",
+	".vite",
+	".vite-plus",
 	".git",
 	"test-results",
 	"playwright-report",
@@ -35,9 +36,7 @@ function walk(directory) {
 			}
 			continue;
 		}
-		const ext = entry.name.includes(".")
-			? `.${entry.name.split(".").pop().toLowerCase()}`
-			: "";
+		const ext = entry.name.includes(".") ? `.${entry.name.split(".").pop().toLowerCase()}` : "";
 		if (SOURCE_EXT.has(ext)) files.push(rel);
 	}
 	return files;
@@ -112,11 +111,9 @@ const unresolved = [];
 for (const file of files) {
 	for (const spec of importsOf(file)) {
 		const resolved = resolveImport(file, spec);
-		if (resolved && graph.has(resolved)) graph.get(file).add(resolved);
-		else if (
-			(spec.startsWith("./") || spec.startsWith("../")) &&
-			!spec.includes("/packages/")
-		) {
+		if (resolved) {
+			if (graph.has(resolved)) graph.get(file).add(resolved);
+		} else if ((spec.startsWith("./") || spec.startsWith("../")) && !spec.includes("/packages/")) {
 			unresolved.push(`${file} -> ${spec}`);
 		}
 	}
@@ -133,9 +130,7 @@ while (queue.length > 0) {
 	for (const next of graph.get(current) ?? []) queue.push(next);
 }
 
-const unreachable = files.filter(
-	(file) => !reachable.has(file) && !file.startsWith("tools/"),
-);
+const unreachable = files.filter((file) => !reachable.has(file) && !file.startsWith("tools/"));
 const fanIn = new Map();
 for (const [from, tos] of graph) {
 	for (const to of tos) {
@@ -169,16 +164,7 @@ for (const name of Object.keys(declared)) {
 	}
 }
 // special-case packages consumed by config/plugins rather than string imports
-for (const name of [
-	"@oxlint/plugins",
-	"oxlint",
-	"@playwright/test",
-	"@webgpu/types",
-	"@vgpu/core",
-	"@vgpu/render",
-	"phase",
-	"earcut",
-]) {
+for (const name of ["@oxlint/plugins", "@playwright/test"]) {
 	if (name in declared) usedDeps.add(name);
 }
 const unusedDeps = Object.keys(declared).filter((name) => !usedDeps.has(name));
@@ -188,7 +174,7 @@ const workspaceManifests = [
 ];
 
 function packageName(spec) {
-	if (spec.startsWith("node:") || spec.startsWith("bun:") || spec === "bun" || spec.startsWith(".") || spec.startsWith("/")) return null;
+	if (spec.startsWith("node:") || spec.startsWith(".") || spec.startsWith("/")) return null;
 	return spec.startsWith("@") ? spec.split("/").slice(0, 2).join("/") : spec.split("/")[0];
 }
 
@@ -225,7 +211,9 @@ function printReport() {
 	for (const gap of packageDependencyGaps) console.log(`  ${gap}`);
 	console.log("component fan-in");
 	const components = files.filter((file) => componentName(file));
-	for (const file of components.toSorted((a, b) => (fanIn.get(b)?.size ?? 0) - (fanIn.get(a)?.size ?? 0))) {
+	for (const file of components.toSorted(
+		(a, b) => (fanIn.get(b)?.size ?? 0) - (fanIn.get(a)?.size ?? 0),
+	)) {
 		const consumers = [...(fanIn.get(file) ?? [])];
 		console.log(`  ${String(consumers.length).padStart(2)}  ${file}`);
 	}
@@ -241,7 +229,8 @@ if (command === "check") {
 		);
 	}
 	if (unusedDeps.length) failures.push(`unused dependencies: ${unusedDeps.join(", ")}`);
-	if (packageDependencyGaps.length) failures.push(`workspace package dependency gaps: ${packageDependencyGaps.join(", ")}`);
+	if (packageDependencyGaps.length)
+		failures.push(`workspace package dependency gaps: ${packageDependencyGaps.join(", ")}`);
 	if (failures.length) {
 		console.error(failures.join("\n"));
 		process.exitCode = 1;

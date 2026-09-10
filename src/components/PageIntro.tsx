@@ -14,8 +14,7 @@ interface PageIntroProps {
 	title: ReactNode;
 }
 
-const pageWidth =
-	`min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
+const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 
 const styles = stylex.create({
 	root: {
@@ -139,7 +138,8 @@ export function PageIntro({
 	const alignedLeft = layout !== "centered";
 	return (
 		<section
-			{...stylex.props(baseStyles.element, 
+			{...stylex.props(
+				baseStyles.element,
 				styles.root,
 				layout === "left" && styles.left,
 				layout === "split" && styles.split,
@@ -151,7 +151,11 @@ export function PageIntro({
 				<h1
 					id={id}
 					tabIndex={-1}
-					{...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingOne, baseStyles.focusable, 
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.heading,
+						baseStyles.headingOne,
+						baseStyles.focusable,
 						styles.title,
 						alignedLeft && styles.titleLeft,
 						layout === "left" && styles.titleLeftWidth,
@@ -160,7 +164,9 @@ export function PageIntro({
 					{title}
 				</h1>
 				<p
-					{...stylex.props(baseStyles.element, baseStyles.paragraph, 
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.paragraph,
 						styles.description,
 						alignedLeft && styles.descriptionLeft,
 					)}
@@ -169,7 +175,8 @@ export function PageIntro({
 				</p>
 				{actions ? (
 					<div
-						{...stylex.props(baseStyles.element, 
+						{...stylex.props(
+							baseStyles.element,
 							styles.actions,
 							alignedLeft && styles.actionsSplit,
 						)}

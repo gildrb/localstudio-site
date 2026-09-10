@@ -29,7 +29,11 @@ const generated = [
 		args: ["scripts/design-manifest.mjs", "write"],
 		files: ["design-manifest.json"],
 	},
-	{ label: "asset-manifest", args: ["scripts/assets.mjs", "write"], files: ["asset-manifest.json"] },
+	{
+		label: "asset-manifest",
+		args: ["scripts/assets.mjs", "write"],
+		files: ["asset-manifest.json"],
+	},
 	{
 		label: "Vercel outputs",
 		args: ["scripts/vercel.mjs", "write"],
@@ -45,6 +49,8 @@ const excludedCopyParts = new Set([
 	".git",
 	".context",
 	"dist",
+	".vite",
+	".vite-plus",
 	"node_modules",
 	"playwright-report",
 	"test-results",
@@ -68,6 +74,7 @@ function runGenerator(directory, { label, args }) {
 		encoding: "utf8",
 		stdio: "inherit",
 	});
+	if (result.error) throw result.error;
 	if (result.status !== 0) throw new Error(`${label} generation failed`);
 }
 

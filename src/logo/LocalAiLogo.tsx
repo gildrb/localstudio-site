@@ -13,22 +13,71 @@ export function LocalAiLogo() {
 	return (
 		<>
 			{status !== "ready" && (
-				<div aria-hidden="true" {...stylex.props(styles.heroAtmosphere, styles.heroAtmospherePlaceholder)}>
+				<div
+					aria-hidden="true"
+					{...stylex.props(styles.heroAtmosphere, styles.heroAtmospherePlaceholder)}
+				>
 					<picture {...stylex.props(styles.heroAtmosphereBackgroundPoster)}>
 						<source media="(prefers-color-scheme: light)" srcSet={assets.heroAtmosphereDay} />
-						<img {...stylex.props(styles.heroAtmosphereImage)} src={assets.heroAtmosphereNight} alt="" draggable={false} decoding="sync" fetchPriority="high" />
+						<img
+							{...stylex.props(styles.heroAtmosphereImage)}
+							src={assets.heroAtmosphereNight}
+							alt=""
+							draggable={false}
+							decoding="sync"
+							fetchPriority="high"
+						/>
 					</picture>
 				</div>
 			)}
-			<canvas ref={atmosphereRef} aria-hidden="true" {...stylex.props(styles.heroAtmosphere, !ready && styles.heroAtmospherePending)} />
-			<Shader atmosphereRef={atmosphereRef} atmosphereForegroundRef={atmosphereForegroundRef} onPending={() => setStatus("loading")} onFirstFrame={() => setStatus("ready")} onFallback={() => setStatus("fallback")} />
-			<canvas ref={atmosphereForegroundRef} aria-hidden="true" {...stylex.props(styles.heroAtmosphere, styles.heroAtmosphereForeground, !ready && styles.heroAtmospherePending)} />
+			<canvas
+				ref={atmosphereRef}
+				aria-hidden="true"
+				{...stylex.props(styles.heroAtmosphere, !ready && styles.heroAtmospherePending)}
+			/>
+			<Shader
+				atmosphereRef={atmosphereRef}
+				atmosphereForegroundRef={atmosphereForegroundRef}
+				onPending={() => setStatus("loading")}
+				onFirstFrame={() => setStatus("ready")}
+				onFallback={() => setStatus("fallback")}
+			/>
+			<canvas
+				ref={atmosphereForegroundRef}
+				aria-hidden="true"
+				{...stylex.props(
+					styles.heroAtmosphere,
+					styles.heroAtmosphereForeground,
+					!ready && styles.heroAtmospherePending,
+				)}
+			/>
 			{status !== "ready" && (
 				<>
-					<LogoPoster sx={styles.heroRender} dayUrl={assets.heroRenderDay} nightUrl={assets.heroRenderNight} />
-					<picture aria-hidden="true" {...stylex.props(styles.heroAtmosphere, styles.heroAtmospherePlaceholder, styles.heroAtmosphereForeground)}>
-						<source media="(prefers-color-scheme: light)" srcSet={assets.heroAtmosphereForegroundDay} />
-						<img {...stylex.props(styles.heroAtmosphereImage)} src={assets.heroAtmosphereForegroundNight} alt="" draggable={false} decoding="sync" fetchPriority="high" />
+					<LogoPoster
+						sx={styles.heroRender}
+						dayUrl={assets.heroRenderDay}
+						nightUrl={assets.heroRenderNight}
+					/>
+					<picture
+						aria-hidden="true"
+						{...stylex.props(
+							styles.heroAtmosphere,
+							styles.heroAtmospherePlaceholder,
+							styles.heroAtmosphereForeground,
+						)}
+					>
+						<source
+							media="(prefers-color-scheme: light)"
+							srcSet={assets.heroAtmosphereForegroundDay}
+						/>
+						<img
+							{...stylex.props(styles.heroAtmosphereImage)}
+							src={assets.heroAtmosphereForegroundNight}
+							alt=""
+							draggable={false}
+							decoding="sync"
+							fetchPriority="high"
+						/>
 					</picture>
 				</>
 			)}

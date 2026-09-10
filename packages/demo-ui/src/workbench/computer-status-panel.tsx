@@ -14,19 +14,27 @@ export function ComputerStatusPanel({
 		<section {...stylex.props(demoStyles.reset, styles.section11)}>
 			<p {...stylex.props(demoStyles.reset)}>
 				<span {...stylex.props(demoStyles.reset, styles.span13)}>Session</span>
-				<span {...stylex.props(demoStyles.reset, styles.span14)}>{focusedSession?.title ?? "New task"}</span>
+				<span {...stylex.props(demoStyles.reset, styles.span14)}>
+					{focusedSession?.title ?? "New task"}
+				</span>
 			</p>
 			<p {...stylex.props(demoStyles.reset)}>
 				<span {...stylex.props(demoStyles.reset, styles.span13)}>Status</span>
-				<span {...stylex.props(demoStyles.reset, styles.span14)}>{focusedSession?.status ?? "idle"}</span>
+				<span {...stylex.props(demoStyles.reset, styles.span14)}>
+					{focusedSession?.status ?? "idle"}
+				</span>
 			</p>
 			<p {...stylex.props(demoStyles.reset)}>
 				<span {...stylex.props(demoStyles.reset, styles.span13)}>Model</span>
-				<span {...stylex.props(demoStyles.reset, styles.span14)}>{activeModel?.name ?? "None"}</span>
+				<span {...stylex.props(demoStyles.reset, styles.span14)}>
+					{activeModel?.name ?? "None"}
+				</span>
 			</p>
 			<p {...stylex.props(demoStyles.reset)}>
 				<span {...stylex.props(demoStyles.reset, styles.span13)}>Project</span>
-				<span {...stylex.props(demoStyles.reset, styles.span14)}>{activeProject?.name ?? "Home"}</span>
+				<span {...stylex.props(demoStyles.reset, styles.span14)}>
+					{activeProject?.name ?? "Home"}
+				</span>
 			</p>
 		</section>
 	);

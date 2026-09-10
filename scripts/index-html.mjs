@@ -13,19 +13,48 @@ const kitty = products.kittyLitter.name;
 const org = {
 	"@type": "Organization",
 	name: company.name,
-	description: "Software company building local-first AI products including Local Studio, KittyLitter, and Codex Shim.",
+	description:
+		"Software company building local-first AI products including Local Studio, KittyLitter, and Codex Shim.",
 	url: company.url,
 	email: company.contact,
-	contactPoint: { "@type": "ContactPoint", email: company.contact, contactType: "customer support", url: `${site.origin}/contact` },
-	address: { "@type": "PostalAddress", name: "Sybil Solutions (online-first organization)", url: company.url },
+	contactPoint: {
+		"@type": "ContactPoint",
+		email: company.contact,
+		contactType: "customer support",
+		url: `${site.origin}/contact`,
+	},
+	address: {
+		"@type": "PostalAddress",
+		name: "Sybil Solutions (online-first organization)",
+		url: company.url,
+	},
 	sameAs: [company.alias, company.github, company.x],
 };
-const app = (name, url, extra) => ({ "@type": "SoftwareApplication", name, url, applicationCategory: "DeveloperApplication", ...extra });
-const jsonLd = { "@context": "https://schema.org", "@graph": [
-	org,
-	app(studio, `${site.origin}/`, { description: "Local-first macOS workstation for running and using self-hosted language-model backends.", operatingSystem: "macOS", license: "https://www.apache.org/licenses/LICENSE-2.0", downloadUrl: release.latestAlias, publisher: { "@type": "Organization", name: org.name, url: org.url } }),
-	app(kitty, `${products.kittyLitter.url}/`, { operatingSystem: "iOS, Android", isRelatedTo: { "@type": "SoftwareApplication", name: studio } }),
-] };
+const app = (name, url, extra) => ({
+	"@type": "SoftwareApplication",
+	name,
+	url,
+	applicationCategory: "DeveloperApplication",
+	...extra,
+});
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@graph": [
+		org,
+		app(studio, `${site.origin}/`, {
+			description:
+				"Local-first macOS workstation for running and using self-hosted language-model backends.",
+			operatingSystem: "macOS",
+			license: "https://www.apache.org/licenses/LICENSE-2.0",
+			downloadUrl: release.latestAlias,
+			publisher: { "@type": "Organization", name: org.name, url: org.url },
+		}),
+		app(kitty, `${products.kittyLitter.url}/`, {
+			operatingSystem: "iOS, Android",
+			isRelatedTo: { "@type": "SoftwareApplication", name: studio },
+		}),
+	],
+};
 const body = `<!doctype html>
 <html lang="en">
   <head>
@@ -68,7 +97,7 @@ if (command === "write") {
 	console.log("wrote index.html");
 } else if (command === "check") {
 	if (readFileSync(dest, "utf8") !== body) {
-		console.error("index.html is stale; run bun run index:html");
+		console.error("index.html is stale; run vp run index:html");
 		process.exit(1);
 	}
 	console.log("index.html ok");

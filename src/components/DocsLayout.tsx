@@ -6,9 +6,7 @@ import { LocalLink } from "./LocalLink";
 
 type TocEntry = readonly [label: string, id: string];
 
-
-const pageWidth =
-	`min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
+const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 
 const styles = stylex.create({
 	root: {
@@ -39,12 +37,12 @@ const styles = stylex.create({
 		display: "grid",
 		gap: { default: "8px", "@media (max-width: 900px)": 0 },
 		marginTop: "16px",
-		paddingTop: '0',
-		paddingRight: '0',
-		paddingBottom: '0',
-		paddingLeft: '16px',
-		borderLeftWidth: '1px',
-		borderLeftStyle: 'solid',
+		paddingTop: "0",
+		paddingRight: "0",
+		paddingBottom: "0",
+		paddingLeft: "16px",
+		borderLeftWidth: "1px",
+		borderLeftStyle: "solid",
 		borderLeftColor: colors.borderSoft,
 		fontSize: "16px",
 		lineHeight: "24px",
@@ -88,7 +86,9 @@ export function DocsLayout({
 	return (
 		<div {...stylex.props(baseStyles.element, styles.root, sx)}>
 			<aside {...stylex.props(baseStyles.element, styles.toc)}>
-				<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.label)}>On this page</p>
+				<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.label)}>
+					On this page
+				</p>
 				<nav aria-label={label} {...stylex.props(baseStyles.element)}>
 					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.list)}>
 						{toc.map(([title, id]) => (

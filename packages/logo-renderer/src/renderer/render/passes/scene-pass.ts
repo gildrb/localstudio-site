@@ -5,70 +5,70 @@ import { writeParams } from "../params";
 import type { RendererResources } from "../resources";
 import type { ImprintRenderOptions, MeshData, RenderControls } from "../types";
 export function renderScene(
-  f: Frame,
-  r: RendererResources,
-  m: MeshData,
-  target: Target,
-  backMaterial: Texture,
-  backDepth: Texture,
-  paint: Texture,
-  voronoiValue: Texture,
-  voronoiEdge: Texture,
-  c: RenderControls,
-  w: number,
-  h: number,
-  pad = r.paddingRadius,
-  im: ImprintRenderOptions = {},
+	f: Frame,
+	r: RendererResources,
+	m: MeshData,
+	target: Target,
+	backMaterial: Texture,
+	backDepth: Texture,
+	paint: Texture,
+	voronoiValue: Texture,
+	voronoiEdge: Texture,
+	c: RenderControls,
+	w: number,
+	h: number,
+	pad = r.paddingRadius,
+	im: ImprintRenderOptions = {},
 ) {
-  const base = {
-    controls: c,
-    logicalWidth: w,
-    logicalHeight: h,
-    projectionPaddingRadius: pad,
-    meshBounds: m.bounds,
-    orbitTarget: r.orbitTarget,
-    thicknessScale: r.thicknessScale,
-    isLight: r.isLight,
-  };
-  // Cached views preserve resource identity and avoid per-frame createView() calls.
-  const bindings = {
-    studioCube: r.studioCubemap.view,
-    studioSampler: r.studioCubemap.sampler,
-    backMaterial: backMaterial.view,
-    backDepth: backDepth.view,
-    paintTex: paint.view,
-    asciiVoronoiValueTex: voronoiValue.view,
-    asciiVoronoiEdgeTex: voronoiEdge.view,
-  };
-  if (c.showEnv)
-    r.pipelines.envBg.set({
-      params: writeParams({ ...base, passKind: PASS_OUTSIDE }),
-      studioCube: r.studioCubemap.view,
-      studioSampler: r.studioCubemap.sampler,
-    });
-  if (c.material === "glass" || c.material === "thickness")
-    r.pipelines.frontMaterial.set({
-      ...bindings,
-      params: writeParams({ ...base, passKind: PASS_OUTSIDE, imprint: im }),
-    });
-  else
-    r.pipelines.opaque.set({
-      ...bindings,
-      params: writeParams({ ...base, passKind: PASS_OUTSIDE }),
-    });
-  if (c.wireframe)
-    r.pipelines.wire.set({
-      ...bindings,
-      params: writeParams({ ...base, passKind: PASS_WIREFRAME }),
-    });
-  f.pass(target, (pass) => {
-    if (c.showEnv) pass.draw(r.pipelines.envBg);
-    if (c.outsideRendering)
-      pass.draw(
-        c.material === "glass" || c.material === "thickness"
-          ? r.pipelines.frontMaterial
-          : r.pipelines.opaque,
-      );
-    if (c.wireframe) pass.draw(r.pipelines.wire);
-  });
+	const base = {
+		controls: c,
+		logicalWidth: w,
+		logicalHeight: h,
+		projectionPaddingRadius: pad,
+		meshBounds: m.bounds,
+		orbitTarget: r.orbitTarget,
+		thicknessScale: r.thicknessScale,
+		isLight: r.isLight,
+	};
+	// Cached views preserve resource identity and avoid per-frame createView() calls.
+	const bindings = {
+		studioCube: r.studioCubemap.view,
+		studioSampler: r.studioCubemap.sampler,
+		backMaterial: backMaterial.view,
+		backDepth: backDepth.view,
+		paintTex: paint.view,
+		asciiVoronoiValueTex: voronoiValue.view,
+		asciiVoronoiEdgeTex: voronoiEdge.view,
+	};
+	if (c.showEnv)
+		r.pipelines.envBg.set({
+			params: writeParams({ ...base, passKind: PASS_OUTSIDE }),
+			studioCube: r.studioCubemap.view,
+			studioSampler: r.studioCubemap.sampler,
+		});
+	if (c.material === "glass" || c.material === "thickness")
+		r.pipelines.frontMaterial.set({
+			...bindings,
+			params: writeParams({ ...base, passKind: PASS_OUTSIDE, imprint: im }),
+		});
+	else
+		r.pipelines.opaque.set({
+			...bindings,
+			params: writeParams({ ...base, passKind: PASS_OUTSIDE }),
+		});
+	if (c.wireframe)
+		r.pipelines.wire.set({
+			...bindings,
+			params: writeParams({ ...base, passKind: PASS_WIREFRAME }),
+		});
+	f.pass(target, (pass) => {
+		if (c.showEnv) pass.draw(r.pipelines.envBg);
+		if (c.outsideRendering)
+			pass.draw(
+				c.material === "glass" || c.material === "thickness"
+					? r.pipelines.frontMaterial
+					: r.pipelines.opaque,
+			);
+		if (c.wireframe) pass.draw(r.pipelines.wire);
+	});
 }

@@ -13,7 +13,6 @@ const copyPath =
 const checkPath =
 	"m15.56 4-.53.53-8.8 8.8c-.68.68-1.78.68-2.47 0l.53-.54-.53.53-2.79-2.79L.44 10 1.5 8.94l.53.53 2.8 2.8c.1.09.25.09.35 0l8.79-8.8.53-.53z";
 
-
 const styles = stylex.create({
 	clipboard: { position: "fixed", opacity: 0 },
 	button: {
@@ -119,7 +118,15 @@ export function CopyButton({ text, sx }: CopyButtonProps) {
 
 	return (
 		<button
-			{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, baseStyles.button, styles.button, copied && styles.copied, sx)}
+			{...stylex.props(
+				baseStyles.element,
+				baseStyles.interactive,
+				baseStyles.focusable,
+				baseStyles.button,
+				styles.button,
+				copied && styles.copied,
+				sx,
+			)}
 			type="button"
 			onClick={copy}
 			aria-label="Copy to clipboard"
@@ -139,7 +146,8 @@ export function CopyButton({ text, sx }: CopyButtonProps) {
 					height="16"
 				>
 					<path
-						{...stylex.props(baseStyles.element, 
+						{...stylex.props(
+							baseStyles.element,
 							styles.path,
 							copied ? styles.hiddenPath : styles.visiblePath,
 						)}
@@ -147,7 +155,8 @@ export function CopyButton({ text, sx }: CopyButtonProps) {
 						d={copyPath}
 					/>
 					<path
-						{...stylex.props(baseStyles.element, 
+						{...stylex.props(
+							baseStyles.element,
 							styles.path,
 							copied ? styles.visiblePath : styles.hiddenPath,
 						)}

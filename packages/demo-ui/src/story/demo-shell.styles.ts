@@ -2,22 +2,20 @@ import * as stylex from "@stylexjs/stylex";
 import { storyMotion, tokens } from "../styles/tokens.stylex.ts";
 
 export const styles = stylex.create({
-  demo: {
-  },
-  demoViewport: {
-    filter: `blur(${storyMotion["--story-content-blur"]})`,
-  },
-  demoApp: {
-  },
-  div42: {
-    display: "flex",
-    minHeight: "0px",
-    minWidth: "0px",
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: "0%",
-    overflowX: "hidden",
-    overflowY: "hidden",
-    backgroundColor: tokens.agentBg,
-  },
+	demo: {},
+	demoViewport: {
+		filter: `blur(${storyMotion["--story-content-blur"]})`,
+	},
+	demoApp: {},
+	div42: {
+		display: "flex",
+		minHeight: "0px",
+		minWidth: "0px",
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: "0%",
+		overflowX: "hidden",
+		overflowY: "hidden",
+		backgroundColor: tokens.agentBg,
+	},
 });

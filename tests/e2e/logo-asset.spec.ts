@@ -35,17 +35,10 @@ test("footer no longer renders the outline mark", async ({ page }) => {
 
 test("document uses transparent light and dark favicon assets", async ({ page }) => {
 	await page.goto("/");
-	const lightFavicon = page.locator(
-		'link[rel="icon"][media="(prefers-color-scheme: light)"]',
-	);
-	const darkFavicon = page.locator(
-		'link[rel="icon"][media="(prefers-color-scheme: dark)"]',
-	);
+	const lightFavicon = page.locator('link[rel="icon"][media="(prefers-color-scheme: light)"]');
+	const darkFavicon = page.locator('link[rel="icon"][media="(prefers-color-scheme: dark)"]');
 	await expect(lightFavicon).toHaveAttribute("href", "/images/favicon.svg");
-	await expect(darkFavicon).toHaveAttribute(
-		"href",
-		"/images/favicon-dark.svg",
-	);
+	await expect(darkFavicon).toHaveAttribute("href", "/images/favicon-dark.svg");
 	for (const path of ["/images/favicon.svg", "/images/favicon-dark.svg"]) {
 		const response = await page.request.get(path);
 		expect(response.ok()).toBeTruthy();
@@ -56,8 +49,10 @@ test("document uses transparent light and dark favicon assets", async ({ page })
 
 test("navbar uses compact text and an accessible GitHub icon", async ({ page }) => {
 	await page.goto("/");
-	const mobile = page.getByRole("navigation", { name: "Landing navigation" }).getByRole("link", { name: "Company" });
-	const typography = await mobile.evaluate(element => {
+	const mobile = page
+		.getByRole("navigation", { name: "Landing navigation" })
+		.getByRole("link", { name: "Company" });
+	const typography = await mobile.evaluate((element) => {
 		const style = getComputedStyle(element);
 		return [style.fontSize, style.lineHeight];
 	});
@@ -65,7 +60,9 @@ test("navbar uses compact text and an accessible GitHub icon", async ({ page }) 
 	await page.setViewportSize({ width: 390, height: 844 });
 	await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
 	await page.getByRole("button", { name: "Open menu" }).click();
-	const github = page.getByRole("dialog", { name: "Navigation menu" }).getByRole("link", { name: "GitHub" });
+	const github = page
+		.getByRole("dialog", { name: "Navigation menu" })
+		.getByRole("link", { name: "GitHub" });
 	await expect(github).toHaveAttribute("href", "https://github.com/sybil-solutions/local-studio");
 	await expect(github.locator("svg")).toBeVisible();
 });

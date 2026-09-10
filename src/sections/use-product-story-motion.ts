@@ -1,11 +1,7 @@
 import { animate } from "motion";
 import { useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-	storyIndex,
-	storyOptionsTime,
-	storyPosition,
-} from "./product-story-motion";
+import { storyIndex, storyOptionsTime, storyPosition } from "./product-story-motion";
 
 const MOBILE_STORY_QUERY = "(max-width: 900px)";
 type MotionControls = ReturnType<typeof animate>;
@@ -20,12 +16,15 @@ export function useProductStoryMotion(sceneCount: number) {
 	const positionRef = useRef(0);
 	const optionsAnimation = useRef<MotionControls | null>(null);
 
-	const syncMotion = useCallback((position: number) => {
-		positionRef.current = position;
-		if (optionsAnimation.current) {
-			optionsAnimation.current.time = storyOptionsTime(position, sceneCount);
-		}
-	}, [sceneCount]);
+	const syncMotion = useCallback(
+		(position: number) => {
+			positionRef.current = position;
+			if (optionsAnimation.current) {
+				optionsAnimation.current.time = storyOptionsTime(position, sceneCount);
+			}
+		},
+		[sceneCount],
+	);
 
 	useEffect(() => {
 		const showcase = showcaseRef.current;
@@ -150,7 +149,6 @@ export function useProductStoryMotion(sceneCount: number) {
 			if (measureFrame !== 0) window.cancelAnimationFrame(measureFrame);
 		};
 	}, [reducedMotion, sceneCount, syncMotion]);
-
 
 	return {
 		activeIndex,

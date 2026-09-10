@@ -13,9 +13,7 @@ test("robots.txt is plain text with crawl rules, AI bots, sitemap, and content s
 	const body = await response.text();
 	expect(body).toContain("User-agent: *");
 	expect(body).toContain("Allow: /");
-	expect(body).toContain(
-		"Content-Signal: search=yes, ai-input=yes, ai-train=yes",
-	);
+	expect(body).toContain("Content-Signal: search=yes, ai-input=yes, ai-train=yes");
 	expect(body).toContain("User-agent: GPTBot");
 	expect(body).toContain("User-agent: OAI-SearchBot");
 	expect(body).toContain("User-agent: Claude-Web");
@@ -35,20 +33,15 @@ test("sitemap.xml lists canonical HTML routes", async ({ request }) => {
 	const body = await response.text();
 	expect(body).toContain("<urlset");
 	for (const path of pages) {
-		const loc =
-			path === "/"
-				? "https://localstudio.ai/"
-				: `https://localstudio.ai${path}`;
+		const loc = path === "/" ? "https://localstudio.ai/" : `https://localstudio.ai${path}`;
 		expect(body).toContain(`<loc>${loc}</loc>`);
 	}
 });
 
-test("homepage sends RFC 8288 Link headers for agent discovery", async ({
-	request,
-}) => {
+test("homepage sends RFC 8288 Link headers for agent discovery", async ({ request }) => {
 	const response = await request.get("/");
 	expect(response.status()).toBe(200);
-	const link = response.headers().link ?? "";
+	const link = response.headers()["link"] ?? "";
 	expect(link).toContain('rel="api-catalog"');
 	expect(link).toContain("/.well-known/api-catalog");
 	expect(link).toContain('rel="describedby"');
@@ -57,9 +50,7 @@ test("homepage sends RFC 8288 Link headers for agent discovery", async ({
 	expect(link).toContain("/docs");
 });
 
-test("Accept text/markdown returns markdown for HTML routes", async ({
-	request,
-}) => {
+test("Accept text/markdown returns markdown for HTML routes", async ({ request }) => {
 	for (const path of pages) {
 		const response = await request.get(path, {
 			headers: { Accept: "text/markdown" },
@@ -94,9 +85,7 @@ test("markdown twins and discovery files are served as markdown or catalog types
 	expect(await card.text()).toContain("Sybil Solutions");
 });
 
-test("machine page names the company and both featured products", async ({
-	page,
-}) => {
+test("machine page names the company and both featured products", async ({ page }) => {
 	await page.goto("/machine");
 	const text = await page.locator("[data-page-focus]").innerText();
 	expect(text).toContain("Sybil Solutions");
@@ -109,7 +98,6 @@ test("machine page names the company and both featured products", async ({
 	expect(text).toContain("Alleycat");
 	expect(text).toContain("vLLM");
 });
-
 
 test("raw homepage is useful without JavaScript and links developer resources", async ({
 	request,

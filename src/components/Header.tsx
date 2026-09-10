@@ -21,11 +21,11 @@ type NavLink = {
 	readonly label: string;
 	readonly href: string;
 	readonly external?: true;
-}
+};
 
 type ChevronProps = {
 	open: boolean;
-}
+};
 
 type MenuListProps = {
 	items: readonly NavLink[];
@@ -33,7 +33,7 @@ type MenuListProps = {
 	sx?: PublicStyle;
 	itemSx?: PublicStyle;
 	desktop?: boolean;
-}
+};
 
 const products = productNav();
 
@@ -68,12 +68,24 @@ function MenuItems({
 	desktop = false,
 }: MenuListProps) {
 	return (
-		<ul {...stylex.props(baseStyles.list, baseStyles.element, sx)} role={desktop ? "none" : undefined}>
+		<ul
+			{...stylex.props(baseStyles.list, baseStyles.element, sx)}
+			role={desktop ? "none" : undefined}
+		>
 			{items.map((item) => (
-				<li key={item.label} role={desktop ? "none" : undefined} {...stylex.props(baseStyles.element)}>
+				<li
+					key={item.label}
+					role={desktop ? "none" : undefined}
+					{...stylex.props(baseStyles.element)}
+				>
 					{item.external ? (
 						<a
-							{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, itemSx)}
+							{...stylex.props(
+								baseStyles.element,
+								baseStyles.interactive,
+								baseStyles.focusable,
+								itemSx,
+							)}
 							href={item.href}
 							target="_blank"
 							rel="noreferrer"
@@ -98,21 +110,13 @@ function MenuItems({
 	);
 }
 
-function DesktopMenu({
-	menu,
-	onNavigate,
-}: {
-	menu: MenuId;
-	onNavigate: () => void;
-}) {
+function DesktopMenu({ menu, onNavigate }: { menu: MenuId; onNavigate: () => void }) {
 	const label = menu === "products" ? "Products" : "Resources";
 	const innerRef = useRef<HTMLDivElement>(null);
 	const [offset, setOffset] = useState(0);
 	useLayoutEffect(() => {
 		function sync() {
-			const trigger = document.querySelector<HTMLElement>(
-				`[aria-controls="nav-menu-${menu}"]`,
-			);
+			const trigger = document.querySelector<HTMLElement>(`[aria-controls="nav-menu-${menu}"]`);
 			const inner = innerRef.current;
 			if (!trigger || !inner) return;
 			const triggerText =
@@ -128,15 +132,17 @@ function DesktopMenu({
 
 	return (
 		<div
-			{...stylex.props(baseStyles.element, headerStyles.mega, menu === "resources" && headerStyles.megaResources)}
+			{...stylex.props(
+				baseStyles.element,
+				headerStyles.mega,
+				menu === "resources" && headerStyles.megaResources,
+			)}
 			id={`nav-menu-${menu}`}
 			aria-label={`${label} menu`}
 			role="menu"
 			onKeyDown={(event) => {
 				if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
-				const items = [
-					...event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]'),
-				];
+				const items = [...event.currentTarget.querySelectorAll<HTMLElement>('[role="menuitem"]')];
 				if (items.length === 0) return;
 				const current = items.findIndex((item) => item === document.activeElement);
 				const next =
@@ -144,8 +150,7 @@ function DesktopMenu({
 						? 0
 						: event.key === "End"
 							? items.length - 1
-							: (current + (event.key === "ArrowDown" ? 1 : -1) + items.length) %
-								items.length;
+							: (current + (event.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
 				event.preventDefault();
 				items[next]?.focus();
 			}}
@@ -153,7 +158,10 @@ function DesktopMenu({
 			<div {...stylex.props(baseStyles.element, headerStyles.megaInner)} ref={innerRef}>
 				<div {...stylex.props(baseStyles.element, headerStyles.megaGrid(offset))}>
 					{(menuColumns[menu] ?? []).map((column) => (
-						<section {...stylex.props(baseStyles.element, headerStyles.megaSection)} key={column[0]?.label ?? menu}>
+						<section
+							{...stylex.props(baseStyles.element, headerStyles.megaSection)}
+							key={column[0]?.label ?? menu}
+						>
 							<MenuItems items={column} onNavigate={onNavigate} desktop />
 						</section>
 					))}
@@ -179,7 +187,14 @@ function MobileMenuGroup({
 			{...stylex.props(baseStyles.element, headerStyles.sheetGroup)}
 			onToggle={(event) => setOpen(event.currentTarget.open)}
 		>
-			<summary {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, headerStyles.sheetSummary)}>
+			<summary
+				{...stylex.props(
+					baseStyles.element,
+					baseStyles.interactive,
+					baseStyles.focusable,
+					headerStyles.sheetSummary,
+				)}
+			>
 				{label}
 				<ChevronDown
 					{...stylex.props(headerStyles.sheetChevron, open && headerStyles.chevronOpen)}
@@ -254,7 +269,6 @@ export function Header() {
 		};
 	}, [openMenu]);
 
-
 	useEffect(() => {
 		const media = window.matchMedia(mobileQuery);
 		function onChange() {
@@ -264,7 +278,6 @@ export function Header() {
 		media.addEventListener("change", onChange);
 		return () => media.removeEventListener("change", onChange);
 	}, []);
-
 
 	useEffect(() => {
 		const main = document.getElementById("content");
@@ -312,14 +325,14 @@ export function Header() {
 				<button
 					type="button"
 					{...stylex.props(
-					baseStyles.element,
-					baseStyles.interactive,
-					baseStyles.focusable,
-					baseStyles.button,
-					headerStyles.menuTrigger,
-					stylex.defaultMarker(),
-					open && headerStyles.menuTriggerOpen,
-				)}
+						baseStyles.element,
+						baseStyles.interactive,
+						baseStyles.focusable,
+						baseStyles.button,
+						headerStyles.menuTrigger,
+						stylex.defaultMarker(),
+						open && headerStyles.menuTriggerOpen,
+					)}
 					aria-haspopup="menu"
 					aria-expanded={open}
 					aria-controls={`nav-menu-${id}`}
@@ -357,121 +370,156 @@ export function Header() {
 	return (
 		<>
 			{mobileOpen ? <div {...stylex.props(baseStyles.element, headerStyles.spacer)} /> : null}
-		<header
-			ref={menusRef}
-			{...stylex.props(baseStyles.element, headerStyles.nav, mobileOpen && headerStyles.navOpen)}
-			onPointerOver={cancelMenuClose}
-			onPointerLeave={scheduleMenuClose}
-		>
-			<span {...stylex.props(baseStyles.element, headerStyles.navBackdrop, mobileOpen && headerStyles.navBackdropOpen, openMenu === "products" && headerStyles.navBackdropProducts, openMenu === "resources" && headerStyles.navBackdropResources)} />
-			<div {...stylex.props(baseStyles.element, headerStyles.primary)}>
-				<LocalLink
-					sx={headerStyles.brand}
-					href={homePath}
-					aria-label={site.products.localStudio.name}
-					onClick={closeMobile}
-					onPointerEnter={close}
-				>
-					<BrandLogo />
-				</LocalLink>
-				<nav {...stylex.props(baseStyles.element, headerStyles.links)} aria-label="Landing navigation">
-					{menu("products", "Products")}
-					{menu("resources", "Resources")}
-					<a
-						{...stylex.props(
-							baseStyles.element,
-							baseStyles.interactive,
-							baseStyles.focusable,
-							headerStyles.topLink,
-							stylex.defaultMarker(),
-						)}
-						data-nav-company=""
-						href={site.company.url}
+			<header
+				ref={menusRef}
+				{...stylex.props(baseStyles.element, headerStyles.nav, mobileOpen && headerStyles.navOpen)}
+				onPointerOver={cancelMenuClose}
+				onPointerLeave={scheduleMenuClose}
+			>
+				<span
+					{...stylex.props(
+						baseStyles.element,
+						headerStyles.navBackdrop,
+						mobileOpen && headerStyles.navBackdropOpen,
+						openMenu === "products" && headerStyles.navBackdropProducts,
+						openMenu === "resources" && headerStyles.navBackdropResources,
+					)}
+				/>
+				<div {...stylex.props(baseStyles.element, headerStyles.primary)}>
+					<LocalLink
+						sx={headerStyles.brand}
+						href={homePath}
+						aria-label={site.products.localStudio.name}
+						onClick={closeMobile}
 						onPointerEnter={close}
 					>
-						<span
-							{...stylex.props(baseStyles.element, headerStyles.triggerSurface)}
-							aria-hidden="true"
-						/>
-						Company
-					</a>
-				</nav>
-			</div>
-			<div {...stylex.props(baseStyles.element, headerStyles.actions)}>
-				<LocalLink
-					sx={headerStyles.github}
-					href={githubUrl}
-					target="_blank"
-					rel="noreferrer"
-					aria-label={`${site.products.localStudio.name} on GitHub`}
-					onPointerEnter={close}
-				>
-					GitHub
-				</LocalLink>
-				<DownloadButton sx={headerStyles.button} />
-			</div>
-			{openMenu ? (
-				<DesktopMenu menu={openMenu} onNavigate={close} />
-			) : null}
-			<button
-				ref={toggleRef}
-				type="button"
-				{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, baseStyles.button, headerStyles.toggle)}
-				aria-label={mobileOpen ? "Close menu" : "Open menu"}
-				aria-expanded={mobileOpen}
-				aria-controls={sheetId}
-				onClick={() => setSheetOpen(!mobileOpen)}
-			>
-				{mobileOpen ? (
-					<X size={22} strokeWidth={1.5} aria-hidden="true" />
-				) : (
-					<Equal size={22} strokeWidth={1.5} aria-hidden="true" />
-				)}
-			</button>
-			<dialog
-				id={sheetId}
-				ref={sheetRef}
-				{...stylex.props(baseStyles.dialog, baseStyles.element, headerStyles.sheet, mobileOpen && headerStyles.sheetOpen)}
-				aria-modal={mobileOpen || undefined}
-				aria-label="Navigation menu"
-				aria-hidden={!mobileOpen}
-				inert={!mobileOpen || undefined}
-			>
-				<nav {...stylex.props(baseStyles.element, headerStyles.sheetNav)} aria-label="Mobile navigation">
-					<MobileMenuGroup label="Products" items={products} onNavigate={closeMobile} />
-					<MobileMenuGroup label="Resources" items={resources} onNavigate={closeMobile} />
-					<a
-						{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, headerStyles.sheetItem, headerStyles.sheetLink)}
-						href={site.company.url}
-						onClick={closeMobile}
-					>
-						<span
-							{...stylex.props(baseStyles.element, headerStyles.triggerSurface)}
-							aria-hidden="true"
-						/>
-						Company
-					</a>
-				</nav>
-				<div {...stylex.props(baseStyles.element, headerStyles.sheetActions)}>
-					<LocalLink
-						sx={[headerStyles.button, headerStyles.sheetAction]}
-						href={downloadPath}
-						onClick={closeMobile}
-					>
-						{downloadLabel()}
+						<BrandLogo />
 					</LocalLink>
-					<a
-						{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, headerStyles.button, headerStyles.sheetAction)}
+					<nav
+						{...stylex.props(baseStyles.element, headerStyles.links)}
+						aria-label="Landing navigation"
+					>
+						{menu("products", "Products")}
+						{menu("resources", "Resources")}
+						<a
+							{...stylex.props(
+								baseStyles.element,
+								baseStyles.interactive,
+								baseStyles.focusable,
+								headerStyles.topLink,
+								stylex.defaultMarker(),
+							)}
+							data-nav-company=""
+							href={site.company.url}
+							onPointerEnter={close}
+						>
+							<span
+								{...stylex.props(baseStyles.element, headerStyles.triggerSurface)}
+								aria-hidden="true"
+							/>
+							Company
+						</a>
+					</nav>
+				</div>
+				<div {...stylex.props(baseStyles.element, headerStyles.actions)}>
+					<LocalLink
+						sx={headerStyles.github}
 						href={githubUrl}
 						target="_blank"
 						rel="noreferrer"
-						onClick={closeMobile}
+						aria-label={`${site.products.localStudio.name} on GitHub`}
+						onPointerEnter={close}
 					>
 						GitHub
-					</a>
+					</LocalLink>
+					<DownloadButton sx={headerStyles.button} />
 				</div>
-			</dialog>
-		</header>
+				{openMenu ? <DesktopMenu menu={openMenu} onNavigate={close} /> : null}
+				<button
+					ref={toggleRef}
+					type="button"
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.interactive,
+						baseStyles.focusable,
+						baseStyles.button,
+						headerStyles.toggle,
+					)}
+					aria-label={mobileOpen ? "Close menu" : "Open menu"}
+					aria-expanded={mobileOpen}
+					aria-controls={sheetId}
+					onClick={() => setSheetOpen(!mobileOpen)}
+				>
+					{mobileOpen ? (
+						<X size={22} strokeWidth={1.5} aria-hidden="true" />
+					) : (
+						<Equal size={22} strokeWidth={1.5} aria-hidden="true" />
+					)}
+				</button>
+				<dialog
+					id={sheetId}
+					ref={sheetRef}
+					{...stylex.props(
+						baseStyles.dialog,
+						baseStyles.element,
+						headerStyles.sheet,
+						mobileOpen && headerStyles.sheetOpen,
+					)}
+					aria-modal={mobileOpen || undefined}
+					aria-label="Navigation menu"
+					aria-hidden={!mobileOpen}
+					inert={!mobileOpen || undefined}
+				>
+					<nav
+						{...stylex.props(baseStyles.element, headerStyles.sheetNav)}
+						aria-label="Mobile navigation"
+					>
+						<MobileMenuGroup label="Products" items={products} onNavigate={closeMobile} />
+						<MobileMenuGroup label="Resources" items={resources} onNavigate={closeMobile} />
+						<a
+							{...stylex.props(
+								baseStyles.element,
+								baseStyles.interactive,
+								baseStyles.focusable,
+								headerStyles.sheetItem,
+								headerStyles.sheetLink,
+							)}
+							href={site.company.url}
+							onClick={closeMobile}
+						>
+							<span
+								{...stylex.props(baseStyles.element, headerStyles.triggerSurface)}
+								aria-hidden="true"
+							/>
+							Company
+						</a>
+					</nav>
+					<div {...stylex.props(baseStyles.element, headerStyles.sheetActions)}>
+						<LocalLink
+							sx={[headerStyles.button, headerStyles.sheetAction]}
+							href={downloadPath}
+							onClick={closeMobile}
+						>
+							{downloadLabel()}
+						</LocalLink>
+						<a
+							{...stylex.props(
+								baseStyles.element,
+								baseStyles.interactive,
+								baseStyles.focusable,
+								headerStyles.button,
+								headerStyles.sheetAction,
+							)}
+							href={githubUrl}
+							target="_blank"
+							rel="noreferrer"
+							onClick={closeMobile}
+						>
+							GitHub
+						</a>
+					</div>
+				</dialog>
+			</header>
 		</>
 	);
 }

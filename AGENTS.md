@@ -3,12 +3,15 @@
 ## Local server policy
 
 - Never start a local HTTP server from an agent tool call.
-- Forbidden commands include `bun run dev`, `bun run dev:lan`, `bun run preview`, and any command that starts scripts/serve.mjs or a local HTTP server.
-- Do not run local Playwright E2E or visual commands that depend on a web server. The user starts the server manually.
-- Build, typecheck, lint, unit, and static validation commands are allowed only when they do not start a server.
-- Do not bypass this policy with raw Node scripts, shell backgrounding, alternate ports, or detached processes.
+- Do not run `vp dev`, `vp preview`, or any other command that starts a local HTTP server. The user starts servers manually.
+- Do not run local Playwright E2E or visual commands that depend on a web server.
+- Install, build, check, lint, format, unit, and static validation commands are allowed only when they do not start a server.
+- Do not bypass this policy with raw scripts, alternate ports, or background processes.
 
-## Runtime policy
+## Toolchain
 
-- Bun is the package manager, bundler, dev/preview server, and unit test runner. There is no Vite and no pnpm.
-- StyleX-heavy scripts (`build`, `prerender`, `stylex:check`, `dev`) run with `BUN_JSC_useJIT=0`: Bun 1.4.0 miscompiles the StyleX-bundled CSS media-query parser after warmup. Drop the flag when Bun fixes it.
+- Use Vite+ (`vp`) for package management, dev/build/preview, checks, formatting, and tests.
+- `vp install` uses the default pnpm workflow and `pnpm-lock.yaml`.
+- Configure the toolchain in `vite.config.ts`. Use the official StyleX and WGSL Vite plugins.
+- `vp check` runs Oxfmt, Oxlint, and Vite+ typechecking. `vp test` runs the unit suite through Vitest.
+- Application-specific generated-output checks run with `vp run validate`. Playwright remains for browser and visual checks.

@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 
 const SOURCE_EXTENSIONS = new Set([".ts", ".tsx"]);
 const TOKEN_OWNERS = new Set(["src/styles/public-tokens.stylex.ts"]);
@@ -24,9 +24,7 @@ test("page colors use typed StyleX tokens instead of loose literals", () => {
 				...(code.match(/(?<!&)#[\da-f]{3,8}\b/gi) ?? []),
 				...(code.match(/\b(?:rgb|rgba|hsl|hsla)\([^)]*\)/gi) ?? []),
 			];
-			return colors.map(
-				(color) => `${projectPath}:${index + 1} ${color}`,
-			);
+			return colors.map((color) => `${projectPath}:${index + 1} ${color}`);
 		});
 	});
 	const tokenOwner = readFileSync("src/styles/public-tokens.stylex.ts", "utf8");

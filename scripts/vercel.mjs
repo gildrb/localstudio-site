@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import {
-	HOMEPAGE_LINK_HEADER,
-	agentDocuments,
-} from "../src/agent/documents.ts";
+import { HOMEPAGE_LINK_HEADER, agentDocuments } from "../src/agent/documents.ts";
 import { markdownPages, redirects, routePaths } from "../src/domain/route.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
@@ -49,13 +46,16 @@ const rewrites = [
 	...routePaths
 		.filter((source) => source !== "/")
 		.map((source) => ({ source, destination: "/index.html" })),
-	...(["developers", "about", "contact", "privacy"].map((name) => ({ source: `/${name}`, destination: `/${name}.html` }))),
+	...["developers", "about", "contact", "privacy"].map((name) => ({
+		source: `/${name}`,
+		destination: `/${name}.html`,
+	})),
 ];
 
 const vercelBody = `${JSON.stringify(
 	{
-		installCommand: "bun install --frozen-lockfile --ignore-scripts",
-		buildCommand: "bun run build",
+		installCommand: "npx --yes --package vite-plus@0.3.1 vp install --frozen-lockfile",
+		buildCommand: "npx --no-install vp build",
 		outputDirectory: "dist",
 		headers,
 		redirects: redirectRules,
@@ -131,11 +131,9 @@ if (command === "write") {
 	for (const output of outputs) writeFileSync(output.path, output.body);
 	console.log("wrote vercel.json and middleware.js");
 } else if (command === "check") {
-	const stale = outputs.filter(
-		(output) => readFileSync(output.path, "utf8") !== output.body,
-	);
+	const stale = outputs.filter((output) => readFileSync(output.path, "utf8") !== output.body);
 	if (stale.length > 0) {
-		console.error("Vercel outputs are stale; run bun run vercel:manifest");
+		console.error("Vercel outputs are stale; run vp run vercel:manifest");
 		process.exit(1);
 	}
 	console.log("Vercel outputs ok");

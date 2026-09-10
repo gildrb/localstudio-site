@@ -1,10 +1,23 @@
 {
-  "compilerOptions": {
-    "rewriteRelativeImportExtensions": true
-  },
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+	"compilerOptions": {
+		"rewriteRelativeImportExtensions": true
+	},
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.node.json"
+		},
+		{
+			"path": "./packages/demo-ui/tsconfig.json"
+		},
+		{
+			"path": "./packages/logo-renderer/tsconfig.json"
+		},
+		{
+			"path": "./tests/tsconfig.json"
+		}
+	]
 }

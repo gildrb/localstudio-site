@@ -53,8 +53,7 @@ export const routes = {
 	"/machine": {
 		title: brandedTitle("Machines"),
 		heading: "Machines",
-		summary:
-			"Dense machine-readable index of company, products, and discovery.",
+		summary: "Dense machine-readable index of company, products, and discovery.",
 		markdown: "/machine.md",
 		footerLabel: "Machines",
 		priority: 0.9,
@@ -76,7 +75,6 @@ export const routePaths = [
 export function isRoutePath(pathname: string): pathname is RoutePath {
 	return Object.prototype.hasOwnProperty.call(routes, pathname);
 }
-
 
 export const homePath = "/" satisfies RoutePath;
 export const machinePath = "/machine" satisfies RoutePath;
@@ -177,10 +175,7 @@ export function notFoundSuggestions(): readonly {
 }
 
 export function markdownPages(): ReadonlyMap<string, string> {
-	const entries: [string, string][] = routePaths.map((path) => [
-		path,
-		routes[path].markdown,
-	]);
+	const entries: [string, string][] = routePaths.map((path) => [path, routes[path].markdown]);
 	for (const path of documentPaths()) {
 		entries.push([path.replace(/\.md$/, ""), path]);
 	}

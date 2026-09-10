@@ -25,7 +25,10 @@ function walk(directory) {
 function manifest() {
 	return walk(join(root, "dist"))
 		.map((path) => {
-			const rel = path.slice(join(root, "dist").length + 1).split("\\").join("/");
+			const rel = path
+				.slice(join(root, "dist").length + 1)
+				.split("\\")
+				.join("/");
 			const raw = readFileSync(path);
 			return {
 				path: rel,
@@ -38,11 +41,12 @@ function manifest() {
 
 function build() {
 	rmSync(join(root, "dist"), { recursive: true, force: true });
-	const result = spawnSync(process.execPath, ["run", "build"], {
+	const result = spawnSync("vp", ["build"], {
 		cwd: root,
 		stdio: "inherit",
 		env: process.env,
 	});
+	if (result.error) throw result.error;
 	if (result.status !== 0) process.exit(result.status ?? 1);
 }
 

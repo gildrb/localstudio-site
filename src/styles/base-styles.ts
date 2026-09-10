@@ -4,37 +4,31 @@ import { colors, constants } from "./public-tokens.stylex";
 const coarsePointer = "@media (hover: none) and (pointer: coarse)";
 const reducedMotion = "@media (prefers-reduced-motion: reduce)";
 
-export type PublicStyle = stylex.StyleXArray<
-	false | null | undefined | stylex.CompiledStyles
->;
+export type PublicStyle = stylex.StyleXArray<false | null | undefined | stylex.CompiledStyles>;
 
 export const selectionStyles = stylex.create({
 	brightToDay: {
 		backgroundColor: {
 			default: null,
-			"::selection":
-				`color-mix(in srgb, ${colors.selectionSkyBright}, ${colors.selectionSkyDay} attr(data-selection-mix type(<percentage>)))`,
+			"::selection": `color-mix(in srgb, ${colors.selectionSkyBright}, ${colors.selectionSkyDay} attr(data-selection-mix type(<percentage>)))`,
 		},
 	},
 	dayToBlue: {
 		backgroundColor: {
 			default: null,
-			"::selection":
-				`color-mix(in srgb, ${colors.selectionSkyDay}, ${colors.selectionSkyBlue} attr(data-selection-mix type(<percentage>)))`,
+			"::selection": `color-mix(in srgb, ${colors.selectionSkyDay}, ${colors.selectionSkyBlue} attr(data-selection-mix type(<percentage>)))`,
 		},
 	},
 	blueToDusk: {
 		backgroundColor: {
 			default: null,
-			"::selection":
-				`color-mix(in srgb, ${colors.selectionSkyBlue}, ${colors.selectionSkyDusk} attr(data-selection-mix type(<percentage>)))`,
+			"::selection": `color-mix(in srgb, ${colors.selectionSkyBlue}, ${colors.selectionSkyDusk} attr(data-selection-mix type(<percentage>)))`,
 		},
 	},
 	duskToNight: {
 		backgroundColor: {
 			default: null,
-			"::selection":
-				`color-mix(in srgb, ${colors.selectionSkyDusk}, ${colors.selectionSkyNight} attr(data-selection-mix type(<percentage>)))`,
+			"::selection": `color-mix(in srgb, ${colors.selectionSkyDusk}, ${colors.selectionSkyNight} attr(data-selection-mix type(<percentage>)))`,
 		},
 	},
 	night: {

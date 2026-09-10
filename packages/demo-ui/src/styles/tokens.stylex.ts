@@ -3,18 +3,23 @@ import * as stylex from "@stylexjs/stylex";
 const lightScheme = "@media (prefers-color-scheme: light)";
 
 export const depth = stylex.defineVars({
-	highlight: stylex.types.color({ default: "rgba(255,255,255,0.05)", [lightScheme]: "rgba(255,255,255,0.88)" }),
+	highlight: stylex.types.color({
+		default: "rgba(255,255,255,0.05)",
+		[lightScheme]: "rgba(255,255,255,0.88)",
+	}),
 	near: stylex.types.color({ default: "rgba(0,0,0,0.28)", [lightScheme]: "rgba(26,28,31,0.11)" }),
 	far: stylex.types.color({ default: "rgba(0,0,0,0.16)", [lightScheme]: "rgba(26,28,31,0.055)" }),
-	hairline: stylex.types.color({ default: "rgba(255,255,255,0.02)", [lightScheme]: "rgba(26,28,31,0.07)" }),
+	hairline: stylex.types.color({
+		default: "rgba(255,255,255,0.02)",
+		[lightScheme]: "rgba(26,28,31,0.07)",
+	}),
 });
 
 export const constants = stylex.defineConsts({
 	demoWidth: "1392px",
 	demoHeight: "787px",
 	composerWidth: "clamp(28rem, 42rem, 48vw)",
-	fontSans:
-		'"Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+	fontSans: '"Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
 	fontMono:
 		'ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace',
 	fs2xs: "10px",
@@ -33,16 +38,11 @@ export const constants = stylex.defineConsts({
 	sidebarRowRadius: "8px",
 	sidebarPaddingX: "7px",
 	composerRadius: "25px",
-	composerElevation:
-		`inset 0 1px 0 ${depth.highlight}, 0 2px 5px ${depth.near}, 0 12px 32px ${depth.far}`,
-	panelElevation:
-		`inset 0 1px 0 ${depth.highlight}, 0 1px 2px ${depth.near}, 0 6px 16px ${depth.far}`,
-	panelElevationHover:
-		`inset 0 1px 0 ${depth.highlight}, 0 1px 3px ${depth.near}, 0 8px 20px ${depth.far}`,
-	recessedElevation:
-		`inset 0 1px 3px ${depth.near}, inset 0 -1px 0 ${depth.hairline}`,
-	headerElevation:
-		`0 1px 0 ${depth.hairline}, 0 4px 12px ${depth.far}`,
+	composerElevation: `inset 0 1px 0 ${depth.highlight}, 0 2px 5px ${depth.near}, 0 12px 32px ${depth.far}`,
+	panelElevation: `inset 0 1px 0 ${depth.highlight}, 0 1px 2px ${depth.near}, 0 6px 16px ${depth.far}`,
+	panelElevationHover: `inset 0 1px 0 ${depth.highlight}, 0 1px 3px ${depth.near}, 0 8px 20px ${depth.far}`,
+	recessedElevation: `inset 0 1px 3px ${depth.near}, inset 0 -1px 0 ${depth.hairline}`,
+	headerElevation: `0 1px 0 ${depth.hairline}, 0 4px 12px ${depth.far}`,
 	radiusXs: "4px",
 	radius2xl: "16px",
 	iconScale: "0.84",

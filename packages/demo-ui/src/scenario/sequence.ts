@@ -114,7 +114,7 @@ No booking actions taken`,
 	{
 		id: "packing",
 		name: "create_automation",
-		args: { kind: "schedule", schedule: "Thursday 18:30", name: "Lake District packing reminder"},
+		args: { kind: "schedule", schedule: "Thursday 18:30", name: "Lake District packing reminder" },
 		resultText: `Automation created
 Thursday at 18:30
 Rechecks the forecast before building the packing list
@@ -122,14 +122,7 @@ Messaging disabled`,
 	},
 ];
 
-export type DemoPhase =
-	| "select"
-	| "prompt"
-	| "load"
-	| "stream"
-	| "tool"
-	| "result"
-	| "done";
+export type DemoPhase = "select" | "prompt" | "load" | "stream" | "tool" | "result" | "done";
 
 export interface DemoState {
 	playing: boolean;

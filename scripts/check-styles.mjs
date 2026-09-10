@@ -2,7 +2,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createStylexTransform } from "./bun-plugins.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url)).replace(/\/$/, "");
 const inspectDist = process.argv.includes("--dist");
@@ -10,7 +9,6 @@ const excludedDirectories = new Set([
 	".context",
 	".git",
 	"dist",
-	"dist-dev",
 	"node_modules",
 	"playwright-report",
 	"test-results",
@@ -61,16 +59,22 @@ function assertSourceContract() {
 		}
 		if (extname(absolute) === ".css") {
 			if (!allowedCss.has(rel)) failures.push(`${rel}: authored CSS is not allowed`);
-			else if (/[^\s]/.test(source)) failures.push(`${rel}: StyleX entry CSS must stay empty`);
+			else if (source.replace(/@font-face\s*\{[^}]*\}/g, "").trim())
+				failures.push(`${rel}: only font-face declarations belong in the CSS entry`);
 		}
 		if (rel.startsWith("src/") || rel.startsWith("packages/")) {
 			if (rel.endsWith(".tsx")) {
-				if (/<[A-Za-z][^>]*\bclassName\s*=/.test(source)) failures.push(`${rel}: literal className styling is not allowed`);
-				if (/<[A-Za-z][^>]*\bstyle\s*=/.test(source)) failures.push(`${rel}: JSX inline style is not allowed`);
+				if (/<[A-Za-z][^>]*\bclassName\s*=/.test(source))
+					failures.push(`${rel}: literal className styling is not allowed`);
+				if (/<[A-Za-z][^>]*\bstyle\s*=/.test(source))
+					failures.push(`${rel}: JSX inline style is not allowed`);
 			}
-			if (/\.classList\b/.test(source)) failures.push(`${rel}: runtime class mutation is not allowed`);
-			if (/\.style(?:\.|\[)/.test(source)) failures.push(`${rel}: runtime inline style mutation is not allowed`);
-			if (/var\(\s*--/.test(source)) failures.push(`${rel}: untyped CSS custom-property access is not allowed`);
+			if (/\.classList\b/.test(source))
+				failures.push(`${rel}: runtime class mutation is not allowed`);
+			if (/\.style(?:\.|\[)/.test(source))
+				failures.push(`${rel}: runtime inline style mutation is not allowed`);
+			if (/var\(\s*--/.test(source))
+				failures.push(`${rel}: untyped CSS custom-property access is not allowed`);
 			if (/<style(?:\s|>)/i.test(source)) failures.push(`${rel}: raw style blocks are not allowed`);
 		}
 		if (rel.endsWith(".html") && /<style(?:\s|>)/i.test(source)) {
@@ -95,28 +99,20 @@ function assertSourceContract() {
 	}
 	if (createCalls < 20) failures.push(`StyleX coverage is too low: ${createCalls} create calls`);
 	if (propsCalls < 40) failures.push(`StyleX coverage is too low: ${propsCalls} props calls`);
-	if (typedVariables < 10) failures.push(`StyleX typed-variable coverage is too low: ${typedVariables} typed values`);
-	if (variableGroups < 2) failures.push(`StyleX token coverage is too low: ${variableGroups} variable groups`);
+	if (typedVariables < 10)
+		failures.push(`StyleX typed-variable coverage is too low: ${typedVariables} typed values`);
+	if (variableGroups < 2)
+		failures.push(`StyleX token coverage is too low: ${variableGroups} variable groups`);
 	if (failures.length > 0) throw new Error(failures.join("\n"));
-	console.log(`StyleX source contract passed: ${createCalls} create, ${propsCalls} props, ${typedVariables} typed values, ${variableGroups} token groups`);
-}
-
-async function assertDevelopmentCss() {
-	const plugin = createStylexTransform(true);
-	const sources = projectFiles().filter((absolute) => {
-		const rel = relative(root, absolute).split("\\").join("/");
-		return (rel.startsWith("src/") || rel.startsWith("packages/")) && /\.[cm]?[jt]sx?$/.test(rel);
-	});
-	for (const absolute of sources) {
-		await plugin.transform(readFileSync(absolute, "utf8"), absolute);
-		plugin.collectCss();
-	}
-	console.log(`StyleX development CSS passed: ${sources.length} modules`);
+	console.log(
+		`StyleX source contract passed: ${createCalls} create, ${propsCalls} props, ${typedVariables} typed values, ${variableGroups} token groups`,
+	);
 }
 
 function assertBuildContract() {
 	const dist = join(root, "dist");
-	if (!statSync(join(dist, "index.html")).isFile()) throw new Error("StyleX build check needs dist/index.html");
+	if (!statSync(join(dist, "index.html")).isFile())
+		throw new Error("StyleX build check needs dist/index.html");
 	const files = walk(dist).filter((absolute) => textExtensions.has(extname(absolute)));
 	const css = files.filter((absolute) => extname(absolute) === ".css");
 	if (css.length === 0) throw new Error("StyleX build emitted no CSS asset");
@@ -128,9 +124,10 @@ function assertBuildContract() {
 	if (!/@layer priority\d/.test(output) || !/\.x[a-zA-Z0-9_-]+\s*\{/.test(output)) {
 		throw new Error("StyleX atomic output was not found in the production CSS");
 	}
-	console.log(`StyleX build contract passed: ${css.length} CSS asset${css.length === 1 ? "" : "s"}`);
+	console.log(
+		`StyleX build contract passed: ${css.length} CSS asset${css.length === 1 ? "" : "s"}`,
+	);
 }
 
 assertSourceContract();
-await assertDevelopmentCss();
 if (inspectDist) assertBuildContract();

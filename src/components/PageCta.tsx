@@ -5,8 +5,7 @@ import { type ReactNode } from "react";
 import { setupPath } from "../domain/route";
 import { CtaPair } from "./Links";
 
-const pageWidth =
-	`min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
+const pageWidth = `min(${lengths.pageWidth}, calc(100% - ${lengths.pageGutter}))`;
 
 const styles = stylex.create({
 	root: {
@@ -39,9 +38,9 @@ const styles = stylex.create({
 		minWidth: 0,
 	},
 	title: {
-		marginBlock: '0',
-		marginRight: 'auto',
-		marginLeft: 'auto',
+		marginBlock: "0",
+		marginRight: "auto",
+		marginLeft: "auto",
 		fontFamily: constants.fontSans,
 		fontSize: {
 			default: "42px",
@@ -95,19 +94,37 @@ export function PageCta({
 	return (
 		<section
 			id={home ? "downloads" : undefined}
-			{...stylex.props(baseStyles.element, home && baseStyles.sectionAnchor, styles.root, home && styles.home, sx)}
+			{...stylex.props(
+				baseStyles.element,
+				home && baseStyles.sectionAnchor,
+				styles.root,
+				home && styles.home,
+				sx,
+			)}
 			aria-labelledby={id}
 		>
 			<h2
 				id={id}
-				{...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.child, styles.title, home && styles.homeTitle)}
+				{...stylex.props(
+					baseStyles.element,
+					baseStyles.heading,
+					baseStyles.headingTwo,
+					styles.child,
+					styles.title,
+					home && styles.homeTitle,
+				)}
 			>
 				{title}
 			</h2>
-			<div {...stylex.props(baseStyles.element, styles.child, styles.actions, home && styles.homeActions)}>
-				{actions ?? (
-					<CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />
+			<div
+				{...stylex.props(
+					baseStyles.element,
+					styles.child,
+					styles.actions,
+					home && styles.homeActions,
 				)}
+			>
+				{actions ?? <CtaPair secondary={{ href: setupPath, label: "Setup Prompt" }} />}
 			</div>
 		</section>
 	);

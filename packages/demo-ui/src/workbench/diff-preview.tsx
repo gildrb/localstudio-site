@@ -1,12 +1,7 @@
 import { demoStyles } from "../styles/demo-root.styles.ts";
 import * as stylex from "@stylexjs/stylex";
 import { styles } from "./diff-preview.styles.ts";
-export type DiffPreviewLineKind =
-	| "addition"
-	| "context"
-	| "deletion"
-	| "hunk"
-	| "meta";
+export type DiffPreviewLineKind = "addition" | "context" | "deletion" | "hunk" | "meta";
 
 type DiffPreviewLine = {
 	content: string;
@@ -74,11 +69,14 @@ export function DiffPreview({ body }: { body: string }) {
 				{lines.map((line) => (
 					<div
 						key={line.id}
-						{...stylex.props(demoStyles.reset, styles.row, rowStyles[line.kind], line.content ? styles.lineTall : styles.lineShort)}
+						{...stylex.props(
+							demoStyles.reset,
+							styles.row,
+							rowStyles[line.kind],
+							line.content ? styles.lineTall : styles.lineShort,
+						)}
 					>
-						<span
-							{...stylex.props(demoStyles.reset, styles.marker, markerStyles[line.kind])}
-						>
+						<span {...stylex.props(demoStyles.reset, styles.marker, markerStyles[line.kind])}>
 							{line.marker}
 						</span>
 						<span {...stylex.props(demoStyles.reset, styles.span81)}>

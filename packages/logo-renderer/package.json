@@ -1,35 +1,36 @@
 {
-  "name": "@local-ai/logo-renderer",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "exports": {
-    "./react": "./src/renderer/index.tsx"
-  },
-  "scripts": {
-    "typecheck": "bun x --bun tsc -p tsconfig.json",
-    "generate": "bun scripts/generate-logo-mesh.mjs",
-    "generate:cta": "bun scripts/generate-cta-mesh.mjs",
-    "check": "bun scripts/generate-logo-mesh.mjs --check && bun scripts/generate-cta-mesh.mjs --check",
-    "shader:check": "bun scripts/check-shaders.mjs",
-		"intro:coverage:check": "bun scripts/check-intro-coverage.mjs",
-    "snapshot": "bun scripts/render-snapshot.mjs",
-    "snapshot:atmosphere": "bun scripts/render-atmosphere.mjs"
-  },
-  "peerDependencies": {
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
-  },
-  "dependencies": {
-    "@stylexjs/stylex": "0.19.0",
-    "phase": "0.0.1",
-    "vgpu": "0.3.1"
-  },
-  "devDependencies": {
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
-    "clipper-lib": "6.4.2",
-    "earcut": "3.2.3",
-    "typescript": "6.0.3"
-  }
+	"name": "@local-ai/logo-renderer",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./react": "./src/renderer/index.tsx"
+	},
+	"scripts": {
+		"generate": "vp exec node scripts/generate-logo-mesh.mjs",
+		"generate:cta": "vp exec node scripts/generate-cta-mesh.mjs",
+		"check": "vp exec node scripts/generate-logo-mesh.mjs --check && vp exec node scripts/generate-cta-mesh.mjs --check",
+		"shader:check": "vp exec node scripts/check-shaders.mjs",
+		"intro:coverage:check": "vp exec node scripts/check-intro-coverage.mjs"
+	},
+	"dependencies": {
+		"@stylexjs/stylex": "0.19.0",
+		"@vgpu/wgsl": "0.3.1",
+		"@vgpu/wgsl-std": "0.3.1",
+		"phase": "0.0.1",
+		"vgpu": "0.3.1"
+	},
+	"devDependencies": {
+		"@types/react": "19.2.18",
+		"@types/react-dom": "19.2.4",
+		"clipper-lib": "6.4.2",
+		"earcut": "3.2.3",
+		"pngjs": "7.0.0",
+		"vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
+		"vite-plus": "0.3.1"
+	},
+	"peerDependencies": {
+		"react": "19.2.8",
+		"react-dom": "19.2.8"
+	}
 }

@@ -30,43 +30,27 @@ export function WorkDemo() {
 					<div {...stylex.props(demoStyles.reset, styles.div26)}>
 						<div {...stylex.props(demoStyles.reset, styles.div27)}>
 							<span {...stylex.props(demoStyles.reset, styles.span28)} />
-							<span {...stylex.props(demoStyles.reset, styles.span29)}>
-								Ready
-							</span>
+							<span {...stylex.props(demoStyles.reset, styles.span29)}>Ready</span>
 						</div>
-						<h3 {...stylex.props(demoStyles.reset, styles.h331)}>
-							Qwen3.8-27B · MLX
-						</h3>
+						<h3 {...stylex.props(demoStyles.reset, styles.h331)}>Qwen3.8-27B · MLX</h3>
 					</div>
 					<div {...stylex.props(demoStyles.reset, styles.div35)}>
 						<button
 							type="button"
-							{...stylex.props(
-								demoStyles.reset,
-								demoStyles.controlReset,
-								styles.button38,
-							)}
+							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button38)}
 						>
 							Models
 							<ChevronDown {...stylex.props(demoStyles.reset, styles.modelChevron)} />
 						</button>
 						<button
 							type="button"
-							{...stylex.props(
-								demoStyles.reset,
-								demoStyles.controlReset,
-								styles.button38,
-							)}
+							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button38)}
 						>
 							Logs
 						</button>
 						<button
 							type="button"
-							{...stylex.props(
-								demoStyles.reset,
-								demoStyles.controlReset,
-								styles.button38,
-							)}
+							{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button38)}
 						>
 							Bench
 						</button>
@@ -75,13 +59,7 @@ export function WorkDemo() {
 				<div {...stylex.props(demoStyles.reset, styles.div53)}>
 					<dl {...stylex.props(demoStyles.reset, styles.dl54)}>
 						{PRIMARY_METRICS.map(([label, value, unit, detail]) => (
-							<StatusMetric
-								key={label}
-								label={label}
-								value={value}
-								unit={unit}
-								detail={detail}
-							/>
+							<StatusMetric key={label} label={label} value={value} unit={unit} detail={detail} />
 						))}
 					</dl>
 					<dl {...stylex.props(demoStyles.reset, styles.dl65)}>
@@ -120,15 +98,12 @@ export function WorkDemo() {
 				<section {...stylex.props(demoStyles.reset, styles.section83)}>
 					<div {...stylex.props(demoStyles.reset, styles.div84)}>
 						<span {...stylex.props(demoStyles.reset, styles.span85)}>
-							GPUs{" "}
-							<span {...stylex.props(demoStyles.reset, styles.span852)}>2</span>
+							GPUs <span {...stylex.props(demoStyles.reset, styles.span852)}>2</span>
 						</span>
 						<span {...stylex.props(demoStyles.reset, styles.span86)}>
 							<span {...stylex.props(demoStyles.reset, styles.span862)} />
 						</span>
-						<span {...stylex.props(demoStyles.reset, styles.span87)}>
-							48 / 64 GB
-						</span>
+						<span {...stylex.props(demoStyles.reset, styles.span87)}>48 / 64 GB</span>
 						<span {...stylex.props(demoStyles.reset, styles.span88)}>
 							util 72% · temp 61° · pwr 124 W
 						</span>
@@ -136,37 +111,25 @@ export function WorkDemo() {
 				</section>
 				<section {...stylex.props(demoStyles.reset, styles.section91)}>
 					<div {...stylex.props(demoStyles.reset, styles.div92)}>
-						<h4 {...stylex.props(demoStyles.reset, styles.h493)}>
-							Controller Logs
-						</h4>
+						<h4 {...stylex.props(demoStyles.reset, styles.h493)}>Controller Logs</h4>
 						<div {...stylex.props(demoStyles.reset, styles.div96)}>
-							<span {...stylex.props(demoStyles.reset, styles.span97)}>
-								Filter
-							</span>
+							<span {...stylex.props(demoStyles.reset, styles.span97)}>Filter</span>
 							<span {...stylex.props(demoStyles.reset)}>24 lines</span>
-							<span {...stylex.props(demoStyles.reset, styles.span99)}>
-								Open
-							</span>
+							<span {...stylex.props(demoStyles.reset, styles.span99)}>Open</span>
 						</div>
 					</div>
 					<div {...stylex.props(demoStyles.reset, styles.div102)}>
 						<p {...stylex.props(demoStyles.reset)}>
-							<span {...stylex.props(demoStyles.reset, styles.span103)}>
-								08:42:16
-							</span>{" "}
-							model ready on 2 GPUs
+							<span {...stylex.props(demoStyles.reset, styles.span103)}>08:42:16</span> model ready
+							on 2 GPUs
 						</p>
 						<p {...stylex.props(demoStyles.reset)}>
-							<span {...stylex.props(demoStyles.reset, styles.span103)}>
-								08:42:21
-							</span>{" "}
-							POST /v1/chat/completions 200 · 94 ms TTFT
+							<span {...stylex.props(demoStyles.reset, styles.span103)}>08:42:21</span> POST
+							/v1/chat/completions 200 · 94 ms TTFT
 						</p>
 						<p {...stylex.props(demoStyles.reset)}>
-							<span {...stylex.props(demoStyles.reset, styles.span103)}>
-								08:42:24
-							</span>{" "}
-							1,486 tokens · 41.8 tok/s
+							<span {...stylex.props(demoStyles.reset, styles.span103)}>08:42:24</span> 1,486 tokens
+							· 41.8 tok/s
 						</p>
 					</div>
 				</section>
@@ -199,15 +162,9 @@ function StatusMetric({
 				)}
 			>
 				<span {...stylex.props(demoStyles.reset)}>{value}</span>
-				{unit ? (
-					<span {...stylex.props(demoStyles.reset, styles.span136)}>
-						{unit}
-					</span>
-				) : null}
+				{unit ? <span {...stylex.props(demoStyles.reset, styles.span136)}>{unit}</span> : null}
 			</dd>
-			{detail ? (
-				<dd {...stylex.props(demoStyles.reset, styles.dd142)}>{detail}</dd>
-			) : null}
+			{detail ? <dd {...stylex.props(demoStyles.reset, styles.dd142)}>{detail}</dd> : null}
 		</div>
 	);
 }
@@ -227,14 +184,9 @@ function TrendPanel({
 		<section {...stylex.props(demoStyles.reset, styles.section152)}>
 			<div {...stylex.props(demoStyles.reset, styles.div153)}>
 				<span {...stylex.props(demoStyles.reset, styles.h493)}>
-					{label}{" "}
-					<span {...stylex.props(demoStyles.reset, styles.span154)}>
-						{unit}
-					</span>
+					{label} <span {...stylex.props(demoStyles.reset, styles.span154)}>{unit}</span>
 				</span>
-				<span {...stylex.props(demoStyles.reset, styles.span155)}>
-					{values}
-				</span>
+				<span {...stylex.props(demoStyles.reset, styles.span155)}>{values}</span>
 			</div>
 			<div {...stylex.props(demoStyles.reset, styles.div157)}>
 				<span {...stylex.props(demoStyles.reset, styles.span158)} />

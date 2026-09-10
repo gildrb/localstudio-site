@@ -1,33 +1,29 @@
 {
-  "name": "@local-studio/demo-ui",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts",
-    "./hero": "./src/hero/HeroDemo.tsx",
-    "./story": "./src/story/FeatureDemo.tsx"
-  },
-  "scripts": {
-    "typecheck": "bun x --bun tsc -p tsconfig.json"
-  },
-  "peerDependencies": {
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
-  },
-  "dependencies": {
-    "lucide-react": "1.31.0",
-    "@stylexjs/stylex": "0.19.0"
-  },
-  "devDependencies": {
-    "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.4",
-    "typescript": "6.0.3"
-  },
-  "demoPackage": {
-    "product": "Local Studio",
-    "contractVersion": 1,
-    "scenario": "src/scenario/sequence.ts",
-    "source": "https://github.com/sybil-solutions/local-studio"
-  }
+	"name": "@local-studio/demo-ui",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts",
+		"./hero": "./src/hero/HeroDemo.tsx",
+		"./story": "./src/story/FeatureDemo.tsx"
+	},
+	"dependencies": {
+		"@stylexjs/stylex": "0.19.0",
+		"lucide-react": "1.31.0"
+	},
+	"devDependencies": {
+		"@types/react": "19.2.18",
+		"@types/react-dom": "19.2.4"
+	},
+	"peerDependencies": {
+		"react": "19.2.8",
+		"react-dom": "19.2.8"
+	},
+	"demoPackage": {
+		"product": "Local Studio",
+		"contractVersion": 1,
+		"scenario": "src/scenario/sequence.ts",
+		"source": "https://github.com/sybil-solutions/local-studio"
+	}
 }

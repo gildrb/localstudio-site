@@ -68,7 +68,8 @@ export const styles = stylex.create({
 	},
 	heroAtmospherePlaceholder: {
 		overflow: "hidden",
-		maskImage: "linear-gradient(to right, transparent 1.2%, rgb(0 0 0 / 15.625%) 3.525%, rgb(0 0 0 / 50%) 5.85%, rgb(0 0 0 / 84.375%) 8.175%, black 10.5%, black 89.5%, rgb(0 0 0 / 84.375%) 91.825%, rgb(0 0 0 / 50%) 94.15%, rgb(0 0 0 / 15.625%) 96.475%, transparent 98.8%), linear-gradient(to bottom, transparent 1.8%, rgb(0 0 0 / 15.625%) 4.225%, rgb(0 0 0 / 50%) 6.65%, rgb(0 0 0 / 84.375%) 9.075%, black 11.5%, black 78%, rgb(0 0 0 / 84.375%) 82.875%, rgb(0 0 0 / 50%) 87.75%, rgb(0 0 0 / 15.625%) 92.625%, transparent 97.5%)",
+		maskImage:
+			"linear-gradient(to right, transparent 1.2%, rgb(0 0 0 / 15.625%) 3.525%, rgb(0 0 0 / 50%) 5.85%, rgb(0 0 0 / 84.375%) 8.175%, black 10.5%, black 89.5%, rgb(0 0 0 / 84.375%) 91.825%, rgb(0 0 0 / 50%) 94.15%, rgb(0 0 0 / 15.625%) 96.475%, transparent 98.8%), linear-gradient(to bottom, transparent 1.8%, rgb(0 0 0 / 15.625%) 4.225%, rgb(0 0 0 / 50%) 6.65%, rgb(0 0 0 / 84.375%) 9.075%, black 11.5%, black 78%, rgb(0 0 0 / 84.375%) 82.875%, rgb(0 0 0 / 50%) 87.75%, rgb(0 0 0 / 15.625%) 92.625%, transparent 97.5%)",
 		maskComposite: "intersect",
 	},
 	heroAtmosphereBackgroundPoster: {
@@ -77,8 +78,10 @@ export const styles = stylex.create({
 		maskImage: {
 			default: "none",
 			"@media (prefers-color-scheme: light)": {
-				default: "radial-gradient(ellipse 65% 70% at 50% calc(25svh + clamp(72px, 11svh, 120px) + clamp(720px, 58vw, 940px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
-				"@media (max-width: 900px)": "radial-gradient(ellipse 65% 70% at 50% calc(25svh + 24px + min(96vw, 620px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
+				default:
+					"radial-gradient(ellipse 65% 70% at 50% calc(25svh + clamp(72px, 11svh, 120px) + clamp(720px, 58vw, 940px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
+				"@media (max-width: 900px)":
+					"radial-gradient(ellipse 65% 70% at 50% calc(25svh + 24px + min(96vw, 620px) / 3.04), black 0%, rgb(0 0 0 / 87.89%) 25%, rgb(0 0 0 / 56.25%) 50%, rgb(0 0 0 / 19.14%) 75%, transparent 100%)",
 			},
 		},
 	},
@@ -184,31 +187,26 @@ export const styles = stylex.create({
 		},
 		marginRight: {
 			default: "auto",
-			[stylex.when.ancestor(
-				':has([aria-label="Local Studio workbench"][data-clip-right])',
-			)]: 0,
+			[stylex.when.ancestor(':has([aria-label="Local Studio workbench"][data-clip-right])')]: 0,
 			"@media (max-width: 900px)": 0,
 		},
 		marginBottom: 0,
 		marginLeft: {
 			default: "auto",
-			[stylex.when.ancestor(
-				':has([aria-label="Local Studio workbench"][data-clip-right])',
-			)]: heroStagePadding,
+			[stylex.when.ancestor(':has([aria-label="Local Studio workbench"][data-clip-right])')]:
+				heroStagePadding,
 			"@media (max-width: 900px)": "calc(48px / 2)",
 		},
 		width: {
 			default: pageWidth,
-			[stylex.when.ancestor(
-				':has([aria-label="Local Studio workbench"][data-clip-right])',
-			)]: heroStageClippedWidth,
+			[stylex.when.ancestor(':has([aria-label="Local Studio workbench"][data-clip-right])')]:
+				heroStageClippedWidth,
 			"@media (max-width: 900px)": "calc(100% - 48px / 2)",
 		},
 		overflow: {
 			default: "visible",
-			[stylex.when.ancestor(
-				':has([aria-label="Local Studio workbench"][data-clip-right])',
-			)]: "clip",
+			[stylex.when.ancestor(':has([aria-label="Local Studio workbench"][data-clip-right])')]:
+				"clip",
 			"@media (max-width: 900px)": "clip",
 		},
 	},

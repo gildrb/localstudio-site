@@ -1,11 +1,5 @@
 import type { ComponentType } from "react";
-import {
-	Activity,
-	Boxes,
-	Clock,
-	ServerCog,
-	TrendingUp,
-} from "../ui/icon-registry";
+import { Activity, Boxes, Clock, ServerCog, TrendingUp } from "../ui/icon-registry";
 
 export type IconComponent = ComponentType<{
 	className?: string;
@@ -23,10 +17,7 @@ export const tabs = [
 export function isRouteActive(pathname: string, href: string): boolean {
 	if (href === "/") return pathname === "/";
 	if (href === "/agent") {
-		return (
-			pathname.startsWith("/agent") &&
-			!pathname.startsWith("/agent/automations")
-		);
+		return pathname.startsWith("/agent") && !pathname.startsWith("/agent/automations");
 	}
 	if (href === "/settings") return pathname.startsWith("/settings");
 	return pathname.startsWith(href);

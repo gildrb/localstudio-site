@@ -25,4 +25,3 @@ export const pages = {
 		import("../pages/MachinePage").then(({ MachinePage }) => ({ default: MachinePage })),
 	),
 } as const satisfies Record<RoutePath, ComponentType>;
-

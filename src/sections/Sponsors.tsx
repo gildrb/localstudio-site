@@ -10,17 +10,14 @@ export function Sponsors() {
 			{...stylex.props(baseStyles.element, styles.sectionWidth, styles.sponsors)}
 			aria-labelledby="sponsors-title"
 		>
-			<p id="sponsors-title" {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.sponsorsTitle)}>
+			<p
+				id="sponsors-title"
+				{...stylex.props(baseStyles.element, baseStyles.paragraph, styles.sponsorsTitle)}
+			>
 				Supporters of {site.company.name}
 			</p>
 			<div {...stylex.props(baseStyles.element, styles.sponsorsViewport)}>
-				<ul
-					{...stylex.props(
-						baseStyles.list,
-						baseStyles.element,
-						styles.sponsorsList,
-					)}
-				>
+				<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.sponsorsList)}>
 					{sponsors.map(({ name, svg, width, height }, index) => (
 						<li key={name} {...stylex.props(baseStyles.element)}>
 							<span

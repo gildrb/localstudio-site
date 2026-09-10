@@ -1,5 +1,5 @@
 {
-	"hash": "4b3d9fd197542ce9ebbf6da7b4b7136c24b6ba604a8c3cba381a12ada04cafff",
+	"hash": "99da50f83ad07cd8f1a15b61ed048faa2205b1648c52083abe9554ffed751d5e",
 	"routes": [
 		"/",
 		"/docs",
@@ -78,6 +78,8 @@
 		"heroRenderDay",
 		"heroAtmosphereDay",
 		"heroAtmosphereNight",
+		"heroAtmosphereForegroundDay",
+		"heroAtmosphereForegroundNight",
 		"ctaMark",
 		"ctaMarkBin",
 		"ctaMarkSvg",

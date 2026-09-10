@@ -1,31 +1,19 @@
 import { expect, test } from "@playwright/test";
 
-test("hero demo autoplays the local inference sequence once", async ({
-	page,
-}) => {
+test("hero demo autoplays the local inference sequence once", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
 	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await expect(demo).toBeVisible();
 	await expect(demo.locator("canvas, video")).toHaveCount(0);
-	await expect(
-		demo.getByRole("button", { name: "Model: Qwen3.8-27B" }),
-	).toBeVisible();
+	await expect(demo.getByRole("button", { name: "Model: Qwen3.8-27B" })).toBeVisible();
 	await expect(demo).toHaveAttribute("data-phase", "done");
-	await expect(demo.locator("[data-chat-markdown]").last()).toContainText(
-		"Ready for you",
-	);
-	await expect(demo.locator("[data-chat-markdown]").last()).toContainText(
-		"Lake District",
-	);
+	await expect(demo.locator("[data-chat-markdown]").last()).toContainText("Ready for you");
+	await expect(demo.locator("[data-chat-markdown]").last()).toContainText("Lake District");
 	await expect(demo.getByText("Maya's birthday weekend").first()).toBeVisible();
 	await expect(demo.getByText("New task").first()).toBeVisible();
-	await expect(
-		demo.getByRole("button", { name: "Status", exact: true }),
-	).toBeVisible();
-	await expect(
-		demo.getByRole("button", { name: "Review", exact: true }),
-	).toBeVisible();
+	await expect(demo.getByRole("button", { name: "Status", exact: true })).toBeVisible();
+	await expect(demo.getByRole("button", { name: "Review", exact: true })).toBeVisible();
 	await expect(demo.getByText("lake-district-weekend.md").first()).toBeVisible();
 });
 
@@ -34,14 +22,14 @@ test("hero demo computer panel tabs are clickable", async ({ page }) => {
 	await page.goto("/?demoClock=fast");
 	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await demo.getByRole("button", { name: "Show tools" }).click();
-	await demo
-		.getByRole("button", { name: "Files Browse project files" })
-		.click();
+	await demo.getByRole("button", { name: "Files Browse project files" }).click();
 	await expect(demo.getByText("saved-places.md").first()).toBeVisible();
 	await demo.getByRole("button", { name: "Show tools" }).click();
 	await demo.getByRole("button", { name: "Browser Open a website" }).click();
 	await expect(
-		demo.getByText("Saturday stays dry until 16:00. Rydal Water to Grasmere keeps the route under two hours."),
+		demo.getByText(
+			"Saturday stays dry until 16:00. Rydal Water to Grasmere keeps the route under two hours.",
+		),
 	).toBeVisible();
 	await demo.getByRole("button", { name: "Status", exact: true }).click();
 	await expect(demo.getByText("Session").first()).toBeVisible();
@@ -54,9 +42,7 @@ test("hero demo follow-ups stay visually quiet", async ({ page }) => {
 	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	const composer = demo.getByRole("textbox", { name: "Message" });
 	await composer.pressSequentially("Add a café stop");
-	expect(await composer.evaluate((element) => getComputedStyle(element).boxShadow)).toBe(
-		"none",
-	);
+	expect(await composer.evaluate((element) => getComputedStyle(element).boxShadow)).toBe("none");
 	await demo.getByRole("button", { name: "Send" }).click();
 	await expect(
 		demo.getByText(
@@ -73,11 +59,7 @@ test("hero demo follow-ups stay visually quiet", async ({ page }) => {
 	);
 });
 
-
-test("hero demo result copies with the clipboard API", async ({
-	page,
-	context,
-}) => {
+test("hero demo result copies with the clipboard API", async ({ page, context }) => {
 	await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/?demoClock=fast");
@@ -90,9 +72,7 @@ test("hero demo result copies with the clipboard API", async ({
 	expect(copied).toContain("Lake District");
 });
 
-test("reduced motion shows the finished result immediately", async ({
-	page,
-}) => {
+test("reduced motion shows the finished result immediately", async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: "reduce" });
 	await page.goto("/?demoClock=fast");
 	const demo = page.getByRole("region", { name: "Local Studio workbench" });
@@ -118,9 +98,7 @@ test("hero demo has no dead sidebar destinations", async ({ page }) => {
 	await expect(demo.getByText("Terminals", { exact: true })).toHaveCount(0);
 	const profile = demo.getByText("Sero", { exact: true });
 	await expect(profile).toBeVisible();
-	expect(
-		await profile.evaluate((element) => element.closest("a, button") === null),
-	).toBe(true);
+	expect(await profile.evaluate((element) => element.closest("a, button") === null)).toBe(true);
 	const url = page.url();
 	await demo.getByText("Models", { exact: true }).click();
 	await expect(page).toHaveURL(url);
@@ -152,9 +130,7 @@ test("KittyLitter keeps context visible while images and links stay fixed", asyn
 	await expect(cards.getByRole("link")).toHaveCount(0);
 	await images.first().hover();
 	await expect(cards.first()).toHaveAttribute("data-active", "true");
-	await expect(
-		cards.first().getByText("Pick up exactly where you left off."),
-	).toBeVisible();
+	await expect(cards.first().getByText("Pick up exactly where you left off.")).toBeVisible();
 	await expect(cards.getByRole("link")).toHaveCount(0);
 	const after = await images.evaluateAll((elements) =>
 		elements.map((element) => element.getBoundingClientRect().top + window.scrollY),
@@ -162,9 +138,7 @@ test("KittyLitter keeps context visible while images and links stay fixed", asyn
 	expect(after).toEqual(before);
 });
 
-test("KittyLitter carousel stays still without pagination chrome", async ({
-	page,
-}) => {
+test("KittyLitter carousel stays still without pagination chrome", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
 	const carousel = page.getByRole("region", { name: "KittyLitter features" });
@@ -179,37 +153,23 @@ test("KittyLitter carousel stays still without pagination chrome", async ({
 	await expect
 		.poll(async () =>
 			carousel.evaluate((element) => {
-				const last = element.querySelector<HTMLElement>(
-					"[data-kitty-feature]:last-child",
-				);
+				const last = element.querySelector<HTMLElement>("[data-kitty-feature]:last-child");
 				const intro = document.querySelector<HTMLElement>("[data-kitty-intro]");
 				if (!last || !intro) return Number.NaN;
-				return Math.round(
-					intro.getBoundingClientRect().right -
-						last.getBoundingClientRect().right,
-				);
+				return Math.round(intro.getBoundingClientRect().right - last.getBoundingClientRect().right);
 			}),
 		)
 		.toBe(0);
 	await expect(page.locator("[data-kitty-feature-description]")).toHaveCount(10);
 });
 
-
-test("KittyLitter carousel supports image jumps and pointer dragging", async ({
-	page,
-}) => {
+test("KittyLitter carousel supports image jumps and pointer dragging", async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
 	const carousel = page.getByRole("region", { name: "KittyLitter features" });
 	await carousel.scrollIntoViewIfNeeded();
-	await page
-		.locator("[data-kitty-feature]")
-		.nth(3)
-		.getByRole("region")
-		.click();
-	await expect
-		.poll(() => carousel.evaluate((element) => element.scrollLeft))
-		.toBeGreaterThan(0);
+	await page.locator("[data-kitty-feature]").nth(3).getByRole("region").click();
+	await expect.poll(() => carousel.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
 	await expect
 		.poll(() =>
 			carousel.evaluate((element) => {
@@ -218,8 +178,7 @@ test("KittyLitter carousel supports image jumps and pointer dragging", async ({
 				const carouselBounds = element.getBoundingClientRect();
 				const cardBounds = card.getBoundingClientRect();
 				return Math.abs(
-					cardBounds.left + cardBounds.width / 2 -
-						(carouselBounds.left + carouselBounds.width / 2),
+					cardBounds.left + cardBounds.width / 2 - (carouselBounds.left + carouselBounds.width / 2),
 				);
 			}),
 		)
@@ -255,9 +214,7 @@ test("KittyLitter carousel supports image jumps and pointer dragging", async ({
 	const settled = await carousel.evaluate((element) => element.scrollLeft);
 	await page.waitForTimeout(300);
 	expect(
-		Math.abs(
-			(await carousel.evaluate((element) => element.scrollLeft)) - settled,
-		),
+		Math.abs((await carousel.evaluate((element) => element.scrollLeft)) - settled),
 	).toBeLessThan(2);
 
 	await carousel.evaluate((element) => {
@@ -284,9 +241,7 @@ test("KittyLitter carousel supports image jumps and pointer dragging", async ({
 	const reversed = await carousel.evaluate((element) => element.scrollLeft);
 	await page.waitForTimeout(300);
 	expect(
-		Math.abs(
-			(await carousel.evaluate((element) => element.scrollLeft)) - reversed,
-		),
+		Math.abs((await carousel.evaluate((element) => element.scrollLeft)) - reversed),
 	).toBeLessThan(2);
 });
 
@@ -294,17 +249,13 @@ test("homepage stays inside the viewport at 320", async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 640 });
 	await page.goto("/?demoClock=fast");
 	const overflow = await page.evaluate(
-		() =>
-			document.documentElement.scrollWidth -
-			document.documentElement.clientWidth,
+		() => document.documentElement.scrollWidth - document.documentElement.clientWidth,
 	);
 	expect(overflow).toBeLessThanOrEqual(0);
 });
 
-test("hero demo is only rounded when the full app is visible", async ({
-	page,
-}) => {
- const demo = page.getByRole("region", { name: "Local Studio workbench" });
+test("hero demo is only rounded when the full app is visible", async ({ page }) => {
+	const demo = page.getByRole("region", { name: "Local Studio workbench" });
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto("/?demoClock=fast");
 	await expect(demo).toBeVisible();
@@ -317,9 +268,7 @@ test("hero demo is only rounded when the full app is visible", async ({
 	expect(await demo.evaluate((el) => Math.round(el.getBoundingClientRect().right))).toBe(1200);
 });
 
-test("mobile hero shows a cropped desktop app, not a compact shell", async ({
-	page,
-}) => {
+test("mobile hero shows a cropped desktop app, not a compact shell", async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto("/?demoClock=fast");
 	const demo = page.getByRole("region", { name: "Local Studio workbench" });

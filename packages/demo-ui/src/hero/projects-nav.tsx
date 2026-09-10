@@ -18,7 +18,6 @@ function SidebarSectionHeader({
 
 export type HeroTaskId = "weekend" | "inbox";
 
-
 export function HeroProjectsNav({
 	expanded,
 	activeTask,
@@ -45,9 +44,7 @@ export function HeroProjectsNav({
 							<Folder {...stylex.props(demoStyles.reset, styles.folder47)} />
 							<FolderOpen {...stylex.props(demoStyles.reset, styles.folderopen48)} />
 						</span>
-						<span {...stylex.props(demoStyles.reset, styles.span50)}>
-							Home
-						</span>
+						<span {...stylex.props(demoStyles.reset, styles.span50)}>Home</span>
 					</button>
 				</div>
 			</div>
@@ -55,27 +52,27 @@ export function HeroProjectsNav({
 			<SidebarRail>
 				<button
 					type="button"
-					{...stylex.props(demoStyles.reset, demoStyles.controlReset, activeTask === "weekend" ? styles.focusedRow : styles.idleRow)}
+					{...stylex.props(
+						demoStyles.reset,
+						demoStyles.controlReset,
+						activeTask === "weekend" ? styles.focusedRow : styles.idleRow,
+					)}
 					onClick={() => onSelectTask("weekend")}
 				>
-					<span {...stylex.props(demoStyles.reset, styles.span63)}>
-						{titles.weekend}
-					</span>
-					<span {...stylex.props(demoStyles.reset, styles.span66)}>
-						now
-					</span>
+					<span {...stylex.props(demoStyles.reset, styles.span63)}>{titles.weekend}</span>
+					<span {...stylex.props(demoStyles.reset, styles.span66)}>now</span>
 				</button>
 				<button
 					type="button"
-					{...stylex.props(demoStyles.reset, demoStyles.controlReset, activeTask === "inbox" ? styles.focusedRow : styles.idleRow)}
+					{...stylex.props(
+						demoStyles.reset,
+						demoStyles.controlReset,
+						activeTask === "inbox" ? styles.focusedRow : styles.idleRow,
+					)}
 					onClick={() => onSelectTask("inbox")}
 				>
-					<span {...stylex.props(demoStyles.reset, styles.span63)}>
-						{titles.inbox}
-					</span>
-					<span {...stylex.props(demoStyles.reset, styles.span66)}>
-						3h
-					</span>
+					<span {...stylex.props(demoStyles.reset, styles.span63)}>{titles.inbox}</span>
+					<span {...stylex.props(demoStyles.reset, styles.span66)}>3h</span>
 				</button>
 			</SidebarRail>
 		</>

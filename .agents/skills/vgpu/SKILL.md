@@ -31,7 +31,7 @@ npm exec --no -- vgpu --version
 ```
 
 Use a local-only equivalent for other package managers, such as `yarn exec vgpu --version` or an
-already resolved `node_modules/.bin/vgpu`. Commands such as bare `npx vgpu` or `bunx vgpu`
+already resolved `node_modules/.bin/vgpu`. Commands such as bare `vp dlx vgpu` or `npx vgpu`
 may download a missing package, so do not use them for local version discovery. npm's `--offline`
 is also insufficient because it can install a missing package from cache. Do not replace an
 installed version merely to read newer documentation.

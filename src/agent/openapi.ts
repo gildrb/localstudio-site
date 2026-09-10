@@ -12,16 +12,14 @@ export const apiProducts = {
 		{
 			id: "local-studio",
 			name: site.products.localStudio.name,
-			description:
-				"Local-first macOS workstation for self-hosted language-model backends.",
+			description: "Local-first macOS workstation for self-hosted language-model backends.",
 			url: `${site.origin}/`,
 			repository: site.products.localStudio.repository,
 		},
 		{
 			id: "kittylitter",
 			name: site.products.kittyLitter.name,
-			description:
-				"Native iOS and Android client for coding agents and Local Studio sessions.",
+			description: "Native iOS and Android client for coding agents and Local Studio sessions.",
 			url: site.products.kittyLitter.url,
 			repository: site.products.kittyLitter.source,
 		},
@@ -72,7 +70,10 @@ export function openApiSpec(): string {
 				{ url: "/", description: "Current origin" },
 				{ url: site.origin, description: "Canonical production service" },
 			],
-			externalDocs: { description: "Local Studio developer portal", url: `${site.origin}/developers` },
+			externalDocs: {
+				description: "Local Studio developer portal",
+				url: `${site.origin}/developers`,
+			},
 			paths: {
 				"/api/v1/status": {
 					get: {
@@ -82,7 +83,9 @@ export function openApiSpec(): string {
 						responses: {
 							"200": {
 								description: "The service is available.",
-								content: { "application/json": { schema: { $ref: "#/components/schemas/Status" } } },
+								content: {
+									"application/json": { schema: { $ref: "#/components/schemas/Status" } },
+								},
 							},
 							"405": { $ref: "#/components/responses/MethodNotAllowed" },
 						},
@@ -91,12 +94,17 @@ export function openApiSpec(): string {
 				"/api/v1/products": {
 					get: {
 						operationId: "listLocalStudioProducts",
-						description: "List public Sybil Solutions products associated with Local Studio and their canonical resources.",
+						description:
+							"List public Sybil Solutions products associated with Local Studio and their canonical resources.",
 						tags: ["Products"],
 						responses: {
 							"200": {
 								description: "A typed product collection.",
-								content: { "application/json": { schema: { $ref: "#/components/schemas/ProductCollection" } } },
+								content: {
+									"application/json": {
+										schema: { $ref: "#/components/schemas/ProductCollection" },
+									},
+								},
 							},
 							"405": { $ref: "#/components/responses/MethodNotAllowed" },
 						},
@@ -111,25 +119,43 @@ export function openApiSpec(): string {
 						properties: {
 							status: { type: "string", const: "ok", description: "Current service state." },
 							service: { type: "string", description: "Human-readable service name." },
-							version: { type: "string", pattern: "^\\d+\\.\\d+\\.\\d+$", description: "API semantic version." },
-							documentation: { type: "string", format: "uri", description: "Developer portal URL." },
+							version: {
+								type: "string",
+								pattern: "^\\d+\\.\\d+\\.\\d+$",
+								description: "API semantic version.",
+							},
+							documentation: {
+								type: "string",
+								format: "uri",
+								description: "Developer portal URL.",
+							},
 						},
 					},
 					Product: {
 						type: "object",
 						required: ["id", "name", "description", "url", "repository"],
 						properties: {
-							id: { type: "string", pattern: "^[a-z0-9-]+$", description: "Stable product identifier." },
+							id: {
+								type: "string",
+								pattern: "^[a-z0-9-]+$",
+								description: "Stable product identifier.",
+							},
 							name: { type: "string", description: "Public product name." },
 							description: { type: "string", description: "Short product purpose." },
 							url: { type: "string", format: "uri", description: "Canonical product URL." },
-							repository: { type: "string", format: "uri", description: "Public source repository." },
+							repository: {
+								type: "string",
+								format: "uri",
+								description: "Public source repository.",
+							},
 						},
 					},
 					ProductCollection: {
 						type: "object",
 						required: ["products"],
-						properties: { products: { type: "array", items: { $ref: "#/components/schemas/Product" } } },
+						properties: {
+							products: { type: "array", items: { $ref: "#/components/schemas/Product" } },
+						},
 					},
 					Error: {
 						type: "object",
@@ -139,7 +165,11 @@ export function openApiSpec(): string {
 								type: "object",
 								required: ["code", "message", "resolution", "documentation"],
 								properties: {
-									code: { type: "string" }, message: { type: "string" }, resolution: { type: "string" }, hint: { type: "string" }, documentation: { type: "string", format: "uri" },
+									code: { type: "string" },
+									message: { type: "string" },
+									resolution: { type: "string" },
+									hint: { type: "string" },
+									documentation: { type: "string", format: "uri" },
 								},
 							},
 						},

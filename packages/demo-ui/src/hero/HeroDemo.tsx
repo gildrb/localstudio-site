@@ -1,14 +1,7 @@
 import * as stylex from "@stylexjs/stylex";
 import { styles } from "./HeroDemo.styles.ts";
 import { demoStyles, lightTheme } from "../styles/demo-root.styles.ts";
-import {
-	useEffect,
-	useLayoutEffect,
-	useReducer,
-	useRef,
-	useState,
-	type FormEvent,
-} from "react";
+import { useEffect, useLayoutEffect, useReducer, useRef, useState, type FormEvent } from "react";
 import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { useDemoTabBoundary } from "../hooks/demo-tab-boundary";
 import { useElementActive } from "../hooks/use-element-activity";
@@ -71,11 +64,7 @@ type Session = {
 	tokenStats: { read: number; write: number; current: number };
 	contextUsage: { tokens: number; percent: number };
 };
-import {
-	ComputerHeader,
-	ComputerLauncherPanel,
-	type ComputerTab,
-} from "./computer-header";
+import { ComputerHeader, ComputerLauncherPanel, type ComputerTab } from "./computer-header";
 import { HeroDesktopSidebar } from "./desktop-sidebar";
 import { HeroFilesystemTree } from "./files-tree";
 import type { HeroTaskId } from "./projects-nav";
@@ -108,12 +97,8 @@ function useDemoFrame() {
 			const mobile = window.matchMedia(`(max-width: ${DEMO_MOBILE}px)`).matches;
 			const scale = mobile ? host.clientWidth / DEMO_FIT : 1;
 			const tokens = getComputedStyle(document.documentElement);
-			const pageWidth = Number.parseFloat(
-				tokens.getPropertyValue("--page-width"),
-			);
-			const gutter = Number.parseFloat(
-				tokens.getPropertyValue("--page-gutter"),
-			);
+			const pageWidth = Number.parseFloat(tokens.getPropertyValue("--page-width"));
+			const gutter = Number.parseFloat(tokens.getPropertyValue("--page-gutter"));
 			const centered = Math.min(pageWidth, window.innerWidth - gutter);
 			setFrame({
 				mobile,
@@ -207,15 +192,7 @@ const inboxMessages: ChatMessage[] = [
 function ignore(): void {}
 
 function useHeroDemoModel(clock: DemoClock) {
-	const {
-		hostRef,
-		active,
-		renderContents,
-		mobile,
-		scale,
-		clipRight,
-		clipBottom,
-	} = useDemoFrame();
+	const { hostRef, active, renderContents, mobile, scale, clipRight, clipBottom } = useDemoFrame();
 	useDemoTabBoundary(hostRef);
 	const reduceMotion = useReducedMotion() === true;
 	const [state, dispatch] = useReducer(
@@ -235,23 +212,19 @@ function useHeroDemoModel(clock: DemoClock) {
 		weekend: "",
 		inbox: "",
 	});
-	const [followUps, setFollowUps] = useState<Record<HeroTaskId, ChatMessage[]>>(
-		{
-			weekend: [],
-			inbox: [],
-		},
-	);
+	const [followUps, setFollowUps] = useState<Record<HeroTaskId, ChatMessage[]>>({
+		weekend: [],
+		inbox: [],
+	});
 	const [userEditing, setUserEditing] = useState(false);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollerRef = useRef<HTMLDivElement>(null);
 	const extraId = useRef(0);
 	const weekendTask = activeTask === "weekend";
 	const prompt = DEMO_PROMPT.slice(0, state.promptChars);
-	const submitted =
-		!weekendTask || (state.phase !== "select" && state.phase !== "prompt");
+	const submitted = !weekendTask || (state.phase !== "select" && state.phase !== "prompt");
 	const output = demoOutput(state);
-	const running =
-		weekendTask && submitted && !state.resultVisible && state.phase !== "done";
+	const running = weekendTask && submitted && !state.resultVisible && state.phase !== "done";
 	const tools = toolBlocksFor(state);
 	const title = titles[activeTask];
 	const extras = followUps[activeTask];
@@ -263,8 +236,7 @@ function useHeroDemoModel(clock: DemoClock) {
 			if (state.phase !== "done") dispatch({ type: "finish" });
 			return;
 		}
-		if (!active || !weekendTask || !state.playing || state.phase === "done")
-			return;
+		if (!active || !weekendTask || !state.playing || state.phase === "done") return;
 		const id = clock.timeout(() => {
 			dispatch({ type: "advance" });
 		}, demoDelay(state));
@@ -277,8 +249,7 @@ function useHeroDemoModel(clock: DemoClock) {
 		const scroller = scrollerRef.current;
 		if (!active || !scroller || !submitted) return;
 		if (state.resultVisible && extras.length === 0) {
-			const toolCalls =
-				scroller.querySelectorAll<HTMLElement>("[data-tool-call]");
+			const toolCalls = scroller.querySelectorAll<HTMLElement>("[data-tool-call]");
 			const anchor = toolCalls.item(Math.max(0, toolCalls.length - 2));
 			if (anchor) {
 				scroller.scrollTo({ top: Math.max(0, anchor.offsetTop - 12) });
@@ -317,8 +288,7 @@ function useHeroDemoModel(clock: DemoClock) {
 	const openTabs = COMPUTER_TAB_ORDER.filter(
 		(item) =>
 			item === "status" ||
-			(item === "files" &&
-				(state.toolsStarted > 0 || extraTabs.includes("files"))) ||
+			(item === "files" && (state.toolsStarted > 0 || extraTabs.includes("files"))) ||
 			(item === "diff" && (state.reviewReady || extraTabs.includes("diff"))) ||
 			extraTabs.includes(item),
 	);
@@ -326,9 +296,7 @@ function useHeroDemoModel(clock: DemoClock) {
 	function selectTab(next: ComputerTab): void {
 		setPanelOpen(true);
 		setPickedTab(next);
-		setExtraTabs((current) =>
-			current.includes(next) ? current : [...current, next],
-		);
+		setExtraTabs((current) => (current.includes(next) ? current : [...current, next]));
 	}
 
 	function closeTab(closing: ComputerTab): void {
@@ -438,10 +406,7 @@ export type HeroDemoProps = {
 	repositoryUrl: string;
 };
 
-export function HeroDemo({
-	clock = browserDemoClock,
-	repositoryUrl,
-}: HeroDemoProps) {
+export function HeroDemo({ clock = browserDemoClock, repositoryUrl }: HeroDemoProps) {
 	const model = useHeroDemoModel(clock);
 	return <HeroDemoView {...model} repositoryUrl={repositoryUrl} />;
 }
@@ -538,15 +503,10 @@ function HeroDemoView(model: HeroDemoViewModel) {
 							onSelectTask={selectTask}
 							titles={titles}
 						/>
-						<div
-							data-no-topbar="true"
-							{...stylex.props(demoStyles.reset, styles.div520)}
-						>
+						<div data-no-topbar="true" {...stylex.props(demoStyles.reset, styles.div520)}>
 							<div {...stylex.props(demoStyles.reset, styles.div522)}>
 								<div {...stylex.props(demoStyles.reset, styles.div523)}>
-									<section
-										{...stylex.props(demoStyles.reset, styles.section524)}
-									>
+									<section {...stylex.props(demoStyles.reset, styles.section524)}>
 										<AgentChatPaneHeader
 											title={title}
 											rightPanelOpen={panelOpen}
@@ -604,21 +564,12 @@ function HeroDemoView(model: HeroDemoViewModel) {
 											</div>
 										) : (
 											<div {...stylex.props(demoStyles.reset, styles.div566)}>
-												<div
-													{...stylex.props(
-														demoStyles.reset,
-														styles.agentThreadShell2,
-													)}
-												>
-													<div
-														{...stylex.props(demoStyles.reset, styles.div568)}
-													>
+												<div {...stylex.props(demoStyles.reset, styles.agentThreadShell2)}>
+													<div {...stylex.props(demoStyles.reset, styles.div568)}>
 														<p {...stylex.props(demoStyles.reset, styles.p569)}>
 															A dream is something you build for yourself.
 														</p>
-														<p {...stylex.props(demoStyles.reset, styles.p572)}>
-															Just talk to it.
-														</p>
+														<p {...stylex.props(demoStyles.reset, styles.p572)}>Just talk to it.</p>
 													</div>
 												</div>
 											</div>
@@ -678,9 +629,7 @@ function HeroDemoView(model: HeroDemoViewModel) {
 															strokeWidth={1.75}
 														/>
 													</button>
-													<div
-														{...stylex.props(demoStyles.reset, styles.div620)}
-													>
+													<div {...stylex.props(demoStyles.reset, styles.div620)}>
 														<button
 															type="button"
 															onClick={selectModel}
@@ -692,15 +641,10 @@ function HeroDemoView(model: HeroDemoViewModel) {
 															aria-label={`Model: ${state.modelSelected || !weekendTask ? DEMO_MODEL : "Select model"}`}
 														>
 															<span
-																{...stylex.props(
-																	demoStyles.reset,
-																	styles.span628,
-																)}
+																{...stylex.props(demoStyles.reset, styles.span628)}
 																translate="no"
 															>
-																{state.modelSelected || !weekendTask
-																	? DEMO_MODEL
-																	: "Select model"}
+																{state.modelSelected || !weekendTask ? DEMO_MODEL : "Select model"}
 															</span>
 															<ChevronDown
 																{...stylex.props(
@@ -736,9 +680,7 @@ function HeroDemoView(model: HeroDemoViewModel) {
 												cwd={demoProject.path}
 												gitBranch="main"
 												gitSummary={gitSummary}
-												currentContextTokens={
-													state.resultVisible || !weekendTask ? 2400 : 0
-												}
+												currentContextTokens={state.resultVisible || !weekendTask ? 2400 : 0}
 												contextWindow={contextWindow}
 												onOpenStatus={() => selectTab("status")}
 												onOpenDiff={() => selectTab("diff")}
@@ -821,25 +763,19 @@ function HeroComputerPanel({ model }: { model: HeroDemoViewModel }) {
 			{tab === "browser" ? (
 				<div {...stylex.props(demoStyles.reset, styles.div738)}>
 					<div {...stylex.props(demoStyles.reset, styles.div739)}>
-						<div {...stylex.props(demoStyles.reset, styles.div740)}>
-							Trip research
-						</div>
+						<div {...stylex.props(demoStyles.reset, styles.div740)}>Trip research</div>
 						<div {...stylex.props(demoStyles.reset, styles.div743)}>
-							Saturday stays dry until 16:00. Rydal Water to Grasmere keeps the
-							route under two hours.
+							Saturday stays dry until 16:00. Rydal Water to Grasmere keeps the route under two
+							hours.
 						</div>
 					</div>
 				</div>
 			) : null}
 			{tab === "terminal" ? (
-				<section {...stylex.props(demoStyles.reset, styles.section751)}>
-					Home shell
-				</section>
+				<section {...stylex.props(demoStyles.reset, styles.section751)}>Home shell</section>
 			) : null}
 			{tab === "side-chat" ? (
-				<section {...stylex.props(demoStyles.reset, styles.section751)}>
-					Side chat
-				</section>
+				<section {...stylex.props(demoStyles.reset, styles.section751)}>Side chat</section>
 			) : null}
 		</aside>
 	);
@@ -868,10 +804,7 @@ function ScenarioThread({
 }) {
 	return (
 		<>
-			<div
-				data-timeline-message-id="user-1"
-				{...stylex.props(demoStyles.reset, styles.div787)}
-			>
+			<div data-timeline-message-id="user-1" {...stylex.props(demoStyles.reset, styles.div787)}>
 				<UserMessage message={userMessage()} />
 			</div>
 			{tools.map((tool) => (
@@ -889,31 +822,17 @@ function ScenarioThread({
 					<article {...stylex.props(demoStyles.reset, styles.article797)}>
 						<div
 							data-chat-markdown
-							{...stylex.props(
-								demoStyles.reset,
-								styles.chatMarkdown,
-								demoStyles.chatMarkdown,
-							)}
+							{...stylex.props(demoStyles.reset, styles.chatMarkdown, demoStyles.chatMarkdown)}
 						>
 							{output}
 						</div>
-						{resultVisible ? (
-							<AssistantMessageActions copyText={output} />
-						) : null}
+						{resultVisible ? <AssistantMessageActions copyText={output} /> : null}
 					</article>
 				</div>
 			) : running ? (
-				<div
-					{...stylex.props(demoStyles.reset, styles.div805)}
-					role="status"
-					aria-live="polite"
-				>
+				<div {...stylex.props(demoStyles.reset, styles.div805)} role="status" aria-live="polite">
 					<span
-						{...stylex.props(
-							demoStyles.reset,
-							styles.codexShimmerText,
-							demoStyles.shimmerText,
-						)}
+						{...stylex.props(demoStyles.reset, styles.codexShimmerText, demoStyles.shimmerText)}
 					>
 						Thinking
 					</span>
@@ -949,11 +868,7 @@ function StaticThread({
 						<article {...stylex.props(demoStyles.reset, styles.article797)}>
 							<div
 								data-chat-markdown
-								{...stylex.props(
-									demoStyles.reset,
-									styles.chatMarkdown,
-									demoStyles.chatMarkdown,
-								)}
+								{...stylex.props(demoStyles.reset, styles.chatMarkdown, demoStyles.chatMarkdown)}
 							>
 								{message.text}
 							</div>
@@ -964,13 +879,8 @@ function StaticThread({
 									rel="noreferrer"
 									{...stylex.props(demoStyles.reset, styles.a844)}
 								>
-									<span {...stylex.props(demoStyles.reset)}>
-										Open Local Studio on GitHub
-									</span>
-									<span
-										aria-hidden="true"
-										{...stylex.props(demoStyles.reset, styles.span847)}
-									>
+									<span {...stylex.props(demoStyles.reset)}>Open Local Studio on GitHub</span>
+									<span aria-hidden="true" {...stylex.props(demoStyles.reset, styles.span847)}>
 										↗
 									</span>
 								</a>

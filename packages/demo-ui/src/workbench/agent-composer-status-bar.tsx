@@ -37,7 +37,9 @@ export function AgentComposerStatusBar({
 				</span>
 				{gitBranch ? (
 					<span {...stylex.props(demoStyles.reset, styles.span34)}>
-						<GitBranchIcon {...stylex.props(demoStyles.reset, styles.gitbranchicon35, styles.lucideScale)} />
+						<GitBranchIcon
+							{...stylex.props(demoStyles.reset, styles.gitbranchicon35, styles.lucideScale)}
+						/>
 						<span {...stylex.props(demoStyles.reset, styles.span36)}>{gitBranch}</span>
 					</span>
 				) : null}
@@ -48,8 +50,12 @@ export function AgentComposerStatusBar({
 						{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.button43)}
 						title="View changes"
 					>
-						<span {...stylex.props(demoStyles.reset, styles.span46)}>+{numberFormatter.format(gitSummary.additions)}</span>
-						<span {...stylex.props(demoStyles.reset, styles.span47)}>-{numberFormatter.format(gitSummary.deletions)}</span>
+						<span {...stylex.props(demoStyles.reset, styles.span46)}>
+							+{numberFormatter.format(gitSummary.additions)}
+						</span>
+						<span {...stylex.props(demoStyles.reset, styles.span47)}>
+							-{numberFormatter.format(gitSummary.deletions)}
+						</span>
 					</button>
 				) : null}
 			</div>

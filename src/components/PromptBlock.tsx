@@ -10,14 +10,13 @@ interface PromptBlockProps {
 	text: string;
 }
 
-
 const styles = stylex.create({
 	root: {
 		position: "relative",
 		minWidth: 0,
 		overflow: "visible",
-		borderWidth: '1px',
-		borderStyle: 'solid',
+		borderWidth: "1px",
+		borderStyle: "solid",
 		borderColor: colors.borderStrong,
 		borderRadius: lengths.radiusPanel,
 		boxShadow: `inset 0 1px 0 ${colors.borderSoft}`,
@@ -75,10 +74,10 @@ const styles = stylex.create({
 		display: "inline-flex",
 		minHeight: { default: "40px", "@media (max-width: 620px)": "44px" },
 		alignItems: "center",
-		paddingBlock: '0',
-		paddingInline: '20px',
-		borderWidth: '1px',
-		borderStyle: 'solid',
+		paddingBlock: "0",
+		paddingInline: "20px",
+		borderWidth: "1px",
+		borderStyle: "solid",
 		borderColor: {
 			default: colors.borderStrong,
 			"@media (hover: hover)": {
@@ -108,19 +107,36 @@ export function PromptBlock({ label, sx, text }: PromptBlockProps) {
 
 	return (
 		<section
-			{...stylex.props(baseStyles.element, styles.root, !expanded && styles.collapsedRoot, stylex.defaultMarker(), sx)}
+			{...stylex.props(
+				baseStyles.element,
+				styles.root,
+				!expanded && styles.collapsedRoot,
+				stylex.defaultMarker(),
+				sx,
+			)}
 			aria-label={label}
 			data-expanded={expanded ? "true" : "false"}
 		>
 			<CopyButton text={text} />
 			<pre
 				id={contentId}
-			{...stylex.props(baseStyles.element, baseStyles.monospace, styles.pre, !expanded && styles.collapsed)}
+				{...stylex.props(
+					baseStyles.element,
+					baseStyles.monospace,
+					styles.pre,
+					!expanded && styles.collapsed,
+				)}
 			>
 				<code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.code)}>{text}</code>
 			</pre>
 			<button
-				{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, baseStyles.button, styles.toggle)}
+				{...stylex.props(
+					baseStyles.element,
+					baseStyles.interactive,
+					baseStyles.focusable,
+					baseStyles.button,
+					styles.toggle,
+				)}
 				type="button"
 				aria-expanded={expanded}
 				aria-controls={contentId}

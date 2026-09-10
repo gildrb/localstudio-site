@@ -234,8 +234,7 @@ export const demoStyles = stylex.create({
 		backgroundImage: {
 			default: null,
 			"::before": `linear-gradient(180deg, ${tokens.frameEdge}, ${tokens.frameShade})`,
-			"::after":
-				`radial-gradient(38% 32% at 0% 0%, color-mix(in srgb, ${tokens.dim} 4%, transparent), transparent 72%), linear-gradient(180deg, color-mix(in srgb, ${tokens.dim} 2%, transparent), transparent 12%)`,
+			"::after": `radial-gradient(38% 32% at 0% 0%, color-mix(in srgb, ${tokens.dim} 4%, transparent), transparent 72%), linear-gradient(180deg, color-mix(in srgb, ${tokens.dim} 2%, transparent), transparent 12%)`,
 		},
 		WebkitMaskImage: {
 			default: null,
@@ -252,7 +251,8 @@ export const demoStyles = stylex.create({
 	},
 	lightScheme: {
 		colorScheme: "light",
-		boxShadow: "0 0 0 1px rgba(26, 28, 31, 0.12), 0 24px 80px rgba(26, 28, 31, 0.12), 0 8px 24px rgba(26, 28, 31, 0.08)",
+		boxShadow:
+			"0 0 0 1px rgba(26, 28, 31, 0.12), 0 24px 80px rgba(26, 28, 31, 0.12), 0 8px 24px rgba(26, 28, 31, 0.08)",
 	},
 	mobile: {
 		pointerEvents: "none",

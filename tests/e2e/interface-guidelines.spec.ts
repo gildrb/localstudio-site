@@ -4,15 +4,19 @@ test("1", async ({ page }) => {
 	for (const scheme of ["dark", "light"] as const) {
 		await page.emulateMedia({ colorScheme: scheme });
 		await page.goto("/");
-		await expect(page.getByRole("region", { name: "Local Studio workbench" })).toHaveAttribute("data-theme", `zai-${scheme}`);
+		await expect(page.getByRole("region", { name: "Local Studio workbench" })).toHaveAttribute(
+			"data-theme",
+			`zai-${scheme}`,
+		);
 		const audit = await page.evaluate(() => {
 			const demo = document.querySelector('[aria-label="Local Studio workbench"]');
 			return {
-			colorScheme: getComputedStyle(document.documentElement).colorScheme,
-			demoScheme: demo ? getComputedStyle(demo).colorScheme : null,
-			demoTheme: demo?.getAttribute("data-theme"),
-			themeColor: [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')]
-				.find((meta) => matchMedia(meta.media).matches)?.content,
+				colorScheme: getComputedStyle(document.documentElement).colorScheme,
+				demoScheme: demo ? getComputedStyle(demo).colorScheme : null,
+				demoTheme: demo?.getAttribute("data-theme"),
+				themeColor: [
+					...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'),
+				].find((meta) => matchMedia(meta.media).matches)?.content,
 			};
 		});
 		expect(audit).toEqual({
@@ -27,7 +31,10 @@ test("1", async ({ page }) => {
 test("2", async ({ page }) => {
 	await page.emulateMedia({ colorScheme: "dark" });
 	await page.goto("/");
-	const primary = page.locator("main").getByRole("link", { name: /Download for/ }).first();
+	const primary = page
+		.locator("main")
+		.getByRole("link", { name: /Download for/ })
+		.first();
 	const primaryStyle = await primary.evaluate((element) => {
 		const style = getComputedStyle(element);
 		return { borderColor: style.borderColor, boxShadow: style.boxShadow };
@@ -50,9 +57,19 @@ test("3", async ({ page }) => {
 	await page.emulateMedia({ colorScheme: "dark" });
 	await page.goto("/");
 	const brightness = (color: string) =>
-		(color.match(/[\d.]+/g)?.slice(0, 3).map(Number) ?? []).reduce((sum, value) => sum + value, 0);
-	const heading = await page.getByRole("heading", { level: 1 }).evaluate((element) => getComputedStyle(element).color);
-	for (const control of [page.getByRole("button", { name: "Products" }), page.locator("footer a").first()]) {
+		(
+			color
+				.match(/[\d.]+/g)
+				?.slice(0, 3)
+				.map(Number) ?? []
+		).reduce((sum, value) => sum + value, 0);
+	const heading = await page
+		.getByRole("heading", { level: 1 })
+		.evaluate((element) => getComputedStyle(element).color);
+	for (const control of [
+		page.getByRole("button", { name: "Products" }),
+		page.locator("footer a").first(),
+	]) {
 		await control.scrollIntoViewIfNeeded();
 		const rest = await control.evaluate((element) => getComputedStyle(element).color);
 		await control.hover();

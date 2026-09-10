@@ -24,9 +24,7 @@ const releaseDateFormatter = new Intl.DateTimeFormat("en-US", {
 	dateStyle: "long",
 	timeZone: "UTC",
 });
-const publishedLabel = releaseDateFormatter.format(
-	new Date(`${release.published}T00:00:00Z`),
-);
+const publishedLabel = releaseDateFormatter.format(new Date(`${release.published}T00:00:00Z`));
 
 const toc = [
 	["Start Here", "start-here"],
@@ -154,15 +152,46 @@ const kittyRows: readonly OverviewEntry[] = [
 		text: (
 			<>
 				<a
-					{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewTextLink)}
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.interactive,
+						baseStyles.focusable,
+						styles.overviewTextLink,
+					)}
 					href={site.products.kittyLitter.url}
 					target="_blank"
 					rel="noreferrer"
 				>
 					kittylitter.app
 				</a>{" "}
-				· <a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewTextLink)} href={site.products.kittyLitter.appStore} target="_blank" rel="noreferrer">App Store</a>{" "}
-				· <a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewTextLink)} href={site.products.kittyLitter.playStore} target="_blank" rel="noreferrer">Google Play</a>
+				·{" "}
+				<a
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.interactive,
+						baseStyles.focusable,
+						styles.overviewTextLink,
+					)}
+					href={site.products.kittyLitter.appStore}
+					target="_blank"
+					rel="noreferrer"
+				>
+					App Store
+				</a>{" "}
+				·{" "}
+				<a
+					{...stylex.props(
+						baseStyles.element,
+						baseStyles.interactive,
+						baseStyles.focusable,
+						styles.overviewTextLink,
+					)}
+					href={site.products.kittyLitter.playStore}
+					target="_blank"
+					rel="noreferrer"
+				>
+					Google Play
+				</a>
 			</>
 		),
 	},
@@ -283,19 +312,15 @@ const sourceRows: readonly OverviewEntry[] = [
 function arrow(entry: OverviewEntry) {
 	const Icon = entry.external ? ArrowUpRight : ArrowRight;
 	return (
-		<Icon
-			{...stylex.props(styles.overviewArrow)}
-			aria-hidden="true"
-			size={14}
-			strokeWidth={1.25}
-		/>
+		<Icon {...stylex.props(styles.overviewArrow)} aria-hidden="true" size={14} strokeWidth={1.25} />
 	);
 }
 
 function OverviewLabel({ entry }: { entry: OverviewEntry }) {
 	return (
 		<span
-			{...stylex.props(baseStyles.element, 
+			{...stylex.props(
+				baseStyles.element,
 				styles.overviewLabel,
 				entry.code && styles.overviewLabelCode,
 			)}
@@ -312,7 +337,12 @@ function OverviewRow({ entry }: { entry: OverviewEntry }) {
 	} else if (entry.external) {
 		label = (
 			<a
-				{...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewLink)}
+				{...stylex.props(
+					baseStyles.element,
+					baseStyles.interactive,
+					baseStyles.focusable,
+					styles.overviewLink,
+				)}
 				href={entry.href}
 				target="_blank"
 				rel="noreferrer"
@@ -323,7 +353,15 @@ function OverviewRow({ entry }: { entry: OverviewEntry }) {
 		);
 	} else if (entry.plain) {
 		label = (
-			<a {...stylex.props(baseStyles.element, baseStyles.interactive, baseStyles.focusable, styles.overviewLink)} href={entry.href}>
+			<a
+				{...stylex.props(
+					baseStyles.element,
+					baseStyles.interactive,
+					baseStyles.focusable,
+					styles.overviewLink,
+				)}
+				href={entry.href}
+			>
 				<OverviewLabel entry={entry} />
 				{arrow(entry)}
 			</a>
@@ -339,7 +377,9 @@ function OverviewRow({ entry }: { entry: OverviewEntry }) {
 	return (
 		<li {...stylex.props(baseStyles.element, styles.overviewRow, styles.docsListItem)}>
 			{label}
-			<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.overviewText)}>{entry.text}</p>
+			<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.overviewText)}>
+				{entry.text}
+			</p>
 		</li>
 	);
 }
@@ -352,126 +392,207 @@ export function ResourcesPage() {
 				id="resources-title"
 				title={routes[overviewPath].heading}
 				description="Documentation, setup paths, downloads, and the surrounding ecosystem in one place."
-				actions={
-					<CtaPair secondary={{ href: docsPath, label: "Read the docs" }} />
-				}
+				actions={<CtaPair secondary={{ href: docsPath, label: "Read the docs" }} />}
 			/>
 			<DocsLayout toc={toc} path={overviewPath} label="Overview sections">
-					<p {...stylex.props(baseStyles.element, baseStyles.paragraph)}>
-						One page, everything on the map: the site, the desktop app, the
-						phone client, the shim, the machine surface, and where the source
-						lives. If it exists around <span translate="no" {...stylex.props(baseStyles.element)}>Local Studio</span>,
-						it is linked from here.
+				<p {...stylex.props(baseStyles.element, baseStyles.paragraph)}>
+					One page, everything on the map: the site, the desktop app, the phone client, the shim,
+					the machine surface, and where the source lives. If it exists around{" "}
+					<span translate="no" {...stylex.props(baseStyles.element)}>
+						Local Studio
+					</span>
+					, it is linked from here.
+				</p>
+				<section id="start-here" {...stylex.props(baseStyles.element, styles.docsSection)}>
+					<h2
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.docsSectionHeading,
+						)}
+					>
+						Start Here
+					</h2>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
+						Three ways in, depending on what you are holding.
 					</p>
-					<section id="start-here" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Start Here</h2>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
-							Three ways in, depending on what you are holding.
-						</p>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{starts.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-					</section>
-					<section id="this-site" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>This Site</h2>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>Every route and what it holds.</p>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{siteRoutes.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-					</section>
-					<section id="local-studio" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Local Studio</h2>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
-							A local-first workstation for running, managing, and using
-							self-hosted LLM backends. Two modules share one controller API,
-							and it keeps the model, the runtime, and the hardware together.
-							Nothing important disappears behind a provider abstraction.
-						</p>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{studioFacts.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.marginTop32)}>
-							Day-to-day operation runs through three surfaces.
-						</p>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{studioSurfaces.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-					</section>
-					<section id="runtimes" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Runtimes</h2>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
-							Recipes launch through the controller runtime layer; a chat proxy
-							call never launches a model silently. Discovery and saved
-							selections stay with the controller and surface in Settings.
-						</p>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{runtimes.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-					</section>
-					<section id="kittylitter" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>KittyLitter</h2>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
-							The native iOS and Android client for Codex, Claude, OpenCode, Pi,
-							and Droid, and the mobile companion for Local Studio. Work still
-							runs on your Mac or server; sessions, streaming, reasoning, and
-							tool results follow the phone.
-						</p>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{kittyRows.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-					</section>
-					<section id="codex-shim" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Codex Shim</h2>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
-							A local Python/aiohttp server that exposes an OpenAI
-							Responses-compatible endpoint on loopback, so Codex Desktop can
-							run BYOK models: OpenAI, Anthropic, Z.ai, DeepSeek, Gemini,
-							OpenRouter, and local proxies. Codex keeps its native UX; routing
-							moves local.
-						</p>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{shimRows.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-					</section>
-					<section id="for-machines" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>For Machines</h2>
-						<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
-							Every HTML route above has a markdown twin: append{" "}
-							<code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>.md</code> or send <code {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}>Accept: text/markdown</code>. The
-							homepage advertises the catalog, docs, and agent card through RFC
-							8288 Link headers.
-						</p>
-						<pre {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsCode)}>
-							curl -H "Accept: text/markdown" {site.origin}{docsPath}
-						</pre>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{machineRows.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-					</section>
-					<section id="source" {...stylex.props(baseStyles.element, styles.docsSection)}>
-						<h2 {...stylex.props(baseStyles.element, baseStyles.heading, baseStyles.headingTwo, styles.docsSectionHeading)}>Source and Company</h2>
-						<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
-							{sourceRows.map((entry) => (
-								<OverviewRow entry={entry} key={entry.label} />
-							))}
-						</ul>
-					</section>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{starts.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+				</section>
+				<section id="this-site" {...stylex.props(baseStyles.element, styles.docsSection)}>
+					<h2
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.docsSectionHeading,
+						)}
+					>
+						This Site
+					</h2>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
+						Every route and what it holds.
+					</p>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{siteRoutes.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+				</section>
+				<section id="local-studio" {...stylex.props(baseStyles.element, styles.docsSection)}>
+					<h2
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.docsSectionHeading,
+						)}
+					>
+						Local Studio
+					</h2>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
+						A local-first workstation for running, managing, and using self-hosted LLM backends. Two
+						modules share one controller API, and it keeps the model, the runtime, and the hardware
+						together. Nothing important disappears behind a provider abstraction.
+					</p>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{studioFacts.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.marginTop32)}>
+						Day-to-day operation runs through three surfaces.
+					</p>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{studioSurfaces.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+				</section>
+				<section id="runtimes" {...stylex.props(baseStyles.element, styles.docsSection)}>
+					<h2
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.docsSectionHeading,
+						)}
+					>
+						Runtimes
+					</h2>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
+						Recipes launch through the controller runtime layer; a chat proxy call never launches a
+						model silently. Discovery and saved selections stay with the controller and surface in
+						Settings.
+					</p>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{runtimes.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+				</section>
+				<section id="kittylitter" {...stylex.props(baseStyles.element, styles.docsSection)}>
+					<h2
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.docsSectionHeading,
+						)}
+					>
+						KittyLitter
+					</h2>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
+						The native iOS and Android client for Codex, Claude, OpenCode, Pi, and Droid, and the
+						mobile companion for Local Studio. Work still runs on your Mac or server; sessions,
+						streaming, reasoning, and tool results follow the phone.
+					</p>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{kittyRows.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+				</section>
+				<section id="codex-shim" {...stylex.props(baseStyles.element, styles.docsSection)}>
+					<h2
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.docsSectionHeading,
+						)}
+					>
+						Codex Shim
+					</h2>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
+						A local Python/aiohttp server that exposes an OpenAI Responses-compatible endpoint on
+						loopback, so Codex Desktop can run BYOK models: OpenAI, Anthropic, Z.ai, DeepSeek,
+						Gemini, OpenRouter, and local proxies. Codex keeps its native UX; routing moves local.
+					</p>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{shimRows.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+				</section>
+				<section id="for-machines" {...stylex.props(baseStyles.element, styles.docsSection)}>
+					<h2
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.docsSectionHeading,
+						)}
+					>
+						For Machines
+					</h2>
+					<p {...stylex.props(baseStyles.element, baseStyles.paragraph, styles.docsSectionLead)}>
+						Every HTML route above has a markdown twin: append{" "}
+						<code
+							{...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}
+						>
+							.md
+						</code>{" "}
+						or send{" "}
+						<code
+							{...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsInlineCode)}
+						>
+							Accept: text/markdown
+						</code>
+						. The homepage advertises the catalog, docs, and agent card through RFC 8288 Link
+						headers.
+					</p>
+					<pre {...stylex.props(baseStyles.element, baseStyles.monospace, styles.docsCode)}>
+						curl -H "Accept: text/markdown" {site.origin}
+						{docsPath}
+					</pre>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{machineRows.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+				</section>
+				<section id="source" {...stylex.props(baseStyles.element, styles.docsSection)}>
+					<h2
+						{...stylex.props(
+							baseStyles.element,
+							baseStyles.heading,
+							baseStyles.headingTwo,
+							styles.docsSectionHeading,
+						)}
+					>
+						Source and Company
+					</h2>
+					<ul {...stylex.props(baseStyles.list, baseStyles.element, styles.overviewRows)}>
+						{sourceRows.map((entry) => (
+							<OverviewRow entry={entry} key={entry.label} />
+						))}
+					</ul>
+				</section>
 			</DocsLayout>
 			<PageCta id="resources-cta-title" />
 		</PageShell>

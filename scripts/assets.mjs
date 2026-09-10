@@ -71,7 +71,9 @@ function dimensionsFor(rel, raw) {
 	}
 	if (ext === ".svg") {
 		const source = raw.toString("utf8", 0, 8192);
-		const viewBox = source.match(/\bviewBox\s*=\s*["']\s*([\d.+-]+)[\s,]+([\d.+-]+)[\s,]+([\d.+-]+)[\s,]+([\d.+-]+)/i);
+		const viewBox = source.match(
+			/\bviewBox\s*=\s*["']\s*([\d.+-]+)[\s,]+([\d.+-]+)[\s,]+([\d.+-]+)[\s,]+([\d.+-]+)/i,
+		);
 		if (viewBox) return { width: Number(viewBox[3]), height: Number(viewBox[4]) };
 		const width = source.match(/\bwidth\s*=\s*["']([\d.]+)/i);
 		const height = source.match(/\bheight\s*=\s*["']([\d.]+)/i);
@@ -108,7 +110,10 @@ function roleFor(rel) {
 
 const files = walk(join(root, "public"))
 	.map((path) => {
-		const rel = path.slice(root.length + 1).split("\\").join("/");
+		const rel = path
+			.slice(root.length + 1)
+			.split("\\")
+			.join("/");
 		const raw = readFileSync(path);
 		return {
 			path: rel,
@@ -139,11 +144,13 @@ if (command === "write") {
 } else if (command === "check") {
 	const current = readFileSync(dest, "utf8");
 	if (current !== body) {
-		console.error("asset-manifest.json is stale; run bun run assets:manifest");
+		console.error("asset-manifest.json is stale; run vp run assets:manifest");
 		process.exit(1);
 	}
 	if (duplicateGroups.length) {
-		console.error(`duplicate asset content is not allowlisted:\n${duplicateGroups.map((group) => group.join(" = ")).join("\n")}`);
+		console.error(
+			`duplicate asset content is not allowlisted:\n${duplicateGroups.map((group) => group.join(" = ")).join("\n")}`,
+		);
 		process.exit(1);
 	}
 	console.log(`asset-manifest.json ok (${files.length} files)`);

@@ -16,13 +16,18 @@ export function NotFoundPage() {
 				description={
 					<>
 						The route does not exist in this{" "}
-						<span translate="no" {...stylex.props(baseStyles.element)}>{site.products.localStudio.name}</span> website. Try one of the
-						routes below instead.
+						<span translate="no" {...stylex.props(baseStyles.element)}>
+							{site.products.localStudio.name}
+						</span>{" "}
+						website. Try one of the routes below instead.
 					</>
 				}
 				actions={
 					<LocalLink sx={styles.button} href={homePath}>
-						Back to <span translate="no" {...stylex.props(baseStyles.element)}>{site.products.localStudio.name}</span>
+						Back to{" "}
+						<span translate="no" {...stylex.props(baseStyles.element)}>
+							{site.products.localStudio.name}
+						</span>
 					</LocalLink>
 				}
 			>
@@ -31,11 +36,7 @@ export function NotFoundPage() {
 					aria-label="Suggested routes"
 				>
 					{notFoundSuggestions().map(({ label, href }) => (
-						<LocalLink
-							sx={styles.notFoundRoute}
-							href={href}
-							key={href}
-						>
+						<LocalLink sx={styles.notFoundRoute} href={href} key={href}>
 							{label}
 						</LocalLink>
 					))}

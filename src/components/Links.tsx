@@ -5,8 +5,10 @@ import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { downloadLabel, downloadPath } from "../domain/route";
 import { LocalLink } from "./LocalLink";
 
-interface TextLinkProps
-	extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className" | "style"> {
+interface TextLinkProps extends Omit<
+	AnchorHTMLAttributes<HTMLAnchorElement>,
+	"className" | "style"
+> {
 	children: ReactNode;
 	href: string;
 	sx?: PublicStyle;
@@ -22,7 +24,6 @@ interface CtaPairProps {
 	secondary: Cta;
 	sx?: PublicStyle;
 }
-
 
 const downloadCta = {
 	href: downloadPath,
@@ -61,10 +62,10 @@ const styles = stylex.create({
 		alignItems: "center",
 		justifyContent: "center",
 		gap: "8px",
-		paddingBlock: '0',
-		paddingInline: '16px',
-		borderWidth: '1px',
-		borderStyle: 'solid',
+		paddingBlock: "0",
+		paddingInline: "16px",
+		borderWidth: "1px",
+		borderStyle: "solid",
 		borderRadius: lengths.radiusControl,
 		color: colors.primaryButtonInk,
 		backgroundColor: colors.primaryButtonSurface,
@@ -122,10 +123,10 @@ const styles = stylex.create({
 		display: "inline-flex",
 		alignItems: "center",
 		justifyContent: "center",
-		paddingBlock: '0',
-		paddingInline: '16px',
-		borderWidth: '1px',
-		borderStyle: 'solid',
+		paddingBlock: "0",
+		paddingInline: "16px",
+		borderWidth: "1px",
+		borderStyle: "solid",
 		borderRadius: lengths.radiusControl,
 		color: colors.foreground,
 		backgroundColor: {

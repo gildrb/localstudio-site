@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { expect, test } from "bun:test";
+import { expect, test } from "vite-plus/test";
 import { assets } from "../../src/domain/asset";
 
 function publicPath(file: { path: string }) {
@@ -25,13 +25,12 @@ test("every registered asset exists in the public asset manifest", () => {
 
 test("every inventoried public file is registered in the asset model", () => {
 	const manifest = JSON.parse(readFileSync("asset-manifest.json", "utf8"));
-	const registered = new Set(Object.values(assets));
+	const registered = new Set<string | undefined>(Object.values(assets));
 	for (const file of manifest.files) {
 		const path = publicPath(file);
 		expect(registered.has(path), path).toBe(true);
 	}
 });
-
 
 test("asset manifest records media types and image dimensions", () => {
 	const manifest = JSON.parse(readFileSync("asset-manifest.json", "utf8"));
@@ -48,9 +47,8 @@ test("asset manifest records media types and image dimensions", () => {
 	}
 });
 
-
 test("source public asset references belong to the asset registry", () => {
-	const registered = new Set(Object.values(assets));
+	const registered = new Set<string | undefined>(Object.values(assets));
 	const references = /["'(]((?:\/images|\/fonts|\/localai)\/[^"'\s)]+)/g;
 	const violations: string[] = [];
 	for (const root of ["src", "packages"]) {

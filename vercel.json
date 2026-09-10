@@ -1,6 +1,6 @@
 {
-	"installCommand": "bun install --frozen-lockfile --ignore-scripts",
-	"buildCommand": "bun run build",
+	"installCommand": "npx --yes --package vite-plus@0.3.1 vp install --frozen-lockfile",
+	"buildCommand": "npx --no-install vp build",
 	"outputDirectory": "dist",
 	"headers": [
 		{

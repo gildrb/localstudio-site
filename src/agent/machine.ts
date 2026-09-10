@@ -66,10 +66,7 @@ export function machineSections(): readonly MachineSection[] {
 				"Native iOS and Android client. Connect over LAN, SSH, or Alleycat; work stays on the Mac or server.",
 			],
 		],
-		[
-			"ROUTES",
-			routePaths.map(routeLine),
-		],
+		["ROUTES", routePaths.map(routeLine)],
 		[
 			"DISCOVERY",
 			[

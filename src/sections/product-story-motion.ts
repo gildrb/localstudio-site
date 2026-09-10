@@ -9,7 +9,7 @@ export function storySceneAnimation(index: number, activeIndex: number, reducedM
 		animate: {
 			opacity: 1,
 			"--story-content-blur": selected || reducedMotion ? "0px" : "8px",
-			visibility: selected ? "visible" as const : "hidden" as const,
+			visibility: selected ? ("visible" as const) : ("hidden" as const),
 		},
 		transition: {
 			...motion.featureSwap,

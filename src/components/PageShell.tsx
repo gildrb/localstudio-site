@@ -16,7 +16,13 @@ interface PageShellProps {
 
 export function PageShell({ backHref, children }: PageShellProps) {
 	return (
-		<div {...stylex.props(baseStyles.element, shellStyles.shell, backHref !== undefined && shellStyles.backShell)}>
+		<div
+			{...stylex.props(
+				baseStyles.element,
+				shellStyles.shell,
+				backHref !== undefined && shellStyles.backShell,
+			)}
+		>
 			<LocalLink sx={shellStyles.skipLink} href="#content">
 				Skip to content
 			</LocalLink>
@@ -37,7 +43,15 @@ export function PageShell({ backHref, children }: PageShellProps) {
 			) : (
 				<Header />
 			)}
-			<main {...stylex.props(baseStyles.element, shellStyles.main, backHref !== undefined && shellStyles.backMain)} id="content" tabIndex={-1}>
+			<main
+				{...stylex.props(
+					baseStyles.element,
+					shellStyles.main,
+					backHref !== undefined && shellStyles.backMain,
+				)}
+				id="content"
+				tabIndex={-1}
+			>
 				{children}
 			</main>
 			<Footer sx={backHref ? shellStyles.backFooter : undefined} />

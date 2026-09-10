@@ -36,7 +36,10 @@ export const infoPages = {
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "Build agent integrations with Local Studio by Sybil Solutions. This portal describes the public, read-only product metadata API hosted on this site and points to the separate controller API that runs on each Local Studio installation. Start with the machine-readable " },
+					{
+						kind: "text",
+						text: "Build agent integrations with Local Studio by Sybil Solutions. This portal describes the public, read-only product metadata API hosted on this site and points to the separate controller API that runs on each Local Studio installation. Start with the machine-readable ",
+					},
 					{ kind: "link", href: "/openapi.json", label: "OpenAPI 3.1 specification" },
 					{ kind: "text", text: " or the " },
 					{ kind: "link", href: "/.well-known/mcp", label: "MCP Streamable HTTP endpoint" },
@@ -47,7 +50,10 @@ export const infoPages = {
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "The public endpoints are a safe production sandbox. They require no account, API key, or write access. Responses are JSON and may be cached. Use them to test discovery, schema ingestion, function calling, health checks, and product lookup without creating user data." },
+					{
+						kind: "text",
+						text: "The public endpoints are a safe production sandbox. They require no account, API key, or write access. Responses are JSON and may be cached. Use them to test discovery, schema ingestion, function calling, health checks, and product lookup without creating user data.",
+					},
 				],
 			},
 			{
@@ -60,18 +66,27 @@ curl -s ${site.origin}/openapi.json`,
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "No authentication is required for this site's public metadata API. Local Studio's controller is different: it binds to " },
+					{
+						kind: "text",
+						text: "No authentication is required for this site's public metadata API. Local Studio's controller is different: it binds to ",
+					},
 					{ kind: "code", code: "127.0.0.1:8080" },
 					{ kind: "text", text: " by default. A non-loopback controller requires " },
 					{ kind: "code", code: "LOCAL_STUDIO_API_KEY" },
-					{ kind: "text", text: ". Keep controller keys out of prompts, URLs, source control, and logs." },
+					{
+						kind: "text",
+						text: ". Keep controller keys out of prompts, URLs, source control, and logs.",
+					},
 				],
 			},
 			{ kind: "heading", text: "Errors and Limits" },
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "API errors use JSON with a stable error code, a human-readable message, a resolution hint, and a documentation link. The public metadata surface is intentionally small and read-only. Use normal conditional requests and avoid repeated polling. No webhooks are offered by this marketing site." },
+					{
+						kind: "text",
+						text: "API errors use JSON with a stable error code, a human-readable message, a resolution hint, and a documentation link. The public metadata surface is intentionally small and read-only. Use normal conditional requests and avoid repeated polling. No webhooks are offered by this marketing site.",
+					},
 				],
 			},
 			{ kind: "heading", text: "Agent Protocols" },
@@ -82,7 +97,10 @@ curl -s ${site.origin}/openapi.json`,
 					{ kind: "link", href: "/openapi.json", label: "OpenAPI" },
 					{ kind: "text", text: ". MCP clients can initialize at " },
 					{ kind: "code", code: "/.well-known/mcp" },
-					{ kind: "text", text: ", list tools, and call the read-only product catalog tool. Agents should also read " },
+					{
+						kind: "text",
+						text: ", list tools, and call the read-only product catalog tool. Agents should also read ",
+					},
 					{ kind: "link", href: "/llms.txt", label: "llms.txt" },
 					{ kind: "text", text: ", " },
 					{ kind: "link", href: "/agents.md", label: "agents.md" },
@@ -104,25 +122,37 @@ curl -s ${site.origin}/openapi.json`,
 				content: [
 					{ kind: "text", text: "Local Studio is a local-first macOS workstation made by " },
 					{ kind: "link", href: site.company.url, label: "Sybil Solutions" },
-					{ kind: "text", text: ". It helps people run, manage, and use self-hosted language-model backends without turning their work into a cloud account. The product brings controllers, models, providers, a browser, files, terminals, and coding agents into one Workbench." },
+					{
+						kind: "text",
+						text: ". It helps people run, manage, and use self-hosted language-model backends without turning their work into a cloud account. The product brings controllers, models, providers, a browser, files, terminals, and coding agents into one Workbench.",
+					},
 				],
 			},
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "The workstation supports local and remote controllers and common inference runtimes including vLLM, SGLang, llama.cpp, and MLX. Its OpenAI-compatible proxy gives applications one surface while model execution remains under the operator's control. The desktop source is public under Apache-2.0, and signed Apple Silicon builds are published through GitHub Releases." },
+					{
+						kind: "text",
+						text: "The workstation supports local and remote controllers and common inference runtimes including vLLM, SGLang, llama.cpp, and MLX. Its OpenAI-compatible proxy gives applications one surface while model execution remains under the operator's control. The desktop source is public under Apache-2.0, and signed Apple Silicon builds are published through GitHub Releases.",
+					},
 				],
 			},
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "Sybil Solutions also supports KittyLitter, a native iOS and Android companion for Codex, Claude, OpenCode, Pi, and Droid, and Codex Shim, a local Responses API bridge for bring-your-own-key models. These products share one goal: useful AI software should keep infrastructure choices, credentials, files, and sessions in the user's hands." },
+					{
+						kind: "text",
+						text: "Sybil Solutions also supports KittyLitter, a native iOS and Android companion for Codex, Claude, OpenCode, Pi, and Droid, and Codex Shim, a local Responses API bridge for bring-your-own-key models. These products share one goal: useful AI software should keep infrastructure choices, credentials, files, and sessions in the user's hands.",
+					},
 				],
 			},
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "This website is the canonical product and documentation index for Local Studio. Use the " },
+					{
+						kind: "text",
+						text: "This website is the canonical product and documentation index for Local Studio. Use the ",
+					},
 					{ kind: "link", href: "/docs", label: "documentation" },
 					{ kind: "text", text: " to install the workstation, the " },
 					{ kind: "link", href: "/setup", label: "setup prompt" },
@@ -144,13 +174,19 @@ curl -s ${site.origin}/openapi.json`,
 				content: [
 					{ kind: "text", text: "Contact Sybil Solutions about Local Studio at " },
 					{ kind: "link", href: `mailto:${site.company.contact}`, label: site.company.contact },
-					{ kind: "text", text: ". Email is the official contact channel for product questions, responsible security reports, partnerships, developer integrations, and corrections to this website. Include “Local Studio” and a short topic in the subject so the request can be routed correctly." },
+					{
+						kind: "text",
+						text: ". Email is the official contact channel for product questions, responsible security reports, partnerships, developer integrations, and corrections to this website. Include “Local Studio” and a short topic in the subject so the request can be routed correctly.",
+					},
 				],
 			},
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "For technical support, include the Local Studio version, macOS version, controller runtime, expected result, actual result, and the smallest safe reproduction. Remove API keys, QR pairing payloads, connection JSON, private model paths, prompts, and user files before sending logs or screenshots. Public code issues may also be reported in the relevant " },
+					{
+						kind: "text",
+						text: "For technical support, include the Local Studio version, macOS version, controller runtime, expected result, actual result, and the smallest safe reproduction. Remove API keys, QR pairing payloads, connection JSON, private model paths, prompts, and user files before sending logs or screenshots. Public code issues may also be reported in the relevant ",
+					},
 					{ kind: "link", href: site.products.localStudio.repository, label: "GitHub repository" },
 					{ kind: "text", text: "." },
 				],
@@ -158,13 +194,19 @@ curl -s ${site.origin}/openapi.json`,
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "For security reports, describe the affected component, impact, prerequisites, and reproducible steps. Do not publish active credentials or personal data. Sybil Solutions does not ask for controller keys, provider keys, KittyLitter connection payloads, or remote shell credentials by email." },
+					{
+						kind: "text",
+						text: "For security reports, describe the affected component, impact, prerequisites, and reproducible steps. Do not publish active credentials or personal data. Sybil Solutions does not ask for controller keys, provider keys, KittyLitter connection payloads, or remote shell credentials by email.",
+					},
 				],
 			},
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "Local Studio is an online-first product and Sybil Solutions does not publish a visitor office or telephone support line on this site. The verified organization links are the " },
+					{
+						kind: "text",
+						text: "Local Studio is an online-first product and Sybil Solutions does not publish a visitor office or telephone support line on this site. The verified organization links are the ",
+					},
 					{ kind: "link", href: site.company.url, label: "company website" },
 					{ kind: "text", text: ", " },
 					{ kind: "link", href: site.company.github, label: "GitHub organization" },
@@ -184,27 +226,42 @@ curl -s ${site.origin}/openapi.json`,
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "This page explains the privacy boundary of the Local Studio product website. The site is a public documentation and download surface. It does not provide user accounts, accept model prompts, upload local files, sell personal information, or expose a hosted inference service. The public metadata API is read-only and does not require an API key." },
+					{
+						kind: "text",
+						text: "This page explains the privacy boundary of the Local Studio product website. The site is a public documentation and download surface. It does not provide user accounts, accept model prompts, upload local files, sell personal information, or expose a hosted inference service. The public metadata API is read-only and does not require an API key.",
+					},
 				],
 			},
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "Hosting and network providers may process standard request data such as IP address, user agent, requested URL, timestamp, and diagnostic logs to deliver and protect the site. Links to GitHub, Apple, Google, KittyLitter, Sybil Solutions, and social profiles lead to third-party services with their own privacy terms. This site does not control those services." },
+					{
+						kind: "text",
+						text: "Hosting and network providers may process standard request data such as IP address, user agent, requested URL, timestamp, and diagnostic logs to deliver and protect the site. Links to GitHub, Apple, Google, KittyLitter, Sybil Solutions, and social profiles lead to third-party services with their own privacy terms. This site does not control those services.",
+					},
 				],
 			},
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "Local Studio itself is local-first. Models, provider credentials, Workbench files, terminal activity, and controller state remain on systems selected by the operator. A controller binds to loopback by default. Operators who enable LAN or remote access are responsible for access controls, API keys, network policy, retention, and the privacy obligations of their environment." },
+					{
+						kind: "text",
+						text: "Local Studio itself is local-first. Models, provider credentials, Workbench files, terminal activity, and controller state remain on systems selected by the operator. A controller binds to loopback by default. Operators who enable LAN or remote access are responsible for access controls, API keys, network policy, retention, and the privacy obligations of their environment.",
+					},
 				],
 			},
 			{
 				kind: "paragraph",
 				content: [
-					{ kind: "text", text: "KittyLitter pairing data and connection JSON are credentials and should be treated like passwords. Do not send them through this website or include them in public issue reports. For privacy questions or requests about information sent directly to Sybil Solutions, email " },
+					{
+						kind: "text",
+						text: "KittyLitter pairing data and connection JSON are credentials and should be treated like passwords. Do not send them through this website or include them in public issue reports. For privacy questions or requests about information sent directly to Sybil Solutions, email ",
+					},
 					{ kind: "link", href: `mailto:${site.company.contact}`, label: site.company.contact },
-					{ kind: "text", text: ` with enough detail to locate the communication. This notice was last updated ${site.lastmod}.` },
+					{
+						kind: "text",
+						text: ` with enough detail to locate the communication. This notice was last updated ${site.lastmod}.`,
+					},
 				],
 			},
 		],

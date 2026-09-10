@@ -17,7 +17,9 @@ export const productFeatures = [
 		],
 		productTitle: "Control the Runtime",
 		productText: [
-			text("Launch and evict models, manage recipes and downloads, and watch GPU, process, log, and usage state from one controller."),
+			text(
+				"Launch and evict models, manage recipes and downloads, and watch GPU, process, log, and usage state from one controller.",
+			),
 		],
 		image: assets.usageProxy,
 		alt: "Local Studio usage screen showing proxied tokens, requests, sessions, active days, and token activity.",
@@ -46,7 +48,9 @@ export const productFeatures = [
 			term("llama.cpp"),
 			text(", or "),
 			term("MLX"),
-			text(" targets, then serve them through one OpenAI-compatible proxy. Runtime discovery and saved selections stay with the controller."),
+			text(
+				" targets, then serve them through one OpenAI-compatible proxy. Runtime discovery and saved selections stay with the controller.",
+			),
 		],
 		image: assets.configureModels,
 		alt: "Local Studio model configuration screen showing searchable Hugging Face models, hardware fit, and downloads.",
@@ -62,7 +66,9 @@ export const productFeatures = [
 		productText: [
 			text("Use the "),
 			term("Pi"),
-			text("-powered Workbench for agent sessions with models, providers, browser, files, terminal, and registered tools in one timeline."),
+			text(
+				"-powered Workbench for agent sessions with models, providers, browser, files, terminal, and registered tools in one timeline.",
+			),
 		],
 		image: assets.workbenchTerminal,
 		alt: "Local Studio workbench with agent reasoning, terminal output, repository changes, and tool activity.",
@@ -76,7 +82,9 @@ export const productFeatures = [
 		],
 		productTitle: "Keep the Machine Working",
 		productText: [
-			text("Automations run on the controller. Proxy checks, model pulls, and recap jobs stay on your hardware."),
+			text(
+				"Automations run on the controller. Proxy checks, model pulls, and recap jobs stay on your hardware.",
+			),
 		],
 		image: assets.workbenchTerminal,
 		alt: "Local Studio automations list with scheduled controller tasks.",
@@ -90,7 +98,9 @@ export const productFeatures = [
 		],
 		productTitle: "Name the Hardware",
 		productText: [
-			text("Runtimes, devices, and controller settings stay with the machine. Nothing important is hidden in a cloud console."),
+			text(
+				"Runtimes, devices, and controller settings stay with the machine. Nothing important is hidden in a cloud console.",
+			),
 		],
 		image: assets.configureModels,
 		alt: "Local Studio configure screen showing local hardware and runtime targets.",
