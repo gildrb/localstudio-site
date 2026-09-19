@@ -1,7 +1,7 @@
 import { demoStyles } from "../styles/demo-root.styles.ts";
 import * as stylex from "@stylexjs/stylex";
 import { styles } from "./computer-header.styles.ts";
-import { useState, type ComponentType } from "react";
+import { useState, type ReactNode } from "react";
 import {
 	Activity,
 	FolderTree,
@@ -155,7 +155,7 @@ function HeaderIconButton({
 	active,
 	onClick,
 }: {
-	icon: ComponentType<{ className?: string }>;
+	icon: (props: { className?: string | undefined }) => ReactNode;
 	label: string;
 	active?: boolean;
 	onClick: () => void;

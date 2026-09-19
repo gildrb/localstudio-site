@@ -321,7 +321,7 @@ export function LocalAiLogoShader({
 			rippleStartTime: Number.NEGATIVE_INFINITY,
 			lastRippleSpawnTime: Number.NEGATIVE_INFINITY,
 			pointerInsideCanvas: false,
-			isCoarsePointer: coarsePointerRef.current,
+			isCoarsePointer: coarsePointerRef.current ?? false,
 			paintOnHover,
 			depthReveal,
 			depthOpening: 0,

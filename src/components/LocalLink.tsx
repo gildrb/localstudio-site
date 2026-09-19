@@ -4,7 +4,7 @@ import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from "react";
 import { pushNavigation, scrollToHash } from "../app/browser-location";
 import { decideSameOriginNavigation } from "../domain/route";
 
-type LocalLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className" | "style"> & {
+type LocalLinkProps = Omit<AnchorHTMLAttributes, "className" | "style"> & {
 	children: ReactNode;
 	href: string;
 	sx?: PublicStyle;

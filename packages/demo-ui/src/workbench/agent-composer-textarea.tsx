@@ -3,7 +3,7 @@ import { demoStyles } from "../styles/demo-root.styles.ts";
 import * as stylex from "@stylexjs/stylex";
 import { styles } from "./agent-composer-textarea.styles.ts";
 
-import type { ChangeEventHandler, KeyboardEventHandler, RefObject } from "react";
+import type { ChangeEventHandler, KeyboardEventHandler, Ref } from "react";
 
 export function AgentComposerTextArea({
 	inputRef,
@@ -12,7 +12,7 @@ export function AgentComposerTextArea({
 	onKeyDown,
 	placeholder = "Ask for follow-up changes",
 }: {
-	inputRef: RefObject<HTMLTextAreaElement | null>;
+	inputRef: Ref<HTMLTextAreaElement>;
 	value: string;
 	onChange: ChangeEventHandler<HTMLTextAreaElement>;
 	onKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;

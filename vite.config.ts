@@ -6,13 +6,21 @@ const root = import.meta.dirname;
 export default defineConfig(({ command }) => ({
 	appType: "mpa",
 	// Resolve public raw SVGs through their served URL, not the /public filesystem path.
-	resolve: { alias: { "#sponsor-svg": "/images/sponsors" } },
+	// React imports are aliased onto the Preact compatibility layer.
+	resolve: {
+		alias: {
+			"#sponsor-svg": "/images/sponsors",
+			"react-dom/test-utils": "preact/test-utils",
+			"react-dom": "preact/compat",
+			"react/jsx-runtime": "preact/jsx-runtime",
+			react: "preact/compat",
+		},
+	},
 	plugins:
 		lazyPlugins(async () => {
 			if (process.env["VITEST"]) return [wgslVitePlugin()];
-			const [{ default: stylex }, { default: react }, { sitePlugin }] = await Promise.all([
+			const [{ default: stylex }, { sitePlugin }] = await Promise.all([
 				import("@stylexjs/unplugin/vite"),
-				import("@vitejs/plugin-react"),
 				import("./scripts/site-plugin"),
 			]);
 			return [
@@ -23,7 +31,6 @@ export default defineConfig(({ command }) => ({
 					unstable_moduleResolution: { type: "commonJS", rootDir: root },
 				}),
 				wgslVitePlugin(),
-				react(),
 				sitePlugin(),
 			];
 		}) ?? [],
@@ -37,7 +44,17 @@ export default defineConfig(({ command }) => ({
 	},
 	environments: {
 		ssr: {
-			resolve: { noExternal: ["@local-studio/demo-ui", "@local-ai/logo-renderer"] },
+			// External node_modules import real React for their peer dependency;
+			// these are bundled with the Preact alias applied instead.
+			resolve: {
+				noExternal: [
+					"@local-studio/demo-ui",
+					"@local-ai/logo-renderer",
+					"@tabler/icons-react",
+					"motion",
+					"phase",
+				],
+			},
 			build: {
 				ssr: "src/entry-server.tsx",
 				outDir: "node_modules/.cache/localstudio/ssr",

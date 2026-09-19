@@ -92,7 +92,7 @@ export function AutomateDemo() {
 								name="automation-search"
 								autoComplete="off"
 								value={query}
-								onChange={(event) => setQuery(event.target.value)}
+								onChange={(event) => setQuery(event.currentTarget.value)}
 								placeholder="Search automations, e.g. health checks…"
 								{...stylex.props(demoStyles.reset, demoStyles.controlReset, styles.element98)}
 							/>

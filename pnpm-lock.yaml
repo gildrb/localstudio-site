@@ -11,6 +11,7 @@ overrides:
 patchedDependencies:
   '@stylexjs/unplugin@0.19.0': 7f3f8fa98007fc818680964ddb0dc71bcef3b8b8f9cc1dbe6430126030b8abe4
   '@tabler/icons-react@3.46.0': 50d8579de7f1d238b981da02da7f790bb1699cc651bf45a70bc8c4d8ae52fc7e
+  preact@10.29.8: 29509356cb9eec5a929db4dbe5d49eda82030f9a6fb5912003a0beb363fde985
   vgpu@0.4.1: 383327b490843f50ad783c679a0860b088ff23f0d944b3ce01bc0396d06034de
 
 importers:
@@ -32,12 +33,12 @@ importers:
       motion:
         specifier: 13.2.0
         version: 13.2.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react:
-        specifier: 19.3.0
-        version: 19.3.0
-      react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+      preact:
+        specifier: 10.29.8
+        version: 10.29.8(patch_hash=29509356cb9eec5a929db4dbe5d49eda82030f9a6fb5912003a0beb363fde985)(preact-render-to-string@6.7.0)
+      preact-render-to-string:
+        specifier: 6.7.0
+        version: 6.7.0(preact@10.29.8)
       valibot:
         specifier: 1.5.0
         version: 1.5.0(typescript@7.0.2)
@@ -51,18 +52,9 @@ importers:
       '@types/node':
         specifier: 26.5.1
         version: 26.5.1
-      '@types/react':
-        specifier: 19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 19.3.0
-        version: 19.3.0(@types/react@19.3.0)
       '@vgpu/wgsl':
         specifier: 0.4.1
         version: 0.4.1(@vgpu/adapter-node@0.4.1)
-      '@vitejs/plugin-react':
-        specifier: 6.1.1
-        version: 6.1.1(@voidzero-dev/vite-plus-core@0.3.1(@types/node@26.5.1)(esbuild@0.28.2)(tsx@4.23.13)(typescript@7.0.2)(yaml@2.9.0))
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -84,19 +76,9 @@ importers:
       '@tabler/icons-react':
         specifier: 3.46.0
         version: 3.46.0(patch_hash=50d8579de7f1d238b981da02da7f790bb1699cc651bf45a70bc8c4d8ae52fc7e)(react@19.3.0)
-      react:
-        specifier: 19.3.0
-        version: 19.3.0
-      react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
-    devDependencies:
-      '@types/react':
-        specifier: 19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 19.3.0
-        version: 19.3.0(@types/react@19.3.0)
+      preact:
+        specifier: 10.29.8
+        version: 10.29.8(patch_hash=29509356cb9eec5a929db4dbe5d49eda82030f9a6fb5912003a0beb363fde985)(preact-render-to-string@6.7.0)
 
   packages/logo-renderer:
     dependencies:
@@ -112,12 +94,9 @@ importers:
       phase:
         specifier: 0.5.4
         version: 0.5.4(react@19.3.0)
-      react:
-        specifier: 19.3.0
-        version: 19.3.0
-      react-dom:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
+      preact:
+        specifier: 10.29.8
+        version: 10.29.8(patch_hash=29509356cb9eec5a929db4dbe5d49eda82030f9a6fb5912003a0beb363fde985)(preact-render-to-string@6.7.0)
       valibot:
         specifier: 1.5.0
         version: 1.5.0(typescript@7.0.2)
@@ -131,12 +110,6 @@ importers:
       '@types/pngjs':
         specifier: 6.0.5
         version: 6.0.5
-      '@types/react':
-        specifier: 19.3.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: 19.3.0
-        version: 19.3.0(@types/react@19.3.0)
       clipper-lib:
         specifier: 6.4.2
         version: 6.4.2
@@ -727,9 +700,6 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@rolldown/pluginutils@1.0.1':
-    resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
-
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
@@ -785,14 +755,6 @@ packages:
 
   '@types/pngjs@6.0.5':
     resolution: {integrity: sha512-0k5eKfrA83JOZPppLtS2C7OUtyNAl2wKNxfyYl9Q5g9lPkgBl/9hNyAu6HuEH2J4XmIv2znEpkDd0SaZVxW6iQ==}
-
-  '@types/react-dom@19.3.0':
-    resolution: {integrity: sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==}
-    peerDependencies:
-      '@types/react': ^19.3.0
-
-  '@types/react@19.3.0':
-    resolution: {integrity: sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -949,22 +911,6 @@ packages:
       '@vgpu/adapter-node': '>=0.1.6 <1.0.0'
     peerDependenciesMeta:
       '@vgpu/adapter-node':
-        optional: true
-
-  '@vitejs/plugin-react@6.1.1':
-    resolution: {integrity: sha512-yxLaQV9gkhS8ezJqCM6+ndU7mDY6gqAg75NQ+0IjwEI8IYOmQCgkRwHKVSfWXW076DsqMo0Dk+0FK1U+M5RgFw==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    peerDependencies:
-      '@rolldown/plugin-babel': ^0.1.7 || ^0.2.0
-      babel-plugin-react-compiler: ^1.0.0
-      oxc-transform-react: ^0.145.0
-      vite: ^8.0.0
-    peerDependenciesMeta:
-      '@rolldown/plugin-babel':
-        optional: true
-      babel-plugin-react-compiler:
-        optional: true
-      oxc-transform-react:
         optional: true
 
   '@vitest/browser-preview@4.1.11':
@@ -1299,9 +1245,6 @@ packages:
   css-mediaquery@0.1.2:
     resolution: {integrity: sha512-COtn4EROW5dBGlE/4PiKnh6rZpAPxDeFLaEEwt4i10jpDMFt2EhQGS79QmmrO+iKCHv0PU/HrOWEhijFd1x99Q==}
 
-  csstype@3.2.3:
-    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
-
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
     engines: {node: '>=6.0'}
@@ -1590,6 +1533,19 @@ packages:
   postcss@8.5.28:
     resolution: {integrity: sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A==}
     engines: {node: ^10 || ^12 || >=14}
+
+  preact-render-to-string@6.7.0:
+    resolution: {integrity: sha512-Z4WR8fmLMRpdYqJ9i7vrlXSsSrxVJydwrkEXHapexfARbWfGb7vGcnvNQnIzN0cXciMVOlz/XLoiMCi9gUsy9Q==}
+    peerDependencies:
+      preact: '>=10 || >= 11.0.0-0'
+
+  preact@10.29.8:
+    resolution: {integrity: sha512-ej2aVZ+vZ8WO7tvlQWRM9N63A0KzF9q4mWJfDUHgYaIofWY9hu74QdnQrjoPMmZi2/nZ5gN0bJCQF49xQqx09Q==}
+    peerDependencies:
+      preact-render-to-string: '>=5'
+    peerDependenciesMeta:
+      preact-render-to-string:
+        optional: true
 
   pretty-format@27.5.1:
     resolution: {integrity: sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==}
@@ -2175,8 +2131,6 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@rolldown/pluginutils@1.0.1': {}
-
   '@standard-schema/spec@1.1.0': {}
 
   '@stylexjs/babel-plugin@0.19.0':
@@ -2255,14 +2209,6 @@ snapshots:
   '@types/pngjs@6.0.5':
     dependencies:
       '@types/node': 26.5.1
-
-  '@types/react-dom@19.3.0(@types/react@19.3.0)':
-    dependencies:
-      '@types/react': 19.3.0
-
-  '@types/react@19.3.0':
-    dependencies:
-      csstype: 3.2.3
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true
@@ -2381,11 +2327,6 @@ snapshots:
       '@vgpu/wgsl-std': 0.4.1
     optionalDependencies:
       '@vgpu/adapter-node': 0.4.1
-
-  '@vitejs/plugin-react@6.1.1(@voidzero-dev/vite-plus-core@0.3.1(@types/node@26.5.1)(esbuild@0.28.2)(tsx@4.23.13)(typescript@7.0.2)(yaml@2.9.0))':
-    dependencies:
-      '@rolldown/pluginutils': 1.0.1
-      vite: '@voidzero-dev/vite-plus-core@0.3.1(@types/node@26.5.1)(esbuild@0.28.2)(tsx@4.23.13)(typescript@7.0.2)(yaml@2.9.0)'
 
   '@vitest/browser-preview@4.1.11(@voidzero-dev/vite-plus-core@0.3.1(@types/node@26.5.1)(esbuild@0.28.2)(tsx@4.23.13)(typescript@7.0.2)(yaml@2.9.0))(vitest@4.1.11)':
     dependencies:
@@ -2612,8 +2553,6 @@ snapshots:
   convert-source-map@2.0.0: {}
 
   css-mediaquery@0.1.2: {}
-
-  csstype@3.2.3: {}
 
   debug@4.4.3:
     dependencies:
@@ -2872,6 +2811,14 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
+  preact-render-to-string@6.7.0(preact@10.29.8):
+    dependencies:
+      preact: 10.29.8(patch_hash=29509356cb9eec5a929db4dbe5d49eda82030f9a6fb5912003a0beb363fde985)(preact-render-to-string@6.7.0)
+
+  preact@10.29.8(patch_hash=29509356cb9eec5a929db4dbe5d49eda82030f9a6fb5912003a0beb363fde985)(preact-render-to-string@6.7.0):
+    optionalDependencies:
+      preact-render-to-string: 6.7.0(preact@10.29.8)
+
   pretty-format@27.5.1:
     dependencies:
       ansi-regex: 5.0.1
@@ -2882,12 +2829,14 @@ snapshots:
     dependencies:
       react: 19.3.0
       scheduler: 0.28.0
+    optional: true
 
   react-is@17.0.2: {}
 
   react@19.3.0: {}
 
-  scheduler@0.28.0: {}
+  scheduler@0.28.0:
+    optional: true
 
   semver@6.3.1: {}
 

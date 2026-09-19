@@ -40,7 +40,7 @@ export function AgentChatPaneHeader({
 						autoComplete="off"
 						value={draftTitle}
 						onFocus={(event) => event.currentTarget.select()}
-						onChange={(event) => setDraftTitle(event.target.value)}
+						onChange={(event) => setDraftTitle(event.currentTarget.value)}
 						onBlur={finishRename}
 						onKeyDown={(event) => {
 							if (event.key === "Enter") finishRename();

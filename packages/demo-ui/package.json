@@ -12,13 +12,8 @@
 		"@stylexjs/stylex": "0.19.0",
 		"@tabler/icons-react": "3.46.0"
 	},
-	"devDependencies": {
-		"@types/react": "19.3.0",
-		"@types/react-dom": "19.3.0"
-	},
 	"peerDependencies": {
-		"react": "19.3.0",
-		"react-dom": "19.3.0"
+		"preact": "10.29.8"
 	},
 	"demoPackage": {
 		"product": "Local Studio",

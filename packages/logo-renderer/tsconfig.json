@@ -23,7 +23,14 @@
 		"allowUnusedLabels": false,
 		"verbatimModuleSyntax": true,
 		"moduleDetection": "force",
-		"skipLibCheck": false
+		"skipLibCheck": false,
+		"jsxImportSource": "preact",
+		"paths": {
+			"react": ["../../node_modules/preact/compat/"],
+			"react/jsx-runtime": ["../../node_modules/preact/jsx-runtime"],
+			"react-dom": ["../../node_modules/preact/compat/"],
+			"react-dom/*": ["../../node_modules/preact/compat/*"]
+		}
 	},
 	"include": ["src", "*.d.ts"]
 }

@@ -1,17 +1,19 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
-const query = "(prefers-color-scheme: light)";
+const LIGHT_SCHEME_QUERY = "(prefers-color-scheme: light)";
 
-function subscribe(change: () => void) {
-	const media = window.matchMedia(query);
-	media.addEventListener("change", change);
-	return () => media.removeEventListener("change", change);
-}
-
+// The live OS scheme; false during server rendering. Re-renders only when the
+// OS scheme changes.
 export function useLightScheme() {
-	return useSyncExternalStore(
-		subscribe,
-		() => window.matchMedia(query).matches,
-		() => false,
-	);
+	const [light, setLight] = useState(() => {
+		if (typeof window === "undefined") return false;
+		return window.matchMedia(LIGHT_SCHEME_QUERY).matches;
+	});
+	useEffect(() => {
+		const media = window.matchMedia(LIGHT_SCHEME_QUERY);
+		const onChange = () => setLight(media.matches);
+		media.addEventListener("change", onChange);
+		return () => media.removeEventListener("change", onChange);
+	}, []);
+	return light;
 }

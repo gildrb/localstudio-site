@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Prose } from "../content/product";
 
-export function renderInlineReact(prose: Prose): ReactNode {
+export function renderInlineProse(prose: Prose): ReactNode {
 	return prose.map((part, index) =>
 		part.kind === "text" ? (
 			part.text

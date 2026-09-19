@@ -597,7 +597,7 @@ function HeroDemoView(model: HeroDemoViewModel) {
 												<AgentComposerTextArea
 													inputRef={inputRef}
 													value={composerValue}
-													onChange={(event) => takeComposer(event.target.value)}
+													onChange={(event) => takeComposer(event.currentTarget.value)}
 													onKeyDown={(event) => {
 														if (event.key !== "Enter" || event.shiftKey) return;
 														event.preventDefault();

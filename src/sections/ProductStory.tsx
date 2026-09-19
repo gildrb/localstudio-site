@@ -6,7 +6,7 @@ import { site } from "../domain/site";
 import { motion } from "../domain/motion";
 import { baseStyles } from "../styles/base-styles";
 import { styles } from "../styles/sections-styles";
-import { renderInlineReact } from "../ui/prose";
+import { renderInlineProse } from "../ui/prose";
 import { storySceneAnimation, storySceneStates } from "./product-story-motion";
 import { useProductStoryMotion } from "./use-product-story-motion";
 
@@ -112,7 +112,7 @@ export function ProductStory() {
 														styles.storyDescription,
 													)}
 												>
-													{renderInlineReact(feature.storyDescription)}
+													{renderInlineProse(feature.storyDescription)}
 												</p>
 											</m.div>
 										</m.li>

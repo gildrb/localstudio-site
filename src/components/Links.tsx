@@ -5,10 +5,7 @@ import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { downloadLabel, downloadPath } from "../domain/route";
 import { LocalLink } from "./LocalLink";
 
-interface TextLinkProps extends Omit<
-	AnchorHTMLAttributes<HTMLAnchorElement>,
-	"className" | "style"
-> {
+interface TextLinkProps extends Omit<AnchorHTMLAttributes, "className" | "style"> {
 	children: ReactNode;
 	href: string;
 	sx?: PublicStyle;

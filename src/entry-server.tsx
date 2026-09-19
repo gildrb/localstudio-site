@@ -1,25 +1,22 @@
 import * as stylex from "@stylexjs/stylex";
 import { Suspense } from "react";
-import { renderToReadableStream } from "react-dom/server";
+import { renderToReadableStream } from "preact-render-to-string/stream";
 import { HomePage } from "./pages/HomePage";
 import { baseStyles } from "./styles/base-styles";
 
 export async function render(template: string): Promise<string> {
 	const root = '<div id="root"></div>';
 	if (!template.includes(root)) throw new Error("The HTML template is missing its empty root.");
-	const errors: unknown[] = [];
-	const stream = await renderToReadableStream(
+	const stream = renderToReadableStream(
 		<Suspense fallback={null}>
 			<HomePage />
 		</Suspense>,
-		{
-			onError(error) {
-				errors.push(error);
-			},
-		},
 	);
-	await stream.allReady;
-	if (errors.length > 0) throw new AggregateError(errors, "Homepage prerender failed.");
+	try {
+		await stream.allReady;
+	} catch (error) {
+		throw new AggregateError([error], "Homepage prerender failed.", { cause: error });
+	}
 	const markup = await new Response(stream).text();
 	const htmlClass = stylex.props(baseStyles.element, baseStyles.html).className ?? "";
 	const bodyClass = stylex.props(baseStyles.element, baseStyles.body).className ?? "";

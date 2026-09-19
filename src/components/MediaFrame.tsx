@@ -3,7 +3,7 @@ import * as stylex from "@stylexjs/stylex";
 import { colors, constants, lengths } from "../styles/public-tokens.stylex";
 import type { ImgHTMLAttributes, ReactNode } from "react";
 
-interface MediaFrameProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "className"> {
+interface MediaFrameProps extends Omit<ImgHTMLAttributes, "className"> {
 	caption?: ReactNode | undefined;
 	sx?: PublicStyle;
 }

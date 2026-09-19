@@ -1,10 +1,11 @@
-import type { ComponentType } from "react";
 import { Activity, Boxes, Clock, ServerCog, TrendingUp } from "../ui/icon-registry";
+import type { ReactNode } from "react";
 
-export type IconComponent = ComponentType<{
-	className?: string;
-	strokeWidth?: number;
-}>;
+// Any component rendering an SVG icon; styled through className and stroke width.
+export type IconComponent = (props: {
+	className?: string | undefined;
+	strokeWidth?: number | undefined;
+}) => ReactNode;
 
 export const tabs = [
 	{ href: "/", label: "Status", icon: Activity },

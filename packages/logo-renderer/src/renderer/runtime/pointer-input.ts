@@ -212,7 +212,7 @@ export function createPointerController({
 		state.pointerInsideCanvas = inside;
 	};
 
-	syncPointerInteractionMode(state, coarsePointerRef.current);
+	syncPointerInteractionMode(state, coarsePointerRef.current ?? false);
 	window.addEventListener("pointermove", onPointerMove, { passive: true });
 	window.addEventListener("scroll", invalidateCanvasRect, { passive: true });
 	window.addEventListener("resize", invalidateCanvasRect, { passive: true });
