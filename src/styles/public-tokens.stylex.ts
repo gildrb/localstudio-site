@@ -72,6 +72,16 @@ export const colors = stylex.defineVars({
 	primaryButtonInk: stylex.types.color({ default: "#000000", [lightScheme]: "#000000" }),
 });
 
+export const masks = stylex.defineVars({
+	// Alpha-only veils composited over the hero artwork; hue is irrelevant.
+	featherSoft: stylex.types.color("rgb(0 0 0 / 15.625%)"),
+	featherMid: stylex.types.color("rgb(0 0 0 / 50%)"),
+	featherFull: stylex.types.color("rgb(0 0 0 / 84.375%)"),
+	vignetteSoft: stylex.types.color("rgb(0 0 0 / 19.14%)"),
+	vignetteMid: stylex.types.color("rgb(0 0 0 / 56.25%)"),
+	vignetteFull: stylex.types.color("rgb(0 0 0 / 87.89%)"),
+});
+
 export const lengths = stylex.defineVars({
 	pageWidth: stylex.types.length({ default: "1399px" }),
 	pageGutter: stylex.types.length({ default: "48px" }),

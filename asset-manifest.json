@@ -515,7 +515,10 @@
 			"path": "public/localai/hero-atmosphere-day-bg.webp",
 			"role": "image",
 			"type": "image/webp",
-			"dimensions": null,
+			"dimensions": {
+				"width": 1203,
+				"height": 1280
+			},
 			"bytes": 13202,
 			"sha256": "9ac4c53f78fc56f66cd497498d40913ddc4a609cd222bedbcacf4847d7608a17"
 		},
@@ -567,7 +570,10 @@
 			"path": "public/localai/hero-atmosphere-night-bg.webp",
 			"role": "image",
 			"type": "image/webp",
-			"dimensions": null,
+			"dimensions": {
+				"width": 1203,
+				"height": 1280
+			},
 			"bytes": 10790,
 			"sha256": "49d800fe0c3853353ea3060573ac79cf52fcec3df0e13eeb17756a11c6767a2d"
 		},

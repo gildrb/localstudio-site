@@ -258,16 +258,12 @@ The full structured independent review found no actionable findings (confidence
 is browser/GPU runtime proof.
 
 After all user UI and icon requests, a fresh check and forced TypeScript build pass;
-the unit suite remains 98 passed / 5 known failures, and two builds match all 106
-outputs. StyleX output and frozen install pass. A final structured UI/dependency
-review also reports no actionable findings (confidence 0.78).
+the unit suite's five known baseline failures were fixed separately, and two builds
+match all 106 outputs. StyleX output and frozen install pass. A final structured
+UI/dependency review also reports no actionable findings (confidence 0.78).
 
 Remaining failures and limits are explicit:
 
-- Five unchanged unit failures: 18 existing mask color literals; approved 0.5s versus
-  expected 0.3s ProductStory timing; an existing blur property excluded by another
-  expectation; unregistered hero-atmosphere-day.png; and missing WebP dimensions.
-  No assertions or snapshots were changed to manufacture passing results.
 - Eager JavaScript is 290,375 gzip bytes, above the unchanged 122,880-byte budget.
   The budget already failed before this audit. It was not raised or suppressed.
 - `vgpu doctor` cannot render: libvulkan.so.1 and a Vulkan ICD are absent, yielding

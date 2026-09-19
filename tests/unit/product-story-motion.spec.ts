@@ -12,9 +12,9 @@ import { motion } from "../../src/domain/motion";
 
 const sceneCount = 5;
 
-test("entries and images transition in 300ms", () => {
+test("entries transition in 300ms; story swap in 500ms", () => {
 	expect(motion.featureEntry.duration).toBe(0.3);
-	expect(motion.featureSwap.duration).toBe(0.3);
+	expect(motion.featureSwap.duration).toBe(0.5);
 });
 
 function positionAt(scrollY: number, scrollRange = 1000) {
@@ -136,20 +136,21 @@ test("Motion owns transitions; demos stay mounted", () => {
 	expect(controller).not.toContain("useSpring");
 });
 
-test("300ms stationary crossfades; reduced motion snaps", () => {
+test("stationary crossfades blur inactive scenes; reduced motion snaps", () => {
 	for (const reduced of [false, true]) {
 		for (let active = 0; active < sceneCount; active += 1) {
 			for (let index = 0; index < sceneCount; index += 1) {
 				const { initial, animate, transition } = storySceneAnimation(index, active, reduced);
 				const selected = index === active;
-				const duration = reduced ? 0 : 0.3;
+				const duration = reduced ? 0 : 0.5;
 				expect(initial).toBe(false);
 				expect(animate).toEqual({
-					opacity: selected ? 1 : 0,
+					opacity: 1,
+					"--story-content-blur": selected || reduced ? "0px" : "8px",
 					visibility: selected ? "visible" : "hidden",
 				});
 				expect(transition.duration).toBe(duration);
-				expect(transition.visibility).toEqual({ duration: 0, delay: selected ? 0 : duration });
+				expect(transition.visibility).toEqual({ duration: 0 });
 			}
 		}
 	}
