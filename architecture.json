@@ -31,7 +31,7 @@
 	},
 	"roots": [
 		"src/main.tsx",
-		"middleware.ts",
+		"worker/index.ts",
 		"playwright.config.ts",
 		"playwright.visual.config.ts",
 		"packages/logo-renderer/scripts/generate-logo-mesh.ts",
@@ -42,7 +42,7 @@
 		"scripts/reproducible.ts",
 		"scripts/assets.ts",
 		"scripts/bundle.ts",
-		"scripts/vercel.ts",
+		"scripts/cloudflare.ts",
 		"scripts/index-html.ts",
 		"src/agent/markdown.ts",
 		"src/env.d.ts",

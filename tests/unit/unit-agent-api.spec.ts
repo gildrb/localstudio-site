@@ -1,15 +1,12 @@
 import { readFileSync } from "node:fs";
 import { expect, test } from "vite-plus/test";
 import * as v from "valibot";
-import mcpHandler from "../../api/mcp.ts";
-import productsHandler from "../../api/v1/products.ts";
-import statusHandler from "../../api/v1/status.ts";
-import notFoundHandler from "../../api/[...path].ts";
 import { agentDocument } from "../../src/agent/documents.ts";
-import type { ApiHandler, ApiRequest, ApiResponse } from "../../api/_shared.ts";
+import { handleApi } from "../../worker/api.ts";
 
-type RecordedResponse = ApiResponse & {
-	headers: Record<string, string>;
+type RecordedResponse = {
+	statusCode: number;
+	headers: Headers;
 	body: string;
 };
 
@@ -55,24 +52,16 @@ const toolsData = v.object({
 });
 const invokedData = v.object({ result: v.object({ structuredContent: productData }) });
 
-function responseRecorder(): RecordedResponse {
-	return {
-		statusCode: 200,
-		headers: {},
-		body: "",
-		setHeader(name, value) {
-			this.headers[name.toLowerCase()] = value;
-		},
-		end(body = "") {
-			this.body = body;
-		},
-	};
-}
-
-function call(handler: ApiHandler, request: ApiRequest): RecordedResponse {
-	const response = responseRecorder();
-	handler(request, response);
-	return response;
+async function call(pathname: string, method: string, body?: unknown): Promise<RecordedResponse> {
+	const response = await handleApi(
+		new Request(new URL(pathname, "https://localstudio.ai"), {
+			method,
+			headers: { "Content-Type": "application/json" },
+			body: body === undefined ? null : JSON.stringify(body),
+		}),
+		pathname,
+	);
+	return { statusCode: response.status, headers: response.headers, body: await response.text() };
 }
 
 test("homepage shell has complete metadata and no raw style block", () => {
@@ -127,54 +116,50 @@ test("trust and developer pages are substantial server documents", () => {
 	}
 });
 
-test("REST handlers return typed success and JSON errors", () => {
-	const status = call(statusHandler, { method: "GET" });
+test("REST handlers return typed success and JSON errors", async () => {
+	const status = await call("/api/v1/status", "GET");
 	expect(status.statusCode).toBe(200);
-	expect(status.headers["content-type"]).toContain("application/json");
+	expect(status.headers.get("content-type")).toContain("application/json");
 	expect(v.parse(statusData, JSON.parse(status.body)).status).toBe("ok");
-	const products = call(productsHandler, { method: "GET" });
+	const products = await call("/api/v1/products", "GET");
 	expect(v.parse(productData, JSON.parse(products.body)).products).toHaveLength(3);
-	const method = call(statusHandler, { method: "POST" });
+	const method = await call("/api/v1/status", "POST");
 	expect(method.statusCode).toBe(405);
 	expect(v.parse(errorData, JSON.parse(method.body)).error.resolution).toBeTruthy();
-	const missing = call(notFoundHandler, { method: "GET" });
+	const missing = await call("/api/v1/missing", "GET");
 	expect(missing.statusCode).toBe(404);
 	expect(v.parse(errorData, JSON.parse(missing.body)).error.code).toBe("not_found");
 });
 
-test("MCP supports initialize, tools/list, and tools/call", () => {
-	const initialize = call(mcpHandler, {
-		method: "POST",
-		body: {
-			jsonrpc: "2.0",
-			id: 1,
-			method: "initialize",
-			params: {
-				protocolVersion: "2025-06-18",
-				capabilities: {},
-				clientInfo: { name: "test", version: "1" },
-			},
+test("MCP supports initialize, tools/list, and tools/call", async () => {
+	const initialize = await call("/.well-known/mcp", "POST", {
+		jsonrpc: "2.0",
+		id: 1,
+		method: "initialize",
+		params: {
+			protocolVersion: "2025-06-18",
+			capabilities: {},
+			clientInfo: { name: "test", version: "1" },
 		},
 	});
 	expect(initialize.statusCode).toBe(200);
 	expect(v.parse(initializedData, JSON.parse(initialize.body)).result.protocolVersion).toBe(
 		"2025-06-18",
 	);
-	const list = call(mcpHandler, {
-		method: "POST",
-		body: { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
+	const list = await call("/api/mcp", "POST", {
+		jsonrpc: "2.0",
+		id: 2,
+		method: "tools/list",
+		params: {},
 	});
 	expect(v.parse(toolsData, JSON.parse(list.body)).result.tools.map((tool) => tool.name)).toContain(
 		"list_products",
 	);
-	const invoke = call(mcpHandler, {
-		method: "POST",
-		body: {
-			jsonrpc: "2.0",
-			id: 3,
-			method: "tools/call",
-			params: { name: "list_products", arguments: {} },
-		},
+	const invoke = await call("/api/mcp", "POST", {
+		jsonrpc: "2.0",
+		id: 3,
+		method: "tools/call",
+		params: { name: "list_products", arguments: {} },
 	});
 	expect(
 		v.parse(invokedData, JSON.parse(invoke.body)).result.structuredContent.products,

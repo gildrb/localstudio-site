@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"generated:check": "vp run design:manifest:check && vp run assets:check && vp run vercel:check && vp run index:html:check && vp run logo:check",
+		"generated:check": "vp run design:manifest:check && vp run assets:check && vp run cloudflare:check && vp run index:html:check && vp run logo:check",
 		"design:manifest": "node scripts/design-manifest.ts write",
 		"design:manifest:check": "node scripts/design-manifest.ts check",
 		"reproducible:check": "node scripts/reproducible.ts",
@@ -12,8 +12,9 @@
 		"assets:check": "node scripts/assets.ts check",
 		"bundle:check": "node scripts/bundle.ts check",
 		"bundle:report": "node scripts/bundle.ts report",
-		"vercel:manifest": "node scripts/vercel.ts write",
-		"vercel:check": "node scripts/vercel.ts check",
+		"cloudflare:manifest": "node scripts/cloudflare.ts write",
+		"cloudflare:check": "node scripts/cloudflare.ts check",
+		"deploy": "vp build && wrangler deploy",
 		"index:html": "node scripts/index-html.ts write",
 		"index:html:check": "node scripts/index-html.ts check",
 		"test:e2e": "playwright test",
@@ -43,7 +44,8 @@
 		"typescript": "7.0.2",
 		"vgpu": "0.4.1",
 		"vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
-		"vite-plus": "0.3.1"
+		"vite-plus": "0.3.1",
+		"wrangler": "4.151.1"
 	},
 	"engines": {
 		"node": ">=24.11.0"

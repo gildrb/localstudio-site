@@ -21,7 +21,7 @@ export async function render(template: string): Promise<string> {
 	const htmlClass = stylex.props(baseStyles.element, baseStyles.html).className ?? "";
 	const bodyClass = stylex.props(baseStyles.element, baseStyles.body).className ?? "";
 	const rootClass = stylex.props(baseStyles.element, baseStyles.root).className ?? "";
-	// Vercel rewrites non-home app routes to this file. Never show home markup there.
+	// Production rewrites non-home app routes to this file. Never show home markup there.
 	const routeGuard =
 		'<script>if(location.pathname!=="/")document.getElementById("root").replaceChildren()</script>';
 	return template

@@ -4,10 +4,8 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { isRunnableDevEnvironment, type Connect, type Plugin } from "vite";
 import * as v from "valibot";
-import notFoundHandler from "../api/[...path].ts";
-import mcpHandler from "../api/mcp.ts";
-import productsHandler from "../api/v1/products.ts";
-import statusHandler from "../api/v1/status.ts";
+import { handleApi, isApiPath } from "../worker/api.ts";
+import { headersFile, redirectsFile } from "./cloudflare-config.ts";
 import {
 	agentDocument,
 	agentDocuments,
@@ -22,21 +20,8 @@ const siteRenderer = v.object({
 	render: v.pipe(v.function(), v.args(v.tuple([v.string()])), v.returns(v.promise())),
 });
 
+/** Bridges a Connect request to the Worker's Fetch API handlers. */
 async function serveApi(pathname: string, request: IncomingMessage, response: ServerResponse) {
-	const apiPath = pathname === "/.well-known/mcp" ? "/api/mcp" : pathname;
-	const handler =
-		apiPath === "/api/v1/status"
-			? statusHandler
-			: apiPath === "/api/v1/products"
-				? productsHandler
-				: apiPath === "/api/mcp"
-					? mcpHandler
-					: notFoundHandler;
-	if (apiPath !== "/api/mcp" || request.method !== "POST") {
-		handler(request, response);
-		return;
-	}
-	// Vercel supplies parsed JSON to its function handlers. Connect supplies a stream.
 	request.setEncoding("utf8");
 	let source = "";
 	for await (const chunk of request) {
@@ -49,14 +34,22 @@ async function serveApi(pathname: string, request: IncomingMessage, response: Se
 			return;
 		}
 	}
-	try {
-		const body: unknown = JSON.parse(source);
-		handler({ method: "POST", body }, response);
-	} catch (error) {
-		if (!(error instanceof SyntaxError)) throw error;
-		// The production handler reports an invalid JSON-RPC request for a missing body.
-		handler(request, response);
+	const headers = new Headers();
+	for (const [name, value] of Object.entries(request.headers)) {
+		if (typeof value === "string") headers.set(name, value);
 	}
+	const method = request.method ?? "GET";
+	const apiResponse = await handleApi(
+		new Request(new URL(pathname, "http://localstudio.invalid"), {
+			method,
+			headers,
+			body: method === "GET" || method === "HEAD" ? null : source,
+		}),
+		pathname,
+	);
+	response.statusCode = apiResponse.status;
+	apiResponse.headers.forEach((value, name) => response.setHeader(name, value));
+	response.end(await apiResponse.text());
 }
 
 function siteMiddleware(development: boolean): Connect.NextHandleFunction {
@@ -72,7 +65,7 @@ function siteMiddleware(development: boolean): Connect.NextHandleFunction {
 				return;
 			}
 
-			if (pathname.startsWith("/api/") || pathname === "/.well-known/mcp") {
+			if (isApiPath(pathname)) {
 				serveApi(pathname, request, response).catch(next);
 				return;
 			}
@@ -135,6 +128,9 @@ export function sitePlugin(): Plugin {
 			for (const document of agentDocuments()) {
 				this.emitFile({ type: "asset", fileName: document.path.slice(1), source: document.body });
 			}
+			// Cloudflare static asset rules; the Worker applies the same rules to its own responses.
+			this.emitFile({ type: "asset", fileName: "_headers", source: headersFile });
+			this.emitFile({ type: "asset", fileName: "_redirects", source: redirectsFile });
 		},
 		buildApp: {
 			order: "post",

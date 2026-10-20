@@ -5,6 +5,7 @@ allowBuilds:
   esbuild: true
   phase: false
   webgpu: true
+  workerd: true
 minimumReleaseAgeExclude:
   - "@types/node@26.5.1"
   - valibot@1.5.0

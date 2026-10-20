@@ -23,7 +23,7 @@
 			"path": "./scripts"
 		},
 		{
-			"path": "./api"
+			"path": "./worker"
 		},
 		{
 			"path": "./packages/logo-renderer/scripts"
