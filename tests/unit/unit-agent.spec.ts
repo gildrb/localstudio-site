@@ -109,6 +109,9 @@ test("Cloudflare headers match agent document content types", () => {
 	]) {
 		expect(headersFile).toContain(`${path}\n\tContent-Type: ${agentDocument(path)?.contentType}\n`);
 	}
+	expect(headersFile).toContain(
+		`/*.html\n\tContent-Type: ${agentDocument("/404.html")?.contentType}\n`,
+	);
 });
 
 test("Cloudflare routes expose HTML pages and the MCP function", () => {

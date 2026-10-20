@@ -49,15 +49,16 @@ local servers or server-dependent browser checks; see `AGENTS.md`.
 
 ## Deployment
 
-Production runs on Cloudflare Workers with static assets (Worker `localstudio`):
+Production runs on Cloudflare Workers with static assets (Worker `localstudio`,
+custom domain `localstudio.gildrb.com`):
 
 ```sh
 vp run deploy
 ```
 
 `vp run deploy` builds `dist/` and runs `wrangler deploy`. `worker/index.ts` handles
-the API (`worker/api.ts`), `/.well-known/mcp`, 308 redirects, and `Accept: text/markdown`
-negotiation; every other path is a static asset. `scripts/cloudflare-config.ts` is the
+the API (`worker/api.ts`), `/.well-known/mcp`, 308 redirects, `Accept: text/markdown`
+negotiation, and the 404 page; existing files are static assets. `scripts/cloudflare-config.ts` is the
 single source for `wrangler.jsonc`, `worker/routes.ts` (both committed; regenerate
 with `vp run cloudflare:manifest`) and the build-emitted `_headers`/`_redirects`.
 `vp run validate` fails when the committed outputs are stale.
