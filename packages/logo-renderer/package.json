@@ -27,8 +27,8 @@
 		"clipper-lib": "6.4.2",
 		"earcut": "3.2.3",
 		"pngjs": "7.0.0",
-		"vite": "npm:@voidzero-dev/vite-plus-core@0.3.1",
-		"vite-plus": "0.3.1"
+		"vite": "catalog:",
+		"vite-plus": "catalog:"
 	},
 	"peerDependencies": {
 		"preact": "10.29.8"

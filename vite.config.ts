@@ -44,16 +44,10 @@ export default defineConfig(({ command }) => ({
 	},
 	environments: {
 		ssr: {
-			// External node_modules import real React for their peer dependency;
-			// these are bundled with the Preact alias applied instead.
+			// Bundled with the Preact alias applied: mixing runner-bundled and
+			// externally imported packages loads preact twice and breaks hooks.
 			resolve: {
-				noExternal: [
-					"@local-studio/demo-ui",
-					"@local-ai/logo-renderer",
-					"@tabler/icons-react",
-					"motion",
-					"phase",
-				],
+				noExternal: true,
 			},
 			build: {
 				ssr: "src/entry-server.tsx",
@@ -78,6 +72,11 @@ export default defineConfig(({ command }) => ({
 		plugins: [wgslVitePlugin({ minify: false })],
 	},
 	test: {
+		// Vitest v4 compatibility: preserve mock call history.
+		// Remove after tests no longer rely on calls from setup or earlier tests.
+		// https://viteplus.dev/guide/vitest-v5#remove-unneeded-compatibility-settings
+		// https://vitest.dev/guide/migration/#clearmocks-is-enabled-by-default
+		clearMocks: false,
 		include: ["tests/unit/**/*.spec.{ts,js}"],
 		environment: "node",
 	},

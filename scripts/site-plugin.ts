@@ -2,7 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { isRunnableDevEnvironment, type Connect, type Plugin } from "vite";
+import { type Connect, type Plugin } from "vite";
 import * as v from "valibot";
 import { handleApi, isApiPath } from "../worker/api.ts";
 import { headersFile, redirectsFile } from "./cloudflare-config.ts";
@@ -19,6 +19,8 @@ import { isRoutePath, markdownPages, normalizePath, redirectFor } from "../src/d
 const siteRenderer = v.object({
 	render: v.pipe(v.function(), v.args(v.tuple([v.string()])), v.returns(v.promise())),
 });
+// vp dev may run its dev server from its own vite-plus-core copy beside the project's;
+// instanceof guards (isRunnableDevEnvironment) fail across copies, so probe shapes.
 
 /** Bridges a Connect request to the Worker's Fetch API handlers. */
 async function serveApi(pathname: string, request: IncomingMessage, response: ServerResponse) {
@@ -155,11 +157,22 @@ export function sitePlugin(): Plugin {
 			order: "post",
 			async handler(html, context) {
 				if (context.server === undefined) return html;
-				const ssr = context.server.environments["ssr"];
-				if (ssr === undefined || !isRunnableDevEnvironment(ssr)) {
+				const environment: unknown = context.server.environments["ssr"];
+				const runner: unknown =
+					typeof environment === "object" && environment !== null && "runner" in environment
+						? environment.runner
+						: undefined;
+				const importMethod = v.safeParse(
+					v.function(),
+					typeof runner === "object" && runner !== null && "import" in runner
+						? runner.import
+						: undefined,
+				);
+				if (!importMethod.success) {
 					throw new Error("The site requires Vite's runnable ssr environment.");
 				}
-				const module: unknown = await ssr.runner.import("/src/entry-server.tsx");
+				// Call the method on the original runner; it depends on its receiver.
+				const module: unknown = await importMethod.output.call(runner, "/src/entry-server.tsx");
 				const { render } = v.parse(siteRenderer, module);
 				const markup: unknown = await render(html);
 				return v.parse(v.string(), markup);

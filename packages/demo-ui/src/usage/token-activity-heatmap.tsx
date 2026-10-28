@@ -103,7 +103,7 @@ export const TokenActivityHeatmap = memo(function TokenActivityHeatmap({
 	daily: DailyUsage[];
 	period?: ActivityPeriod;
 }) {
-	const end = startOfUtcDay(new Date());
+	const [end] = useState(() => startOfUtcDay(new Date()));
 	const start = calendarStart(end);
 	const byDate =
 		period === "daily" ? new Map(daily.map((day) => [day.date, day])) : weeklyUsage(daily);
